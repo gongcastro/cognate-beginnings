@@ -1,0 +1,76 @@
+---
+title: "Notes on data anlaysis"
+output: html_notebook
+---
+
+The aim of this study is two-fold. First, we want to test whether word-forms are acquired earlier by bilinguals when their translation equivalent is form-similar. Second, we want to test if the difference in age of acquisition between both translation equivalents is smaller when they are form-similar.
+
+In order to gather information about acquisition of vocabulary, many developmental studies rely on vocabulary inventories such as the McArthur-Bates Communicative Developmental Inventories (*CDI* from now on). These questionnaires are administered to parents or caretakers, which are presented with a printed list of words. For each word, parents must report whether they think the child understands and/or produces the word. Age of acquisition (AoA) is then defined as the age at which the proportion of children that are able to understand or produce a given word exceeds a given threshold. For instance, the word *door* may be considered to be aquired when at least 60% of the participants in our sample are reported to understand the word.
+
+We find two reasons to consider this approach suboptimal. First, the value of the cut-off is arbitrary. Although most studies use thresholds between 50% and 60%, this varibility makes it difficult to build cumulative knowledge from the listerature when the un-aggregated data (not yet filtered by the cut-off) is available. Second, it is unlikely that the acquisition status of a word is well represented by a dicotomy between acquired and not acquired. Word learning is a multidomain process where many processes take place. It is more likely that the trajectory of acquisition of a given word is better defined by a curve that characterises the probability of a child being able to understand or produce a word across ages. Third, by considering AoA as a point estimate, other dimensions that characterise the trajectory of aquisition are being neglected. For instance, it seems reasonable to think that some words are acquired faster the others. This means that the developmental curve of some words is steeper that that of others. For instance, the effect of word frequency on AoA has been extensively: more frequent words are aquired earlier then less frequent words. We suggest that this effect could also be reflected on steeper acquisition trajectories.
+
+Recent studies have explored the role of word frequency, as well as other well know predictors (e.g., concreteness) on age of acquisition by going beyond arbitraty cut-offs. 
+
+Description of @braginsky2019 and @jones2019.
+
+Both studies have made substantial contributions to the study of the internal structure of developing lexicon by performing item-wise analysis. However, neither of them adresses the potential non-linearity of the developmental trajectory of words. By fitting a linear (multilevel) model, two main parameters of interest are estimated. Both parameters characterise the line that defines the effect of each predictor (e.g., age, frequency) on the outcome variable (e.g., proportion of children reported the understand the word, probability that a given child will be reported to undestand the word). A first parameter is the intercept, which provides information about the value of the outcome when all predictors are at baseline. A second set of parameters informs us about the contribution of each of the predictor or combination of predictors. This model assumes that *age* holds a linear relationship with the proportion of infants that have acquired the word. We consider that this assumed linear relation does not capture well enought the consitribution of *age* on the acquisition status of the word. Instead, we propose that this relationship is better defined by logarithmic curves.
+
+Logarithmic curves are characterised by three parameters: 1) Upper asymptote, 2) inflexion point, and 3) steepness at inflexion point. First, although it seems reasonable to assume that, as age increases, the proportion of children that have acquired a given word increases as well. However, it is most likely that such word will never have been acquired by all children in the population. This asymptotic nature of the acquisition status of the words is capture by the first parameter indicated above. Second, previous studies have reported that vocabulary size (both receptive and productive) remains relatively stable during the first year and a half of life, and then grows exponentially until one year after, when it stabilises again. Later, vocabulary size keeps growing, but a slower pace. This means that, around 20 to 24 months of age, the developmental trajectory of most of the words that will be part of the vocabulary of the child during the next 3 years, will find an inflexion point, where the curve is steepest. If this is to be true, it could be reasonable to consider this point as the critical age at which the acquisition status of a given word is evolving faster. We argue that this age point reflects overlaps better with what most researchers mean by *word-acquistion*, compared to the tradicitonal cut-off approach. Third, some items may differ on how steep their acquisition trajectory is in this inflexion point. For instance, hight-frequency words may entail a steeper curve than low_frequency words, thus leading to high-frequency words to be acquired faster than low-frequency word once the inflexion point is reached.
+
+We consider that logarithmic curves are more suitable to developmental trajectories of individual items, because they capture cross-item variability in age of acquisition and speed of acquisition, at the same time they account for non-linear trends in such trajectories, as well as for the existence of an upper asymptotic boundary in the proportion of infants that have acquired each word.
+
+### Model specification
+
+In this study, we model developmental tracjectories of individual items using logarithmic curves. We assume a common upper boundary for all items (i.e., 1). We aim to estimate the inflexion point (i.e., age at which the curve is steepest) and the steepness (i.e., how fast the proportion of infants that know the word increases) at the inflexion point. We will follow a multilevel Bayesian approach to estimate the mid point and steepness of each word. We assume that mid-points will be generated from a normal distribution with mean 7.5 (age bin corresponsing to 22 months of age) and standard deviation 1. This means that the inflexion point (i.e., age of maximum steepness), 68% of the items will be located within 1 stand deviation at 22 months. Our model will update collected data to update the estimated mid-point of the words, by using word frequency, cognate status, and language profile to predict the mean of the distribution. We will include by-item random intercepts, and by-item random slopes for cognate status and language profile. We will include a correlation parameter for each grouping variable (i.e. cognate status and language profile), but we won't allow correlation across grouping variables. We assume that the steepness of each item will be generated from a normal distribution with mean 1 and standard deviation 0.5. This means that for 68% of the items, the proportion of children that understand a given word will be close 1 standard deviation  far maximum from in a 100% at the age of maximum steepness. Our model can be described as follows:
+
+$$Y_{ij} = \frac{1}{1 + e \exp{-k_i(Age-x_{0ij})}}$$
+$$Y_{i} \sim Binomial(p, N)$$
+$$k \sim Normal(1, 0.5)$$
+$$x_{0ij} \sim N{\beta_0 + \beta_{0j} + (\beta_1 + \beta_{1j}) \times Profile_{ij} + (\beta_2 + \beta_{2j}) \times Cognateness_{ij}, \sigma^2}$$
+$$\beta_0 \sim Normal(0, 1)$$
+$$\beta_{0j} \sim Normal(0, \tau^2_{0})$$
+$$\beta_{1j} \sim Normal(0, \tau^2_{1})$$
+$$\beta_2 \sim Normal(0, 1)$$
+$$\beta_{2j} \sim Normal(0, \tau^2_{2})$$
+
+Where:
+
+* $Y_{ij}$ is the proportion of children that have been reported to have acquired the item $i$ at age $j$; assumed to be distributed following a Gaussian distribution with mean 0 and variance $\sigma^2$.
+* $k_i$ is the steepness of the curve at the inflexion point of item $i$, assumed to be distributed following a Gaussian distribution with mean 1 and standard deviation 0.5.
+* $x_{0ij}$ is the age at which the inflexion point is located in item $i$ and cognate status $j$. This parameter is defined by a linear model the includes the following parameters:
+     * $\beta_0$ is the intercept of the model, that is, the grand mean age of of infants when the curve of item $i$ is at its steepest point, when all other predictors are at baseline; it is assumed to be distributed following a Gaussian distribution with mean 7.5 (age bin corresponding at 22 months of age) and standard deviation 4.
+     * $\beta_{0j}$ is the intercept of the model, that is, the grand mean age of of infants when the curve of item $i$ is at its steepest point, when all other predictors are at baseline; it is assumed to be distributed following a Gaussian distribution with mean 7.5 (age bin corresponding at 22 months of age) and standard deviation $\tau^2_{0}$.
+     * $\beta_1$ is the slope of *language profile* on the outcome; it is assumed to be distributed following a Gaussian distribution with mean 0 and standard deviation 1.
+     * $\beta_{1j}$ is the slope of *language profile* on cognate status $j$; it is assumed to be distributed following a Gaussian distribution with mean 0 and standard deviation $\tau^2_{1}$.
+     * $\beta_2$ is the slope of *cognateness* on the outcome; it is assumed to be distributed following a Gaussian distribution with mean 0 and standard deviation 1.
+     * $\beta_{2j}$ is the slope of *cognateness* on cognate status $j$; it is assumed to be distributed following a Gaussian distribution with mean 0 and standard deviation $\tau^2_{2}$.
+     * $\beta_3$ is the slope of the interaction between *language profile* and *cognateness* on the outcome; it is assumed to be distributed following a Gaussian distribution with mean 0 and standard deviation 1.
+     * $\beta_{3j}$ is the slope of the interaction term between *language profile* and *cognateness* on cognate status $j$; it is assumed to be distributed following a Gaussian distribution with mean 0 and standard deviation $\tau^2_{3}$.
+     
+We will run separate models for items in the most dominant and less dominant language, and for receptive and productive vocabulary.
+
+### Setting priors
+
+We will use the Bayesian framework to estimate the parameters of our model. This involves the use of the Bayes' rule to compute the probability ($\pi$) of all values our set of estimated parameters ($\theta$) can take. To do this, it combines prior information coming from scientific expertise (also known as priors, $\pi(\theta)$), and the likelihood of each value the parameter can take, given the observed data ($\pi(y|\theta)$)). The product of both prior and likelihood is then standardised using the marginal likelihood of the parameter sampling space ($\pi(y)$). The combination of both sources of information leads to what is known as the posterior distribution of each parameter ($\pi(\theta|y)$), which informs us of the likelihood of each value the parameters can take, given our prior knowledge about it, and the observed data. We can extract information from this posterior distribution in several ways. We will use probabilistic posterior sampling to approximate this distribution and characterise it.
+
+$$\pi(\theta | y) = \frac{\pi(y | \theta)\pi(\theta)}{\pi(y)}$$
+
+We need to set priors for $k_i$, $\sigma$, $\tau^2_{0}$, $\tau^2_{1}$, $\tau^2_{2}$, $\tau^2_{3}$, $\beta_{0j}$, $\beta_{1j}$, and $\beta_{2j}$ and $\beta_{3j}$. We will specify the following priors:
+    
+    * $k_i$: `normal(1, 0.5)`
+    * $\beta_{1}$: `normal(0, 1)`
+    * $\beta_{2}$: `normal(0, 1)`
+    * $\beta_{3}$: `normal(0, 1)`
+    * $\sigma$: `student_t(3, 0, 10)`
+    * $\tau^2_{0}$: `student_t(3, 0, 10)`,
+    * $\tau^2_{1}$: `student_t(3, 0, 10)`
+    * $\tau^2_{2}$: `student_t(3, 0, 10)`
+    * $\tau^2_{3}$: `student_t(3, 0, 10)`
+
+### Model fitting
+
+We run our model using the `brm()` function in the `brms` R package [@bruckner2018], which uses the Stan environment [@stan2019] in the back end to approximate the posterior distribution via Hamiltonian Monte Carlo (HMC).
+
+### Comparing models
+*
+To analyse the effect of the interaction between *language profile* and *cognate status*, we will fit three models. A first minimal model will not include any of the predictors of interest. A second null model will include *language profile* as a population effect A third complete model will also include *cognate status*, and its interaction with *language profile* as population effects. All models will include *item* as grouping variable. We will specify, in each model, a maximal random effects structure that includes by-item intercepts, slopes, and correlation parameters [@barr2013a]. We will then compare the three models following the workflow suggested by @schad2019. The minimal model will be expanded to the null model, and then the null model be expanded to the complete model. At each stage, we will check whether the expanded model is more adequate than the previous. In case the expanded model proves more inadequate, we will fall back to the simpler, previous model.
