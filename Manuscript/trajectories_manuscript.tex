@@ -1,0 +1,492 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[english,man,man,floatsintext]{apa6}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
+\hypersetup{
+            pdftitle={The role of cross-linguistic lexical similarity on bilingual word acquisition},
+            pdfkeywords={word acquisition, vocabulary, bilingualism, lexical similarity},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+% Manuscript styling
+\usepackage{upgreek}
+\captionsetup{font=singlespacing,justification=justified}
+
+% Table formatting
+\usepackage{longtable}
+\usepackage{lscape}
+% \usepackage[counterclockwise]{rotating}   % Landscape page setup for large tables
+\usepackage{multirow}		% Table styling
+\usepackage{tabularx}		% Control Column width
+\usepackage[flushleft]{threeparttable}	% Allows for three part tables with a specified notes section
+\usepackage{threeparttablex}            % Lets threeparttable work with longtable
+
+% Create new environments so endfloat can handle them
+% \newenvironment{ltable}
+%   {\begin{landscape}\begin{center}\begin{threeparttable}}
+%   {\end{threeparttable}\end{center}\end{landscape}}
+\newenvironment{lltable}{\begin{landscape}\begin{center}\begin{ThreePartTable}}{\end{ThreePartTable}\end{center}\end{landscape}}
+
+% Enables adjusting longtable caption width to table width
+% Solution found at http://golatex.de/longtable-mit-caption-so-breit-wie-die-tabelle-t15767.html
+\makeatletter
+\newcommand\LastLTentrywidth{1em}
+\newlength\longtablewidth
+\setlength{\longtablewidth}{1in}
+\newcommand{\getlongtablewidth}{\begingroup \ifcsname LT@\roman{LT@tables}\endcsname \global\longtablewidth=0pt \renewcommand{\LT@entry}[2]{\global\advance\longtablewidth by ##2\relax\gdef\LastLTentrywidth{##2}}\@nameuse{LT@\roman{LT@tables}} \fi \endgroup}
+
+% \setlength{\parindent}{0.5in}
+% \setlength{\parskip}{0pt plus 0pt minus 0pt}
+
+% \usepackage{etoolbox}
+\makeatletter
+\patchcmd{\HyOrg@maketitle}
+  {\section{\normalfont\normalsize\abstractname}}
+  {\section*{\normalfont\normalsize\abstractname}}
+  {}{\typeout{Failed to patch abstract.}}
+\makeatother
+\shorttitle{Cross-linguistic similarity and  word acquisition}
+\author{Gonzalo García-Castro\textsuperscript{1}, Daniela Avila-Varela\textsuperscript{1}, \& Núria Sebastian-Galles\textsuperscript{1}}
+\affiliation{
+\vspace{0.5cm}
+\textsuperscript{1} Center for Brain and Cognition, Universitat Pompeu Fabra}
+\authornote{Add complete departmental affiliations for each author here. Each new line herein must be indented, like this line.
+
+Enter author note here.
+
+
+Correspondence concerning this article should be addressed to Gonzalo García-Castro, Ramon Trias Fargas, 25-27, 08005 Barcelona, Spain. E-mail: gonzalo.garciadecastro@upf.edu}
+\keywords{word acquisition, vocabulary, bilingualism, lexical similarity\newline\indent Word count: X}
+\usepackage{lineno}
+
+\linenumbers
+\usepackage{csquotes}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[shorthands=off,main=english]{babel}
+\else
+  % load polyglossia as late as possible as it *could* call bidi if RTL lang (e.g. Hebrew or Arabic)
+  \usepackage{polyglossia}
+  \setmainlanguage[]{english}
+\fi
+
+\title{The role of cross-linguistic lexical similarity on bilingual word acquisition}
+
+\date{}
+
+\abstract{
+Previous literature on early vocabulary has been mostly committed to exploring how the receptive and productive vocabulary size changes with age, and its relationship with toddlers' performance on language tasks (e.g.~Fernald, Swingley, \& Pinto, 2001; Fernald, Perfors, \& Marchman, 2006). The content of the developing lexicon has remained relatively unexplored. More recently, studies have focused on the characterisation of the developmental trajectory of individual words, reporting an earlier age of acquisition for words with high frequency, concreteness, and phonological neighbourhood density (e.g.~Braginsky, Yurovsky, Marchman, \& Frank, 2019; Jones \& Brandt, 2019). Such item-level analysis allows not only to predict the age of acquisition of specific words, but also to shed light on the cognitive processes that underlie early word learning. This approach is particularly interesting for investigating the potential impact of acquiring two languages simultaneously. A recent study by Floccia et al. (2018) compared vocabulary sizes of 24-month-old children learning British English, together with an additional language from a pool of 13 diverse languages. They found larger productive vocabulary sizes of toddlers learning two languages that are phonologically similar (see for a similar approach Bosch \& Ramon-Casas, 2014). The mechanisms underlying this effect remain unknown. One possibility is that the similarity between the two languages speeds the acquisition of form-similar translation equivalents. The aim of this study is to perform an item-wise analysis on infant's vocabulary contents. We developed an online tool to collect parental reports of receptive and productive vocabularies from children learning Catalan and/or Spanish. We expect that phonological overlap between translation equivalents will predict earlier age of acquisition. If this effect is driven by the phonological overlap between translation equivalents, cognate pairs should be acquired closer in time than non-cognates. For instance, the translation of cat /gato/ in Spanish and /gat/ in Catalan should be learnt at approximately the same age. This should not necessarily happen for the translations of dog, /pero/ and /gos/. We analyse the time elapsed between the acquisition of a word in one language, and its translation in the other.
+We present preliminary data (data collection is ongoing) on receptive vocabulary of 90 monolingual and bilingual toddlers aged 18 to 36 months. We obtained parental responses to 230 pairs of Catalan-Spanish translation equivalents, resulting in a total of 41490 responses. Words that yielded a phonologically similar translation equivalent were more likely to be present in toddlers' receptive vocabulary at all ages, and were acquired earlier, even when accounting for the effect of word frequency. Further analysis will explore the distance in time between the acquisition of pairs of translation equivalents using a more detailed measure of phonological overlap across translation equivalents and taking into account cross-individual and cross-item variability.
+}
+
+\begin{document}
+\maketitle
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+One of the main challenges bilingual infants and toddlers face is learning two distinct set of words (one for each language) that partially overlap in sound and meaning. Previous studies have reported that bilingual children know fewer words than their monolingual counterparts when only language is considered (e.g., English monolinguals know more words in English than English-Spanish bilinguals). When taking both languages into account, bilingual children between seem to know, at least, as many words as monolinguals do ({\textbf{???}}; {\textbf{???}}; {\textbf{???}}; {\textbf{???}}; {\textbf{???}}; {\textbf{???}}; {\textbf{???}}). Tough, not all bilinguals show asimilar developmental trajectory of lexical acquisition.
+
+Recent studies have capitalised on the role of the similarity between the specific pair of language the infant is learning. Floccia et al. (2018) analysed vocabulary scores across of 24-month-old toddlers learning English and an additional language. Toddlers learning languages sharing a large amounth of cognates (e.g., English-German) showed larger vocabulary sizes than those learning less languages sharing less cognates (e.g., English-Chinese). ({\textbf{???}}) extended these results to children aged three to 10 years. These results point to the possibility that the overlap between the word inventories infants are acquiring impacts their trajectory of lexical aquisition. However, none of these studies provide an account for the mechanisms involved in this facilitatory effect of language driven by similarity across languages. The aim of this study is to explore two scenarios in which this effect may be taking place:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\item
+  In a first scenario, it is the phonological overlap between language pairs, and not the amount of cognates they share, what boosts the vocabulary growthof bilingual toddlers. Languages sharing a lot of cognates tend to also share a lot of phonemic categories. It is possible that having to learn fewer phonemic categories makes it easier for toddlers to acquire words. If this is true, toddlers learning two languages with similar phonemic inventories should show larger vocabulary sizes than those learning languages that barely ovelap phonologically. Moreover, this facilitation effect should be reflected in the developmental trajectory of all the items included in a vocabulary inventory, independently of their cognate status.
+\item
+  In a second scenario, Words that are form similar It is the amount of cognates language pairs share that boosts vocabulary growth in bilingual toddlers. If this is true, toddlers may acquire cognates earlier
+\end{enumerate}
+
+To our knowledge, there are no previous studies that have investigated the effect of cognateness on the acquisition trajectories of individual word forms. Braginsky et al. (2019) used data from MacArthur-Bates CDIs from multiple languages to explore what properties are associated with an earlier acquisition. The found that frequency, concreteness, and {[}\ldots{}{]} significantly predicted an earlier age of acquisition. We plan to extend these analyses to the case of bilinguals.
+
+We have developed a fully-online vocabulary inventory in Catalan and Spanish that is more exhaustive than the MacArthur-Bates CDI, including a larger number of items. All participants filled the questionnaire it both languages, thus providing responses to pairs of translation equivalents.
+
+In this study, we examine the role of cognateness on age of acquisition by modelling the probability of parents reporting that the participant is able to understand, say and understand on each item in the questionnaire. We will test the effect the participants' language profile (monolingual vs.~bilingual), and its cognate status on the developmetnal curves of each item.
+
+We will analyse the developmental trajectories of individual words in monolinguals and bilinguals learning Catalan and Spanish (two phonologically close languages sharing a great deal of cognates), between 14 and 30 months of age. We will test whether cognate words are learnt earlier than non-cognate words, taking into account wether they are part of the most- o less-dominant language of the infant, as well as their frequency, concreteness, and number of syllables. We have deloped an on-line questionnaire that entails a short language exposure questionnaire, asks for some demographic information, and presents parent with a list of \textasciitilde{}800 words in each language, for which parent report whether their child understands, says, or doesn't understand and say, in each item.
+
+We will fit a Bayesian multilevel model on the item responses, modelling the probability of parents reporting that a given word is acquired by the infant, including language profile (monolingual vs.~bilingual), item dominance (dominant language vs.~non-dominant language), frequency, concreteness, and number of syllables. We will include \emph{meaning} as grouping variable. We will fit a sigmoidal curve (see {\textbf{???}}) on each item, defined by the steepness of the developmental curve, and the mid-point (the poinnt at which the developmental curve is steepest, which will be considered the point of acquisition). Priors will be derived from previous literature on the subject.
+
+NOTES:
+
+Evidence that bilingual lexica barely overlap ({\textbf{???}}; {\textbf{???}}).
+
+Studies with infants from 8 to 30 months of age show weaker evidence for this claim ({\textbf{???}}; {\textbf{???}}), pointing to the posibility that differences between bilingual and monolingual vocabulary sizes may be dependent on maturational factors.
+
+sugested that the developmental trajectory of lexical aquisition varies across two dimensions: the language profile of the infant, and the joint proporties of the specific language pair the infant is learning. Regarding the first, ({\textbf{???}}) found thant infants exposed to a more balanced
+
+Of special interest is the fact than cognates (form-similar translation equivalents) tend to be overrepresented in the early bilingual vocabulary (Bosch \& Ramon-Casas, 2014).
+
+The similarity between both languages may play a role in bilingual lexical aquisition.
+
+\hypertarget{hypotheses}{%
+\subsection{Hypotheses}\label{hypotheses}}
+
+\begin{description}
+\tightlist
+\item[Hypothesis 1]
+The boost effect of language similarity is driven by cognates being acquired earlier than non-cognates. We predict that age of acquisition of cognates will be ealier thant that of non-cognates. This effect should only be present in bilinguals.
+\item[Hypothesis 2]
+That this effect is driven by the word-forms in one language scaffolding the acquisition of their translation equivalents via parallel activation. We predict that the difference in time between the acquisition pairs of translation equivalents is shorter in cognates than in non-cognates. This effect will only be present in bilinguals.
+\end{description}
+
+\hypertarget{method}{%
+\section{Method}\label{method}}
+
+\hypertarget{participants}{%
+\subsection{Participants}\label{participants}}
+
+Data from 235 participants from the different cities in Spain were invited to participate through social media. Families in the Metropolitan area of Barcelona were also recruited at birth. All families participated voluntarily. Data were collected between 28th October, 2019 and 31th May, 2020, using the BiLexicon inventory. This study was approved by the Comitè d'Ètica de la Investigació amb Medicaments (CEIm) from Hospital del Mar (Barcelona, Spain), code XXXXXXXXX.
+
+\begin{table}
+
+\caption{\label{tab:participants}Sample demographics and overall language profile. Dominance = Language to which the participant is exposed the most, N = sample size, M age = Mean age, SD age = standard deviation of age, M DOE Cat = mean degree of exposure to Catalan, SD DOE Cat = standard deviation of exposure to Catalan, M DOE Spa = mean degree of exposure to Spanish, SD DOE Spa = standard deviation of exposure to Spanish.}
+\centering
+\begin{tabular}[t]{c|c|c|c|c|c|c|c|c}
+\hline
+Dominance & Sex & N & M\_Age & SD\_Age & M DOE Cat & SD\_DOE\_Cat & M\_DOE\_Spa & SD\_DOE\_Spa\\
+\hline
+Catalan & Female & 126,526 & 20.96 & 4.59 & 73.94 & 18.48 & 23.52 & 18.29\\
+\hline
+Catalan & Male & 132,856 & 20.86 & 4.78 & 70.83 & 17.74 & 27.77 & 17.08\\
+\hline
+Spanish & Female & 66,476 & 21.22 & 4.76 & 17.38 & 14.74 & 81.14 & 15.60\\
+\hline
+Spanish & Male & 47,511 & 20.83 & 4.88 & 26.67 & 13.12 & 72.66 & 11.67\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+\tightlist
+\item
+  \emph{Location}
+\item
+  \emph{Age}
+\item
+  \emph{Sex}
+\item
+  \emph{Language profile}: : Linguistic profiles were assessed using the Language Exposure Questionnaire (LEQ) ({\textbf{???}}). This questionnaire estimates de degree of exposure (DOE) to each language via a 10 minutes long interview with the parents. LEQs were administered inmediately before or after the testing session at the lab. We here considered only exposure to Catalan and Spanish. Participants with \textgreater{}10\% exposure to a third language other than Catalan or Spanish were excluded.
+\item
+  \emph{SES}
+\end{itemize}
+
+\hypertarget{exclusion-criteria}{%
+\subsubsection{Exclusion criteria}\label{exclusion-criteria}}
+
+\begin{itemize}
+\tightlist
+\item
+  Language disorders
+\end{itemize}
+
+\hypertarget{questionnaires}{%
+\subsubsection{Questionnaires}\label{questionnaires}}
+
+\hypertarget{bilexicon-1.0}{%
+\paragraph{BiLexicon 1.0}\label{bilexicon-1.0}}
+
+\hypertarget{bilexicon-2.0}{%
+\paragraph{BiLexicon 2.0}\label{bilexicon-2.0}}
+
+\hypertarget{bilexicon-short}{%
+\paragraph{BiLexicon Short}\label{bilexicon-short}}
+
+This questionnaire was developed as a short version of the BiLexicon 1.0 and BiLexicon 2.0 inventories. Given the large amount of items to be answered to, we restricted the use of such inventories to participants that were to participate presentially in one of the studies run in the lab at that time. These participants only filled one of the questionnaires, and did so only once.
+
+The aim of developing a short version of this questionnaire (BiLexicon Short) was to provde a more on-line friendly format to families that would participate remotely exclusively, or that would fill the questionnaire more than once (e.g., in longitudinal studies). We divided the items of each language in the pool into four versions named A, B, C, and D. Items in each category (e.g., animals, auxiliary words) were randomly assigned one of the versions. Thos categories that did not entail more than 16 items (thus resulting in less than four items after dividing it in ofur lists), were not divided (all of their items were included in all versions).
+
+When filling the questionnaire for the first time, participants were randomly assigned one version. Each familiy filled only one of the versions, thus reducing the number of items to be answered. To ensure that longitudinal participants would provide longitudinal data in the questionnaire, we made sure that participants were always assigned the same version of this questionnaire. Words that were used as part of the trial lists in the experiment families would participate in were present across all versions.
+
+\hypertarget{item-inclusion-criteria}{%
+\subsubsection{Item inclusion criteria}\label{item-inclusion-criteria}}
+
+We gathered data from 695 distinct translation equivalents across Spanish (695 word forms) and Catalan (703 word forms). The unequal number of word-orms across both languages is due to that some tanslation equivalents did not entail a one-to-one-corespondence: some items had more than one translation equivalent in the other language (e.g.~the Catalan word form \emph{walking}, \emph{anar}, can be translated as both \emph{caminar} {[}to walk{]} or \emph{ir} {[}to go{]}).
+
+We included items from the following categories: Action words, adventures, animals, body parts, clothes, color, descriptive words, food and drink, furniture and rooms, household items, on-line, outside, parts of animals, parts of things, people, pronouns, quantifiers, question words, time, toys, and vehicles. We discarded the following categories: adverbs, auxiliary words, connectives, interjections and games and routines.
+
+We excluded items that enailed more than one word (e.g., \emph{barrita de cereales} {[}cereal bar{]}).
+
+\hypertarget{item-properties}{%
+\subsubsection{Item properties}\label{item-properties}}
+
+\hypertarget{frequencies}{%
+\paragraph{Frequencies}\label{frequencies}}
+
+We retrieved frequencies from SUBTLEX-ESP ({\textbf{???}}) and SUBTLEX-CAT ({\textbf{???}}) for Spanish and Catalan words, respectively. Word frequency was calculated as the Zipf score of the word ({\textbf{???}}; {\textbf{???}}).
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.6\linewidth]{/Users/GonzaloGGC/projects/BiLexicon/Figures/pool_freq_cognateness} 
+
+}
+
+\caption{ }\label{fig:unnamed-chunk-1}
+\end{figure}
+
+\hypertarget{cognate-status}{%
+\paragraph{Cognate status}\label{cognate-status}}
+
+\hypertarget{demographics-by-item}{%
+\paragraph{Demographics by item}\label{demographics-by-item}}
+
+\begin{table}
+
+\caption{\label{tab:unnamed-chunk-2}Demographics of responses by item. Language = item language, LP = language profile of participant, Sex = sex of participant, M Age = mean age of responses, SD Age = mean SD of responses across items, Min Age = minimum age of responses across items, Max Age = maximum age of responses across items, M N = mean number of responses across items, N = total number of responses across items.}
+\centering
+\begin{tabular}[t]{c|c|c|c|c|c|c|c|c}
+\hline
+Language & LP & Sex & M Age & SD Age & Min Age & Max Age & M N & N\\
+\hline
+Catalan & Bilingual & Female & 22.36 & 22.36 & 12.35 & 31.42 & 52.22 & 41620\\
+\hline
+Catalan & Bilingual & Male & 20.77 & 20.77 & 12.37 & 31.91 & 64.06 & 51057\\
+\hline
+Catalan & Monolingual & Female & 20.14 & 20.14 & 12.83 & 30.15 & 68.01 & 54204\\
+\hline
+Catalan & Monolingual & Male & 21.11 & 21.11 & 12.60 & 30.93 & 48.30 & 38495\\
+\hline
+Spanish & Bilingual & Female & 22.33 & 22.33 & 12.35 & 31.42 & 52.76 & 42209\\
+\hline
+Spanish & Bilingual & Male & 20.72 & 20.72 & 12.37 & 31.91 & 64.72 & 51778\\
+\hline
+Spanish & Monolingual & Female & 20.10 & 20.10 & 12.83 & 30.15 & 68.71 & 54969\\
+\hline
+Spanish & Monolingual & Male & 21.06 & 21.06 & 12.60 & 30.93 & 48.80 & 39037\\
+\hline
+\end{tabular}
+\end{table}
+
+\hypertarget{data-analysis}{%
+\subsection{Data analysis}\label{data-analysis}}
+
+For testing the first hypothesis, we fit a non-linear model using logistic curves to model the probability of aquisition of words across ages. Logistic curves are characterised by three parameters: 1) an asymptote (maximum value of the curve in the Y-axis), 2) the steepness (how fast the curve grows), and 3) a mid-point (the point in the X-axis at which the steepness is highest). Figure 1 shows the elements of a simulated logarithmic curve:
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.6\linewidth]{/Users/GonzaloGGC/projects/BiLexicon/Figures/05_illustration} 
+
+}
+
+\caption{Simulated logarithmic curve. The curve is characterised by three parameters: Asymptote (red), mid-point (blue), and steepness (green). This curve is the result of simulating learning curves of 1000 items. We set fixed values for the asymptote at 1. Mid-points were randomly generated from a normal distribution truncated at 0 (no negative age values are allowed), with mean 23 (*SD* = 0.5), and steepness values were generated from a normal ditribution truncated at 0 (we assume that the proportion of participants that have acquired each item can only grow), with mean 0.1 (*SD* = 1) The solid black line represents the average proportion of participants who have acquired the item, and the shaded ribbon indicates the standard error of the mean. We suggest that learning curves of individual word-forms, as well as the evolution of vocabulary size across ages, follows this trend. Our model will estimate the three of to adress our hypotheses.}\label{fig:logcurve}
+\end{figure}
+
+One reason for using logistic curves to fit the data is that previous studies describe lexical development as a non-linear process, where between 20 and 24 months a vocabulary spurt happens. An analysis of the available data in Wordbank ({\textbf{???}}) provides moderate support for this hypothesis. We fitted a logistic model using the proportion of infants that acquired each item as output, and age as input, estimating the three parameters afore mentioned (asymptote, mid-point, and steepness). We included data from 13119 items from 20 languages\footnote{Chinese (Cantonese and Mandarin), Croatian, Czech, Danish, English (Australian, British, and American), French (European), German, Hebrew, Italian, Korean, Latvian, Portuguese, Russian, Slovak, Spanish (European and Mexican), and Turkish. All the other available languages were excluded, as no (or insufficient) data were available.}, from infants between 16 and 30 months of age. Then we compared the fit of the logarithmic model agains a linear model, and found that the formr fitted the data slightly better (see Figure 2).
+
+A second reason for using logistic curves is that the parameters that characterise a logistic curve map onto our hypotheses quite easily. Out first hypothesis concerns the mid-point parameter, which indicates the point at which the steepness of the curve is maximum. In our model, the value of this parameter can be interpreted as the age at which the proportion of participants that have acquired a given item is at maximum rate. The mathematical interpretation of this parameter is easily mapped into a definition of age of acquisition.
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.6\linewidth]{/Users/GonzaloGGC/projects/BiLexicon/Figures/05_wordbank} 
+
+}
+
+\caption{Logarithmic model fitted on Wordbank data, compared to a linear model. The logarithmic model fits the data slightly better. The estimated values of the three parameters involved in the logarithmic model (asymptote, mid-point and steepness) are indicated.}\label{fig:wordbank}
+\end{figure}
+
+We built a Bayesian logistic model that estimates the value of the mid-point and steepness across items. Under our hypothesis, mid-points are generated from a linear model that incorporates language profile (monolingual vs.~bilingual) and cognateness (non-cognate vs.~cognate) as predictors, where cognateness predictes ealier mid-points for bilingual, but not monolingual participants. Due to computational limitations, we set a fixed value for the asymptote at 0.75, according to our model fit on Wordbank data. Due to computational limitations, we did not run the same linear model to estimate steepness. Rather, this parameter was just included as an intercept. We compared how well this model fits the data \emph{versus} how a null model that does not include \emph{cognateness} as predictor does, by using Bayes factors and Pareto-smoothed importance sampling (PSIS; {\textbf{???}}).
+
+We used the information provided by Wordbank as priors to feed our Bayesian model. For mid-points, we specified a strong prior with a normal prior with mean = 23.08 and \emph{SD} = 1. For steepness, we also set a strong prior with a normal distribution with mean = 3.28 and SD = 2. We had little prior information about how cognateness impacts the mid-point of an item, and therefore we will set a weak prior.
+
+We fit both null and alternative models within the R environment ({\textbf{???}}; {\textbf{???}}) using the \texttt{brms} package ({\textbf{???}}), which relies on the probabilistic language Stan ({\textbf{???}}). Data and model results will be processed and visualised using the R packages the \texttt{tidyverse} family of packages ({\textbf{???}}) and the \texttt{tidybayes} package ({\textbf{???}}).
+
+\hypertarget{results}{%
+\section{Results}\label{results}}
+
+\hypertarget{model-selection}{%
+\subsection{Model selection}\label{model-selection}}
+
+\hypertarget{posterior-distibutions}{%
+\subsection{Posterior distibutions}\label{posterior-distibutions}}
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.6\linewidth]{/Users/GonzaloGGC/projects/BiLexicon/Figures/05_gca-coefficients} 
+
+}
+
+\caption{ }\label{fig:posteriors}
+\end{figure}
+
+\hypertarget{posterior-correlations}{%
+\subsection{Posterior correlations}\label{posterior-correlations}}
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.6\linewidth]{/Users/GonzaloGGC/projects/BiLexicon/Figures/05_gca-correlations} 
+
+}
+
+\caption{ }\label{fig:correlations}
+\end{figure}
+
+\hypertarget{prior-predictive-checks}{%
+\subsection{Prior predictive checks}\label{prior-predictive-checks}}
+
+Following ({\textbf{???}}), we performed prior predictive chackes to disgnose the appropriateness of our priors.
+
+\hypertarget{posterior-predictive-checks}{%
+\subsection{Posterior predictive checks}\label{posterior-predictive-checks}}
+
+\hypertarget{model-diagnosis}{%
+\subsection{Model diagnosis}\label{model-diagnosis}}
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.6\linewidth]{/Users/GonzaloGGC/projects/BiLexicon/Figures/05_gca-convergence} 
+
+}
+
+\caption{ }\label{fig:convergence}
+\end{figure}
+
+\hypertarget{auto-correlation}{%
+\subsubsection{Auto-correlation}\label{auto-correlation}}
+
+\hypertarget{potential-scale-reduction-factor-hatr}{%
+\subsubsection{\texorpdfstring{Potential scale reduction factor (\(\hat{R}\))}{Potential scale reduction factor (\textbackslash{}hat\{R\})}}\label{potential-scale-reduction-factor-hatr}}
+
+\hypertarget{posterior-predictive-checks-1}{%
+\subsection{Posterior predictive checks}\label{posterior-predictive-checks-1}}
+
+Does our model generate similar observations to the ones in our data-set?
+
+\hypertarget{discussion}{%
+\section{Discussion}\label{discussion}}
+
+\hypertarget{limitations}{%
+\subsection{Limitations}\label{limitations}}
+
+\begin{itemize}
+\tightlist
+\item
+  Cross-sectional data for longitudinal claims
+\item
+  Data is right censored\\
+\item
+  Inventory:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Phonological forms?
+  \item
+    We can't say how frequently words are produced by the parents or the toddler.
+  \item
+    Although instructed to ignore imitations, it is difficult to say whether a toddler has \emph{really} acquired a word that produces, or she can only imitate it.
+  \item
+    Responses in the questionnaire rely heavily on parental memory.
+  \item
+    We don't know about the context at which words are heard or produced.
+  \item
+    Classification system of items (e.g., \emph{household items}) is adult centric. Children may use the words \emph{pretty} to name jewellery (Bates et al., 1994).
+  \end{itemize}
+\item
+  Mid and mid-upper class families are overrepresented in the sample.
+\end{itemize}
+
+\hypertarget{appendix}{%
+\section{Appendix}\label{appendix}}
+
+\hypertarget{appendix-1-session-info}{%
+\subsection{Appendix 1: Session info}\label{appendix-1-session-info}}
+
+R version 3.6.3 (2020-02-29)
+Platform: x86\_64-apple-darwin15.6.0 (64-bit)
+Running under: macOS Catalina 10.15.4
+
+Matrix products: default
+BLAS: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
+
+locale:
+{[}1{]} en\_US.UTF-8/en\_US.UTF-8/en\_US.UTF-8/C/en\_US.UTF-8/en\_US.UTF-8
+
+attached base packages:
+{[}1{]} stats graphics grDevices utils datasets methods base
+
+other attached packages:
+{[}1{]} rlang\_0.4.6 here\_0.1 data.table\_1.12.8\\
+{[}4{]} truncnorm\_1.0-8 wesanderson\_0.3.6 patchwork\_1.0.0.9000
+{[}7{]} ggridges\_0.5.2 ggplot2\_3.3.1 lubridate\_1.7.8\\
+{[}10{]} tidyr\_1.0.3 readxl\_1.3.1 stringr\_1.4.0\\
+{[}13{]} forcats\_0.5.0 dplyr\_1.0.0 tibble\_3.0.1\\
+{[}16{]} magrittr\_1.5 knitr\_1.28 papaja\_0.1.0.9942
+
+loaded via a namespace (and not attached):
+{[}1{]} Rcpp\_1.0.4.6 pillar\_1.4.4 compiler\_3.6.3 cellranger\_1.1.0
+{[}5{]} plyr\_1.8.6 tools\_3.6.3 digest\_0.6.25 evaluate\_0.14\\
+{[}9{]} lifecycle\_0.2.0 gtable\_0.3.0 pkgconfig\_2.0.3 yaml\_2.2.1\\
+{[}13{]} xfun\_0.14 withr\_2.2.0 generics\_0.0.2 vctrs\_0.3.0\\
+{[}17{]} rprojroot\_1.3-2 grid\_3.6.3 tidyselect\_1.1.0 glue\_1.4.1\\
+{[}21{]} R6\_2.4.1 rmarkdown\_2.1 bookdown\_0.18 purrr\_0.3.4\\
+{[}25{]} backports\_1.1.7 scales\_1.1.1 ellipsis\_0.3.1 htmltools\_0.4.0
+{[}29{]} colorspace\_1.4-1 stringi\_1.4.6 munsell\_0.5.0 crayon\_1.3.4
+
+\hypertarget{appendix-2-model}{%
+\subsection{Appendix 2: Model}\label{appendix-2-model}}
+
+\hypertarget{references}{%
+\section{References}\label{references}}
+
+\begingroup
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{0.5in}
+
+\hypertarget{refs}{}
+\leavevmode\hypertarget{ref-bates1994}{}%
+Bates, E., Marchman, V., Thal, D., Fenson, L., Dale, P., Reznick, J. S., \ldots{} Hartung, J. (1994). Developmental and stylistic variation in the composition of early vocabulary. \emph{Journal of Child Language}, \emph{21}(1), 85--123. \url{https://doi.org/10.1017/S0305000900008680}
+
+\leavevmode\hypertarget{ref-bosch2014}{}%
+Bosch, L., \& Ramon-Casas, M. (2014). First translation equivalents in bilingual toddlers' expressive vocabulary: Does form similarity matter? \emph{International Journal of Behavioral Development}, \emph{38}(4), 317--322. \url{https://doi.org/10.1177/0165025414532559}
+
+\leavevmode\hypertarget{ref-floccia2018}{}%
+Floccia, C., Sambrook, T. D., Luche, C. D., Kwok, R., Goslin, J., White, L., \ldots{} Plunkett, K. (2018). I: Introduction. \emph{Monographs of the Society for Research in Child Development}, \emph{83}(1), 7--29. \url{https://doi.org/10.1111/mono.12348}
+
+\endgroup
+
+\end{document}
