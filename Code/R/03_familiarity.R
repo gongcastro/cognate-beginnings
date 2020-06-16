@@ -6,7 +6,6 @@
 
 # load packages
 library(tibble)        # for nice data frames
-library(googlesheets4) # for import Google spreadsheets
 library(magrittr)      # for using pipes
 library(data.table)    # for importing data
 library(dplyr)         # for manipulating data
@@ -14,9 +13,7 @@ library(stringr)       # for working with character strings
 library(lubridate)     # for working with dates
 library(tidyr)         # for reshaping datasets
 library(readxl)        # for importing Excel spreadsheets
-library(janitor)       # for cleaning vairable names
 library(ggplot2)       # for visualising data
-library(patchwork)     # for arranging plots
 library(here)          # for locating files
 
 # load/create functions
@@ -24,7 +21,7 @@ source(here("R", "functions.R"))
 
 # set params
 bins          <- c("< 10", "10-12", "12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34", "34-36", "36-38", "38-40", "> 40")
-bins_interest <- c("18-20", "20-22", "22-24", "24-26", "26-28", "28-30")
+bins_interest <- c("18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32")
 breaks <- c(0, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 100)
 
 #### import data ############################################
@@ -40,24 +37,42 @@ dat <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FA
          understands = response %in% c("understands", "produces"),
          produces = response %in% "produces",
          age_bin = factor(cut(age, breaks = breaks, labels = bins), levels = bins, ordered = TRUE)) %>%
-  filter(completed,
-         lp %in% c("Monolingual", "Bilingual"),
+  filter(lp %in% c("Monolingual", "Bilingual"),
          age_bin %in% bins_interest) %>%
-  group_by(item, lp, item_dominance, age_bin) %>%
-  summarise(understands = mean(understands, na.rm = TRUE),
-            produces = mean(produces, na.rm = TRUE),
-            n_understands = sum(!is.na(understands)),
-            n_produces = sum(!is.na(produces)),
+  select(-response) %>%
+  pivot_longer(c(understands, produces), names_to = "type", values_to = "response") %>%
+  mutate(type = ifelse(type=="understands", "Comprehensive", "Productive")) %>%
+  arrange(item, lp, item_dominance, age_bin) %>%
+  group_by(item, lp, age_bin, type) %>%
+  summarise(n = sum(!is.na(response)),
+            successes = sum(response, na.rm = TRUE),
+            proportion = mean(response, na.rm = TRUE),
             .groups = "drop") %>%
   ungroup() %>%
-  arrange(age_bin, lp, item_dominance, age_bin)
+  arrange(age_bin, lp, age_bin) %>%
+  left_join(pool, by = "item") %>%
+  rename(cognate = cognate_rater1) %>%
+  mutate_at(vars(include, cognate), ~as.logical(as.numeric(.))) %>%
+  filter(include) %>%
+  drop_na(cognate) %>%
+  select(-c(survey, version, -ipa, source, label, A, B, C, D, include, cognate_expert, cognate_rater2, agreement, comments)) %>%
+  mutate(cognate = case_when(cognate ~ "Cognate", !cognate ~ "Non-cognate", TRUE ~ NA_character_))
 
 #### export data #############################################
 fwrite(dat, here("Data", "03_familiarity.csv"), sep = ",", dec = ".", row.names = FALSE)
 
 #### visualise data ##########################################
 
-dat %>%
-  pivot_longer(c(understands, produces), names_to = "type", values_to = "response") %>%
-  ggplot(aes(age_bin, response)) +
+ggplot(dat, aes(age_bin, proportion, group = cognate, colour = cognate, fill = cognate)) +
+  facet_grid(type~lp) +
+  geom_smooth(method = "lm", formula = y ~ splines::bs(x, 3)) +
+  #stat_summary(fun.data = "mean_se", geom = "ribbon", colour = NA, alpha = 0.5, na.rm = TRUE) +
+  #stat_summary(fun = "mean", geom = "line", na.rm = TRUE) +
+  labs(x = "Age (months)", y = "Proportion", colour = "Cognateness", fill = "Cognateness") +
+  scale_colour_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1") +
+  theme_custom +
+  theme(legend.title = element_blank(),
+        legend.position = "top") +
+  ggsave(here("Figures", "03_familiarity.png"), height = 4)
   

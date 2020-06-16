@@ -20,7 +20,7 @@ source(here("R", "functions.R"))
 inv_logit <- function(x) 1 / (1 + exp(-x))
 
 # set params
-age_bins <- c("10-12", "12-14", "12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "30-32")
+age_bins <- c("18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34", "34-36")
 
 #### generate data #######################################
 mid           <- 7.5
@@ -32,14 +32,14 @@ b_cognateness <- 1
 n <- 100
 
 item <- factor(1:n)
-age <- factor(0:length(age_bin), ordered = TRUE)
+age <- factor(0:length(age_bins)-1, ordered = TRUE)
 
 dat <- expand_grid(item, age) %>%
   mutate(cognateness = rep(c(-0.5, 0.5), each = nrow(.)/2),
          cognateness_label = ifelse(cognateness==-0.5, "Non-cognate", "Cognate"),
          age = as.numeric(age)) %>%
   group_by(item) %>%
-  mutate(mid = rtruncnorm(n = 1, mean = mid, sd = mid_sd, a = 0) + cognateness_slope*cognateness,
+  mutate(mid = rtruncnorm(n = 1, mean = mid, sd = mid_sd, a = 0) + b_cognateness*cognateness,
          steep = rtruncnorm(n = 1, mean = steep, sd = steep_sd, a = 0),
          proportion = 1 / (1 + exp((mid - age) * steep))) %>%
   arrange(item, age, cognateness) %>%
@@ -58,7 +58,7 @@ ggplot(dat, aes(age, proportion, colour = cognateness_label, fill = cognateness_
        colour = "Cognateness", fill = "Cognateness") +
   scale_colour_brewer(palette = "Set1") +
   scale_fill_brewer(palette = "Set1") +
-  scale_x_continuous(breaks = seq(0, 9), labels = age_bin) +
+  scale_x_continuous(breaks = seq(0, 8), labels = age_bins) +
   theme_custom +
   theme(legend.title = element_blank(),
         legend.position = c(0.15, 0.9))

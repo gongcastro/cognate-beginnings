@@ -21,7 +21,7 @@ library(patchwork)
 library(here)
 
 # load functions
-source(here("R", "functions.R"))
+source(here("Code", "R", "functions.R"))
 inv_logit <- function(x) 1 / (1 + exp(-x))
 
 # set params
@@ -71,13 +71,13 @@ asymptote <- coefs_nl$estimate[coefs_nl$term=="asym"]
 ggplot(dat, aes(x = age, y = proportion)) +
   geom_segment(x = x_mid, xend = x_mid, y = 0, yend = y_mid, colour = "blue", size = 1) +
   annotate(geom = "point", x = x_mid, y = y_mid, colour = "blue", size = 5) +
-  annotate(geom = "text", label = paste0("Mid point = ", round(x_mid, 2), "months"), x = mid_sim+1.5, y = 0.25, colour = "blue", size = 4, hjust = 0) +
+  annotate(geom = "text", label = paste0("Mid point = ", round(x_mid, 2), "months"), x = x_mid+1.5, y = 0.25, colour = "blue", size = 4, hjust = 0) +
   geom_segment(x = -Inf, xend = Inf, y = asymptote, yend = asymptote, colour = "red") +
   annotate(geom = "text", label = paste0("Asymptote = ", round(asymptote, 2)),
            x = min(dat$age), y = asym-0.3, colour = "red", size = 4, hjust = 0) +
   annotate(geom = "segment", x = x_mid-1.25, xend = x_mid+1.2, y = y_mid+0.005, yend = y_mid+0.15,
            colour = "green", size = 1, arrow = arrow(ends = "both", length = unit(0.2, units = "cm"))) +
-  annotate(geom = "text", label = paste0("Steepness = ", round(steepness, 2)), x = mid_sim-0.6, y = y_mid+0.02, colour = "green", size = 4, hjust = 0, angle = 22.5) +
+  annotate(geom = "text", label = paste0("Steepness = ", round(steepness, 2)), x = x_mid-0.6, y = y_mid+0.02, colour = "green", size = 4, hjust = 0, angle = 22.5) +
   geom_line(data = dat_fit, aes(y = fit, colour = type), size = 1) +
   stat_summary(aes(group = language),
                fun = "mean", geom = "line", na.rm = TRUE,
@@ -97,5 +97,5 @@ ggplot(dat, aes(x = age, y = proportion)) +
   ggsave(here("Figures", "05_wordbank.png"), height = 5)
 
 #### export data ###########################
-fwrite(dat, here("Data", "05_wordbank.csv"), sep = ",", row.names = FALSE)
-fwrite(coefs_nl, here("Data", "05_wordbank-priors.csv"), sep = ",", row.names = FALSE)
+fwrite(dat, here("Data", "05_priors.csv"), sep = ",", row.names = FALSE)
+fwrite(coefs_nl, here("Data", "05_priors.csv"), sep = ",", row.names = FALSE)

@@ -12,7 +12,8 @@ library(ggplot2)
 # evaluate if x is included in y
 "%!in%" <- function(x, y) !(x %in% y)
 
-# logarithmic curve
+# logistic curve
+inv_logit <- function(x) 1 / (1 + exp(-x))
 log_curve <- function(x, u, k, mid){ {{ u }}/(1+exp(-{{ k }}*({{ x }} - {{ mid }} )))}
 
 # logit to probability

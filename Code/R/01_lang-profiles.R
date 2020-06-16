@@ -14,8 +14,9 @@ library(stringr)       # for working with character strings
 library(lubridate)     # for working with dates
 library(tidyr)         # for reshaping datasets
 library(readxl)        # for importing Excel spreadsheets
-library(janitor)       # for cleaning vairable names
 library(ggplot2)       # for visualising data
+library(ggridges)      # for plotting densities
+library(ggalluvial)
 library(patchwork)     # for arranging plots
 library(here)          # for locating files
 
@@ -23,13 +24,12 @@ library(here)          # for locating files
 source(here("Code", "R", "functions.R"))
 
 # set params
-bins          <- c("< 10", "10-12", "12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34", "34-36", "36-38", "38-40", "> 40")
+bins <- c("< 10", "10-12", "12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34", "34-36", "36-38", "38-40", "> 40")
 bins_interest <- c("18-20", "20-22", "22-24", "24-26", "26-28", "28-30")
-breaks <- c(0, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 100)
 
 ### import data #########################################
 pool <- read_xlsx(here("Data","01_pool.xlsx"))
-studies <- range_read("1ApKe-vwnNvHehKXCKJ1RMGx6KlGpEH7xs0ogM9Loh3s") %>% distinct(q_version, language, q_items) 
+studies <- fread(here("Data", "Logs", "studies.csv")) %>% distinct(q_version, language, q_items) 
 logs <- list.files(here("Data", "Logs"), pattern = "logs", full.names = TRUE) %>%
     .[!str_detect(., "summary")] %>%
     last() %>%
@@ -75,7 +75,9 @@ dat <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FA
     distinct(id_db, language, version, .keep_all = TRUE) %>%
     group_by(id_db, version) %>%
     mutate(n_lang = length(language)) %>%
-    filter(n_lang > 1) %>%
+    filter(n_lang > 1,
+           lp %in% c("Monolingual", "Bilingual"),
+           age_bin %in% bins_interest) %>%
     select(-n_lang) %>%
     arrange(id_db, version, language) %>%
     mutate(vocab_comp_cat = vocab_comp[language=="Catalan"],
@@ -90,9 +92,9 @@ dat <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FA
            lp_num_vocab_comp = abs(vocab_comp_cat-vocab_comp_spa),
            lp_num_vocab_prod = abs(vocab_prod_cat-vocab_prod_spa)) %>%
     ungroup() %>%
-    mutate(lp_num_doe_norm = scale(lp_num_doe),
-           lp_num_vocab_comp_norm = scale(lp_num_vocab_comp),
-           lp_num_vocab_prod_norm = scale(lp_num_vocab_prod),
+    mutate(lp_num_doe_norm = scale(lp_num_doe)[,1],
+           lp_num_vocab_comp_norm = scale(lp_num_vocab_comp)[,1],
+           lp_num_vocab_prod_norm = scale(lp_num_vocab_prod)[,1],
            lp_vocab_comp = ifelse(lp_num_vocab_comp > 0.2, "Monolingual", "Bilingual"),
            lp_vocab_prod = ifelse(lp_num_vocab_prod > 0.2, "Monolingual", "Bilingual")) %>%
     rename(lp_doe = lp) %>%
@@ -101,24 +103,27 @@ dat <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FA
     pivot_longer(cols = c(vocab_comp, vocab_prod), names_to = "type", values_to = "vocab") %>%
     mutate(type = ifelse(type=="vocab_comp", "Comprehensive", "Productive"),
            lp_num_doe = lp_num_doe/100,
-           lp_doe_90 = ifelse(lp_num_doe >= 0.9, "Monolingual", "Bilingual"))
+           lp_doe = ifelse(lp_num_doe >= 0.9, "Monolingual", "Bilingual")) %>%
+    distinct(id_db, language, .keep_all = TRUE)
 
 #### visualise data #######################################
-
-# category
 dat %>%
-    filter(lp_doe %in% c("Monolingual", "Bilingual")) %>%
-    ggplot(aes(doe_spanish, doe_catalan, colour = lp_num_doe)) +
-    annotate(geom = "rect", xmin = 0, xmax = 25, ymin = 0, ymax = 100, alpha = 0.5, fill = "grey") +
-    annotate(geom = "rect", xmin = 25, xmax = 75, ymin = 0, ymax = 100, alpha = 0.5, fill = "transparent") +
-    annotate(geom = "rect", xmin = 75, xmax = 100, ymin = 0, ymax = 100, alpha = 0.5, fill = "grey") +
-    geom_hline(yintercept = 50) +
-    geom_vline(xintercept = 50) +
-    geom_point(alpha = 0.5, na.rm = TRUE) +
-    labs(x = "Degree of Exposure to Spanish (%)", y = "Degree of Exposure to Catalan (%)",
-         colour = "LP") +
-    scale_colour_viridis_c() +
-    theme_custom
+    group_by(lp_doe, lp_vocab_comp, lp_vocab_prod) %>%
+    summarise(n = n(), .groups = "drop") %>%
+    drop_na(lp_doe, lp_vocab_comp, lp_vocab_prod) %>%
+    ggplot(aes(axis1 = lp_doe, axis2 = lp_vocab_comp, axis3 = lp_vocab_prod, y = n)) +
+    geom_alluvium(aes(fill = lp_doe), na.rm = TRUE) +
+    geom_stratum(fill = "white", na.rm = TRUE) +
+    geom_text(stat = "stratum", infer.label = TRUE, angle = 90, size = 3) +
+    labs(x = "Criterion", y = "Number of participants", fill = "Language profile") +
+    scale_x_discrete(limits = c("Exposure (90%)", "Comprehensive vocabulary\n(Median)", "Productive vocabulary\n(Median)")) +
+    scale_fill_brewer(palette = "Set1") +
+    theme_custom +
+    theme(legend.title = element_blank(),
+          legend.position = "top",
+          axis.title.x = element_blank()) +
+    ggsave(here("Figures", "01_lp-criteria.png"))
+
 
 
 plot_doe_comp <- dat %>%
@@ -128,15 +133,14 @@ plot_doe_comp <- dat %>%
     ggplot(aes(lp_num_doe, lp_num_vocab_comp, colour = LP)) +
     geom_point(alpha = 0.5, na.rm = TRUE) +
     geom_vline(xintercept = 0.75, colour = "black", linetype = "dashed") +
-    geom_hline(yintercept = median(dat$lp_num_vocab_comp, na.rm = TRUE), colour = "black", linetype = "dashed") +
-    labs(x = "Standardized degree of exposure to L1", y = "Standardized absolute difference in\nproductive vocabulary",
+    geom_hline(yintercept = median(dat$lp_num_vocab_prod, na.rm = TRUE), colour = "black", linetype = "dashed") +
+    labs(x = "Standardized degree of exposure to L1", y = "Standardized absolute difference in\ncomprehensive vocabulary",
          fill = "Density",
          title = "Degree of exposure vs. comprehensive vocabulary") +
     scale_colour_brewer(palette = "Set1") +
     theme_custom +
     theme(title = element_text(size = 10),
           legend.position = "top")
-
 
 plot_doe_prod <- dat %>%
     distinct(id_db, language, .keep_all = TRUE) %>%
@@ -179,7 +183,7 @@ plot_vocab_both <- dat %>%
                     caption = "Inclusion criteria:\n   - Age: 18-30 months \n   - Completed both the Catalan and Spanish questionnaires \n   - Are not exposed to a 3rd language > 10% of the time") &
     theme(legend.position = "top",
           plot.caption = element_text(hjust = 0)) &
-    ggsave(here("Figures", "01_lp.png"), height = 10, width = 5) 
+    ggsave(here("Figures", "01_lp-pairwise.png"), height = 10, width = 5) 
 
 
 
