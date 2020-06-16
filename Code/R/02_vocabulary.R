@@ -29,7 +29,7 @@ breaks <- c(0, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 1
 
 #### import data #########################################
 pool <- read_xlsx(here("Data","01_pool.xlsx"))
-studies <- range_read("1ApKe-vwnNvHehKXCKJ1RMGx6KlGpEH7xs0ogM9Loh3s") %>% distinct(q_version, language, q_items) 
+studies <- fread(here("Data", "Logs", "studies.csv")) %>% distinct(q_version, language, q_items) 
 logs <- list.files(here("Data", "Logs"), pattern = "logs", full.names = TRUE) %>%
   .[!str_detect(., "summary")] %>%
   last() %>%
@@ -101,7 +101,7 @@ dat <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FA
   pivot_longer(cols = c(vocab_comp, vocab_prod), names_to = "type", values_to = "vocab") %>%
   mutate(type = ifelse(type=="vocab_comp", "Comprehensive", "Productive"),
          lp_num_doe = lp_num_doe/100,
-         lp_doe = ifelse(lp_num_doe >= 0.9, "Monolingual", "Bilingual"))
+         lp_doe_90 = ifelse(lp_num_doe >= 0.90, "Monolingual", "Bilingual"))
 
 
 #### export data ##########################################
