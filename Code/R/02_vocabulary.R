@@ -24,7 +24,7 @@ source(here("Code", "R", "functions.R"))
 
 # set params
 bins          <- c("< 10", "10-12", "12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34", "34-36", "36-38", "38-40", "> 40")
-bins_interest <- c("18-20", "20-22", "22-24", "24-26", "26-28", "28-30")
+bins_interest <- c("12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34")
 breaks <- c(0, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 100)
 
 #### import data #########################################
@@ -44,7 +44,7 @@ dat <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FA
   as_tibble() %>%
   mutate_at(vars(time_stamp), as_date) %>%
   mutate_at(vars(id_db), as.character) %>%
-  left_join(logs, by = c("id_db", "study", "time_stamp", "age", "sex", "dominance", "code", "version", "lp", "age_bin")) %>%
+  left_join(logs) %>%
   mutate(version = factor(version, levels = c("CBC", "BL-Short-A", "BL-Short-B", "BL-Short-C", "BL-Short-D", "BL-Long-1", "BL-Long-2", "DevLex"), ordered = TRUE)) %>%
   left_join(studies, by = c("version" = "q_version", "language")) %>%
   select(-c(id_exp, code)) %>%
@@ -111,20 +111,13 @@ fwrite(dat, here("Data", "03_vocabulary.csv"), sep = ",", row.names = FALSE)
 
 # vocabulary across ages
 dat %>%
-  filter(lp_doe %in% c("Monolingual", "Bilingual")) %>%
-  pivot_longer(c(lp_doe, lp_doe_90, lp_vocab_comp, lp_vocab_prod), names_to = "classification", values_to = "lp") %>%
-  mutate(classification = case_when(classification=="lp_doe" ~ "Exposure (75% threshold)",
-                                    classification=="lp_doe_90" ~ "Exposure (90% threshold)",
-                                    classification=="lp_vocab_comp" ~ "Vocabulary (comprehensive)",
-                                    classification=="lp_vocab_prod" ~ "Vocabulary (productive)")) %>%
+  filter(lp_doe %in% c("Monolingual", "Bilingual"),
+         age_bin %in% bins_interest) %>%
   drop_na() %>%
-  ggplot(aes(x = age_bin, y = vocab, colour = lp, fill = lp)) +
-  facet_grid(type~classification) +
-  geom_point(size = 0.25, alpha = 0.25, na.rm = TRUE, show.legend = FALSE) +
-  annotate(geom = "rect", xmin = 1, xmax = 5, ymin = 0, ymax = 1, fill = "black", alpha = 0.1) +
-  annotate(geom = "rect", xmin = 11, xmax = 17, ymin = 0, ymax = 1, fill = "black", alpha = 0.1) +
-  stat_summary(aes(group = lp), fun.data = "mean_se", geom = "pointrange", size = 0.25, na.rm = TRUE) +
-  geom_smooth(aes(group = lp), method = "loess", formula = "y ~ x", na.rm = TRUE) +
+  ggplot(aes(x = age_bin, y = vocab, colour = lp_doe, fill = lp_doe)) +
+  facet_wrap(~type) +
+  geom_jitter(size = 0.25, alpha = 0.25, width = 0.1, na.rm = TRUE, show.legend = FALSE) +
+  geom_smooth(aes(group = lp_doe), method = "loess", formula = "y ~ x", na.rm = TRUE) +
   labs(x = "Age (months)", y = "Vocabulary size (%)",
        colour = "Language profile", fill = "Language profile") +
   scale_color_brewer(palette = "Set1") +

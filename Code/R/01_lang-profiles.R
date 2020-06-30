@@ -5,16 +5,12 @@
 #### set up ##############################################
 
 # load packages
-library(tibble)        # for nice data frames
+library(tidyverse)   
 library(googlesheets4) # for import Google spreadsheets
 library(magrittr)      # for using pipes
 library(data.table)    # for importing data
-library(dplyr)         # for manipulating data
-library(stringr)       # for working with character strings
 library(lubridate)     # for working with dates
-library(tidyr)         # for reshaping datasets
 library(readxl)        # for importing Excel spreadsheets
-library(ggplot2)       # for visualising data
 library(ggridges)      # for plotting densities
 library(ggalluvial)
 library(patchwork)     # for arranging plots
@@ -25,7 +21,8 @@ source(here("Code", "R", "functions.R"))
 
 # set params
 bins <- c("< 10", "10-12", "12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34", "34-36", "36-38", "38-40", "> 40")
-bins_interest <- c("18-20", "20-22", "22-24", "24-26", "26-28", "28-30")
+bins_interest <- c("12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34")
+breaks <- c(11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33)
 
 ### import data #########################################
 pool <- read_xlsx(here("Data","01_pool.xlsx"))
@@ -44,7 +41,7 @@ dat <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FA
     as_tibble() %>%
     mutate_at(vars(time_stamp), as_date) %>%
     mutate_at(vars(id_db), as.character) %>%
-    left_join(logs, by = c("id_db", "study", "time_stamp", "age", "sex", "dominance", "code", "version", "lp", "age_bin")) %>%
+    left_join(logs) %>%
     mutate(version = factor(version, levels = c("CBC", "BL-Short-A", "BL-Short-B", "BL-Short-C", "BL-Short-D", "BL-Long-1", "BL-Long-2", "DevLex"), ordered = TRUE)) %>%
     left_join(studies, by = c("version" = "q_version", "language")) %>%
     select(-c(id_exp, code)) %>%
@@ -64,8 +61,8 @@ dat <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FA
            understands = sum(understands, produces, na.rm = TRUE),
            vocab_comp  = prod(understands, 1/vocab_total, na.rm = FALSE),
            vocab_prod  = prod(produces, 1/vocab_total, na.rm = FALSE),
-           age_bin     =  factor(cut(age, breaks = breaks, labels = bins),
-                                 levels = bins,
+           age_bin     =  factor(cut(age, breaks = breaks, labels = bins_interest),
+                                 levels = bins_interest,
                                  ordered = TRUE),
            completed   = (abs(q_items-vocab_total)/q_items) < 0.05) %>%
     ungroup() %>%
@@ -113,16 +110,19 @@ dat %>%
     drop_na(lp_doe, lp_vocab_comp, lp_vocab_prod) %>%
     ggplot(aes(axis1 = lp_doe, axis2 = lp_vocab_comp, axis3 = lp_vocab_prod, y = n)) +
     geom_alluvium(aes(fill = lp_doe), na.rm = TRUE) +
-    geom_stratum(fill = "white", na.rm = TRUE) +
+    geom_stratum(fill = "white", width = 0.35, na.rm = TRUE) +
     geom_text(stat = "stratum", infer.label = TRUE, angle = 90, size = 3) +
     labs(x = "Criterion", y = "Number of participants", fill = "Language profile") +
     scale_x_discrete(limits = c("Exposure (90%)", "Comprehensive vocabulary\n(Median)", "Productive vocabulary\n(Median)")) +
+    scale_y_continuous(breaks = seq())
     scale_fill_brewer(palette = "Set1") +
     theme_custom +
     theme(legend.title = element_blank(),
-          legend.position = "top",
+          legend.position = "none",
+          panel.border = element_blank(),
+          axis.line.x = element_blank(),
           axis.title.x = element_blank()) +
-    ggsave(here("Figures", "01_lp-criteria.png"))
+    ggsave(here("Figures", "01_lp-criteria.png"), height = 4.5, width = 6)
 
 
 
