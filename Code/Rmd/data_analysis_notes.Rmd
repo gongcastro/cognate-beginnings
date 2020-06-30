@@ -74,3 +74,18 @@ We run our model using the `brm()` function in the `brms` R package [@bruckner20
 ### Comparing models
 *
 To analyse the effect of the interaction between *language profile* and *cognate status*, we will fit three models. A first minimal model will not include any of the predictors of interest. A second null model will include *language profile* as a population effect A third complete model will also include *cognate status*, and its interaction with *language profile* as population effects. All models will include *item* as grouping variable. We will specify, in each model, a maximal random effects structure that includes by-item intercepts, slopes, and correlation parameters [@barr2013a]. We will then compare the three models following the workflow suggested by @schad2019. The minimal model will be expanded to the null model, and then the null model be expanded to the complete model. At each stage, we will check whether the expanded model is more adequate than the previous. In case the expanded model proves more inadequate, we will fall back to the simpler, previous model.
+
+
+## Limitations
+
+
+* Cross-sectional data for longitudinal claims
+* Data is right censored    
+* Inventory:
+    - Phonological forms?
+    - We can't say how frequently words are produced by the parents or the toddler.
+    - Although instructed to ignore imitations, it is difficult to say whether a toddler has *really* acquired a word that produces, or she can only imitate it.
+    - Responses in the questionnaire rely heavily on parental memory.
+    - We don't know about the context at which words are heard or produced.
+    - Classification system of items (e.g., *household items*) is adult centric. Children may use the words *pretty* to name jewellery [@bates1994].
+* Mid and mid-upper class families are overrepresented in the sample.

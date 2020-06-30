@@ -14,7 +14,6 @@ library(ggplot2)
 
 # logistic curve
 inv_logit <- function(x) 1 / (1 + exp(-x))
-log_curve <- function(x, u, k, mid){ {{ u }}/(1+exp(-{{ k }}*({{ x }} - {{ mid }} )))}
 
 # logit to probability
 logit2prob <- function(logit){
