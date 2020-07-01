@@ -82,12 +82,14 @@ model {
     mu[n] = inv_logit(inv_logit(nlp_asym[n]) * inv(1 + exp((nlp_mid[n] - C_1[n]) * exp(nlp_steep[n]))));
   }
   // priors including all constants
-  target += normal_lpdf(b_asym[1] | 0.7903355, 0.05);
-  target += normal_lpdf(b_mid[1] | 2.516456, 1);
-  target += normal_lpdf(b_mid[2] | 0, 5);
-  target += normal_lpdf(b_mid[3] | 0, 5);
-  target += normal_lpdf(b_steep[1] | 1.7925281, 0.6);
-  target += normal_lpdf(Intercept_phi | 2, 1);
+  target += normal_lpdf(b_asym[1] | 0.7857192, 0.1);
+  target += normal_lpdf(b_mid[1] | 4.497546, 1);
+  target += normal_lpdf(b_mid[2] | 0, 1);
+  target += normal_lpdf(b_mid[3] | 0, 1);
+  target += normal_lpdf(b_mid[4] | 0, 1);
+  target += normal_lpdf(b_mid[5] | 0, 1);
+  target += normal_lpdf(b_steep[1] | 1.757652, 0.8);
+  target += normal_lpdf(Intercept_phi | 1.5, 1);
   target += beta_lpdf(zoi | 1, 1);
   target += beta_lpdf(coi | 1, 1);
   target += student_t_lpdf(sd_1 | 3, 0, 2.5)
