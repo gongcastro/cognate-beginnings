@@ -53,9 +53,7 @@ anova <- anovaBF(mid_diff ~ cognate, data = midpoints)
 ggplot(midpoints, aes(cognate, mid_diff, fill = cognate)) +
     geom_violin(colour = NA) +
     geom_boxplot(width = 0.1, fill = "white", colour = "black") +
-    labs(x = "Cognateness", y = "Time difference in acquistion\n(Mid-point L2- Mid-point-L1)",
-         subtitle = paste("Bayes Factor (H1/H0):", round(extractBF(anova)$bf, 3))) +
-    scale_fill_manual(values = c("#44546A", "orange")) +
+    labs(x = "Cognateness", y = "AoA L2 - AoA L1") +    scale_fill_manual(values = c("#44546A", "orange")) +
     scale_colour_manual(values = c("#44546A", "orange")) +
     theme_custom +
     theme(plot.title = element_text(size = 14),
@@ -74,7 +72,7 @@ ggplot(midpoints, aes(cognate, mid_diff, fill = cognate)) +
     facet_wrap(~cognate, ncol = 2) +
     geom_violin(colour = NA) +
     geom_boxplot(width = 0.1, fill = "white", colour = "black") +
-    labs(x = "Item dominance", y = "Age of acquisition (Mid-point)") +
+    labs(x = "Item dominance", y = "AoA") +
     scale_fill_manual(values = c("#44546A", "orange")) +
     scale_colour_manual(values = c("#44546A", "orange")) +
     theme_custom +
@@ -86,10 +84,8 @@ ggplot(midpoints, aes(cognate, mid_diff, fill = cognate)) +
           panel.grid.major.y = element_line(colour = "grey"),
           axis.title.x = element_blank()) +
     
-    plot_layout(nrow = 1) &
-    plot_annotation(title = "Difference in AoA across TEs",
-                    subtitle = "Hypothesis 2: Smaller differences in cognates",
-                    caption = "Difference in AoA between the word forms of the same TE were calculated by\nsubtracting the predicted AoA (mid-point) of the L2 item from that of the L1 item.\nA Bayesian ANOVA analysing the impact of cognateness on the difference in AoA\nprovided strong support the the null hypothesis (no cognateness effect)") &
+    plot_layout(ncol = 1) &
+    plot_annotation(title = "Difference in AoA across TEs") &
     theme(plot.title = element_text(size = 14),
           plot.title.position = "plot",
           plot.caption = element_text(hjust = 0),
@@ -99,7 +95,7 @@ ggplot(midpoints, aes(cognate, mid_diff, fill = cognate)) +
           panel.grid.major.y = element_line(colour = "grey"),
           axis.title.x = element_blank()) &
     
-    ggsave(here("Figures", "08_survival-comp.png"), width = 7.5, height = 4)
+    ggsave(here("Figures", "08_survival-comp.png"), width = 4, height = 4)
 
 
 ####

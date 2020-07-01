@@ -21,7 +21,7 @@ source(here("Code", "R", "functions.R"))
 
 # set params
 set.seed(888)
-bins <- c("14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34")
+bins_interest <- c("12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34")
 options(contrasts = c("contr.sum", "contr.poly"))
 
 #### import data ##########################################
@@ -124,42 +124,6 @@ posterior <- fit1 %>%
                              TRUE ~ "Random"),
            .chain = factor(.chain, levels = 1:4, ordered = TRUE))
 
-prior <- fit_prior %>%
-    gather_draws(b_asym_Intercept,
-                 b_steep_Intercept,
-                 b_mid_Intercept,
-                 b_mid_item_dominance1,
-                 b_mid_cognate1,
-                 b_mid_frequency,
-                 `b_mid_item_dominance1:cognate1`,
-                 Intercept_phi,
-                 b_phi_Intercept,
-                 zoi,
-                 coi,
-                 r_meaning__mid[meaning, term],
-                 sd_meaning__mid_Intercept) %>% 
-    mutate(.label = case_when(.variable %in% "b_asym_Intercept" ~ "Asymptote\n(Intercept)",
-                              .variable %in% "b_steep_Intercept" ~ "Steepness\n(Intercept)",
-                              .variable %in% "b_mid_Intercept" ~ "Mid-point\n(Intercept)",
-                              .variable %in% "b_mid_item_dominance1" ~ "Dominance\n(L2/L1)",
-                              .variable %in% "b_mid_cognate1" ~ "Cognateness\n(Non-cognate/Cognate)",
-                              .variable %in% "b_mid_item_dominance1:cognate1" ~ "Dominance \U000D7 Cognateness\n",
-                              .variable %in% "b_mid_frequency" ~ "Frequency\n(Zipf, std.)",
-                              .variable %in% "phi_Intercept" ~ "\U03C6\n(Intercept)",
-                              .variable %in% "b_phi_Intercept" ~ "\U03C6\n(Slope)",
-                              .variable %in% "zoi" ~ "ZOI",
-                              .variable %in% "coi" ~ "COI",
-                              .variable %in% "sd_meaning__mid_Intercept" ~ "SD Meaning\n(Intercept)",
-                              TRUE ~ "Meaning\n(Intercept)"),
-           class = case_when(.label %in% c("Asymptote\n(Intercept)", "Steepness\n(Intercept)", "Mid-point\n(Intercept)") ~ "Logistic\n(Intercept, fixed)",
-                             .label %in% c("Dominance\n(Slope)", "Cognateness\n(Slope)", "Dominance \U000D7 Cognateness\n(Slope)", "Frequency\n(Slope)") ~ "Linear",
-                             .label %in% c("b_phi_Intercept", "\U03C6\n(Intercept)", "\U03C6\n(Slope)", "ZOI", "COI") ~ "Distributional",
-                             TRUE ~ "Random"),
-           .chain = factor(.chain, levels = 1:4, ordered = TRUE))
-
-both <- list(prior = prior, posterior = posterior) %>% 
-    bind_rows(.id = "dist") %>% 
-    mutate(dist = str_to_sentence(dist))
 
 #### check convergence ######################
 
@@ -177,23 +141,26 @@ ggplot(posterior, aes(.iteration, .value, colour = .chain)) +
 intervals <- posterior %>% 
     filter(.variable %in% c("b_mid_item_dominance1", "b_mid_cognate1", "b_mid_item_dominance1:cognate1", "b_mid_frequency")) %>% 
     group_by(class, .variable, .label) %>%
-    mean_qi(.value, .width = c(0.95, 0.89, 0.50))
+    mean_qi(.value, .width = c(0.95, 0.89, 0.50)) %>% 
+    mutate(.label = factor(.label, levels = c("Frequency\n(Zipf, std.)", "Dominance\n(L2/L1)", "Cognateness\n(Non-cognate/Cognate)", "Dominance \U000D7 Cognateness\n"), ordered = TRUE)) 
+    
 
-both %>%
+posterior %>%
     filter(.variable %in% c("b_mid_item_dominance1", "b_mid_cognate1", "b_mid_item_dominance1:cognate1", "b_mid_frequency")) %>% 
-    mutate(.label = str_remove(.label, "\n(Slope)")) %>% 
-    ggplot(aes(x = .value, y = .label)) +
-    stat_slabh(aes(fill = dist), colour = NA, show.legend = FALSE) +
-    geom_intervalh(data = intervals, position = position_nudge(y = -0.15), alpha = 0.7) +
+    mutate(.label = str_remove(.label, "\n(Slope)"),
+           .label = factor(.label, levels = c("Frequency\n(Zipf, std.)", "Dominance\n(L2/L1)", "Cognateness\n(Non-cognate/Cognate)", "Dominance \U000D7 Cognateness\n"), ordered = TRUE)) %>% 
+    ggplot(aes(x = .value, y = as.factor(.label))) +
+    stat_slabh(fill = "#44546A", colour = NA, show.legend = FALSE) +
+    geom_intervalh(data = intervals, position = position_nudge(y = -0.2), alpha = 0.7) +
     geom_vline(xintercept = 0, linetype = "dotted") +
-    annotate(geom = "text", x = 1.75, y = 4.5, label = "Increases AoA", size = 3) +
-    annotate(geom = "text", x = -1.75, y = 4.5, label = "Reduces AoA", size = 3) +
+    annotate(geom = "text", x = 2, y = 4.5, label = "Increases AoA", size = 3) +
+    annotate(geom = "text", x = -2, y = 4.5, label = "Reduces AoA", size = 3) +
     annotate(geom = "segment", x = 3, xend = 3.5, y = 4.5, yend = 4.5, arrow = arrow(ends = "last", length = unit(0.1, units = "cm"))) +
     annotate(geom = "segment", x = -3.5, xend = -3, y = 4.5, yend = 4.5, arrow = arrow(ends = "first", length = unit(0.1, units = "cm"))) +
     labs(x = "Estimate", y = "Parameter",
          fill = "Credible Interval", colour = "Credible Interval",
-         title = "Fixed coefficients of the extended model (M1)",
-         caption = "Frequency scores were extracted from SUBTLEX-ESP [1] and SUBTLEX-CAT [2]") +
+         subtitle = "Model coefficients: What is the contribution of each predictor?",
+         caption = "Fixed coefficients of the extended model (M1). Contrasts were sum-coded.\nFrequency scores were extracted from SUBTLEX-ESP [5] and SUBTLEX-CAT [6]") +
     scale_fill_manual(values = c("#44546A", "orange")) +
     scale_colour_brewer(palette = "YlOrBr") +
     theme_custom +
@@ -205,37 +172,40 @@ both %>%
           panel.background = element_rect(fill = "transparent"),
           panel.grid.major.y = element_line(colour = "grey"),
           axis.title.y = element_blank()) +
-    ggsave(here("Figures", "07_gca_comp-coefs.png"), width = 6, height = 4)
+    ggsave(here("Figures", "07_gca_comp-coefs.png"), width = 5.5, height = 4)
 
 #### posterior predictive checks ##############################
 
 posterior_check <- expand_grid(age_bin = unique(dat$age_bin),
                                item_dominance = c("L2", "L1"),
                                cognate = c("Non-cognate", "Cognate"),
-                               meaning = unique(dat$meaning),
                                frequency = seq_range(dat$frequency, 4)) %>%
-    add_fitted_draws(model = fit1, n = 100, value = "proportion", scale = "linear") %>% 
+    add_fitted_draws(model = fit1, n = 100, value = "proportion", scale = "linear", re_formula = NA) %>% 
     ungroup() %>%
     mutate(frequency = cut(frequency, breaks = seq_range(dat$frequency, 5), labels = paste("Frequency:", c("Q1", "Q2", "Q3", "Q4")), include.lowest = TRUE),
            .draw = as.character(.draw))
 
-ggplot(posterior_check, aes(age_bin, proportion, colour = cognate, linetype = cognate)) +
-    facet_grid(~frequency) +
-    stat_lineribbon(aes(group = cognate), size = 0.5, colour = "#44546A",
-                    .width = c(0.11, 0.5, 0.89, 0.95)) +
-    #geom_point(data = dat_ppcheck, aes(x = age_bin, y = prop, colour = cognate)) +
-    #geom_errorbar(data = dat_ppcheck, aes(x = age_bin, y = prop, ymin = prop-sem, ymax = prop+sem, colour = cognate), width = 0) +
-    labs(x = "Age (months)", y = "Proportion", fill = "Credible interval",
-         group = "Cognate", linetype = "Cognate", colour = "Cognate") +
-    scale_x_continuous(breaks = seq(0, 11), labels = bins) +
-    scale_fill_brewer(palette = "Oranges") +
+posterior_check %>%
+    ggplot(aes(age_bin, proportion, colour = cognate, linetype = item_dominance)) +
+    stat_summary(fun = "median", geom = "line", na.rm = TRUE, size  =1) +
+    labs(x = "Age (months)", y = "Proportion",
+         group = "Cognate", linetype = "Dominance", colour = "Cognateness",
+         subtitle = "Posterior predictive checks: What does our model predict?",
+         caption = "Lines represent the median of the marginal posterior\ndistribution of fitted values for each condition.") +
+    scale_colour_manual(values = c("#44546A", "orange")) +
+    scale_fill_manual(values = c("#44546A", "orange")) +
+    scale_x_continuous(breaks = seq(1, 11), labels = bins_interest) +
     theme_custom +
     theme(panel.grid.major.y = element_line(colour = "grey", linetype = "dotted"),
-          legend.position = "right",
-          legend.text = element_text(size = 7),
-          legend.title = element_text(size = 8),
-          axis.text.x = element_text(size = 7, angle = 300)) +
-    ggsave(here("Figures", "07_analysis_comp_posterior-checks.png"))
+          legend.position = c(0.2, 0.6),
+          text = element_text(colour = "black"),
+          axis.text = element_text(colour = "black"),
+          legend.margin = margin(t = 0.01, b = 0.01),
+          legend.title = element_blank(),
+          plot.caption = element_text(hjust = 0),
+          plot.caption.position = "plot",
+          plot.title.position = "plot") +
+    ggsave(here("Figures", "07_gca_comp_posterior-checks.png"), height = 4.7, width = 4.5)
 
 #### compare models #########################
 loo0 <- add_criterion(fit0, "loo", file = here("Results", "comp-L1_fit0"))
@@ -245,5 +215,5 @@ comp <- list(loo_comp)
 
 #### export results #########################
 fits <- list(fit0, fit1)
-saveRDS(fits, here("Results", "comp-L1_fits.rds"))
-saveRDS(comp, here("Results", "comp-L1_selection.rds"))
+saveRDS(fits, here("Results", "comp_fits.rds"))
+saveRDS(comp, here("Results", "comp_selection.rds"))
