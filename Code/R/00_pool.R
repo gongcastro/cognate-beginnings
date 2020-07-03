@@ -5,13 +5,9 @@
 #### set up #############################################
 
 # load packages
+library(tidyverse)    
 library(data.table)    # for importing and exporting data
-library(dplyr)         # for manipulating data
-library(tidyr)         # for reshaping datasets
 library(readxl)        # for importing Excel files
-library(stringr)       # for working with character strings
-library(ggplot2)       # for visualising data
-library(wesanderon)    # for nice colours
 library(here)          # for locating files
 
 # load/create functions
@@ -44,7 +40,6 @@ ggplot(dat_freqdiff, aes(x = language, y = frequency, colour = frequency_diff, a
   geom_line(aes(group = meaning), na.rm = TRUE, size = 0.5) +
   geom_boxplot(width = 0.05, na.rm = TRUE, colour = "black") +
   labs(x = "Language", y = "Frequency (Zipf score)", colour = "Absolute\ndifference") +
-  scale_colour_gradientn(colours = wes_palette("Zissou1")) +
   scale_alpha(guide = FALSE) +
   theme_custom +
   theme(legend.position = "right") +

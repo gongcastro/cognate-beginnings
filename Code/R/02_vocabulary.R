@@ -5,17 +5,13 @@
 #### set up ##############################################
 
 # load packages
-library(tibble)        # for nice data frames
+library(tidyverse)       
 library(googlesheets4) # for import Google spreadsheets
 library(magrittr)      # for using pipes
 library(data.table)    # for importing data
-library(dplyr)         # for manipulating data
-library(stringr)       # for working with character strings
 library(lubridate)     # for working with dates
-library(tidyr)         # for reshaping datasets
 library(readxl)        # for importing Excel spreadsheets
 library(janitor)       # for cleaning vairable names
-library(ggplot2)       # for visualising data
 library(patchwork)     # for arranging plots
 library(here)          # for locating files
 
@@ -29,7 +25,7 @@ breaks <- c(0, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 1
 
 #### import data #########################################
 pool <- read_xlsx(here("Data","01_pool.xlsx"))
-studies <- fread(here("Data", "Logs", "studies.csv")) %>% distinct(q_version, language, q_items) 
+studies <- fread(here("Data", "00_studies.csv")) %>% distinct(q_version, language, q_items) 
 logs <- list.files(here("Data", "Logs"), pattern = "logs", full.names = TRUE) %>%
   .[!str_detect(., "summary")] %>%
   last() %>%
@@ -37,37 +33,34 @@ logs <- list.files(here("Data", "Logs"), pattern = "logs", full.names = TRUE) %>
   as_tibble() %>%
   mutate_at(vars(date_sent, time_stamp), as_date) %>%
   mutate_at(vars(age_bin), factor, levels = bins, ordered = TRUE) %>%
-  mutate_at(vars(id_db), as.character) 
-
+  mutate_at(vars(id_db), as.character)
 
 dat <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FALSE, na.strings = "") %>%
   as_tibble() %>%
   mutate_at(vars(time_stamp), as_date) %>%
   mutate_at(vars(id_db), as.character) %>%
-  left_join(logs) %>%
-  mutate(version = factor(version, levels = c("CBC", "BL-Short-A", "BL-Short-B", "BL-Short-C", "BL-Short-D", "BL-Long-1", "BL-Long-2", "DevLex"), ordered = TRUE)) %>%
+  left_join(logs) %>% 
+  mutate(version = factor(version, levels = c("CBC", "BL-Short-A", "BL-Short-B", "BL-Short-C", "BL-Short-D", "BL-Long-1", "BL-Long-2", "DevLex"), ordered = TRUE)) %>% 
   left_join(studies, by = c("version" = "q_version", "language")) %>%
-  select(-c(id_exp, code)) %>%
+  select(-c(id_exp, code)) %>% 
   rename(dominance_doe = dominance) %>%
   drop_na(response) %>%
   mutate(response = case_when(response == 1 ~ "no",
                               response == 2 ~ "understands",
                               response == 3 ~ "produces",
                               TRUE          ~ NA_character_)) %>%
-  group_by(id_db, study, version, language, lp, sex, dominance_doe, doe_catalan, doe_spanish, response, q_items) %>%
-  summarise(count = n(), age = sample(age, 1), .groups = "drop") %>%
+  group_by(id_db, study, version, language, lp, sex, dominance_doe, doe_catalan, doe_spanish, response, q_items, completed) %>%
+  summarise(count = n(), age = sample(age, 1), .groups = "drop") %>% 
   ungroup() %>%
   pivot_wider(names_from = "response", values_from = "count") %>%
-  rowwise() %>%
+  rowwise() %>% 
   mutate(no = ifelse(is.na(no), 0, no),
          vocab_total = sum(produces, understands, no, na.rm = TRUE),
          understands = sum(understands, produces, na.rm = TRUE),
          vocab_comp  = prod(understands, 1/vocab_total, na.rm = FALSE),
          vocab_prod  = prod(produces, 1/vocab_total, na.rm = FALSE),
-         age_bin     =  factor(cut(age, breaks = breaks, labels = bins),
-                               levels = bins,
-                               ordered = TRUE),
-         completed   = (abs(q_items-vocab_total)/q_items) < 0.05) %>%
+         age_bin     =  factor(cut(age, breaks = breaks, labels = bins), levels = bins, ordered = TRUE),
+         completed   = (abs(q_items-vocab_total)/q_items) < 0.05) %>% 
   ungroup() %>%
   select(id_db, study, version, language, no, produces, understands, vocab_comp, vocab_prod, vocab_total, q_items, completed, age_bin, lp, dominance_doe, doe_catalan, doe_spanish, sex, age) %>%
   arrange(version, age_bin, id_db, language) %>%
