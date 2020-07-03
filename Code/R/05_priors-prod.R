@@ -122,14 +122,13 @@ fit_prior <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - 
                            prior(normal(0, 1), class = "b", nlpar = "mid", coef = "frequency"),
                            prior(normal(1.5, 1), dpar = "phi", class = "Intercept")),
                  data = dat,
+                 file = here("Results", "prod_fit-prior.rds"),
                  sample_prior = "only",
                  save_all_pars = TRUE,
-                 save_model = here("Code", "Stan", "comp_fit-prior.stan"))
 
-saveRDS(fit_prior, here("Results", "prod_fit-prior.rds"))
+                                  save_model = here("Code", "Stan", "comp_fit-prior.stan"))
 
 #### prior predictive checks ##############################
-
 posterior <- fit_prior %>%
   gather_draws(b_asym_Intercept,
                b_steep_Intercept,
