@@ -41,7 +41,7 @@ dat <- list.files(here("Data", "Logs"), pattern = "logs", full.names = TRUE) %>%
     
 #### visualise dates #######################
 samples <- dat %>% 
-    filter(completed, lp %!in% "Other", age_bin %in% bins_interest) %>% 
+    filter(completed, lp %in% "Bilingual", age_bin %in% bins_interest) %>% 
     group_by(lp, dominance, age_bin) %>%
     summarise(n = n(), .groups = "drop") %>%
     group_by(age_bin, lp) %>%
@@ -54,10 +54,10 @@ dat %>%
     labs(x = "Age (months)", y = "Number of partcipants",
          fill = "Language of highest exposure") +
     scale_y_continuous(labels = as.integer) +
-    scale_fill_brewer(palette = "Set1") +
+    scale_fill_manual(values = c("#44546A", "orange")) +
     theme_custom +
     theme(legend.position = "top",
           panel.background = element_rect(fill = "white"),
           axis.text = element_text(colour = "black"),
           panel.grid.major.y = element_line(colour = "grey", linetype = "dotted")) +
-    ggsave(here("Figures", "01_logs-distribution.png"))
+    ggsave(here("Figures", "01_logs-distribution.png"), height = 4, width = 5)

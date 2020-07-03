@@ -72,13 +72,11 @@ library(knitr)
 
 library(magrittr)
 library(tidyverse)
-library(dplyr)
-library(forcats)
-library(stringr)
 library(readxl)
 library(lubridate)
 library(janitor)
 
+library(broom)
 library(ggridges)
 library(patchwork)
 library(gt)
@@ -90,7 +88,7 @@ library(here)
 source(here("Code", "R", "functions.R"))
 
 # set params
-bins <- c("14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34", "34-36")
+bins <- c("12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34")
 
 # import data 
 dat_studies <- fread(here("Data", "00_studies.csv")) %>% distinct(q_version, language, q_items)
@@ -110,9 +108,12 @@ dat_raw <- fread(here("Data", "02_merged.csv"), na.strings = "") %>%
          age_bin %in% bins) %>%
   as_tibble() %>%
   mutate_at(vars(date_birth, time_stamp), as_date)
-
 dat_wordbank <- fread(here("Data", "05_wordbank.csv"))
 dat_wordbank_priors <- fread(here("Data", "05_priors-wordbank.csv"))
+
+# import results
+comp_fit1 <- readRDS(here("Results", "comp_fit1.rds"))
+comp_selection <- readRDS(here("Results", "comp_selection.rds"))
 
 ```
 
@@ -245,10 +246,21 @@ To test Hypothesis 2, we run a Bayesian ANOVA using the difference in mid-points
 # Results
 
 
-## Hypothesis 1
+## Hypothesis 1: Are cognates acquired ealier?
 
 
 ### Comprehensive vocabulary
+
+Table \@ref(tab:resultscomp) shows the outcomes of the model.
+
+```{r resultscomp, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+
+tidy(comp_fit1) %>% 
+    gt()
+
+
+```
 
 
 ### Productive vocabulary

@@ -30,7 +30,7 @@ dat <- fread(here("Data", "04_prepared.csv")) %>%
     filter(type=="Comprehensive",
            lp=="Bilingual") %>%
     select(item, meaning, age_bin, item_dominance, cognate, proportion, frequency) %>%
-    mutate(age_bin = as.numeric(factor(age_bin, levels = bins, ordered = TRUE)),
+    mutate(age_bin = as.numeric(factor(age_bin, levels = bins_interest, ordered = TRUE)),
            item_dominance = as.factor(item_dominance),
            frequency = scale(frequency)[,1],
            cognate = as.factor(cognate)) %>%
@@ -58,12 +58,13 @@ fit0 <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - age_b
                          nl = TRUE,
                          family = zero_one_inflated_beta),
             prior = c(prior(normal(0.7857192, 0.1), nlpar = "asym", coef = "Intercept"),
-                      prior(normal(3.497546, 1), nlpar = "mid", coef = "Intercept"),
+                      prior(normal(5.369435, 1), nlpar = "mid", coef = "Intercept"),
                       prior(normal(1.7576520, 0.8), nlpar = "steep", coef = "Intercept"),
                       prior(normal(0, 1), class = "b", nlpar = "mid", coef = "item_dominance1"),
                       prior(normal(0, 1), class = "b", nlpar = "mid", coef = "frequency"),
                       prior(normal(1.5, 1), dpar = "phi", class = "Intercept")),
             data = dat,
+            file = here("Results", "comp_fit0.Rds"),
             save_all_pars = TRUE,
             save_model = here("Code", "Stan", "comp_fit0.stan"))
 
@@ -76,7 +77,7 @@ fit1 <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - age_b
                          nl = TRUE,
                          family = zero_one_inflated_beta),
             prior = c(prior(normal(0.7857192, 0.1), nlpar = "asym", coef = "Intercept"),
-                      prior(normal(3.497546, 1), nlpar = "mid", coef = "Intercept"),
+                      prior(normal(5.369435, 1), nlpar = "mid", coef = "Intercept"),
                       prior(normal(1.7576520, 0.8), nlpar = "steep", coef = "Intercept"),
                       prior(normal(0, 1), class = "b", nlpar = "mid", coef = "item_dominance1"),
                       prior(normal(0, 1), class = "b", nlpar = "mid", coef = "cognate1"),
@@ -84,11 +85,9 @@ fit1 <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - age_b
                       prior(normal(0, 1), class = "b", nlpar = "mid", coef = "frequency"),
                       prior(normal(1.5, 1), dpar = "phi", class = "Intercept")),
             data = dat,
+            file = here("Results", "comp_fit1.Rds"),
             save_all_pars = TRUE,
             save_model = here("Code", "Stan", "comp_fit1.stan"))
-# export fit
-saveRDS(fit0, here("Results", "comp_fit0.Rds"))
-saveRDS(fit1, here("Results", "comp_fit1.Rds"))
 
 #### extract posterior samples ###################################3
 posterior <- fit1 %>%
@@ -186,34 +185,36 @@ posterior_check <- expand_grid(age_bin = unique(dat$age_bin),
            .draw = as.character(.draw))
 
 posterior_check %>%
-    ggplot(aes(age_bin, proportion, colour = cognate, linetype = item_dominance)) +
-    stat_summary(fun = "median", geom = "line", na.rm = TRUE, size  =1) +
+    mutate(cognate = factor(cognate, levels = c("Non-cognate", "Cognate"), ordered = TRUE)) %>% 
+    mutate(item_dominance = ifelse(item_dominance == "L1", "Dominant language", "Non-dominant language")) %>%  
+    ggplot(aes(age_bin, proportion, colour = cognate, fill = cognate)) +
+    facet_wrap(~item_dominance) +
+    stat_lineribbon(.width = 0.95, alpha = 0.25, colour = "NA", show.legend = FALSE) +
+    stat_summary(fun = "median", geom = "line", na.rm = TRUE, size = 1) +
     labs(x = "Age (months)", y = "Proportion",
          group = "Cognate", linetype = "Dominance", colour = "Cognateness",
          subtitle = "Posterior predictive checks: What does our model predict?",
-         caption = "Lines represent the median of the marginal posterior\ndistribution of fitted values for each condition.") +
+         caption = "Lines represent the median of the marginal posterior distribution of fitted values.\nShaded areas represent 95% credible intervals.") +
     scale_colour_manual(values = c("#44546A", "orange")) +
     scale_fill_manual(values = c("#44546A", "orange")) +
     scale_x_continuous(breaks = seq(1, 11), labels = bins_interest) +
     theme_custom +
     theme(panel.grid.major.y = element_line(colour = "grey", linetype = "dotted"),
-          legend.position = c(0.2, 0.6),
+          legend.position = "top",
           text = element_text(colour = "black"),
           axis.text = element_text(colour = "black"),
+          axis.text.x = element_text(angle = 270, size = 8),
           legend.margin = margin(t = 0.01, b = 0.01),
           legend.title = element_blank(),
           plot.caption = element_text(hjust = 0),
           plot.caption.position = "plot",
           plot.title.position = "plot") +
-    ggsave(here("Figures", "07_gca_comp_posterior-checks.png"), height = 4.7, width = 4.5)
+    ggsave(here("Figures", "07_gca_comp_posterior-checks.png"), width = 4.8, height = 3.5)
 
 #### compare models #########################
-loo0 <- add_criterion(fit0, "loo", file = here("Results", "comp-L1_fit0"))
-loo1 <- add_criterion(fit1, "loo", file = here("Results", "comp-L1_fit1"))
+loo0 <- add_criterion(fit0, "loo", file = here("Results", "comp_fit0"))
+loo1 <- add_criterion(fit1, "loo", file = here("Results", "comp_fit1"))
 loo_comp <- loo_compare(loo0, loo1)
-comp <- list(loo_comp)
 
 #### export results #########################
-fits <- list(fit0, fit1)
-saveRDS(fits, here("Results", "comp_fits.rds"))
-saveRDS(comp, here("Results", "comp_selection.rds"))
+fwrite(posterior, here("Results", "comp_posterior.csv"), sep = ",", dec = ".", rownames = FALSE)
