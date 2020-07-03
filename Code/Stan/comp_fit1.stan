@@ -83,7 +83,7 @@ model {
   }
   // priors including all constants
   target += normal_lpdf(b_asym[1] | 0.7857192, 0.1);
-  target += normal_lpdf(b_mid[1] | 3.497546, 1);
+  target += normal_lpdf(b_mid[1] | 5.369435, 1);
   target += normal_lpdf(b_mid[2] | 0, 1);
   target += normal_lpdf(b_mid[3] | 0, 1);
   target += normal_lpdf(b_mid[4] | 0, 1);
