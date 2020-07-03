@@ -1,4 +1,4 @@
-#### 05_wordbank: compute priors from Worbank data
+#### 05_priors-prod: compute priors from Worbank data
 # Gonzalo García-Castro, gonzalo.garciadecastro@upf.edu
 # Center for Brain and Cognition, Universitat Pompeu Fabra
 
@@ -43,7 +43,7 @@ dat_wordbank <- list.files(here("Data", "Wordbank"), full.names = TRUE) %>%
 # raw data
 dat <- fread(here("Data", "04_prepared.csv")) %>%
   as_tibble() %>% 
-  filter(type=="Comprehensive",
+  filter(type=="Productive",
          lp=="Bilingual") %>%
   select(item, meaning, age_bin, item_dominance, cognate, proportion, frequency) %>%
   mutate(age_bin = as.numeric(factor(age_bin, levels = bins_interest, ordered = TRUE)),
@@ -73,7 +73,7 @@ ggplot(dat_wordbank, aes(x = age_bin, y = proportion)) +
   geom_segment(x = -Inf, xend = Inf, y = asymptote, yend = asymptote, colour = "grey", size = 1) +
   annotate(geom = "text", label = paste0("Asymptote = ", round(asymptote, 2)),
            x = min(dat_wordbank$age_bin), y = asymptote+0.035, size = 4, hjust = 0) +
-    geom_vline(xintercept = x_mid, colour = "grey", size = 1.25) +
+  geom_vline(xintercept = x_mid, colour = "grey", size = 1.25) +
   annotate(geom = "text", label = paste0("Mid-point = ", round(x_mid, 2)*2+16, " months"),
            x = x_mid+0.35, y = 0.15, size = 4, hjust = 0) +
   annotate(geom = "segment", x = x_mid-1.5, xend = x_mid+0.5, y = y_mid-0.05, yend = y_mid+0.17,
@@ -114,7 +114,7 @@ fit_prior <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - 
                               nl = TRUE,
                               family = zero_one_inflated_beta),
                  prior = c(prior(normal(0.7857192, 0.1), nlpar = "asym", coef = "Intercept"),
-                           prior(normal(5.369435, 1), nlpar = "mid", coef = "Intercept"),
+                           prior(normal(6.369435, 1), nlpar = "mid", coef = "Intercept"),
                            prior(normal(1.7576520, 0.8), nlpar = "steep", coef = "Intercept"),
                            prior(normal(0, 1), class = "b", nlpar = "mid", coef = "item_dominance1"),
                            prior(normal(0, 1), class = "b", nlpar = "mid", coef = "cognate1"),
@@ -126,7 +126,7 @@ fit_prior <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - 
                  save_all_pars = TRUE,
                  save_model = here("Code", "Stan", "comp_fit-prior.stan"))
 
-saveRDS(fit_prior, here("Results", "comp_fit-prior.rds"))
+saveRDS(fit_prior, here("Results", "prod_fit-prior.rds"))
 
 #### prior predictive checks ##############################
 
@@ -189,7 +189,7 @@ posterior %>%
         panel.background = element_rect(fill = "transparent"),
         panel.grid.major.y = element_line(colour = "grey"),
         axis.title.y = element_blank()) +
-  ggsave(here("Figures", "05_comp_prior-coefs.png"), height = 5)
+  ggsave(here("Figures", "05_prod_prior-coefs.png"), height = 5)
 
 #### prior predictive checks ###########################
 posterior_check <- expand_grid(age_bin = unique(dat$age_bin),
@@ -222,8 +222,8 @@ posterior_check %>%
         plot.caption = element_text(hjust = 0),
         plot.caption.position = "plot",
         plot.title.position = "plot") +
-  ggsave(here("Figures", "05_comp_prior-checks.png"), height = 4, width = 5)
+  ggsave(here("Figures", "05_prod_prior-checks.png"), height = 4, width = 5)
 
 
 #### export data ###########################
-fwrite(coefs, here("Data", "05_priors-wordbank.csv"), sep = ",", row.names = FALSE)
+fwrite(coefs, here("Data", "05_priors-prod.csv"), sep = ",", row.names = FALSE)

@@ -5,15 +5,11 @@
 #### set up ##############################################
 
 # load packages
-library(tibble)        # for nice data frames
+library(tidyverse)        # for nice data frames
 library(magrittr)      # for using pipes
 library(data.table)    # for importing data
-library(dplyr)         # for manipulating data
-library(stringr)       # for working with character strings
 library(lubridate)     # for working with dates
-library(tidyr)         # for reshaping datasets
 library(readxl)        # for importing Excel spreadsheets
-library(ggplot2)       # for visualising data
 library(here)          # for locating files
 
 # load/create functions

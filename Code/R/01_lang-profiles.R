@@ -12,7 +12,7 @@ library(data.table)    # for importing data
 library(lubridate)     # for working with dates
 library(readxl)        # for importing Excel spreadsheets
 library(ggridges)      # for plotting densities
-library(ggalluvial)
+library(ggalluvial)    # for flow charts
 library(patchwork)     # for arranging plots
 library(here)          # for locating files
 
@@ -26,7 +26,7 @@ breaks <- c(11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33)
 
 ### import data #########################################
 pool <- read_xlsx(here("Data","01_pool.xlsx"))
-studies <- fread(here("Data", "Logs", "studies.csv")) %>% distinct(q_version, language, q_items) 
+studies <- fread(here("Data", "00_studies.csv")) %>% distinct(q_version, language, q_items) 
 logs <- list.files(here("Data", "Logs"), pattern = "logs", full.names = TRUE) %>%
     .[!str_detect(., "summary")] %>%
     last() %>%
@@ -41,12 +41,12 @@ dat <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FA
     as_tibble() %>%
     mutate_at(vars(time_stamp), as_date) %>%
     mutate_at(vars(id_db), as.character) %>%
-    left_join(logs) %>%
+    left_join(logs) 
     mutate(version = factor(version, levels = c("CBC", "BL-Short-A", "BL-Short-B", "BL-Short-C", "BL-Short-D", "BL-Long-1", "BL-Long-2", "DevLex"), ordered = TRUE)) %>%
     left_join(studies, by = c("version" = "q_version", "language")) %>%
     select(-c(id_exp, code)) %>%
     rename(dominance_doe = dominance) %>%
-    drop_na(response) %>%
+    drop_na(response) %>% 
     mutate(response = case_when(response == 1 ~ "no",
                                 response == 2 ~ "understands",
                                 response == 3 ~ "produces",
@@ -71,7 +71,7 @@ dat <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FA
     filter(completed) %>%
     distinct(id_db, language, version, .keep_all = TRUE) %>%
     group_by(id_db, version) %>%
-    mutate(n_lang = length(language)) %>%
+    mutate(n_lang = length(language)) %%
     filter(n_lang > 1,
            lp %in% c("Monolingual", "Bilingual"),
            age_bin %in% bins_interest) %>%

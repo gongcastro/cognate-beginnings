@@ -5,13 +5,8 @@
 #### set up ################################
 
 # load packages
-library(dplyr)
-library(tibble)
-library(tidyr)
-library(stringr)
+library(tidyverse)
 library(lubridate)
-library(ggplot2)
-library(wesanderson)
 library(patchwork)
 library(data.table)
 library(here)

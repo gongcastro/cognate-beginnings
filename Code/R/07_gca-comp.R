@@ -12,8 +12,6 @@ library(brms)
 library(modelr)
 library(janitor)
 library(tidybayes)
-library(ggmcmc)
-library(mcmcplots) 
 library(here)
 
 # create/load functions
