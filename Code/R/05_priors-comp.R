@@ -1,4 +1,4 @@
-#### 05_priors-comp: compute priors from Worbank data
+#### 05_priors-comp: compute priors from Worbank data ####
 # Gonzalo García-Castro, gonzalo.garciadecastro@upf.edu
 # Center for Brain and Cognition, Universitat Pompeu Fabra
 
@@ -133,10 +133,10 @@ posterior <- fit_prior %>%
                b_mid_item_dominance1,
                b_mid_cognate1,
                b_mid_frequency,
-               `b_mid_item_bilingualism:item_dominance1`,
-               `b_mid_item_bilingualism:cognate1`,
+               `b_mid_bilingualism:item_dominance1`,
+               `b_mid_bilingualism:cognate1`,
                `b_mid_item_dominance1:cognate1`,
-               `b_mid_item_bilingualism:item_dominance1:cognate1`,
+               `b_mid_bilingualism:item_dominance1:cognate1`,
                Intercept_phi,
                b_phi_Intercept,
                zoi,
@@ -146,13 +146,13 @@ posterior <- fit_prior %>%
   mutate(.label = case_when(.variable %in% "b_asym_Intercept" ~ "Asymptote\n(Intercept)",
                             .variable %in% "b_steep_Intercept" ~ "Steepness\n(Intercept)",
                             .variable %in% "b_mid_Intercept" ~ "Mid-point\n(Intercept)",
-                            .variable %in% "b_mid_item_bilingualism" ~ "Bilingualism\n(Slope)",
+                            .variable %in% "b_mid_bilingualism" ~ "Bilingualism\n(Slope)",
                             .variable %in% "b_mid_item_dominance1" ~ "Dominance\n(Slope)",
                             .variable %in% "b_mid_cognate1" ~ "Cognateness (Slope)",
                             .variable %in% "b_mid_bilingualism:item_dominance1" ~ "Bilingualism \U000D7 Dominance\n(Slope)",
                             .variable %in% "b_mid_bilingualism:cognate1" ~ "Bilingualism \U000D7 Cognateness\n(Slope)",
                             .variable %in% "b_mid_item_dominance1:cognate1" ~ "Dominance \U000D7 Cognateness\n(Slope)",
-                            .variable %in% "b_mid_item_bilingualism:dominance1:cognate1" ~ "Bilingualism \U000D7 Dominance \U000D7 Cognateness\n(Slope)",
+                            .variable %in% "b_mid_bilingualism:dominance1:cognate1" ~ "Bilingualism \U000D7 Dominance \U000D7 Cognateness\n(Slope)",
                             .variable %in% "b_mid_frequency" ~ "Frequency\n(Slope)",
                             .variable %in% "phi_Intercept" ~ "\U03C6\n(Intercept)",
                             .variable %in% "b_phi_Intercept" ~ "\U03C6\n(Slope)",
@@ -161,7 +161,7 @@ posterior <- fit_prior %>%
                             .variable %in% "sd_meaning__mid_Intercept" ~ "SD Meaning\n(Intercept)",
                             TRUE ~ "Meaning\n(Intercept)"),
          class = case_when(.variable %in% c("b_asym_Intercept", "b_steep_Intercept", "b_mid_Intercept") ~ "Logistic\n(Intercept, fixed)",
-                           .variable %in% c("b_mid_item_dominance1", "b_mid_cognate1", "b_mid_item_dominance1:cognate1", "b_mid_frequency") ~ "Linear",
+                           .variable %in% c("b_mid_bilingualism", "b_mid_item_dominance1", "b_mid_cognate1", "b_mid_bilingualism1:item_dominance1", "b_mid_bilingualism:cognate1",  "b_mid_item_dominance1:cognate1", "b_mid_bilingualism1:item_dominance1:cognate1", "b_mid_frequency") ~ "Linear",
                            .variable %in% c("phi_Intercept", "b_phi_Intercept", "zoi", "coi") ~ "Distributional",
                            TRUE ~ "Random"),
          .chain = factor(.chain, levels = 1:4, ordered = TRUE))
@@ -196,6 +196,7 @@ posterior %>%
 
 #### prior predictive checks ###########################
 posterior_check <- expand_grid(age_bin = unique(dat$age_bin),
+                               bilingualism = seq(0, 1, by = 0.1),
                                item_dominance = c("L2", "L1"),
                                cognate = c("Non-cognate", "Cognate"),
                                frequency = seq_range(dat$frequency, 4)) %>%
@@ -207,9 +208,9 @@ posterior_check <- expand_grid(age_bin = unique(dat$age_bin),
 posterior_check %>%
   ggplot(aes(age_bin, proportion)) +
   stat_summary(fun = "median", geom = "line", na.rm = TRUE, size  =1) +
-  stat_lineribbon(.width = seq(0.5, 0.99, by = 0.1), show.legend = FALSE) +
+  stat_lineribbon(.width = seq(0.5, 0.99, by = 0.1)) +
   labs(x = "Age (months)", y = "Proportion",
-       group = "Cognate", linetype = "Dominance", colour = "Cognateness",
+       group = "Cognate", linetype = "Dominance", colour = "Cognateness", fill = "CrI",
        subtitle = "Posterior predictive checks: What do our priors predict?",
        caption = "Lines represent the median of the marginal posterior\ndistribution of fitted values for each condition.") +
   scale_fill_brewer(palette =  "Oranges") +
@@ -221,7 +222,6 @@ posterior_check %>%
         text = element_text(colour = "black"),
         axis.text = element_text(colour = "black"),
         legend.margin = margin(t = 0.01, b = 0.01),
-        legend.title = element_blank(),
         plot.caption = element_text(hjust = 0),
         plot.caption.position = "plot",
         plot.title.position = "plot") +
