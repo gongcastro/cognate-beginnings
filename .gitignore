@@ -1,8 +1,10 @@
 .Rproj.user
 .Rhistory
 .RData
+.Rproj
 .Ruserdata
 Data/
 Results/
 Figures/
+Communitations/
 .secrets
