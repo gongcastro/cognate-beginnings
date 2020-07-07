@@ -26,14 +26,7 @@ breaks <- c(0, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 1
 #### import data #########################################
 pool <- read_xlsx(here("Data","01_pool.xlsx"))
 studies <- fread(here("Data", "00_studies.csv")) %>% distinct(q_version, language, q_items) 
-logs <- list.files(here("Data", "Logs"), pattern = "logs", full.names = TRUE) %>%
-  .[!str_detect(., "summary")] %>%
-  last() %>%
-  fread(na.strings = "", stringsAsFactors = FALSE) %>%
-  as_tibble() %>%
-  mutate_at(vars(date_sent, time_stamp), as_date) %>%
-  mutate_at(vars(age_bin), factor, levels = bins, ordered = TRUE) %>%
-  mutate_at(vars(id_db), as.character)
+logs <- fread(here("Data", "01_participants.csv"))
 
 dat <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FALSE, na.strings = "") %>%
   as_tibble() %>%

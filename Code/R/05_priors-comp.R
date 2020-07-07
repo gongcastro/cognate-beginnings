@@ -42,11 +42,11 @@ dat_wordbank <- list.files(here("Data", "Wordbank"), full.names = TRUE) %>%
 # raw data
 dat <- fread(here("Data", "04_prepared.csv")) %>%
   as_tibble() %>% 
-  filter(type=="Comprehensive",
-         lp=="Bilingual") %>%
-  select(item, meaning, age_bin, item_dominance, cognate, proportion, frequency) %>%
+  filter(type=="Comprehensive") %>%
+  select(item, meaning, age_bin, bilingualism, item_dominance, cognate, proportion, frequency) %>%
   mutate(age_bin = as.numeric(factor(age_bin, levels = bins_interest, ordered = TRUE)),
          item_dominance = as.factor(item_dominance),
+         bilingualism = scale(bilingualism)[,1],
          frequency = scale(frequency)[,1],
          cognate = as.factor(cognate)) %>%
   arrange(item, meaning, age_bin)
@@ -105,7 +105,7 @@ ggplot(dat_wordbank, aes(x = age_bin, y = proportion)) +
 #### sample prior ###########################################
 fit_prior <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - age_bin) * exp(steep))),
                               asym ~ 1,
-                              mid ~ 1 + item_dominance*cognate + frequency + (1 | meaning),
+                              mid ~ 1 + bilingualism*item_dominance*cognate + frequency + (1 | meaning),
                               steep ~ 1, 
                               phi ~ 1,
                               nl = TRUE,
@@ -113,10 +113,7 @@ fit_prior <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - 
                  prior = c(prior(normal(0.7857192, 0.1), nlpar = "asym", coef = "Intercept"),
                            prior(normal(5.369435, 1), nlpar = "mid", coef = "Intercept"),
                            prior(normal(1.7576520, 0.8), nlpar = "steep", coef = "Intercept"),
-                           prior(normal(0, 1), class = "b", nlpar = "mid", coef = "item_dominance1"),
-                           prior(normal(0, 1), class = "b", nlpar = "mid", coef = "cognate1"),
-                           prior(normal(0, 1), class = "b", nlpar = "mid", coef = "item_dominance1:cognate1"),
-                           prior(normal(0, 1), class = "b", nlpar = "mid", coef = "frequency"),
+                           prior(normal(0, 1), class = "b", nlpar = "mid"),
                            prior(normal(1.5, 1), dpar = "phi", class = "Intercept")),
                  data = dat,
                  silent = FALSE,
@@ -132,10 +129,14 @@ posterior <- fit_prior %>%
   gather_draws(b_asym_Intercept,
                b_steep_Intercept,
                b_mid_Intercept,
+               b_mid_bilingualism,
                b_mid_item_dominance1,
                b_mid_cognate1,
                b_mid_frequency,
+               `b_mid_item_bilingualism:item_dominance1`,
+               `b_mid_item_bilingualism:cognate1`,
                `b_mid_item_dominance1:cognate1`,
+               `b_mid_item_bilingualism:item_dominance1:cognate1`,
                Intercept_phi,
                b_phi_Intercept,
                zoi,
@@ -145,9 +146,13 @@ posterior <- fit_prior %>%
   mutate(.label = case_when(.variable %in% "b_asym_Intercept" ~ "Asymptote\n(Intercept)",
                             .variable %in% "b_steep_Intercept" ~ "Steepness\n(Intercept)",
                             .variable %in% "b_mid_Intercept" ~ "Mid-point\n(Intercept)",
+                            .variable %in% "b_mid_item_bilingualism" ~ "Bilingualism\n(Slope)",
                             .variable %in% "b_mid_item_dominance1" ~ "Dominance\n(Slope)",
                             .variable %in% "b_mid_cognate1" ~ "Cognateness (Slope)",
+                            .variable %in% "b_mid_bilingualism:item_dominance1" ~ "Bilingualism \U000D7 Dominance\n(Slope)",
+                            .variable %in% "b_mid_bilingualism:cognate1" ~ "Bilingualism \U000D7 Cognateness\n(Slope)",
                             .variable %in% "b_mid_item_dominance1:cognate1" ~ "Dominance \U000D7 Cognateness\n(Slope)",
+                            .variable %in% "b_mid_item_bilingualism:dominance1:cognate1" ~ "Bilingualism \U000D7 Dominance \U000D7 Cognateness\n(Slope)",
                             .variable %in% "b_mid_frequency" ~ "Frequency\n(Slope)",
                             .variable %in% "phi_Intercept" ~ "\U03C6\n(Intercept)",
                             .variable %in% "b_phi_Intercept" ~ "\U03C6\n(Slope)",
