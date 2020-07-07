@@ -32,18 +32,27 @@ dat <- list.files(here("Data", "Logs"), pattern = "logs", full.names = TRUE) %>%
            doe = ifelse(dominance=="Spanish", doe_spanish, doe_catalan),
            lp = ifelse(!between(doe, 50, 100, incbounds = TRUE), "Other", lp),
            lp = factor(lp, levels = c("Monolingual", "Bilingual"))) %>%
-    drop_na(lp)
-    
-#### visualise dates #######################
+    rowwise() %>% 
+    mutate(bilingualism = ifelse(
+        dominance %in% "Spanish",
+        1-(abs((doe_spanish-doe_catalan)/(doe_spanish+doe_catalan))),
+        1-(abs((doe_catalan-doe_spanish)/(doe_spanish+doe_catalan))))
+    ) %>% 
+    drop_na(lp) %>% 
+    filter(completed, age_bin %in% bins_interest) 
+
+#### export data ##########################
+fwrite(dat, here("Data", "01_participants.csv"), sep = ",", dec = ".", row.names = FALSE)
+
+#### visualise data #######################
+# distribution across ages
 samples <- dat %>% 
-    filter(completed, lp %in% "Bilingual", age_bin %in% bins_interest) %>% 
     group_by(lp, dominance, age_bin) %>%
     summarise(n = n(), .groups = "drop") %>%
     group_by(age_bin, lp) %>%
     mutate(y = ifelse(dominance=="Catalan", sum(n), n))
 
 dat %>%
-    filter(completed, lp %!in% "Other", age_bin %in% bins_interest) %>%
     ggplot(aes(x = age_bin, fill = dominance)) +
     geom_bar() +
     labs(x = "Age (months)", y = "Number of partcipants",
@@ -56,3 +65,17 @@ dat %>%
           axis.text = element_text(colour = "black"),
           panel.grid.major.y = element_line(colour = "grey", linetype = "dotted")) +
     ggsave(here("Figures", "01_logs-distribution.png"), height = 4, width = 5)
+
+# distribution across profiles
+dat %>%
+    ggplot(aes(x = age_bin, y = bilingualism)) +
+    stat_bin_2d(binwidth = 0.10, na.rm = TRUE) +
+    labs(x = "Age (months)", y = "Bilingualism score\n(DoE1-DoE2)/(DoE1+DoE2)",
+         fill = "Participants") +
+    theme_custom +
+    theme(legend.position = "top",
+          panel.background = element_rect(fill = "white"),
+          axis.text = element_text(colour = "black"),
+          panel.grid = element_blank()) +
+    ggsave(here("Figures", "01_logs-distribution.png"), height = 4, width = 5)
+    

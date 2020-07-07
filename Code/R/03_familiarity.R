@@ -36,6 +36,11 @@ dat <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FA
          lp = ifelse(!between(doe, 50, 100, incbounds = TRUE), "Other", lp),
          lp = factor(lp, levels = c("Monolingual", "Bilingual")),
          age_bin = factor(cut(age, breaks = breaks, labels = bins), levels = bins, ordered = TRUE)) %>%
+  rowwise() %>% 
+  mutate(bilingualism = ifelse(dominance %in% "Spanish",
+                               1-abs((doe_spanish-doe_catalan)/(doe_spanish+doe_catalan)),
+                               1-abs((doe_catalan-doe_spanish)/(doe_spanish+doe_catalan)))) %>% 
+  ungroup() %>% 
   filter(lp %in% c("Monolingual", "Bilingual"),
          age_bin %in% bins_interest) %>%
   select(-response) %>%
@@ -43,7 +48,7 @@ dat <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FA
   mutate(type = ifelse(type=="understands", "Comprehensive", "Productive")) %>%
   arrange(item, lp, item_dominance, age_bin) %>%
   # aggregate data
-  group_by(item, lp, age_bin, item_dominance, type) %>%
+  group_by(item, lp, bilingualism, age_bin, item_dominance, type) %>%
   summarise(n = sum(!is.na(response)),
             successes = sum(response, na.rm = TRUE),
             proportion = mean(response, na.rm = TRUE),
@@ -62,7 +67,6 @@ dat <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FA
 fwrite(dat, here("Data", "03_familiarity.csv"), sep = ",", dec = ".", row.names = FALSE)
 
 #### visualise data ##########################################
-
 ggplot(dat, aes(age_bin, proportion, group = cognate, colour = cognate, fill = cognate)) +
   facet_grid(item_dominance~type~lp) +
   geom_smooth(method = "lm", formula = y ~ splines::bs(x, 3)) +
@@ -76,3 +80,15 @@ ggplot(dat, aes(age_bin, proportion, group = cognate, colour = cognate, fill = c
         legend.position = "top") +
   ggsave(here("Figures", "03_familiarity.png"), height = 8, width = 10)
   
+# by lang profile
+ggplot(dat, aes(bilingualism, proportion, group = cognate, colour = cognate, fill = cognate)) +
+  facet_grid(item_dominance~type) +
+  stat_summary(fun = "mean", geom = "point", size = 0.5, na.rm = TRUE, alpha = 0.5) +
+  geom_smooth(method = "lm", formula = y ~ splines::bs(x, 2)) +
+  labs(x = "Bilingualism", y = "Proportion", colour = "Cognateness", fill = "Cognateness") +
+  scale_colour_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1") +
+  theme_custom +
+  theme(legend.title = element_blank(),
+        legend.position = "top") +
+  ggsave(here("Figures", "03_familiarity.png"), height = 8, width = 10)
