@@ -86,6 +86,8 @@ model {
   target += normal_lpdf(b_mid[1] | 5.369435, 1);
   target += normal_lpdf(b_mid[2] | 0, 1);
   target += normal_lpdf(b_mid[3] | 0, 1);
+  target += normal_lpdf(b_mid[4] | 0, 1);
+  target += normal_lpdf(b_mid[5] | 0, 1);
   target += normal_lpdf(b_steep[1] | 1.757652, 0.8);
   target += normal_lpdf(Intercept_phi | 1.5, 1);
   target += beta_lpdf(zoi | 1, 1);

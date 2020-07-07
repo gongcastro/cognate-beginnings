@@ -13,7 +13,7 @@ library(readxl)        # for importing Excel spreadsheets
 library(here)          # for locating files
 
 # load/create functions
-source(here("R", "functions.R"))
+source(here("Code", "R", "functions.R"))
 
 # set params
 bins          <- c("< 10", "10-12", "12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34", "34-36", "36-38", "38-40", "> 40")
@@ -33,7 +33,7 @@ dat <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FA
          understands = response %in% c("understands", "produces"),
          produces = response %in% "produces",
          doe = ifelse(dominance=="Spanish", doe_spanish, doe_catalan),
-         lp = ifelse(!between(doe, 50, 100, incbounds = TRUE), "Other", lp),
+         lp = ifelse(!data.table::between(doe, 50, 100,incbounds = TRUE), "Other", lp),
          lp = factor(lp, levels = c("Monolingual", "Bilingual")),
          age_bin = factor(cut(age, breaks = breaks, labels = bins), levels = bins, ordered = TRUE)) %>%
   rowwise() %>% 
