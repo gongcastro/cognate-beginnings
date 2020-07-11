@@ -11,6 +11,7 @@ library(truncnorm)
 library(brms)
 library(modelr)
 library(janitor)
+library(rayshader)
 library(tidybayes)
 library(here)
 
@@ -49,14 +50,15 @@ fit_prior <- readRDS(here("Results", "comp_fit-prior.rds"))
 fit0 <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - age_bin) * exp(steep))),
                          asym ~ 1,
                          mid ~ 1 + bilingualism*item_dominance + frequency + (1 | meaning),
-                         steep ~ 1, 
+                         steep ~ 1 + bilingualism*item_dominance + frequency + (1 | meaning),
                          phi ~ 1,
                          nl = TRUE,
                          family = zero_one_inflated_beta),
-            prior = c(prior(normal(0.7857192, 0.1), nlpar = "asym", coef = "Intercept"),
-                      prior(normal(5.369435, 1), nlpar = "mid", coef = "Intercept"),
-                      prior(normal(1.7576520, 0.8), nlpar = "steep", coef = "Intercept"),
+            prior = c(prior(normal(0.7857192, 5), nlpar = "asym", coef = "Intercept"),
+                      prior(normal(5.369435, 5), nlpar = "mid", coef = "Intercept"),
+                      prior(normal(1.7576520, 5), nlpar = "steep", coef = "Intercept"),
                       prior(normal(0, 1), class = "b", nlpar = "mid"),
+                      prior(normal(0, 1), class = "b", nlpar = "steep"),
                       prior(normal(1.5, 1), dpar = "phi", class = "Intercept")),
             data = dat,
             file = here("Results", "comp_fit0.Rds"),
@@ -67,7 +69,7 @@ fit0 <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - age_b
 fit1 <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - age_bin) * exp(steep))),
                          asym ~ 1,
                          mid ~ 1 + bilingualism*item_dominance*cognate + frequency + (1 | meaning),
-                         steep ~ 1, 
+                         steep ~ 1 + bilingualism*item_dominance*cognate + frequency + (1 | meaning),
                          phi ~ 1,
                          nl = TRUE,
                          family = zero_one_inflated_beta),
@@ -75,6 +77,7 @@ fit1 <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - age_b
                       prior(normal(5.369435, 1), nlpar = "mid", coef = "Intercept"),
                       prior(normal(1.7576520, 0.8), nlpar = "steep", coef = "Intercept"),
                       prior(normal(0, 1), class = "b", nlpar = "mid"),
+                      prior(normal(0, 1), class = "b", nlpar = "steep"),
                       prior(normal(1.5, 1), dpar = "phi", class = "Intercept")),
             data = dat,
             file = here("Results", "comp_fit1.Rds"),
@@ -94,15 +97,26 @@ posterior <- fit1 %>%
                  `b_mid_bilingualism:cognate1`,
                  `b_mid_item_dominance1:cognate1`,
                  `b_mid_bilingualism:item_dominance1:cognate1`,
+                 r_meaning__mid[meaning, term],
+                 sd_meaning__mid_Intercept,
+                 b_steep_bilingualism,
+                 b_steep_item_dominance1,
+                 b_steep_cognate1,
+                 b_steep_frequency,
+                 `b_steep_bilingualism:item_dominance1`,
+                 `b_steep_bilingualism:cognate1`,
+                 `b_steep_item_dominance1:cognate1`,
+                 `b_steep_bilingualism:item_dominance1:cognate1`,
+                 r_meaning__steep[meaning, term],
+                 sd_meaning__steep_Intercept,
                  Intercept_phi,
                  b_phi_Intercept,
                  zoi,
                  coi,
-                 r_meaning__mid[meaning, term],
-                 sd_meaning__mid_Intercept) %>% 
-    mutate(.label = case_when(.variable %in% "b_asym_Intercept" ~ "Asymptote",
-                              .variable %in% "b_steep_Intercept" ~ "Steepness",
-                              .variable %in% "b_mid_Intercept" ~ "Mid-point",
+                 ) %>% 
+    mutate(.label = case_when(.variable %in% "b_asym_Intercept" ~ "Asymptote (Intercept)",
+                              .variable %in% "b_steep_Intercept" ~ "Steepness (Intercept)",
+                              .variable %in% "b_mid_Intercept" ~ "Mid-point (Intercept)",
                               .variable %in% "b_mid_bilingualism" ~ "Bilingualism",
                               .variable %in% "b_mid_item_dominance1" ~ "Dominance",
                               .variable %in% "b_mid_cognate1" ~ "Cognateness",
@@ -111,16 +125,30 @@ posterior <- fit1 %>%
                               .variable %in% "b_mid_item_dominance1:cognate1" ~ "Dominance \U000D7 Cognateness",
                               .variable %in% "b_mid_bilingualism:item_dominance1:cognate1" ~ "Bilingualism \U000D7 Dominance \U000D7 Cognateness",
                               .variable %in% "b_mid_frequency" ~ "Frequency",
+                              .variable %in% "r_meaning__mid" ~ "SD Meaning (Intercept)",
+                              .variable %in% "sd_meaning__mid_Intercept" ~ "SD Meaning (Intercept)",
+                              
+                              .variable %in% "b_steep_Intercept" ~ "Mid-point",
+                              .variable %in% "b_steep_bilingualism" ~ "Bilingualism",
+                              .variable %in% "b_steep_item_dominance1" ~ "Dominance",
+                              .variable %in% "b_steep_cognate1" ~ "Cognateness",
+                              .variable %in% "b_steep_bilingualism:item_dominance1" ~ "Bilingualism \U000D7 Dominance",
+                              .variable %in% "b_steep_bilingualism:cognate1" ~ "Bilingualism \U000D7 Cognateness",
+                              .variable %in% "b_steep_item_dominance1:cognate1" ~ "Dominance \U000D7 Cognateness",
+                              .variable %in% "b_steep_bilingualism:item_dominance1:cognate1" ~ "Bilingualism \U000D7 Dominance \U000D7 Cognateness",
+                              .variable %in% "b_steep_frequency" ~ "Frequency",
+                              .variable %in% "r_meaning__steep" ~ "SD Meaning (Intercept)",
+                              .variable %in% "sd_meaning__steep_Intercept" ~ "SD Meaning (Intercept)",
+                              
                               .variable %in% "phi_Intercept" ~ "\U03C6 (Intercept)",
                               .variable %in% "b_phi_Intercept" ~ "\U03C6 (Slope)",
                               .variable %in% "zoi" ~ "ZOI",
                               .variable %in% "coi" ~ "COI",
-                              .variable %in% "sd_meaning__mid_Intercept" ~ "SD Meaning\n",
-                              TRUE ~ "Meaning)"),
-           class = case_when(.label %in% c("Asymptote)", "Steepness", "Mid-point") ~ "Shape parameter",
-                             .label %in% c("Bilingualism", "Dominance", "Cognateness",  "Bilingualism \U000D7 Dominance",  "Bilingualism \U000D7 Cognateness", "Dominance \U000D7 Cognateness", "Dominance \U000D7 Cognateness",  "Bilingualism \U000D7 Dominance \U000D7 Cognateness", "Frequency") ~ "Mid-point generator",
-                             .label %in% c("\U03C6 (Intercept)", "\U03C6 (Slope)", "ZOI", "COI") ~ "Distributional",
-                             TRUE ~ "Random"),
+                              TRUE ~ "Meaning (Intercept)"),
+           class = case_when(.variable %in% c("b_asym_Intercept") ~ "Asymptote",
+                             str_detect(.variable, "mid") ~ "Mid-point",
+                             str_detect(.variable, "steep") ~ "Steepness",
+                             .variable %in% c("phi_Intercept", "b_phi_Intercept", "zoi", "coi") ~ "Distributional"),
            .chain = factor(.chain, levels = 1:4, ordered = TRUE))
 
 
@@ -128,27 +156,30 @@ posterior <- fit1 %>%
 
 # traceplot: If convergence is good, plots should look like funny fat catterpillars
 ggplot(posterior, aes(.iteration, .value, colour = .chain)) +
-    facet_wrap(~.label, scales = "free") +
+    facet_wrap(class~.label, scales = "free") +
     geom_line(alpha = 0.7) +
     labs(x = "Iteration", y = "Value", colour = "Chain") +
     scale_colour_brewer(palette = "Oranges") +
     theme_custom +
     theme(legend.position = "top") +
-    ggsave(here("Figures", "07_gca_comp-convergence.png"), height = 6, width = 7)
+    ggsave(here("Figures", "07_gca_comp-convergence.png"), height = 12, width = 12)
 
 #### coefficients ##############################################
 intervals <- posterior %>% 
-    filter(.variable %in% c("b_mid_bilingualism", "b_mid_item_dominance1", "b_mid_cognate1", "b_mid_bilingualism:item_dominance1", "b_mid_bilingualism:cognate1", "b_mid_item_dominance1:cognate1", "b_mid_bilingualism:item_dominance1:cognate1", "b_mid_frequency")) %>% 
-    group_by(class, .variable, .label) %>%
+    filter(.variable %in% c("b_mid_bilingualism", "b_mid_item_dominance1", "b_mid_cognate1", "b_mid_bilingualism:item_dominance1", "b_mid_bilingualism:cognate1", "b_mid_item_dominance1:cognate1", "b_mid_bilingualism:item_dominance1:cognate1", "b_mid_frequency",
+                            "b_steep_bilingualism", "b_steep_item_dominance1", "b_steep_cognate1", "b_steep_bilingualism:item_dominance1", "b_steep_bilingualism:cognate1", "b_steep_item_dominance1:cognate1", "b_steep_bilingualism:item_dominance1:cognate1", "b_steep_frequency")) %>% 
+    group_by(class, .variable, .label) %>% 
     mean_qi(.value, .width = c(0.95, 0.89, 0.50)) %>% 
     mutate(.label = factor(.label, levels = c("Frequency", "Bilingualism", "Dominance", "Cognateness", "Bilingualism \U000D7 Dominance", "Bilingualism \U000D7 Cognateness", "Dominance \U000D7 Cognateness", "Bilingualism \U000D7 Dominance \U000D7 Cognateness"), ordered = TRUE)) 
     
 
 posterior %>%
-    filter(.variable %in% c("b_mid_bilingualism", "b_mid_item_dominance1", "b_mid_cognate1", "b_mid_bilingualism:item_dominance1", "b_mid_bilingualism:cognate1", "b_mid_item_dominance1:cognate1", "b_mid_bilingualism:item_dominance1:cognate1", "b_mid_frequency")) %>% 
+    filter(.variable %in% c("b_mid_bilingualism", "b_mid_item_dominance1", "b_mid_cognate1", "b_mid_bilingualism:item_dominance1", "b_mid_bilingualism:cognate1", "b_mid_item_dominance1:cognate1", "b_mid_bilingualism:item_dominance1:cognate1", "b_mid_frequency",
+                            "b_steep_bilingualism", "b_steep_item_dominance1", "b_steep_cognate1", "b_steep_bilingualism:item_dominance1", "b_steep_bilingualism:cognate1", "b_steep_item_dominance1:cognate1", "b_steep_bilingualism:item_dominance1:cognate1", "b_steep_frequency")) %>%
     mutate(.label = factor(.label, levels = c("Frequency", "Bilingualism", "Dominance", "Cognateness", "Bilingualism \U000D7 Dominance", "Bilingualism \U000D7 Cognateness", "Dominance \U000D7 Cognateness", "Bilingualism \U000D7 Dominance \U000D7 Cognateness"), ordered = TRUE)) %>% 
     ggplot(aes(x = .value, y = as.factor(.label))) +
-    stat_slab(fill = "#44546A", colour = NA, show.legend = FALSE) +
+    facet_wrap(~class) +
+    stat_slabh(fill = "#44546A", colour = NA, show.legend = FALSE) +
     geom_intervalh(data = intervals, position = position_nudge(y = -0.2), alpha = 0.7) +
     geom_vline(xintercept = 0, linetype = "dotted") +
     annotate(geom = "text", x = 2, y = 8.5, label = "Increases AoA", size = 3) +
@@ -157,8 +188,7 @@ posterior %>%
     annotate(geom = "segment", x = -3.5, xend = -3, y = 8.5, yend = 8.5, arrow = arrow(ends = "first", length = unit(0.1, units = "cm"))) +
     labs(x = "Estimate", y = "Parameter",
          fill = "Credible Interval", colour = "Credible Interval",
-         subtitle = "Model coefficients: What is the contribution of each predictor?",
-         caption = "Fixed coefficients of the extended model (M1). Contrasts were sum-coded.\nFrequency scores were extracted from SUBTLEX-ESP [5] and SUBTLEX-CAT [6]") +
+         subtitle = "Model coefficients: What is the contribution of each predictor?") +
     scale_fill_manual(values = c("#44546A", "orange")) +
     scale_colour_brewer(palette = "YlOrBr") +
     theme_custom +
@@ -170,7 +200,7 @@ posterior %>%
           panel.background = element_rect(fill = "transparent"),
           panel.grid.major.y = element_line(colour = "grey"),
           axis.title.y = element_blank()) +
-    ggsave(here("Figures", "07_gca_comp-coefs.png"), width = 6, height = 4)
+    ggsave(here("Figures", "07_gca_comp-coefs.png"), width = 10, height = 5)
 
 #### posterior predictive checks ##############################
 
@@ -180,14 +210,14 @@ posterior_check <- expand_grid(age_bin = unique(dat$age_bin),
                                cognate = c("Non-cognate", "Cognate"),
                                frequency = seq_range(dat$frequency, 4)) %>%
     add_fitted_draws(model = fit1, n = 100, value = "proportion", scale = "linear", re_formula = NA) %>% 
-    ungroup() %>%
-    mutate(bilingualism = cut(bilingualism, breaks = seq_range(dat$bilingualism, 3), labels = paste("Bilingualism:", c("Below median", "Above median")), include.lowest = FALSE),
-           frequency = cut(frequency, breaks = seq_range(dat$frequency, 5), labels = paste("Frequency:", c("Q1", "Q2", "Q3", "Q4")), include.lowest = TRUE),
-           .draw = as.character(.draw))
+    ungroup()
 
 posterior_check %>%
-    mutate(cognate = factor(cognate, levels = c("Non-cognate", "Cognate"), ordered = TRUE)) %>% 
-    mutate(item_dominance = ifelse(item_dominance == "L1", "Dominant language", "Non-dominant language")) %>%  
+    mutate(cognate = factor(cognate, levels = c("Non-cognate", "Cognate"), ordered = TRUE),
+           item_dominance = ifelse(item_dominance == "L1", "Dominant language", "Non-dominant language"),
+           bilingualism = cut_interval(bilingualism, n = 2, labels = c("Bilingualism below median", "Bilingualism above median")),
+           frequency = cut(frequency, breaks = seq_range(dat$frequency, 5), labels = paste("Frequency:", c("Q1", "Q2", "Q3", "Q4")), include.lowest = TRUE),
+           .draw = as.character(.draw)) %>%  
     ggplot(aes(age_bin, proportion, colour = cognate, fill = cognate)) +
     facet_grid(item_dominance~bilingualism) +
     stat_lineribbon(.width = 0.95, alpha = 0.25, colour = "NA", show.legend = FALSE) +
@@ -211,6 +241,19 @@ posterior_check %>%
           plot.caption.position = "plot",
           plot.title.position = "plot") +
     ggsave(here("Figures", "07_gca_comp_posterior-checks.png"), width = 4.8, height = 4.8)
+
+# 3D graph
+plot_heatmap <- posterior_check %>%
+    mutate(cognate = factor(cognate, levels = c("Non-cognate", "Cognate"), ordered = TRUE)) %>% 
+    mutate(item_dominance = ifelse(item_dominance == "L1", "Dominant language", "Non-dominant language")) %>%  
+    ggplot(aes(age_bin, bilingualism, fill = proportion)) +
+    facet_wrap(cognate~item_dominance) +
+    geom_raster() +
+    scale_fill_gradient(low = "pink", high = "red")
+
+plot_gg(plot_heatmap, width = 4, zoom = 0.60, theta = -45, phi = 30,
+        windowsize = c(1400, 866))
+render_snapshot(clear = TRUE)
 
 #### compare models #########################
 loo0 <- add_criterion(fit0, "loo", file = here("Results", "comp_fit0"))

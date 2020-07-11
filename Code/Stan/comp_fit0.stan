@@ -40,6 +40,12 @@ data {
   int<lower=1> J_1[N];  // grouping indicator per observation
   // group-level predictor values
   vector[N] Z_1_mid_1;
+  // data for group-level effects of ID 2
+  int<lower=1> N_2;  // number of grouping levels
+  int<lower=1> M_2;  // number of coefficients per level
+  int<lower=1> J_2[N];  // grouping indicator per observation
+  // group-level predictor values
+  vector[N] Z_2_steep_1;
   int prior_only;  // should the likelihood be ignored?
 }
 transformed data {
@@ -53,10 +59,14 @@ parameters {
   real<lower=0,upper=1> coi;  // conditional one-inflation probability
   vector<lower=0>[M_1] sd_1;  // group-level standard deviations
   vector[N_1] z_1[M_1];  // standardized group-level effects
+  vector<lower=0>[M_2] sd_2;  // group-level standard deviations
+  vector[N_2] z_2[M_2];  // standardized group-level effects
 }
 transformed parameters {
   vector[N_1] r_1_mid_1;  // actual group-level effects
+  vector[N_2] r_2_steep_1;  // actual group-level effects
   r_1_mid_1 = (sd_1[1] * (z_1[1]));
+  r_2_steep_1 = (sd_2[1] * (z_2[1]));
 }
 model {
   // initialize linear predictor term
@@ -74,6 +84,10 @@ model {
     nlp_mid[n] += r_1_mid_1[J_1[n]] * Z_1_mid_1[n];
   }
   for (n in 1:N) {
+    // add more terms to the linear predictor
+    nlp_steep[n] += r_2_steep_1[J_2[n]] * Z_2_steep_1[n];
+  }
+  for (n in 1:N) {
     // apply the inverse link function
     phi[n] = exp(phi[n]);
   }
@@ -89,12 +103,19 @@ model {
   target += normal_lpdf(b_mid[4] | 0, 1);
   target += normal_lpdf(b_mid[5] | 0, 1);
   target += normal_lpdf(b_steep[1] | 1.757652, 0.8);
+  target += normal_lpdf(b_steep[2] | 0, 1);
+  target += normal_lpdf(b_steep[3] | 0, 1);
+  target += normal_lpdf(b_steep[4] | 0, 1);
+  target += normal_lpdf(b_steep[5] | 0, 1);
   target += normal_lpdf(Intercept_phi | 1.5, 1);
   target += beta_lpdf(zoi | 1, 1);
   target += beta_lpdf(coi | 1, 1);
   target += student_t_lpdf(sd_1 | 3, 0, 2.5)
     - 1 * student_t_lccdf(0 | 3, 0, 2.5);
   target += std_normal_lpdf(z_1[1]);
+  target += student_t_lpdf(sd_2 | 3, 0, 2.5)
+    - 1 * student_t_lccdf(0 | 3, 0, 2.5);
+  target += std_normal_lpdf(z_2[1]);
   // likelihood including all constants
   if (!prior_only) {
     for (n in 1:N) {
