@@ -7,7 +7,6 @@
 # load packages
 library(tidyverse)
 library(data.table)
-library(truncnorm)
 library(brms)
 library(modelr)
 library(janitor)
@@ -20,32 +19,30 @@ source(here("Code", "R", "functions.R"))
 # set params
 set.seed(888)
 bins_interest <- c("12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34")
-options(contrasts = c("contr.sum", "contr.poly"))
 
 #### import data ##########################################
 dat <- fread(here("Data", "04_prepared.csv")) %>%
     as_tibble() %>% 
     filter(type=="Comprehensive",
            item_dominance=="L2") %>%
-    select(item, meaning, category, age_bin, bilingualism, cognate, proportion) %>%
+    select(item, meaning, category, age_bin, sex, bilingualism, cognate, proportion) %>%
     mutate(age_bin = as.numeric(factor(age_bin, levels = bins_interest, ordered = TRUE))-1,
            bilingualism = scale(bilingualism)[,1],
-           cognate = as.factor(cognate)) %>%
+           cognate = as.factor(cognate),
+           sex = factor(sex, levels = c("Female", "Male"))) %>%
     arrange(item, meaning, age_bin)
 
 contrasts(dat$cognate) <- contr.sum(c("Non-cognate", "Cognate"))/2
+contrasts(dat$sex) <- contr.sum(c("Female", "Male"))/2
 
 dat_priors <- fread(here("Data", "05_priors-wordbank.csv")) %>%
     mutate(estimate_scaled = (estimate_scaled-14)/2)
 
 #### fit models ###########################################
 
-# load in case models are already fitted
-fit_prior <- readRDS(here("Results", "comp_fit-prior.rds"))
-
 # set priors 
 priors <- c(prior(normal(0.7857192, 0.1), nlpar = "asym", coef = "Intercept"),
-            prior(normal(5.369435, 1), nlpar = "mid", coef = "Intercept"),
+            prior(normal(4.369435, 1), nlpar = "mid", coef = "Intercept"),
             prior(normal(1.7576520, 0.8), nlpar = "steep", coef = "Intercept"),
             prior(normal(0, 5), class = "b", nlpar = "mid"),
             prior(normal(1.5, 1), dpar = "phi", class = "Intercept"),
@@ -55,7 +52,7 @@ priors <- c(prior(normal(0.7857192, 0.1), nlpar = "asym", coef = "Intercept"),
 # model 0
 fit0 <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - age_bin) * exp(steep))),
                          asym ~ 1,
-                         mid ~ 1 + bilingualism + (1 | meaning),
+                         mid ~ 1 + bilingualism + sex + (1 | meaning),
                          steep ~ 1,
                          phi ~ 1,
                          nl = TRUE,
@@ -64,7 +61,7 @@ fit0 <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - age_b
             data = dat,
             chains = 1,
             iter = 4000,
-            cores = 
+            cores = parallel::detectCores(),
             file = here("Results", "comp_fit0.rds"),
             save_model = here("Code", "Stan", "comp_fit0.stan"),
             control = list(adapt_delta = 0.95, max_treedepth = 15))
@@ -72,7 +69,7 @@ fit0 <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - age_b
 # model 1
 fit1 <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - age_bin) * exp(steep))),
                          asym ~ 1,
-                         mid ~ 1 + bilingualism*cognate + (1 | meaning),
+                         mid ~ 1 + bilingualism*cognate + sex + (1 | meaning),
                          steep ~ 1,
                          phi ~ 1,
                          nl = TRUE,
@@ -81,6 +78,7 @@ fit1 <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - age_b
             data = dat,
             chains = 1,
             iter = 4000,
+            cores = parallel::detectCores(),
             file = here("Results", "comp_fit1.rds"),
             save_model = here("Code", "Stan", "comp_fit1.stan"),
             control = list(adapt_delta = 0.95, max_treedepth = 15))
