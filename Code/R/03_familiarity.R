@@ -48,7 +48,7 @@ dat <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FA
   mutate(type = ifelse(type=="understands", "Comprehensive", "Productive")) %>%
   arrange(item, lp, item_dominance, age_bin) %>%
   # aggregate data
-  group_by(item, lp, bilingualism, age_bin, item_dominance, type) %>%
+  group_by(item, sex, lp, bilingualism, age_bin, item_dominance, type) %>%
   summarise(n = sum(!is.na(response)),
             successes = sum(response, na.rm = TRUE),
             proportion = mean(response, na.rm = TRUE),
