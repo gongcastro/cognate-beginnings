@@ -47,3 +47,20 @@ theme_custom <- theme(panel.background = element_rect(fill = "transparent"),
                       legend.background = element_rect(fill = "transparent"),
                       legend.key = element_rect(colour = "transparent", fill = "transparent")
 )
+
+pred_labels <- function(x){
+  require(dplyr)
+  case_when({{ x }} %in% "b_asym_Intercept" ~ "Asymptote (Intercept)",
+            {{ x }} %in% "b_steep_Intercept" ~ "Steepness (Intercept)",
+            {{ x }} %in% "b_mid_Intercept" ~ "Mid-point (Intercept)",
+            {{ x }} %in% "b_mid_bilingualism" ~ "Bilingualism (Slope)",
+            {{ x }} %in% "b_mid_cognate1" ~ "Cognateness (Slope)",
+            {{ x }} %in% "b_mid_bilingualism:cognate1" ~ "Bilingualism \U000D7 Cognateness",
+            {{ x }} %in% "sd_meaning__mid_Intercept" ~ "SD TE (Intercept)",
+            {{ x }} %in% "sd_meaning__mid_cognate1" ~ "SD TE-Cognateness (Slope)",
+            
+            {{ x }} %in% "phi_Intercept" ~ "\U03C6 (Intercept)",
+            {{ x }} %in% "b_phi_Intercept" ~ "\U03C6 (Slope)",
+            {{ x }} %in% "zoi" ~ "ZOI",
+            {{ x }} %in% "coi" ~ "COI")
+}
