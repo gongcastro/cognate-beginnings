@@ -23,7 +23,7 @@ dat_familiarity <- fread(here("Data", "03_familiarity.csv"), quote = '"', na.str
     rowwise() %>%
     mutate(prop = prod(successes, 1/n, na.rm = TRUE))  %>%
     filter(n >= 4,
-           class=="noun") %>%
+           class %in% c("noun", "verb")) %>%
     ungroup()
 
 #### impute data ########################################
