@@ -5,7 +5,10 @@
 #### set up #############################################
 
 # load packages
-library(tidyverse)    
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(ggplot2)
 library(data.table)    # for importing and exporting data
 library(readxl)        # for importing Excel files
 library(here)          # for locating files
@@ -37,10 +40,10 @@ dat_freqdiff <- dat %>%
 ggplot(dat_freqdiff, aes(x = language, y = frequency, colour = frequency_diff, alpha = frequency_diff)) +
   facet_wrap(~cognate_rater1) +
   geom_violin(fill = "black", colour = NA, alpha = 0.4, na.rm = TRUE) +
-  geom_line(aes(group = meaning), na.rm = TRUE, size = 0.5) +
+  geom_line(aes(group = meaning), na.rm = TRUE, size = 0.5, alpha = 0.5) +
   geom_boxplot(width = 0.05, na.rm = TRUE, colour = "black") +
-  labs(x = "Language", y = "Frequency (Zipf score)", colour = "Absolute\ndifference") +
+  labs(x = "Language", y = "Frequency (Zipf score)", colour = "Absolute difference") +
   scale_alpha(guide = FALSE) +
   theme_custom +
-  theme(legend.position = "right") +
+  theme(legend.position = "top") +
   ggsave(here("Figures", "00_pool_freq_cognateness.png"))

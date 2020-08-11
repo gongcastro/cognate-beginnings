@@ -5,7 +5,9 @@
 #### set up ##############################################
 
 # load packages
-library(tidyverse)       
+library(dplyr)
+library(tidyr)
+library(ggplot2)
 library(googlesheets4) # for import Google spreadsheets
 library(magrittr)      # for using pipes
 library(data.table)    # for importing data
@@ -25,8 +27,10 @@ breaks <- c(0, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 1
 
 #### import data #########################################
 pool <- read_xlsx(here("Data","01_pool.xlsx"))
-studies <- fread(here("Data", "00_studies.csv")) %>% distinct(q_version, language, q_items) 
-logs <- fread(here("Data", "01_participants.csv"))
+studies <- fread(here("Data", "00_studies.csv")) %>%
+  distinct(q_version, language, q_items)
+logs <- fread(here("Data", "01_participants.csv")) %>% 
+  mutate(time_stamp = as_date(time_stamp))
 
 dat <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FALSE, na.strings = "") %>%
   as_tibble() %>%
