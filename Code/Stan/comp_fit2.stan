@@ -19,6 +19,8 @@ data {
   // group-level predictor values
   vector[N] Z_1_mid_1;
   vector[N] Z_1_mid_2;
+  vector[N] Z_1_mid_3;
+  vector[N] Z_1_mid_4;
   int<lower=1> NC_1;  // number of group-level correlations
   int prior_only;  // should the likelihood be ignored?
 }
@@ -38,10 +40,14 @@ transformed parameters {
   // using vectors speeds up indexing in loops
   vector[N_1] r_1_mid_1;
   vector[N_1] r_1_mid_2;
+  vector[N_1] r_1_mid_3;
+  vector[N_1] r_1_mid_4;
   // compute actual group-level effects
   r_1 = (diag_pre_multiply(sd_1, L_1) * z_1)';
   r_1_mid_1 = r_1[, 1];
   r_1_mid_2 = r_1[, 2];
+  r_1_mid_3 = r_1[, 3];
+  r_1_mid_4 = r_1[, 4];
 }
 model {
   // initialize linear predictor term
@@ -54,7 +60,7 @@ model {
   vector[N] mu;
   for (n in 1:N) {
     // add more terms to the linear predictor
-    nlp_mid[n] += r_1_mid_1[J_1[n]] * Z_1_mid_1[n] + r_1_mid_2[J_1[n]] * Z_1_mid_2[n];
+    nlp_mid[n] += r_1_mid_1[J_1[n]] * Z_1_mid_1[n] + r_1_mid_2[J_1[n]] * Z_1_mid_2[n] + r_1_mid_3[J_1[n]] * Z_1_mid_3[n] + r_1_mid_4[J_1[n]] * Z_1_mid_4[n];
   }
   for (n in 1:N) {
     // compute non-linear predictor values
@@ -65,10 +71,12 @@ model {
   target += normal_lpdf(b_steep[1] | -1.757652, 1);
   target += normal_lpdf(b_mid[1] | 4.369435, 1);
   target += normal_lpdf(b_mid[2] | 0, 5);
+  target += normal_lpdf(b_mid[3] | 0, 5);
+  target += normal_lpdf(b_mid[4] | 0, 5);
   target += student_t_lpdf(sigma | 3, 0, 10)
     - 1 * student_t_lccdf(0 | 3, 0, 10);
   target += cauchy_lpdf(sd_1 | 0, 5)
-    - 2 * cauchy_lccdf(0 | 0, 5);
+    - 4 * cauchy_lccdf(0 | 0, 5);
   target += normal_lpdf(to_vector(z_1) | 0, 1);
   target += lkj_corr_cholesky_lpdf(L_1 | 2);
   // likelihood including all constants

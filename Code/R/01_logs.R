@@ -5,7 +5,8 @@
 #### set up ################################
 
 # load packages
-library(tidyverse)
+library(dplyr)
+library(tidyr)
 library(lubridate)
 library(patchwork)
 library(data.table)
@@ -30,14 +31,12 @@ dat <- list.files(here("Data", "Logs"), pattern = "logs", full.names = TRUE) %>%
     mutate_at(vars(age_bin), factor, levels = bins, ordered = TRUE) %>%
     mutate(version = factor(version, levels = c("CBC", "DevLex", "BL-Short-A", "BL-Short-B", "BL-Short-C", "BL-Short-D", "BL-Long-1", "BL-Long-2"), ordered = TRUE),
            doe = ifelse(dominance=="Spanish", doe_spanish, doe_catalan),
-           lp = ifelse(!between(doe, 50, 100, incbounds = TRUE), "Other", lp),
+           lp = ifelse(!data.table::between(doe, 50, 100, incbounds = TRUE), "Other", lp),
            lp = factor(lp, levels = c("Monolingual", "Bilingual"))) %>%
     rowwise() %>% 
-    mutate(bilingualism = ifelse(
-        dominance %in% "Spanish",
-        1-(abs((doe_spanish-doe_catalan)/(doe_spanish+doe_catalan))),
-        1-(abs((doe_catalan-doe_spanish)/(doe_spanish+doe_catalan))))
-    ) %>% 
+    mutate(bilingualism = ifelse(dominance %in% "Spanish",
+                                 1-(abs((doe_spanish-doe_catalan)/(doe_spanish+doe_catalan))),
+                                 1-(abs((doe_catalan-doe_spanish)/(doe_spanish+doe_catalan))))) %>% 
     drop_na(lp) %>% 
     filter(completed, age_bin %in% bins_interest) 
 

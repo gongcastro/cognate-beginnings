@@ -6,7 +6,11 @@
 
 # load packages
 library(data.table)
-library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(purrr)
+library(stringr)
 library(janitor)
 library(broom)
 library(modelr)

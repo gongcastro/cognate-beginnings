@@ -5,7 +5,8 @@
 #### set up ##############################################
 
 # load packages
-library(tidyverse)        # for nice data frames
+library(dplyr)        # for nice data frames
+library(tidyr)
 library(magrittr)      # for using pipes
 library(data.table)    # for importing data
 library(lubridate)     # for working with dates
@@ -14,6 +15,7 @@ library(here)          # for locating files
 
 # load/create functions
 source(here("Code", "R", "functions.R"))
+
 
 # set params
 bins          <- c("< 10", "10-12", "12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34", "34-36", "36-38", "38-40", "> 40")

@@ -18,14 +18,14 @@ affiliation:
     institution   : "Center for Brain and Cognition, Universitat Pompeu Fabra, Barcelona, Spain"
 
 authornote: |
-  "Campus de Ciutadella, Universitat Pompeu Fabra, 08005, Barcelona, Spain
+"Campus de Ciutadella, Universitat Pompeu Fabra, 08005, Barcelona, Spain
 
 abstract: |
- Bilinguals face the challenging task of learning words from languages with overlapping phonologies. Floccia et al. (2018) reported larger vocabulary sizes for 24-month-old bilinguals that were learning languages that shared a greater amount of cognates (e.g., English-Dutch). The mechanisms underlying this effect remain unknown. We explore two compatible scenarios. First, we test whether cognates are learnt earlier than non-cognates. This would account for the difference in vocabulary size associated to the amount of shared cognates across languages. Second, we explore the possibility that the word-forms of one language interact with those form the other language, scaffolding the acquisition of their translation equivalents when their phonologies overlap. This mechanism, in line with the parallel activation account of bilingual speech perception, would provide a plausible explanation to why cognates are acquired ealier by bilinguals. We developed an online tool to collect parental reports of receptive and productive vocabularies from children learning Catalan and/or Spanish, and present data on receptive and productive vocabulary of bilingual toddlers aged 12 to 34 months.
+Bilinguals face the challenging task of learning words from languages with overlapping phonologies. Floccia et al. (2018) reported larger vocabulary sizes for 24-month-old bilinguals that were learning languages that shared a greater amount of cognates (e.g., English-Dutch). The mechanisms underlying this effect remain unknown. We explore two compatible scenarios. First, we test whether cognates are learnt earlier than non-cognates. This would account for the difference in vocabulary size associated to the amount of shared cognates across languages. Second, we explore the possibility that the word-forms of one language interact with those form the other language, scaffolding the acquisition of their translation equivalents when their phonologies overlap. This mechanism, in line with the parallel activation account of bilingual speech perception, would provide a plausible explanation to why cognates are acquired ealier by bilinguals. We developed an online tool to collect parental reports of receptive and productive vocabularies from children learning Catalan and/or Spanish, and present data on receptive and productive vocabulary of bilingual toddlers aged 12 to 34 months.
 
-  
-  <!-- https://tinyurl.com/ybremelq -->
-  
+
+<!-- https://tinyurl.com/ybremelq -->
+
 keywords          : "lexical acquisition, vocabulary, bilingualism"
 wordcount         : "X"
 
@@ -53,13 +53,13 @@ output            :
 ```{r setup, include = FALSE}
 
 knitr::opts_chunk$set(
-	echo = FALSE,
-	fig.align = "center",
-	message = FALSE,
-	warning = FALSE,
-	cache.extra = knitr::rand_seed,
-	out.width = "80%",
-	results = "asis"
+    echo = FALSE,
+    fig.align = "center",
+    message = FALSE,
+    warning = FALSE,
+    cache.extra = knitr::rand_seed,
+    out.width = "80%",
+    results = "asis"
 )
 ```
 
@@ -71,13 +71,20 @@ library(papaja)
 library(knitr)
 
 library(magrittr)
-library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(ggplot2)
+library(patchwork)
 library(readxl)
 library(lubridate)
 library(janitor)
 
 library(broom)
 library(ggridges)
+library(brms)
+library(modelr)
+library(tidybayes)
 library(patchwork)
 library(gt)
 
@@ -92,28 +99,32 @@ bins <- c("12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28"
 
 # import data 
 dat_studies <- fread(here("Data", "00_studies.csv")) %>% distinct(q_version, language, q_items)
+
 dat_items <- read_xlsx(here("Data", "01_pool.xlsx")) %>%
-  group_by() %>%
-  drop_na(language) %>%
-  mutate_at(vars(A, B, C, D, cognate_rater1, include, frequency), as.numeric) %>%
-  mutate_at(vars(A, B, C, D, cognate_rater1, include), as.logical)
-dat_participants <- list.files(here("Data", "Logs"), pattern = "logs", full.names = TRUE) %>%
-  last() %>%
-  fread(na.strings = "") %>%
-  filter(age_bin %in% bins,
-         completed,
-         lp == "Bilingual")
+    group_by() %>%
+    drop_na(language) %>%
+    mutate_at(vars(A, B, C, D, cognate_rater1, include, frequency), as.numeric) %>%
+    mutate_at(vars(A, B, C, D, cognate_rater1, include), as.logical)
+
+dat_participants <- fread(here("Data", "01_participants.csv"), na.strings = "")
 dat_raw <- fread(here("Data", "02_merged.csv"), na.strings = "") %>%
-  filter(lp %in% c("Bilingual"),
-         age_bin %in% bins) %>%
-  as_tibble() %>%
-  mutate_at(vars(date_birth, time_stamp), as_date)
+    filter(lp %in% c("Bilingual"),
+           age_bin %in% bins) %>%
+    as_tibble() %>%
+    mutate_at(vars(date_birth, time_stamp), as_date)
+dat <- fread(here("Data", "preprocessed.csv"), na.strings = "", stringsAsFactors = TRUE)
 dat_wordbank <- fread(here("Data", "05_wordbank.csv"))
 dat_wordbank_priors <- fread(here("Data", "05_priors-wordbank.csv"))
 
 # import results
+comp_fit0 <- readRDS(here("Results", "comp_fit0.rds"))
 comp_fit1 <- readRDS(here("Results", "comp_fit1.rds"))
-comp_selection <- readRDS(here("Results", "comp_selection.rds"))
+comp_fit2 <- readRDS(here("Results", "comp_fit2.rds"))
+comp_selection <- readRDS(here("Results", "comp_loo.rds"))
+
+random <- readRDS(here("Results", "ranef.rds"))
+corr <- readRDS(here("Results", "corr.rds"))
+
 
 ```
 
@@ -156,19 +167,17 @@ We assessed toddlers' language background asking parents for an estimated propor
 
 ```{r lpdist, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 
-dat_participants %>%
-  filter(completed, lp %!in% "Other", age_bin %in% bins) %>%
-  ggplot(aes(x = age_bin, fill = dominance)) +
-  geom_bar() +
-  labs(x = "Age (months)", y = "Number of partcipants",
-       fill = "Dominant language") +
-  scale_y_continuous(labels = as.integer) +
-  scale_fill_brewer(palette = "Set1") +
-  theme_custom +
-  theme(legend.position = c(0.05, 0.85),
-        legend.direction = "vertical",
-        legend.justification = 0,
-        panel.grid.major.y = element_line(colour = "grey", linetype = "dotted"))
+participants %>%
+    mutate(bilingualism = cut_interval(bilingualism, n = 6,
+                                       labels = paste0(seq(0, 50, by = 10), "%"))) %>%
+    ggplot(aes(x = age_bin, y = bilingualism)) +
+    stat_bin_2d(colour = "white") +
+    scale_fill_viridis_c(option = "plasma") +
+    labs(x = "Age (months)", y = "L2 exposure", fill = "Participants") +
+    theme_classic() +
+    theme(axis.text.x = element_text(angle = 270),
+          axis.text = element_text(colour = "black"))
+ggsave(here("Figures", "01_logs-distribution.png"), height = 4, width = 5)
 ```
 
 
@@ -183,61 +192,61 @@ Each item of the inventory presented a word-form, to which parents were instruct
 ## Data analysis
 
 
-For testing Hypothesis 1, we modelled the proportion of infants that understood or produced each item  within age bins of 2 months. Our model assumes that this proportion follows a logistic curve accross ages, an that the age of acquisition of each item is generated from a linear model that adjusts for the dominance of the language of the item (*item dominance*, L1 vs. L2), the cognate status of the word (*cognateness*, Non-cognate vs. Cognate), and the frequency of the word form in its correspondent language. Our prediction  is that the age of acquisition will be lower for cognate words, compared to that of non-cognate words.
+For testing Hypothesis 1, we modeled the proportion of infants that understood or produced each item in the non-dominant language within age bins of 2 months. Our model assumes that this proportion follows a logistic curve across ages, an that the age of acquisition of each item is generated from a linear model that adjusts for the degree of exposure to the non-dominant language (*bilingualism*, 0-50%), the cognate status of the word (*cognateness*, Non-cognate vs. Cognate), and their interaction. Our prediction is that the age of acquisition will be lower for cognate words, compared to that of non-cognate words, and that this effect will be larger for more balanced bilinguals.
 
 
-Items were classified into cognates and non-cognates by a trained Catalan-Spanish bilingual with broad experience in phonology and phonetics. Items were classified as L1 if the item was included in the inventory of the language the participant was dominant in, and as L2 if otherwise For instance, the item porta (door, in Catalan) was classified as L1 when answered by Catalan-dominant participants, and as L2 when answered by Spanish-dominant participants. We retrieved frequencies from SUBTLEX-ESP [@cuetos2011] and SUBTLEX-CAT [@boada2019] for Spanish and Catalan words, respectively. Word frequency was calculated as the Zipf score of the word [@zipf1949; @heuven2014]. Missing frequency scores were imputed using multiple imputation [@vanbuuren2011]. Table \@ref(tab:itemsinfo) shows the classification of items in cognates and non-cognates and their frequency scores across the four lists of the inventories.
+Items were classified into cognates and non-cognates by a trained Catalan-Spanish bilingual with broad experience in phonology and phonetics. Items were classified as L1 if the item was included in the inventory of the language the participant was dominant in, and as L2 if otherwise For instance, the item *porta* (*door*, in Catalan) was classified as L1 when answered by Catalan-dominant participants, and as L2 when answered by Spanish-dominant participants. Table \@ref(tab:itemsinfo) shows the classification of items in cognates and non-cognates and their frequency scores across the four lists of the inventories.
 
 
 ```{r itemsinfo, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 
 dat_items %>%
-  drop_na(cognate_rater1) %>%
-  filter(include) %>%
-  select(A, B, C, D, cognate_rater1, frequency, language) %>% 
-  mutate(cognate_rater1 = ifelse(cognate_rater1, "Cognate", "Non-cognate")) %>%
-  pivot_longer(c(A, B, C, D), names_to = c("list"), values_to = "n") %>% 
-  filter(n) %>% 
-  group_by(list, language, cognate_rater1) %>% 
-  summarise(n = sum(n, na.rm = TRUE),
-            mean = mean(frequency, na.rm = TRUE),
-            sd = sd(frequency, na.rm = TRUE),
-            min = min(frequency, na.rm = TRUE),
-            max = max(frequency, na.rm = TRUE)) %>%
-  ungroup() %>% 
-  rename(cognateness = cognate_rater1) %>%
-  relocate(list, language, cognateness, n, mean, sd, min, max) %>%
-  arrange(list, language, cognateness) %>%
-  mutate(list = paste("List", list)) %>% 
-  pivot_wider(names_from = cognateness, values_from = c(n, mean, sd, min, max)) %>%
-  clean_names() %>%
-  gt(groupname_col = c("language")) %>% 
-  fmt_number(columns = contains("cognate"), decimals = 2) %>%
-  fmt_number(columns = starts_with("n_"), decimals = 0) %>%
-  tab_header(title = md("**Questionnaire and item properties**"),
-             subtitle = "Participants were randomly allocated on of the the four lists, and completed both the Catalan and the Spanish versions.") %>% 
-  tab_spanner(label = "Frequency (Cognates)", columns = vars("n_cognate", "mean_cognate", "sd_cognate", "min_cognate", "max_cognate")) %>% 
+    drop_na(cognate_rater1) %>%
+    filter(include) %>%
+    select(A, B, C, D, cognate_rater1, frequency, language) %>% 
+    mutate(cognate_rater1 = ifelse(cognate_rater1, "Cognate", "Non-cognate")) %>%
+    pivot_longer(c(A, B, C, D), names_to = c("list"), values_to = "n") %>% 
+    filter(n) %>% 
+    group_by(list, language, cognate_rater1) %>% 
+    summarise(n = sum(n, na.rm = TRUE),
+              mean = mean(frequency, na.rm = TRUE),
+              sd = sd(frequency, na.rm = TRUE),
+              min = min(frequency, na.rm = TRUE),
+              max = max(frequency, na.rm = TRUE)) %>%
+    ungroup() %>% 
+    rename(cognateness = cognate_rater1) %>%
+    relocate(list, language, cognateness, n, mean, sd, min, max) %>%
+    arrange(list, language, cognateness) %>%
+    mutate(list = paste("List", list)) %>% 
+    pivot_wider(names_from = cognateness, values_from = c(n, mean, sd, min, max)) %>%
+    clean_names() %>%
+    gt(groupname_col = c("language")) %>% 
+    fmt_number(columns = contains("cognate"), decimals = 2) %>%
+    fmt_number(columns = starts_with("n_"), decimals = 0) %>%
+    tab_header(title = md("**Questionnaire and item properties**"),
+               subtitle = "Participants were randomly allocated on of the the four lists, and completed both the Catalan and the Spanish versions.") %>% 
+    tab_spanner(label = "Frequency (Cognates)", columns = vars("n_cognate", "mean_cognate", "sd_cognate", "min_cognate", "max_cognate")) %>% 
     tab_spanner(label = "Frequency (Non-cognates)", columns = contains("non_cognate")) %>% 
-  cols_label(list = md("**List**"), 
-             n_cognate = md("*N*"),
-             mean_cognate = md("*Mean*"),
-             sd_cognate = md("*SD*"),
-             min_cognate = md("*Min*"),
-             max_cognate = md("*Max*"),
-             n_non_cognate = md("*N*"),
-             mean_non_cognate = md("*Mean*"),
-             sd_non_cognate = md("*SD*"),
-             min_non_cognate = md("*Min*"),
-             max_non_cognate = md("*Max*")) %>%
-  gtsave(here("Results", "descriptives_items.png"))
+    cols_label(list = md("**List**"), 
+               n_cognate = md("*N*"),
+               mean_cognate = md("*Mean*"),
+               sd_cognate = md("*SD*"),
+               min_cognate = md("*Min*"),
+               max_cognate = md("*Max*"),
+               n_non_cognate = md("*N*"),
+               mean_non_cognate = md("*Mean*"),
+               sd_non_cognate = md("*SD*"),
+               min_non_cognate = md("*Min*"),
+               max_non_cognate = md("*Max*")) %>%
+    gtsave(here("Results", "descriptives_items.png"))
 
 ```
 
 
-We fit two separate logistic models on comprehensive and productive data, respectively. Logistic curves are characterised by three parameters[see @mahr2019 and @mahr2020 for an excellent introduction to this approach, in which we based this analysis]: (a) an *asymptote* (`asym`, upper boundary  of the proportion of infants that have acquired the item), (b) the *steepness* (`steep`, how fast the a given item is acquired by infants), and (c) a *mid-point* (`mid`, the age at which steepness is maximum). We work on the assumption that the trajectory of aquisition of items follows a sigmoidal shape [@mayor2011], and that the age of acquisition of a word is fairly captured by the position of the mid-point of its curve. This approach allows us to model and estimate the age of acquisition of items explicitely. Our model estimated the asymptote and stepness as grand means across items (i.e., intercepts). Mid-points were estimated by a linear zero-one-beta-regression model^[Zero-or-one-inflated beta regression models allow to account for overdispersion then using proportions as the output of a model accounting, while also allowing values to be at boundary (0 and 1).][@ospina2012] that included our predictors of interest: `age`, `dominance` (contrast-coded, L2 = -0.5, L2 = 0.5), `cognateness` (contrast-coded, Non-cognate = -0.5, Cognate = 0.5), their interaction, and `frequency` (standardised Zipf score). We also included a random intercept for each translation equivalent (`TE`). Appendix 1 shows a detailed description of the model.
+We fit two separate logistic models on comprehensive and productive data, respectively. Logistic curves are characterised by three parameters[see @mahr2019 and @mahr2020 for an excellent introduction to this approach, in which we based this analysis]: (a) an *asymptote* (`asym`, upper boundary  of the proportion of infants that have acquired the item), (b) the *steepness* (`steep`, how fast the a given item is acquired by infants), and (c) a *mid-point* (`mid`, the age at which steepness is maximum). We work on the assumption that the trajectory of aquisition of items follows a sigmoidal shape [@mayor2011], and that the age of acquisition of a word is fairly captured by the position of the mid-point of its curve. This approach allows us to model and estimate the age of acquisition of items explicitely. Our model estimated the asymptote and steepness as grand means across items (i.e., intercepts). Mid-points were estimated by a linear regression model that included our predictors of interest: `age`, `bilingualism` (standardised), `cognateness` (contrast-coded, Non-cognate = -0.5, Cognate = 0.5). We also included random intercepts and slopes for each translation equivalent (`TE`) [@barr2013]. Appendix 1 shows a detailed description of the model.
 
 
-We estimated the parameters of our model using the Bayesian framework. Bayesian models use the Bayes rule to combine prior knowlegde about the distribution of a given parameter, and the likelihood of each of the values it can take given tha observed data. We relied on the available data on Wordbank [@frank2017] to generate our priors (see Appendix 1 for more details about our priors). In order to test the contribution of the predictor *cognateness* on the fit of the model,  we compared the fit of our (expanded) model to the fit of a (null) model that did not include *cognateness* as predictor [@schad2020] using leave-one-out cross validation. We fit both the null and alternative models using the R environment [@rcoreteam2013; @rstudioteam2015] and the `brms` package [@burkner2017], which relies on the probabilistic language Stan [@carpenter2017] to approximate posterior distributions. We used Pareto-smoothed importance sampling [PSIS; @vehtari2017; @vehtari2019] to compare the null and extended models. Data and model results were processed and visualised using the `tidyverse` family of R packages [@wickham2019] and the `tidybayes` package [@kay2020].
+We estimated the parameters of our model using the Bayesian framework. Bayesian models use the Bayes rule to combine prior knowledge about the distribution of a given parameter, and the likelihood of each of the values it can take given the data. We relied on the available data on Wordbank [@frank2017] to generate our priors (see Appendix 1 for more details about our priors). In order to test the contribution of each predictor on the fit of the model, we started fitting a null model that only included an global intercept and random intercepts for each TE, then fitted a model that also included *bilingualism* and its random slopes by TE, and finally a model that also included *cognateness* and its interaction with *bilingualism*, as well as random slopes for all the fixed effects. We compared how the fit of the model changed in every step [@schad2020] using leave-one-out cross validation. We fit both the null and alternative models using the R environment [@rcoreteam2013; @rstudioteam2015] and the `brms` package [@burkner2017], which relies on the probabilistic language Stan [@carpenter2017] to approximate posterior distributions. We used Pareto-smoothed importance sampling [PSIS; @vehtari2017; @vehtari2019] to compare the null and extended models. Data and model results were processed and visualised using the `tidyverse` family of R packages [@wickham2019] and the `tidybayes` package [@kay2020].
 
 
 To test Hypothesis 2, we run a Bayesian ANOVA using the difference in mid-points between the two word-forms of each translation equivalent (in Catalan and Spanish, respectively), that included *cognateness* as predictor. Using the `BayesFactor` R package [@morey2018a], we computed a Bayes factor (*BF*) that compared the likelihood of a linear model that included *cognateness* as a predictor against the likelihood of a linear model that did not, under the light of our data.
@@ -245,25 +254,123 @@ To test Hypothesis 2, we run a Bayesian ANOVA using the difference in mid-points
 
 # Results
 
-
 ## Hypothesis 1: Are cognates acquired ealier?
 
+```{r post}
+posterior <- comp_fit2 %>%
+    recover_types(dat) %>% 
+    gather_draws(`b_.*`, regex = TRUE) %>% 
+    mutate_at(vars(.variable, .chain), as.factor) %>%
+    filter(!str_detect(.variable, "Intercept"))
 
-### Comprehensive vocabulary
+ggplot(posterior, aes(.value, .variable)) +
+    stat_slab(fill = "black") +
+    stat_interval(.width = c(0.95, 0.89, 0.67, 0.5),
+                  point_interval = "median_hdi",
+                  position = position_nudge(y = -0.1),) +
+    geom_vline(xintercept = 0, linetype = "dashed") +
+    labs(x = "Value", y = "Coefficient", colour = "HDI", fill = "Type") +
+    scale_colour_brewer() +
+    theme_classic() +
+    theme(legend.position = "top",
+          panel.grid.major.y = element_line(colour = "grey"),
+          axis.text = element_text(colour = "black")) +
+    ggsave(here("Figures", "06_gca_comp-coefs.png"), width = 6)
+
+```
+
+```{r post_checks}
+posterior_check <- expand_grid(n = 1,
+                               age_bin = seq_range(dat$age_bin, n = 50),
+                               item_dominance = c("L2", "L1"),
+                               cognate = c("Non-cognate", "Cognate")) %>%
+    add_fitted_draws(model = comp_fit2, newdata = ., n = 100, scale = "response", re_formula = NA) %>% 
+    ungroup() %>% 
+    mutate(cognate = factor(cognate, levels = c("Non-cognate", "Cognate"), ordered = TRUE),
+           .draw = as.character(.draw))
+
+
+ggplot(posterior_check, aes(age_bin, .value, colour = cognate, fill = cognate)) +
+    facet_grid(~item_dominance) +
+    stat_lineribbon(.width = 89, colour = NA, alpha = 0.5) +
+    stat_summary(fun = "mean", geom = "line") +
+    labs(x = "Age (months)", y = "Proportion",
+         colour = "Cognateness", fill = "Cognateness", shape = "Cognateness") +
+    scale_fill_brewer(palette = "Set1") +
+    scale_colour_brewer(palette = "Set1") +
+    scale_x_continuous(breaks = seq(0, 10), labels = bins_interest) +
+    theme_classic() +
+    theme(legend.position = "top", 
+          axis.text = element_text(colour = "black"),
+          axis.text.x = element_text(angle = 270),
+          legend.title = element_blank(),
+          plot.caption = element_text(hjust = 0),
+          plot.caption.position = "plot",
+          plot.title.position = "plot") +
+    ggsave(here("Figures", "07_gca_comp_posterior-checks.png"))
+
+```
+
+
 
 Table \@ref(tab:resultscomp) shows the outcomes of the model.
 
 ```{r resultscomp, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 
 
-tidy(comp_fit1) %>% 
-    gt()
+summary(comp_fit2)$fixed %>% 
+    as.data.frame() %>% 
+    rownames_to_column("term") %>% 
+    select(1:5) %>% 
+    mutate_at(4:5, round, 2) %>% 
+    unite("ci", 4:5, sep = ", ") %>% 
+    gt(rowname_col = "term") %>% 
+    fmt_number(2:3) %>% 
+    cols_label(Estimate = "Estimate",
+               `Est.Error` = "SE",
+               ci = "95% CrI")
 
 
 ```
 
 
-### Productive vocabulary
+```{r random_effects}
+ggplot(random, aes(r_intercept, item_dominance1)) +
+    geom_point(shape = 1, alpha = 0.5, size = 0.25) +
+    geom_abline(slope = corr$cor_meaning_mid_intercept_mid_item_dominance1, colour = "red") +
+    labs(x = "Intercept", y = "Dominance") +
+    
+    ggplot(random, aes(r_intercept, cognate1)) +
+    geom_point(shape = 1, alpha = 0.5, size = 0.25) +
+    geom_abline(slope = corr$cor_meaning_mid_intercept_mid_cognate1, colour = "red") +
+    labs(x = "Intercept", y = "Cognateness slope") +
+    
+    ggplot(random, aes(r_intercept, item_dominance1_cognate1)) +
+    geom_point(shape = 1, alpha = 0.5, size = 0.25) +
+    geom_abline(slope = corr$cor_meaning_mid_intercept_mid_item_dominance1_cognate1, colour = "red") +
+    labs(x = "Intercept", y = "Dominance x Cognateness") +
+    
+    ggplot(random, aes(item_dominance1, cognate1)) +
+    geom_point(shape = 1, alpha = 0.5, size = 0.25) +
+    geom_abline(slope = corr$sd_meaning_mid_item_dominance1_cognate1, colour = "red") +
+    labs(x = "Dominance", y = "Cognateness") +
+    
+    ggplot(random, aes(item_dominance1, item_dominance1_cognate1)) +
+    geom_point(shape = 1, alpha = 0.5, size = 0.25) +
+    geom_abline(slope = corr$sd_meaning_mid_item_dominance1_cognate1, colour = "red") +
+    labs(x = "Dominance", y = "Dominance x Cognateness") +
+    
+    ggplot(random, aes(cognate1, item_dominance1_cognate1)) +
+    geom_point(shape = 1, alpha = 0.5, size = 0.25) +
+    geom_abline(slope = corr$sd_meaning_mid_item_dominance1_cognate1, colour = "red") +
+    labs(x = "Cognateness", y = "Dominance x Cognateness") +
+    
+    plot_layout(ncol = 3) &
+    plot_annotation(tag_levels = "A") &
+    theme_classic() &
+    ggsave(here("Figures", "random_effects.png"), height = 4, width = 6)
+
+```
 
 
 ## Hypothesis 2
@@ -299,19 +406,19 @@ We fitted a logistic model using the proportion of infants that acquired each it
 ```{r worbank, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 
 dat_wordbank_priors %>%
-  rename(estimate_scaled = estimate) %>%
-  mutate(conf = paste0("[", round(conf_low, 2), ", ", round(conf_high, 2), "]"),
-         estimate = estimate_scaled*2+20,
-         term = c("Asymptote", "Mid-point", "Steepness")) %>% 
-  select(term, estimate, estimate_scaled, std_error, conf) %>%
-  gt(rowname_col = "term") %>% 
-  fmt_number(vars(estimate, estimate_scaled, std_error), decimals = 2) %>% 
-  cols_label(estimate = md("*Estimate<br>(months)*"),
-             estimate_scaled = md("*Estimate<br>(scaled)*"),
-             std_error = md("*SE*"),
-             conf = md("*95% CI*")) %>% 
-  cols_align(align = "c") %>% 
-  gtsave(here("Results", "wordbank.png"))
+    rename(estimate_scaled = estimate) %>%
+    mutate(conf = paste0("[", round(conf_low, 2), ", ", round(conf_high, 2), "]"),
+           estimate = estimate_scaled*2+20,
+           term = c("Asymptote", "Mid-point", "Steepness")) %>% 
+    select(term, estimate, estimate_scaled, std_error, conf) %>%
+    gt(rowname_col = "term") %>% 
+    fmt_number(vars(estimate, estimate_scaled, std_error), decimals = 2) %>% 
+    cols_label(estimate = md("*Estimate<br>(months)*"),
+               estimate_scaled = md("*Estimate<br>(scaled)*"),
+               std_error = md("*SE*"),
+               conf = md("*95% CI*")) %>% 
+    cols_align(align = "c") %>% 
+    gtsave(here("Results", "wordbank.png"))
 
 ```
 
@@ -338,7 +445,7 @@ tribble(~param, ~coefficient, ~notation, ~prior,
         "Mid-point", "Intercept", "$COI$", "Beta(1, 1)", 
         "Mid-point", "Intercept", "$ZOI$", "Beta(1, 1)",
         "Mid-point", "Std. Deviation", "$\\sigma{ijk}$", "t(3, 0, 2.5)") %>%
-  kable(digits = 2, row.names = FALSE, col.names = c("**Adjusted parameter**", "**Coefficient**", "**Notation**", "**Distribution**"), align = "c", caption = "Prior distribution of the parameters in our models. We set specific informative priors for the asymptote, steepness, and mid-point of the curves (using data from Wordbank) and and weakly informative priors for the rest of the coefficients.", escape = TRUE, format = "latex")
+    kable(digits = 2, row.names = FALSE, col.names = c("**Adjusted parameter**", "**Coefficient**", "**Notation**", "**Distribution**"), align = "c", caption = "Prior distribution of the parameters in our models. We set specific informative priors for the asymptote, steepness, and mid-point of the curves (using data from Wordbank) and and weakly informative priors for the rest of the coefficients.", escape = TRUE, format = "latex")
 
 ```
 

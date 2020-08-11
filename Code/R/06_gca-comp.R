@@ -5,7 +5,10 @@
 #### set up ##############################################
 
 # load packages
-library(tidyverse)
+library(dplyr)
+library(tibble)
+library(tidyr)
+library(stringr)
 library(data.table)
 library(brms)
 library(modelr)
@@ -19,15 +22,21 @@ source(here("Code", "R", "functions.R"))
 # set params
 set.seed(888)
 bins_interest <- c("12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34")
+nchains <- 4
+ncores <- 4
+niter <- 2000
+control <- list(adapt_delta = 0.95, max_treedepth = 15))
+
 
 #### import data ##########################################
 dat <- fread(here("Data", "04_prepared.csv")) %>%
     as_tibble() %>% 
     filter(type=="Comprehensive",
            item_dominance=="L2") %>%
-    select(item, meaning, category, age_bin, sex, bilingualism, cognate, proportion) %>%
+    select(item, meaning, category, age_bin, sex, bilingualism, cognate, n, successes, proportion) %>%
     mutate(age_bin = as.numeric(factor(age_bin, levels = bins_interest, ordered = TRUE))-1,
            bilingualism = scale(bilingualism)[,1],
+           bilingualism_cat = cut_interval(bilingualism, n = 2, labels = c("Completely bilingual", "Completely monolingual")),
            cognate = as.factor(cognate),
            sex = factor(sex, levels = c("Female", "Male"))) %>%
     arrange(item, meaning, age_bin)
@@ -39,182 +48,163 @@ dat_priors <- fread(here("Data", "05_priors-wordbank.csv")) %>%
     mutate(estimate_scaled = (estimate_scaled-14)/2)
 
 #### fit models ###########################################
+inv_logit <- function(x) 1 / (1 + exp(-x))
 
 # set priors 
-priors <- c(prior(normal(0.7857192, 0.1), nlpar = "asym", coef = "Intercept"),
+priors <- c(prior(normal(0.7857192, 0.5), nlpar = "asym", coef = "Intercept"),
+            prior(normal(-1.7576520, 1), nlpar = "steep", coef = "Intercept"),
             prior(normal(4.369435, 1), nlpar = "mid", coef = "Intercept"),
-            prior(normal(1.7576520, 0.8), nlpar = "steep", coef = "Intercept"),
             prior(normal(0, 5), class = "b", nlpar = "mid"),
-            prior(normal(1.5, 1), dpar = "phi", class = "Intercept"),
-            prior(beta(10, 10), class = "coi"),
-            prior(beta(10, 10), class = "zoi"),
-            prior(HalfCauchy(0, 5), class  = "sd"))
+            prior(cauchy(0, 5), class  = "sd", nlpar = "mid"))
+
 # model 0
-fit0 <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - age_bin) * exp(steep))),
+fit0 <- brm(formula = bf(proportion ~ asym * inv(1 + exp((mid - age_bin) * steep)),
                          asym ~ 1,
-                         mid ~ 1 + bilingualism + sex + (1 | meaning),
                          steep ~ 1,
-                         phi ~ 1,
-                         nl = TRUE,
-                         family = zero_one_inflated_beta),
+                         mid ~ 1 + (1 | meaning),
+                         nl = TRUE),
             prior = priors,
             data = dat,
-            chains = 1,
-            iter = 4000,
-            cores = parallel::detectCores(),
+            chains = nchains,
+            cores = ncores,
+            iter = niter,
             file = here("Results", "comp_fit0.rds"),
             save_model = here("Code", "Stan", "comp_fit0.stan"),
-            control = list(adapt_delta = 0.95, max_treedepth = 15))
+            control = control)
 
 # model 1
-fit1 <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - age_bin) * exp(steep))),
+fit1 <- brm(formula = bf(proportion ~ asym * inv(1 + exp((mid - age_bin) * steep)),
                          asym ~ 1,
-                         mid ~ 1 + bilingualism*cognate + sex + (1 | meaning),
                          steep ~ 1,
-                         phi ~ 1,
-                         nl = TRUE,
-                         family = zero_one_inflated_beta),
-            prior = priors,
+                         mid ~ 1 + bilingualism + (1 + bilingualism | meaning),
+                         nl = TRUE),
+            prior = c(priors, prior(lkj(2), class = "cor")),
             data = dat,
-            chains = 1,
-            iter = 4000,
-            cores = parallel::detectCores(),
+            chains = nchains,
+            cores = ncores,
+            iter = niter,
             file = here("Results", "comp_fit1.rds"),
             save_model = here("Code", "Stan", "comp_fit1.stan"),
-            control = list(adapt_delta = 0.95, max_treedepth = 15))
+            control = control)
+
+# model 2
+fit2 <- brm(formula = bf(proportion ~ asym * inv(1 + exp((mid - age_bin) * steep)),
+                         asym ~ 1,
+                         steep ~ 1,
+                         mid ~ 1 + bilingualism*cognate + (1 + bilingualism*cognate | meaning),
+                         nl = TRUE),
+            prior = c(priors, prior(lkj(2), class = "cor")),
+            data = dat,
+            chains = nchains,
+            iter = ncores,
+            file = here("Results", "comp_fit2.rds"),
+            save_model = here("Code", "Stan", "comp_fit2.stan"),
+            control = control)
 
 
-#### extract posterior samples ###################################
-posterior_groups <- fit1 %>%
-    spread_draws(b_asym_Intercept, b_mid_bilingualism, b_steep_Intercept, b_mid_Intercept, r_meaning__mid[meaning, term]) %>% 
-    median_qi(.width = 0.5) %>% 
-    arrange(meaning) %>% 
-    select(meaning, term, mid = b_mid_Intercept, asym = b_asym_Intercept, steep = b_steep_Intercept, bilingualism = b_mid_bilingualism, mid_group = r_meaning__mid) %>% 
-    pivot_wider(names_from = term, values_from = mid_group) %>% 
-    left_join(expand_grid(meaning = unique(dat$meaning), age_bin = unique(dat$age_bin))) %>% 
-    rename(mid_group = Intercept) %>% 
-    rowwise() %>% 
-    mutate(proportion_noncognate = asym/(1 + exp((((mid+mid_group)*-0.5*cognate1)-age_bin)*steep)),
-           proportion_cognate = asym/(1 + exp((((mid+mid_group)*0.5*cognate1)-age_bin)*steep))) %>% 
-    pivot_longer(c(proportion_noncognate, proportion_cognate), names_to = "cognateness", values_to = "proportion") %>% 
-    mutate(cognateness = ifelse(str_detect(cognateness, "noncognate"), "Non-cognate", "Cognate"))
+#### compare models #########################
+loo_comp <- loo(fit0, fit1, fit2)
 
-ggplot(posterior_groups, aes(age_bin, proportion, colour = cognateness)) +
-    stat_summary(data = dat, aes(age_bin, proportion, colour = cognate), fun = "mean", geom = "point") +
-    geom_line(aes(group = meaning), size = 0.5, alpha = 0.5) +
-    labs(x = "Age (months)", y = "Proportion", colour = "Cognateness") +
-    theme_classic() +
-    theme(legend.position = "top") +
-    ggsave(here("Figures", "06_gca_comp-category.png"), height = 4, width = 7)
+fixed_coefs <- summary(fit2)$fixed %>%
+    as.data.frame() %>% 
+    rownames_to_column("term") %>% 
+    as_tibble() %>% 
+    clean_names()
 
-
-
-posterior <- fit1 %>%
+#### posterior ##############################
+posterior <- fit2 %>%
     recover_types(dat) %>% 
-    gather_draws(c(`b_.*`, `sd_.*`, coi, zoi), regex = TRUE) %>% 
-    mutate(.label = pred_labels(.variable),
-           class = case_when(.variable %in% c("b_asym_Intercept") ~ "Asymptote",
-                             str_detect(.variable, "mid") ~ "Mid-point",
-                             str_detect(.variable, "steep") ~ "Steepness",
-                             .variable %in% c("phi_Intercept", "b_phi_Intercept", "zoi", "coi") ~ "Distributional"),
-           .chain = factor(.chain, levels = 1:4, ordered = TRUE))
+    gather_draws(`b_.*`, regex = TRUE) %>% 
+    mutate_at(vars(.variable, .chain), as.factor) %>%
+    filter(!str_detect(.variable, "Intercept"))
 
+ggplot(posterior, aes(.value, .variable)) +
+    stat_slab(fill = "black") +
+    stat_interval(position = position_nudge(y = -0.2), point_interval = "mean_hdi") +
+    geom_vline(xintercept = 0, linetype = "dashed") +
+    labs(x = "Value", y = "Coefficient", colour = "HDI") +
+    scale_color_brewer() +
+    theme_classic() +
+    theme(panel.grid.major.y = element_line(colour = "grey")) +
+    ggsave(here("Figures", "06_gca_comp-coefs.png"), width = 6)
 
 #### check convergence ######################
 
 # traceplot: If convergence is good, plots should look like funny fat catterpillars
-ggplot(posterior, aes(.iteration, .value)) +
-    facet_wrap(class~.label, scales = "free") +
-    geom_line(colour = "Orange") +
+ggplot(posterior, aes(.iteration, .value, colour = .chain)) +
+    facet_wrap(~.variable, scales = "free") +
+    geom_line(colour = "black") +
     labs(x = "Iteration", y = "Value", colour = "Chain") +
-    scale_colour_brewer(palette = "Oranges") +
     theme_classic() +
     theme(legend.position = "top") +
     ggsave(here("Figures", "07_gca_comp-convergence.png"), height = 5, width = 9)
 
 #### coefficients ##############################################
-intervals <- posterior %>% 
-    filter(class %in% "Mid-point") %>% 
-    group_by(class, .variable, .label) %>% 
-    mean_qi(.value, .width = c(0.95, 0.89, 0.50)) 
-
-
-posterior %>%
-    filter(class %in% "Mid-point") %>% 
-    ggplot(aes(x = .value, y = .label)) +
-    stat_slabh(fill = "#44546A", colour = NA, show.legend = FALSE) +
-    geom_intervalh(data = intervals, position = position_nudge(y = -0.2), alpha = 0.7) +
-    geom_vline(xintercept = 0, linetype = "dotted") +
-    annotate(geom = "text", x = 2, y = 6.5, label = "Increases AoA", size = 3) +
-    annotate(geom = "text", x = -2, y = 6.5, label = "Reduces AoA", size = 3) +
-    annotate(geom = "segment", x = 3, xend = 3.5, y = 6.5, yend = 6.5, arrow = arrow(ends = "last", length = unit(0.1, units = "cm"))) +
-    annotate(geom = "segment", x = -3.5, xend = -3, y = 6.5, yend = 6.5, arrow = arrow(ends = "first", length = unit(0.1, units = "cm"))) +
-    labs(x = "Estimate", y = "Parameter",
-         fill = "Credible Interval", colour = "Credible Interval",
-         subtitle = "Model coefficients: What is the contribution of each predictor?") +
-    scale_fill_manual(values = c("#44546A", "orange")) +
-    scale_colour_brewer(palette = "YlOrBr") +
-    theme_classic() +
-    theme(plot.title = element_text(size = 14),
-          plot.title.position = "plot",
-          plot.caption = element_text(hjust = 0),
-          plot.caption.position = "plot",
-          legend.position = "top",
-          panel.background = element_rect(fill = "transparent"),
-          panel.grid.major.y = element_line(colour = "grey"),
-          axis.title.y = element_blank()) +
-    ggsave(here("Figures", "07_gca_comp-coefs.png"), width = 10, height = 5)
 
 #### posterior predictive checks ##############################
 
-posterior_check <- expand_grid(age_bin = unique(dat$age_bin),
-                               bilingualism = seq(0, 1, by = 0.1),
+posterior_check <- expand_grid(n = 1,
+                               age_bin = seq_range(dat$age_bin, n = 50),
+                               bilingualism = c(-1, 1),
                                cognate = c("Non-cognate", "Cognate")) %>%
-    add_fitted_draws(model = fit1, n = 100, value = "proportion", scale = "linear", re_formula = NA) %>% 
-    ungroup()
-
-posterior_check %>%
+    add_fitted_draws(model = prod_fit2, newdata = ., n = 100, scale = "response", re_formula = NA) %>% 
+    ungroup() %>% 
     mutate(cognate = factor(cognate, levels = c("Non-cognate", "Cognate"), ordered = TRUE),
-           bilingualism = cut_interval(bilingualism, n = 2, labels = c("Bilingualism below median", "Bilingualism above median")),
-           .draw = as.character(.draw)) %>%  
-    ggplot(aes(age_bin, proportion, colour = cognate, fill = cognate)) +
-    facet_grid(~bilingualism) +
-    stat_lineribbon(.width = 0.95, alpha = 0.25, colour = "NA", show.legend = FALSE) +
-    stat_summary(fun = "median", geom = "line", na.rm = TRUE, size = 1) +
+           bilingualism_cat = factor(bilingualism, levels = c(-1, 1), labels = c("Completely bilingual", "Completely monolingual")),
+           .draw = as.character(.draw))
+
+ggplot(posterior_check, aes(age_bin, .value, colour = cognate, fill = cognate)) +
+    facet_grid(~bilingualism_cat) +
+    stat_lineribbon(.width = 0.95, colour = NA, alpha = 0.5) +
+    stat_summary(fun = "mean", geom = "line") +
+    stat_summary(data = dat, aes(y = proportion), fun = "mean", geom = "point", shape = 1) +
     labs(x = "Age (months)", y = "Proportion",
-         group = "Cognate", colour = "Cognateness",
-         subtitle = "Posterior predictive checks: What does our model predict?",
-         caption = "Lines represent the median of the marginal posterior distribution of fitted values.\nShaded areas represent 95% credible intervals.") +
-    scale_colour_manual(values = c("#44546A", "orange")) +
-    scale_fill_manual(values = c("#44546A", "orange")) +
+         colour = "Cognateness", fill = "Cognateness", shape = "Cognateness") +
+    scale_fill_brewer(palette = "Set1") +
+    scale_colour_brewer(palette = "Set1") +
     scale_x_continuous(breaks = seq(0, 10), labels = bins_interest) +
     theme_classic() +
-    theme(legend.position = "top",
+    theme(legend.position = "top", 
+          axis.text = element_text(colour = "black"),
+          axis.text.x = element_text(angle = 270),
           legend.title = element_blank(),
           plot.caption = element_text(hjust = 0),
           plot.caption.position = "plot",
           plot.title.position = "plot") +
-    ggsave(here("Figures", "07_gca_comp_posterior-checks.png"), height = 4)
+    ggsave(here("Figures", "07_gca_comp_posterior-checks.png"))
 
 # 3D graph
+posterior_check_cat <- expand_grid(n = 1,
+                               age_bin = seq_range(dat$age_bin, n = 50),
+                               bilingualism = seq_range(dat$bilingualism, n = 50),
+                               cognate = c("Non-cognate", "Cognate")) %>%
+    add_fitted_draws(model = fit2, newdata = ., n = 100, scale = "response", re_formula = NA) %>% 
+    ungroup() %>% 
+    mutate(cognate = factor(cognate, levels = c("Non-cognate", "Cognate"), ordered = TRUE),
+           .draw = as.character(.draw))
+
 posterior_check %>%
     mutate(cognate = factor(cognate, levels = c("Non-cognate", "Cognate"), ordered = TRUE)) %>% 
-    ggplot(aes(age_bin, bilingualism, fill = proportion)) +
+    ggplot(aes(age_bin, bilingualism, fill = .value)) +
     facet_wrap(~cognate) +
-    geom_raster() +
-    labs(x = "Age (months)", y = "% L2 exposure", fill = "Proportion") +
+    geom_raster(interpolate = TRUE) +
+    annotate(geom = "text", colour = "white", label = "Very bilingual", size = 2.5,
+             x = median(posterior_check$age_bin), y = max(posterior_check$bilingualism)-0.1) +
+    annotate(geom = "text", colour = "white", label = "Very monolingual", size = 2.5,
+             x = median(posterior_check$age_bin), y = min(posterior_check$bilingualism)+0.1) +
+    labs(x = "Age (months)", y = "L2 exposure", fill = "Proportion") +
     scale_fill_viridis_c(option = "plasma") +
+    scale_x_continuous(breaks = seq_range(dat$age_bin, n = length(bins_interest)),
+                       labels = bins_interest) +
+    scale_y_continuous(breaks = seq_range(dat$bilingualism, n = 6),
+                       labels = paste0(seq(0, 50, by = 10), "%")) +
     theme_classic() +
+    theme(legend.position = "right",
+          axis.text = element_text(colour = "black"),
+          axis.text.x = element_text(angle = 270)) +
     ggsave(here("Figures", "07_gca_comp-surface.png"))
-    
-#### compare models #########################
-loo0 <- add_criterion(fit0, "loo", file = here("Results", "comp_fit0"))
-loo1 <- add_criterion(fit1, "loo", file = here("Results", "comp_fit1"))
-loo_comp <- loo_compare(loo0, loo1)
+
 
 #### export results #########################
-fwrite(posterior, here("Results", "comp_posterior.csv"), sep = ",", dec = ".")
-
-
-library(nlmer)
-
+fwrite(posterior_check, here("Results", "comp_posterior_check.csv"), sep = ",", dec = ".")
+fwrite(posterior_check_cat, here("Results", "comp_posterior_check_cat.csv"), sep = ",", dec = ".")
