@@ -13,14 +13,20 @@ library(tidybayes)
 library(BayesFactor)
 library(janitor)
 library(here)
+
 # load functions
+source(here("Code", "R", "functions.R"))
+inv_logit <- function(x) 1 / (1 + exp(-x))
 
 # set params
 set.seed(888)
 bins_interest <- c("12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34")
+nchains <- 4
+ncores <- 4
+niter <- 2000
+control <- list(adapt_delta = 0.95, max_treedepth = 15)
 
 #### import data #####################
-
 dat <- fread(here("Data", "preprocessed.csv"), na.strings = "", stringsAsFactors = TRUE)
 
 contrasts(dat$cognate) <- contr.sum(c("Non-cognate", "Cognate"))/2
@@ -29,32 +35,38 @@ contrasts(dat$item_dominance) <- contr.sum(c("L2", "L1"))/2
 dat_priors <- fread(here("Data", "05_priors-wordbank.csv")) %>%
     mutate(estimate_scaled = (estimate_scaled-14)/2)
 
-inv_logit <- function(x) 1 / (1 + exp(-x))
 
 #### comprehension ###################
 # set priors 
-comp_priors <- c(prior(normal(0.7857192, 0.5), nlpar = "asym", coef = "Intercept"),
-                 prior(normal(-1.7576520, 0.5), nlpar = "steep", coef = "Intercept"),
-                 prior(normal(4.369435, 1), nlpar = "mid", coef = "Intercept"),
-                 prior(normal(0, 5), class = "b", nlpar = "mid"),
-                 prior(cauchy(0, 5), class  = "sd", nlpar = "mid"))
+priors_comp <- c(prior(normal(0.7857192, 0.1), nlpar = "asym", coef = "Intercept"),
+                 prior(normal(4.669435, 1), nlpar = "mid", coef = "Intercept"),
+                 prior(normal(1.7576520, 0.8), nlpar = "steep", coef = "Intercept"),
+                 prior(normal(0, 1), class = "b", nlpar = "mid"),
+                 prior(cauchy(1.5, 1), class  = "sd", nlpar = "mid"))
+
+priors_prod <- c(prior(normal(0.7857192, 0.1), nlpar = "asym", coef = "Intercept"),
+                 prior(normal(5.669435, 1), nlpar = "mid", coef = "Intercept"),
+                 prior(normal(1.7576520, 0.8), nlpar = "steep", coef = "Intercept"),
+                 prior(normal(0, 1), class = "b", nlpar = "mid"),
+                 prior(cauchy(1.5, 1), class  = "sd", nlpar = "mid"))
 
 # `model 0
-comp_fit0 <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - age_bin) * steep)),
+comp_fit0 <- brm(formula = bf(proportion ~ asym * inv(1 + exp((mid - age_bin) * steep)),
                               asym ~ 1,
                               steep ~ 1,
-                              mid ~ 1 + (1 | meaning),
+                              mid ~ 1 + (1 | te),
                               nl = TRUE),
-                 prior = comp_priors,
+                 prior = priors_comp,
                  data = filter(dat, type=="Comprehensive"),
-                 chains = 1,
-                 iter = 2000,
+                 chains = nchains,
+                 cores = ncores,
+                 iter = niter,
                  file = here("Results", "comp_fit0.rds"),
                  save_model = here("Code", "Stan", "comp_fit0.stan"),
-                 control = list(adapt_delta = 0.95, max_treedepth = 15))
+                 control = control)
 
 # model 1
-comp_fit1 <- brm(formula = bf(proportion ~ inv_logit(asym) * inv(1 + exp((mid - age_bin) * steep)),
+comp_fit1 <- brm(formula = bf(proportion ~ asym) * inv(1 + exp((mid - age_bin) * steep)),
                               asym ~ 1,
                               steep ~ 1,
                               mid ~ 1 + item_dominance + (1 + item_dominance | meaning),
