@@ -23,74 +23,82 @@ bins_interest <- c("12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26"
 breaks <- c(0, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 100)
 
 #### import data ############################################
-pool <- read_xlsx(here("Data","01_pool.xlsx"))
+pool <- read_xlsx(here("Data","01_pool.xlsx")) %>%
+  rename(te = meaning) %>% 
+  select(-c(survey, version, ipa, source, label, A, B, C, D, cognate_expert, cognate_rater2, agreement, comments)) %>% 
+  rename(cognate = cognate_rater1) %>%
+  mutate_at(vars(include, cognate), ~as.logical(as.numeric(.)))
+
+  
 
 dat <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FALSE, na.strings = "") %>%
   as_tibble() %>%
   mutate_at(vars(time_stamp), as_date) %>%
   mutate_at(vars(id_db), as.character) %>%
+  mutate(dominance = case_when(id_db %in% "54469" ~ "Spanish",
+                               id_db %in% "57157" ~ "Catalan",
+                               TRUE ~ dominance),
+         doe_catalan = case_when(id_db %in% "54469" ~ 0,
+                                 id_db %in% "57157" ~ 80,
+                                 id_db %in% "57046" ~ 50,
+                                 TRUE ~ as.numeric(doe_catalan)),
+         doe_spanish = case_when(id_db %in% "57046" ~ 50,
+                                 TRUE ~ as.numeric(doe_spanish))) %>% 
   mutate(version = factor(version, levels = c("CBC", "BL-Short-A", "BL-Short-B", "BL-Short-C", "BL-Short-D", "BL-Long-1", "BL-Long-2", "DevLex"), ordered = TRUE)) %>%
   drop_na(response) %>%
   mutate(response = case_when(response == 1 ~ "no", response == 2 ~ "understands", response == 3 ~ "produces", TRUE ~ NA_character_),
          understands = response %in% c("understands", "produces"),
          produces = response %in% "produces",
-         doe = ifelse(dominance=="Spanish", doe_spanish, doe_catalan),
-         lp = ifelse(!data.table::between(doe, 50, 100,incbounds = TRUE), "Other", lp),
-         lp = factor(lp, levels = c("Monolingual", "Bilingual")),
+         doe1 = ifelse(dominance=="Spanish", doe_spanish, doe_catalan),
+         doe2 = ifelse(dominance=="Spanish", doe_catalan, doe_spanish),
+         lp = case_when(!data.table::between(doe1, 40, 100, incbounds = TRUE) ~ "Other",
+                        !data.table::between(doe2, 0, 50, incbounds = TRUE) ~ "Other",
+                        !between(doe1 + doe2, 90, 100, incbounds = TRUE) ~  "Other",
+                        TRUE ~ lp),
          age_bin = factor(cut(age, breaks = breaks, labels = bins), levels = bins, ordered = TRUE)) %>%
-  rowwise() %>% 
-  mutate(bilingualism = ifelse(dominance %in% "Spanish",
-                               1-abs((doe_spanish-doe_catalan)/(doe_spanish+doe_catalan)),
-                               1-abs((doe_catalan-doe_spanish)/(doe_spanish+doe_catalan)))) %>% 
-  ungroup() %>% 
   filter(lp %in% c("Monolingual", "Bilingual"),
          age_bin %in% bins_interest) %>%
-  select(-response) %>%
+  select(-response) %>% 
   pivot_longer(c(understands, produces), names_to = "type", values_to = "response") %>%
   mutate(type = ifelse(type=="understands", "Comprehensive", "Productive")) %>%
   arrange(item, lp, item_dominance, age_bin) %>%
+  filter(!(type=="Productive" & version=="DevLex")) %>% 
   # aggregate data
-  group_by(item, sex, lp, bilingualism, age_bin, item_dominance, type) %>%
+  group_by(item, lp, age_bin, item_dominance, type) %>%
   summarise(n = sum(!is.na(response)),
             successes = sum(response, na.rm = TRUE),
             proportion = mean(response, na.rm = TRUE),
+            logodds = log10((successes+0.5)/(n-successes+0.5)),
+            probability = 1/(1+exp(-logodds)),
+            weights = (1/(successes+0.5))+(1/(n-successes+0.5)),
             .groups = "drop") %>%
-  ungroup() %>%
-  arrange(age_bin, lp, item_dominance, age_bin) %>%
+  arrange(age_bin, item_dominance, age_bin) %>%
   left_join(pool, by = "item") %>%
-  rename(cognate = cognate_rater1) %>%
-  mutate_at(vars(include, cognate), ~as.logical(as.numeric(.))) %>%
   filter(include) %>%
-  drop_na(cognate, age_bin) %>%
-  select(-c(survey, version, ipa, source, label, A, B, C, D, include, cognate_expert, cognate_rater2, agreement, comments)) %>%
-  mutate(cognate = case_when(cognate ~ "Cognate", !cognate ~ "Non-cognate", TRUE ~ NA_character_))
+  select(-include) %>% 
+  mutate(cognate = case_when(cognate ~ "Cognate", !cognate ~ "Non-cognate", TRUE ~ NA_character_)) %>% 
+  drop_na(cognate, age_bin) 
 
 #### export data #############################################
 fwrite(dat, here("Data", "03_familiarity.csv"), sep = ",", dec = ".", row.names = FALSE)
 
 #### visualise data ##########################################
-ggplot(dat, aes(age_bin, proportion, group = cognate, colour = cognate, fill = cognate)) +
-  facet_grid(item_dominance~type~lp) +
-  geom_smooth(method = "lm", formula = y ~ splines::bs(x, 3)) +
-  #stat_summary(fun.data = "mean_se", geom = "ribbon", colour = NA, alpha = 0.5, na.rm = TRUE) +
-  #stat_summary(fun = "mean", geom = "line", na.rm = TRUE) +
-  labs(x = "Age (months)", y = "Proportion", colour = "Cognateness", fill = "Cognateness") +
-  scale_colour_brewer(palette = "Set1") +
-  scale_fill_brewer(palette = "Set1") +
-  theme_custom +
-  theme(legend.title = element_blank(),
-        legend.position = "top") +
-  ggsave(here("Figures", "03_familiarity.png"), height = 8, width = 10)
-  
-# by lang profile
-ggplot(dat, aes(bilingualism, proportion, group = cognate, colour = cognate, fill = cognate)) +
+dat %>%
+  mutate(lp_cog = case_when(cognate %in% "Cognate" & lp %in% "Bilingual" ~ "BIL - Cognate",
+                            cognate %in% "Non-cognate" & lp %in% "Bilingual" ~ "BIL - Non-cognate",
+                            cognate %in% "Cognate" & lp %in% "Monolingual" ~ "MON - Cognate",
+                            cognate %in% "Non-cognate" & lp %in% "Monolingual" ~ "MON - Non-cognate")) %>% 
+  ggplot(aes(age_bin, proportion, colour = lp_cog, group = lp_cog)) +
   facet_grid(item_dominance~type) +
-  stat_summary(fun = "mean", geom = "point", size = 0.5, na.rm = TRUE, alpha = 0.5) +
-  geom_smooth(method = "lm", formula = y ~ splines::bs(x, 2)) +
-  labs(x = "Bilingualism", y = "Proportion", colour = "Cognateness", fill = "Cognateness") +
-  scale_colour_brewer(palette = "Set1") +
-  scale_fill_brewer(palette = "Set1") +
-  theme_custom +
+  geom_smooth(method = "lm", formula = y ~ log(x), se = FALSE, size = 0.75) +
+  stat_summary(fun = "mean", geom = "point", shape = 1,  na.rm = TRUE) +
+  labs(x = "Age (months)", y = "Proportion", colour = "Cognateness", fill = "Cognateness") +
+  scale_colour_manual(values = c("red", "orange", "navy", "blue")) +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+  theme_bw() +
   theme(legend.title = element_blank(),
+        legend.text = element_text(size = 7),
+        axis.text.x = element_text(size = 7),
         legend.position = "top") +
-  ggsave(here("Figures", "03_familiarity.png"), height = 8, width = 10)
+  ggsave(here("Figures", "03_familiarity.png"), height = 5)
+  

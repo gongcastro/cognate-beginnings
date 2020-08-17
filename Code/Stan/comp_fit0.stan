@@ -1,4 +1,4 @@
-// generated with brms 2.12.0
+// generated with brms 2.13.9
 functions {
 }
 data {
@@ -52,14 +52,14 @@ model {
     mu[n] = nlp_asym[n] * inv(1 + exp((nlp_mid[n] - C_1[n]) * nlp_steep[n]));
   }
   // priors including all constants
-  target += normal_lpdf(b_asym[1] | 0.7857192, 0.5);
-  target += normal_lpdf(b_steep[1] | -1.757652, 1);
+  target += normal_lpdf(b_asym[1] | 0.7631182, 0.05);
+  target += normal_lpdf(b_steep[1] | 1.6859966, 0.5);
   target += normal_lpdf(b_mid[1] | 4.369435, 1);
-  target += student_t_lpdf(sigma | 3, 0, 10)
-    - 1 * student_t_lccdf(0 | 3, 0, 10);
-  target += cauchy_lpdf(sd_1 | 0, 5)
-    - 1 * cauchy_lccdf(0 | 0, 5);
-  target += normal_lpdf(z_1[1] | 0, 1);
+  target += normal_lpdf(b_mid[2] | 0, 1);
+  target += student_t_lpdf(sigma | 3, 0, 2.5)
+    - 1 * student_t_lccdf(0 | 3, 0, 2.5);
+  target += exponential_lpdf(sd_1 | 1);
+  target += std_normal_lpdf(z_1[1]);
   // likelihood including all constants
   if (!prior_only) {
     target += normal_lpdf(Y | mu, sigma);

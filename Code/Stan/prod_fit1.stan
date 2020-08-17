@@ -1,4 +1,4 @@
-// generated with brms 2.12.0
+// generated with brms 2.13.9
 functions {
 }
 data {
@@ -11,7 +11,7 @@ data {
   int<lower=1> K_mid;  // number of population-level effects
   matrix[N, K_mid] X_mid;  // population-level design matrix
   // covariate vectors for non-linear functions
-  int C_1[N];
+  vector[N] C_1;
   // data for group-level effects of ID 1
   int<lower=1> N_1;  // number of grouping levels
   int<lower=1> M_1;  // number of coefficients per level
@@ -58,18 +58,18 @@ model {
   }
   for (n in 1:N) {
     // compute non-linear predictor values
-    mu[n] = inv_logit(nlp_asym[n]) * inv(1 + exp((nlp_mid[n] - C_1[n]) * nlp_steep[n]));
+    mu[n] = nlp_asym[n] * inv(1 + exp((nlp_mid[n] - C_1[n]) * nlp_steep[n]));
   }
   // priors including all constants
-  target += normal_lpdf(b_asym[1] | 0.7857192, 0.5);
-  target += normal_lpdf(b_steep[1] | -1.757652, 1);
-  target += normal_lpdf(b_mid[1] | 5.369435, 1);
-  target += normal_lpdf(b_mid[2] | 0, 5);
-  target += student_t_lpdf(sigma | 3, 0, 10)
-    - 1 * student_t_lccdf(0 | 3, 0, 10);
-  target += cauchy_lpdf(sd_1 | 0, 5)
-    - 2 * cauchy_lccdf(0 | 0, 5);
-  target += normal_lpdf(to_vector(z_1) | 0, 1);
+  target += normal_lpdf(b_asym[1] | 0.7631182, 0.05);
+  target += normal_lpdf(b_steep[1] | 1.6859966, 0.5);
+  target += normal_lpdf(b_mid[1] | 5.3694351, 1);
+  target += normal_lpdf(b_mid[2] | 0, 1);
+  target += normal_lpdf(b_mid[3] | 0, 1);
+  target += student_t_lpdf(sigma | 3, 0, 2.5)
+    - 1 * student_t_lccdf(0 | 3, 0, 2.5);
+  target += exponential_lpdf(sd_1 | 1);
+  target += std_normal_lpdf(to_vector(z_1));
   target += lkj_corr_cholesky_lpdf(L_1 | 2);
   // likelihood including all constants
   if (!prior_only) {

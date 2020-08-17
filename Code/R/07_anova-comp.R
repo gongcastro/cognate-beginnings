@@ -11,7 +11,6 @@ library(tidybayes)
 library(BayesFactor)
 library(ggridges)
 library(patchwork)
-library(see)
 library(here)
 
 # load functions
@@ -22,7 +21,7 @@ set.seed(888)
 bins <- c("12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34")
 
 #### import data ###################################################
-fit1 <- readRDS(here("Results", "comp_fit1.rds"))
+fit2 <- readRDS(here("Results", "comp_fit2.rds"))
 dat <- fread(here("Data", "04_prepared.csv")) %>%
     as_tibble() %>% 
     filter(type=="Comprehensive",
@@ -36,9 +35,9 @@ dat <- fread(here("Data", "04_prepared.csv")) %>%
 
 #### extract midpoints ##############################################
 midpoints <- fit1 %>%
-    spread_draws(b_mid_Intercept, b_mid_item_dominance1, b_mid_frequency, r_meaning__mid[meaning, term]) %>% 
-    mutate(mid_L1 = b_mid_Intercept + r_meaning__mid + 0.5*b_mid_item_dominance1 + b_mid_frequency,
-           mid_L2 = b_mid_Intercept + r_meaning__mid + -0.5*b_mid_item_dominance1 + b_mid_frequency) %>% 
+    spread_draws(b_mid_Intercept, b_mid_bilingualism, r_meaning__mid[meaning, term]) %>% 
+    mutate(mid_L1 = b_mid_Intercept + r_meaning__mid + -1*b_mid_bilingualism,
+           mid_L2 = b_mid_Intercept + r_meaning__mid + -1*b_mid_bilingualism) %>% 
     median_qi(mid_L1, mid_L2) %>%
     select(-c(term, .interval, .point, .width)) %>%
     ungroup() %>% 

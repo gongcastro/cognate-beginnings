@@ -9,7 +9,6 @@ library(data.table) # for importing data
 library(tibble)     # more more informative data frames
 library(dplyr)      # for manipulating data
 library(mice)       # for imputing data
-library(purrr)      # for working with lists
 library(here)       # for locating files
 
 # create functions
@@ -22,8 +21,8 @@ bins_interest <- c("12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26"
 dat_familiarity <- fread(here("Data", "03_familiarity.csv"), quote = '"', na.strings = c("", "NA")) %>% 
     rowwise() %>%
     mutate(prop = prod(successes, 1/n, na.rm = TRUE))  %>%
-    filter(n >= 4,
-           class %in% c("noun", "verb")) %>%
+    filter(class %in% c("noun", "verb"),
+           lp %in% "Bilingual") %>% 
     ungroup()
 
 #### impute data ########################################
@@ -41,14 +40,16 @@ dat_imputed <- dat_familiarity %>%
 fwrite(dat_imputed, here("Data", "04_prepared.csv"), sep = ",", row.names = FALSE)
 
 #### visualise data #######################################
-ggplot(dat_imputed, aes(bilingualism, proportion, group = cognate, colour = cognate, fill = cognate)) +
+ggplot(dat_imputed, aes(age_bin, proportion, colour = cognate, group = cognate)) +
     facet_grid(item_dominance~type) +
-    stat_summary(fun = "mean", geom = "point", size = 0.5, na.rm = TRUE, alpha = 0.5) +
-    geom_smooth(method = "lm", formula = y ~ splines::bs(x, 2)) +
-    labs(x = "Bilingualism", y = "Proportion", colour = "Cognateness", fill = "Cognateness") +
-    scale_colour_brewer(palette = "Set1") +
-    scale_fill_brewer(palette = "Set1") +
-    theme_custom +
+    geom_smooth(method = "lm", formula = y ~ log(x), se = FALSE, size = 0.75) +
+    stat_summary(fun = "mean", geom = "point", shape = 1,  na.rm = TRUE) +
+    labs(x = "Age (months)", y = "Proportion", colour = "Cognateness", fill = "Cognateness") +
+    scale_colour_manual(values = c("red", "blue")) +
+    scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+    theme_bw() +
     theme(legend.title = element_blank(),
+          legend.text = element_text(size = 7),
+          axis.text.x = element_text(size = 7),
           legend.position = "top") +
-    ggsave(here("Figures", "03_familiarity.png"), height = 8, width = 10)
+    ggsave(here("Figures", "03_familiarity.png"), height = 5)
