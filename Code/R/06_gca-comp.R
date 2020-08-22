@@ -30,7 +30,8 @@ control <- list(adapt_delta = 0.95, max_treedepth = 15)
 #### import data ##########################################
 dat <- fread(here("Data", "04_prepared.csv")) %>%
     as_tibble() %>% 
-    filter(type=="Comprehensive") %>%
+    filter(type=="Comprehensive",
+           n > 4) %>%
     select(item, te, category, age_bin, item_dominance, cognate, frequency, n, successes, proportion) %>%
     mutate(age_bin = as.numeric(factor(age_bin, levels = bins_interest, ordered = TRUE))-1) %>% 
     mutate_at(vars(cognate, item_dominance), as.factor) %>% 
@@ -53,8 +54,7 @@ priors <- c(prior(normal(0.7631182, 0.05), nlpar = "asym", coef = "Intercept"),
 
 # model 0
 fit0 <- brm(formula = bf(proportion ~ asym*inv(1+exp((mid-age_bin)*steep)),
-                         asym ~ 1, steep ~ 1,
-                         mid ~ 1 + frequency + (1 | te),
+                         asym ~ 1, steep ~ 1, mid ~ 1 + frequency + (1 | te),
                          nl = TRUE),
             prior = priors, data = dat, chains = nchains, cores = ncores, iter = niter, control = control,
             file = here("Results", "comp_fit0.rds"),
@@ -63,8 +63,7 @@ fit0 <- brm(formula = bf(proportion ~ asym*inv(1+exp((mid-age_bin)*steep)),
 
 # model 1
 fit1 <- brm(formula = bf(proportion ~ asym * inv(1+exp((mid-age_bin)*steep)),
-                         asym ~ 1,
-                         steep ~ 1,
+                         asym ~ 1, steep ~ 1,
                          mid ~ 1 + frequency + item_dominance + (1 + item_dominance | te),
                          nl = TRUE),
             prior = c(priors, prior(lkj(2), class = "cor")),
