@@ -3,16 +3,10 @@
 #### set up #####################################################################
 
 # load packages
-library(dplyr)
-library(tibble)
-library(tidyr)
-library(ggdist)
-library(broom.mixed)
+library(tidyverse)
 library(data.table)
-library(forcats)
-library(nlme)
-library(modelr)
-library(janitor)
+library(brms)
+library(tidybayes)
 library(here)
 
 # create/load functions
@@ -22,246 +16,84 @@ source(here("Code", "R", "functions.R"))
 set.seed(888)
 bins_interest <- c("12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34")
 
-##### import data and set params #######################################################################################3
+##### import data and set params ###############################################
 dat <- fread(here("Data", "preprocessed.csv"), na.string = c("", "NA")) %>% 
     as_tibble() %>% 
-    select(item, type, te, category, age_bin, item_dominance, cognate, frequency, n, successes, proportion) %>%
-    mutate(age_bin = as.numeric(factor(age_bin, levels = bins_interest, ordered = TRUE))-1) %>% 
-    mutate_at(vars(cognate, item_dominance), as.factor) %>% 
-    arrange(item, te, age_bin) 
+    filter(type %in% "Comprehensive") %>% 
+    mutate(age_bin = as.numeric(factor(age_bin, levels = bins_interest, ordered = TRUE))-1,
+           age_center = age-mean(age, na.rm = TRUE),
+           cognate = as.factor(cognate),
+           item_dominance = as.factor(item_dominance),
+           response = as.numeric(response)) %>%
+    arrange(type, item, te, age_center) %>% 
+    select(item, te, item_dominance, cognate, age_center, response)
 
-contrasts(dat$cognate) <- contr.sum(c("Non-cognate", "Cognate"))/2
-contrasts(dat$item_dominance) <- contr.sum(c("L2", "L1"))/2
+contrasts(dat$cognate) <- c(0.5, -0.5) 
+contrasts(dat$item_dominance) <- c(0.5, -0.5) 
 
-dat_comp <- dat %>% filter(type=="Comprehensive") %>% groupedData(proportion ~ 1|te, .)
-dat_prod <- dat %>% filter(type=="Productive") %>% groupedData(proportion ~ 1|te, .)
+#### fit model #################################################################
+priors <- c(prior(normal(0, 0.1), class = "Intercept"),
+            prior(normal(0, 0.5), class = "b"),
+            prior(exponential(2.5), class = "sd"),
+            prior(lkj(2), class = "cor"))
 
-dat_priors <- fread(here("Data", "05_priors-wordbank.csv")) %>%
-    mutate(estimate_scaled = (estimate_scaled-14)/2)
-inits <- c(fixed = c(Asym = 0.7631182, xmid = 4.3694351, scal = 1.6859966))
+fit0 <- brm(response ~ age_center + (age_center | te), 
+            family = bernoulli("logit"),
+            data = dat,
+            prior = priors,
+            file = here("Results", "fit0.rds"),
+            chains = 1)
 
-#### comprehensive data ##################################################################################################
+fit1 <- brm(response ~ age_center*item_dominance + (age_center*item_dominance | te), 
+            family = bernoulli("logit"),
+            data = dat,
+            prior = priors,
+            file = here("Results", "fit1.rds"),
+            chains = 1)
 
-# fit models
-fit0_comp <- nlme(proportion ~ SSlogis(age_bin, Asym, xmid, scal),
-                  data = dat_comp,
-                  fixed = list(Asym ~ 1, xmid ~ 1, scal ~ 1),
-                  random = xmid~1|te,
-                  start = inits,
-                  control = nlmeControl(msMaxIter = 100))
+fit2 <- brm(response ~ age_center*item_dominance*cognate + (age_center*item_dominance | te), 
+            family = bernoulli("logit"),
+            data = dat,
+            prior = priors,
+            file = here("Results", "fit2.rds"),
+            chains = 1)
 
-fit1_comp <- update(fit0_comp, fixed = list(Asym ~ 1, xmid ~ 1 + frequency, scal ~ 1),
-                    start = c(inits, frequency = 0.1))
+#### compare models ############################################################
+loo0 <- loo(fit0)
+loo1 <- loo(fit1)
+loo2 <- loo(fit2)
+comp <- loo_compare(loo(fit0), loo(fit1), loo(fit2))
 
-fit2_comp <- update(fit0_comp, fixed = list(Asym ~ 1, xmid ~ 1 + frequency + item_dominance, scal ~ 1),
-                    random = xmid~item_dominance|te,
-                    start = c(inits, frequency = 0.1, item_dominance1 = 0.1))
+#### examine posterior #########################################################
+post <- gather_draws(fit2, `b_.*`, regex = TRUE)
+post_preds <- distinct(dat, te, cognate) %>%
+    left_join(., expand_grid(te = unique(dat$te),
+                             age_bin_center = seq(min(dat$age_bin_center),
+                                                  max(dat$age_bin_center),
+                                                  by = 0.1),
+                             item_dominance = c("L1", "L2"),
+                             n = 1)) %>% 
+    add_fitted_draws(fit1, n = 10) %>% 
+    mutate(te = as.factor(te))
 
-fit3_comp <- update(fit0_comp, fixed = list(Asym ~ 1, xmid ~ 1 + frequency + item_dominance + cognate, scal ~ 1),
-                    random = xmid~item_dominance|te,
-                    start = c(inits, frequency = 0.1, item_dominance1 = 0.1, cognate1 = 0.1))
+#### visualise data ############################################################
+# posterior distributions
+ggplot(post, aes(.value, .variable)) +
+    geom_vline(xintercept = 0) +
+    stat_dotsinterval(quantiles = seq(0, 1, by = 0.005)) 
 
-fit4_comp <- update(fit0_comp, fixed = list(Asym ~ 1, xmid ~ 1 + frequency + item_dominance*cognate, scal ~ 1),
-                    random = xmid~item_dominance|te,
-                    start = c(inits, frequency = 0.1, item_dominance1 = 1, cognate1 = 1, `item_dominance:cognate` = 1))
+# joint posterior distribution
+spread_draws(fit1, `b_.*`, regex = TRUE) %>% 
+    ggplot(aes(b_Intercept, b_age_bin_center)) +
+    stat_density_2d_filled()
 
-# compare models
-selection_comp <- anova(fit0_comp, fit1_comp, fit2_comp, fit3_comp, fit4_comp)
-anova_comp <- anova(fit4_comp)
-summary_comp <- summary(fit4_comp)
-
-# age of acquisition
-aoa_comp <- summary_comp$coefficients$random$te %>% 
-    as_tibble() %>% 
-    mutate(te = unique(as.character(dat_comp$te))) %>% 
-    left_join(mutate_all(distinct(dat_comp, item_dominance, cognate, te, .keep_all = TRUE), as.character)) %>% 
-    clean_names() %>% 
-    mutate(asym_intercept = summary_comp$coefficients$fixed["Asym"],
-           scal_intercept = summary_comp$coefficients$fixed["scal"],
-           xmid_intercept = summary_comp$coefficients$fixed["xmid.(Intercept)"] + xmid_intercept,
-           xmid_item_dominance = summary_comp$coefficients$fixed["xmid.item_dominance1"] + xmid_item_dominance1, 
-           xmid_cognate = summary_comp$coefficients$fixed["xmid.cognate1"],
-           xmid_item_dominance_cognate = summary_comp$coefficients$fixed["xmid.item_dominance1:cognate1"],
-           item_dominance_coded = ifelse(item_dominance=="L1", 0.5, -0.5),
-           cognate_coded = ifelse(cognate=="Cognate", 0.5, -0.5)) %>% 
-    rowwise() %>% 
-    mutate(item_dominance_cognate_coded = item_dominance_coded*cognate_coded,
-           asym = asym_intercept,
-           scal = scal_intercept,
-           xmid = xmid_intercept+(item_dominance_coded*xmid_item_dominance)+(cognate_coded*xmid_cognate)+(item_dominance_cognate_coded*xmid_item_dominance_cognate)) %>% 
-    ungroup() %>% 
-    select(te, item_dominance, cognate, xmid) %>% 
-    pivot_wider(names_from = item_dominance, values_from = xmid) %>% 
-    rowwise() %>% 
-    mutate(xmid_diff = abs(L2-L1)) %>% 
-    ungroup() %>% 
-    as.data.frame() %>% 
-    mutate(cognate = as.factor(cognate))
-
-
-#### productive data ##################################################################################################
-
-# fit models
-fit0_prod <- nlme(proportion ~ SSlogis(age_bin, Asym, xmid, scal), data = dat_prod,
-                  fixed = list(Asym ~ 1, xmid ~ 1, scal ~ 1),
-                  random = xmid ~ 1|te,
-                  start = inits,
-                  control = nlmeControl(msMaxIter = 100))
-
-fit1_prod <- update(fit0_prod, fixed = list(Asym ~ 1, xmid ~ 1 + frequency, scal ~ 1),
-                    start = c(inits, frequency = 0.1))
-
-fit2_prod <- update(fit0_prod, fixed = list(Asym ~ 1, xmid ~ 1 + frequency + item_dominance, scal ~ 1),
-                    random = xmid~item_dominance|te,
-                    start = c(inits, frequency = 0.1, item_dominance = 0.1))
-
-# this model does not converge successfully, so let's try a Zero-correlation parameter model
-fit3_prod <- update(fit1_prod, fixed = list(Asym ~ 1, xmid ~ 1 + frequency + item_dominance+cognate, scal ~ 1),
-                    random = xmid~item_dominance|te,
-                    start = c(inits, frequency = 0.1, item_dominance1 = 0.1, cognate1 = 0.1))
-
-fit3_zero_prod <- update(fit1_prod, fixed = list(Asym ~ 1, xmid ~ 1 + frequency + item_dominance+cognate, scal ~ 1),
-                         random = pdDiag(form = xmid~item_dominance),
-                         start = c(inits, frequency = 0.1, item_dominance1 = 0.1, cognate1 = 0.1))
-
-fit4_prod <- update(fit1_prod, fixed = list(Asym ~ 1, xmid ~ 1 + frequency + item_dominance*cognate, scal ~ 1),
-                    random = xmid~item_dominance|te,
-                    start = c(inits, frequency = 0.1, item_dominance1 = 0.1, cognate1 = 0.1, `item_dominance:cognate` = 0.1))
-
-# compare models
-selection_prod <- anova(fit0_prod, fit1_prod, fit2_prod, fit3_zero_prod, fit4_prod)
-anova_prod <- anova(fit4_prod)
-summary_prod <- summary(fit4_prod)
-
-#### predictions ##################################
-
-# comprehension predictions
-comp_asym <- summary_comp$coefficients$fixed["Asym"]
-comp_scal <- summary_comp$coefficients$fixed["scal"]
-comp_xmid_intercept <- summary_comp$coefficients$fixed["xmid.(Intercept)"]
-comp_xmid_frequency <- summary_comp$coefficients$fixed["xmid.frequency"]
-comp_xmid_item_dominance <- summary_comp$coefficients$fixed["xmid.item_dominance1"]
-comp_xmid_cognate <- summary_comp$coefficients$fixed["xmid.cognate1"]
-comp_xmid_item_dominance_cognate <- summary_comp$coefficients$fixed["xmid.item_dominance1:cognate1"]
-
-comp_preds <- expand_grid(cognate = c(-0.5, 0.5),
-                          item_dominance = c(-0.5, 0.5),
-                          frequency = mean(dat$frequency, na.rm = TRUE),
-                          age_bin = seq_range(dat_prod$age_bin, n = 100)) %>% 
-    rowwise() %>% 
-    mutate(xmid = comp_xmid_intercept + frequency*comp_xmid_frequency + item_dominance*comp_xmid_item_dominance + cognate*comp_xmid_cognate + (item_dominance*cognate)*comp_xmid_item_dominance_cognate,
-           proportion = comp_asym/(1+exp((xmid-age_bin)/comp_scal))) %>% 
-    ungroup() %>% 
-    mutate(cognate = ifelse(cognate==-0.5, "Non-cognate", "Cognate"),
-           item_dominance = ifelse(item_dominance==-0.5, "L2", "L1"))
+# posterior predictive predictions
+ggplot(dat, aes(age_bin_center, proportion)) +
+    facet_wrap(te~cognate) +
+    geom_line(data = post_preds, aes(y = .value, group = interaction(.draw, item_dominance),
+                                     colour = item_dominance)) +
+    theme_minimal() +
+    theme(legend.position = "none")
 
 
-# production predictions
-prod_asym <- summary_prod$coefficients$fixed["Asym"]
-prod_scal <- summary_prod$coefficients$fixed["scal"]
-prod_xmid_intercept <- summary_prod$coefficients$fixed["xmid.(Intercept)"]
-prod_xmid_frequency <- summary_prod$coefficients$fixed["xmid.frequency"]
-prod_xmid_item_dominance <- summary_prod$coefficients$fixed["xmid.item_dominance1"]
-prod_xmid_cognate <- summary_prod$coefficients$fixed["xmid.cognate1"]
-prod_xmid_item_dominance_cognate <- summary_prod$coefficients$fixed["xmid.item_dominance1:cognate1"]
 
-prod_preds <- expand_grid(cognate = c(-0.5, 0.5),
-                          item_dominance = c(-0.5, 0.5),
-                          frequency = mean(dat$frequency, na.rm = TRUE),
-                          age_bin = seq_range(dat_prod$age_bin, n = 100)) %>% 
-    rowwise() %>% 
-    mutate(xmid = prod_xmid_intercept + frequency*prod_xmid_frequency + item_dominance*prod_xmid_item_dominance + cognate*prod_xmid_cognate + (item_dominance*cognate)*prod_xmid_item_dominance_cognate,
-           proportion = prod_asym/(1+exp((xmid-age_bin)/prod_scal))) %>% 
-    ungroup() %>% 
-    mutate(cognate = ifelse(cognate==-0.5, "Non-cognate", "Cognate"),
-           item_dominance = ifelse(item_dominance==-0.5, "L2", "L1"))
-
-#### random effects ##############################################
-
-# comprehension random effects
-rancoefs_comp <- summary(fit4_comp)$coefficients$random$te %>%
-    as_tibble() %>% 
-    mutate(te = as.character(unique(dat_comp$te))) %>% 
-    relocate(te) %>% 
-    clean_names() %>% 
-    rowwise() %>% 
-    mutate(xmid_intercept = comp_xmid_intercept + xmid_intercept,
-           xmid_item_dominance1 = comp_xmid_item_dominance + xmid_item_dominance1)
-
-# production random effects
-rancoefs_prod <- summary(fit4_prod)$coefficients$random$te %>% 
-    as_tibble() %>% 
-    mutate(te = as.character(unique(dat_prod$te))) %>% 
-    relocate(te) %>% 
-    clean_names() %>% 
-    mutate(xmid_intercept = xmid_intercept,
-           xmid_item_dominance1 = xmid_item_dominance1)
-
-# joint random effects
-rancoefs <- bind_rows(rancoefs_comp, rancoefs_prod, .id = "type") %>%
-    mutate(type = ifelse(type==1, "Comprehensive", "Productive")) %>% 
-    left_join(distinct(mutate(dat, te = as.character(te)), te, type, cognate))
-
-
-#### ages of acquisition ###################################
-
-# comprehensive AoAs
-aoa_comp <- summary_comp$coefficients$random$te %>% 
-    as_tibble() %>% 
-    mutate(te = unique(as.character(dat_comp$te))) %>% 
-    left_join(mutate_all(distinct(dat_comp, item_dominance, cognate, te, .keep_all = TRUE), as.character)) %>% 
-    clean_names() %>% 
-    mutate(asym_intercept = summary_comp$coefficients$fixed["Asym"],
-           scal_intercept = summary_comp$coefficients$fixed["scal"],
-           xmid_intercept = summary_comp$coefficients$fixed["xmid.(Intercept)"] + xmid_intercept,
-           xmid_item_dominance = summary_comp$coefficients$fixed["xmid.item_dominance1"] + xmid_item_dominance1, 
-           xmid_cognate = summary_comp$coefficients$fixed["xmid.cognate1"],
-           xmid_item_dominance_cognate = summary_comp$coefficients$fixed["xmid.item_dominance1:cognate1"],
-           item_dominance_coded = ifelse(item_dominance=="L1", 0.5, -0.5),
-           cognate_coded = ifelse(cognate=="Cognate", 0.5, -0.5)) %>% 
-    rowwise() %>% 
-    mutate(item_dominance_cognate_coded = item_dominance_coded*cognate_coded,
-           asym = asym_intercept,
-           scal = scal_intercept,
-           xmid = xmid_intercept+(item_dominance_coded*xmid_item_dominance)+(cognate_coded*xmid_cognate)+(item_dominance_cognate_coded*xmid_item_dominance_cognate)) %>% 
-    ungroup() %>% 
-    select(te, item_dominance, cognate, xmid) %>% 
-    pivot_wider(names_from = item_dominance, values_from = xmid) %>% 
-    rowwise() %>% 
-    mutate(xmid_diff = abs(L2-L1)) %>% 
-    ungroup() %>% 
-    as.data.frame() %>% 
-    mutate(cognate = as.factor(cognate))
-
-# productive AoAs
-aoa_prod <- summary_prod$coefficients$random$te %>% 
-    as_tibble() %>% 
-    mutate(te = unique(as.character(dat_comp$te))) %>% 
-    left_join(mutate_all(distinct(dat_comp, item_dominance, cognate, te, .keep_all = TRUE), as.character)) %>% 
-    clean_names() %>% 
-    mutate(asym_intercept = summary_prod$coefficients$fixed["Asym"],
-           scal_intercept = summary_prod$coefficients$fixed["scal"],
-           xmid_intercept = summary_prod$coefficients$fixed["xmid.(Intercept)"] + xmid_intercept,
-           xmid_item_dominance = summary_prod$coefficients$fixed["xmid.item_dominance1"] + xmid_item_dominance1, 
-           xmid_cognate = summary_prod$coefficients$fixed["xmid.cognate1"],
-           xmid_item_dominance_cognate = summary_prod$coefficients$fixed["xmid.item_dominance1:cognate1"],
-           item_dominance_coded = ifelse(item_dominance=="L1", 0.5, -0.5),
-           cognate_coded = ifelse(cognate=="Cognate", 0.5, -0.5)) %>% 
-    rowwise() %>% 
-    mutate(item_dominance_cognate_coded = item_dominance_coded*cognate_coded,
-           asym = asym_intercept,
-           scal = scal_intercept,
-           xmid = xmid_intercept+(item_dominance_coded*xmid_item_dominance)+(cognate_coded*xmid_cognate)+(item_dominance_cognate_coded*xmid_item_dominance_cognate)) %>% 
-    ungroup() %>% 
-    select(te, item_dominance, cognate, xmid) %>% 
-    pivot_wider(names_from = item_dominance, values_from = xmid) %>% 
-    rowwise() %>% 
-    mutate(xmid_diff = abs(L2-L1)) %>% 
-    ungroup() %>% 
-    as.data.frame() %>% 
-    mutate(cognate = as.factor(cognate))
-
-# joint AoAs
-aoas <- bind_rows(aoa_comp, aoa_prod, .id = "type") %>% 
-    mutate(type = ifelse(type==1, "Comprehensive", "Productive")) %>% 
-    pivot_longer(c(L1, L2), names_to = "item_dominance", values_to = "xmid")
