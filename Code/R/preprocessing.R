@@ -3,9 +3,7 @@
 #### set up ##############################################################
 
 # load packages
-library(dplyr)
-library(tidyr)
-library(stringr)
+library(tidyverse)
 library(lubridate)
 library(readxl)
 library(janitor)
@@ -24,13 +22,10 @@ breaks <- c(0, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 1
 
 #### participant data ######################
 
-participants <- list.files(here("Data", "Logs"), pattern = "logs", full.names = TRUE) %>%
-    .[!str_detect(., "summary")] %>%
-    last() %>%
-    fread(na.strings = "") %>%
+participants <- fread(here("Data", "participants.csv"), na.strings = "") %>%
     as_tibble() %>%
     mutate_at(vars(date_sent, time_stamp), as_date) %>%
-    mutate_at(vars(id_db), factor) %>%
+    mutate_at(vars(id_db), factor) %>% 
     mutate_at(vars(age_bin), factor, levels = bins, ordered = TRUE) %>%
     mutate(dominance = case_when(id_db %in% "54469" ~ "Spanish",
                                  id_db %in% "57157" ~ "Catalan",
@@ -57,7 +52,7 @@ fwrite(participants, here("Data", "participants.csv"), sep = ",", dec = ".", row
 
 
 #### items data ############################################################
-pool <- read_xlsx(here("Data", "01_pool.xlsx"), na = c("", "NA")) %>%
+pool <- read_xlsx(here("Data", "pool.xlsx"), na = c("", "NA")) %>%
     rename(te = meaning) %>% 
     mutate(frequency = as.numeric(frequency),
            te = as.character(te),
@@ -66,7 +61,7 @@ pool <- read_xlsx(here("Data", "01_pool.xlsx"), na = c("", "NA")) %>%
 
 
 #### process responses #####################################################
-responses <- fread(here("Data", "02_merged.csv"), header = TRUE, stringsAsFactors = FALSE, na.strings = "") %>%
+responses <- fread(here("Data", "responses.csv"), header = TRUE, stringsAsFactors = FALSE, na.strings = "") %>%
     as_tibble() %>%
     mutate_at(vars(time_stamp), as_date) %>%
     mutate_at(vars(id_db), as.character) %>%
@@ -104,7 +99,7 @@ fwrite(responses, here("Data", "raw.csv"), sep = ",", dec = ".", row.names = FAL
 
 
 #### vocabulary sizes ###########################################################################
-studies <- fread(here("Data", "00_studies.csv"), na.strings = c("", "NA")) %>%
+studies <- fread(here("Data", "studies.csv"), na.strings = c("", "NA")) %>%
     distinct(q_version, language, q_items)
 
 vocab <- responses %>% 
@@ -131,37 +126,30 @@ fwrite(vocab, here("Data", "vocab.csv"), sep = ",", dec = ".", row.names = FALSE
 
 
 #### aggregate data #############################################################################
-aggregated <- responses %>% 
-    group_by(item, version, sex, lp, age_bin, item_dominance, type) %>%
-    summarise(n = sum(!is.na(response)),
-              successes = sum(response, na.rm = TRUE),
-              proportion = mean(response, na.rm = TRUE),
-              .groups = "drop") %>%
-    ungroup() %>%
-    arrange(age_bin, lp, item_dominance, age_bin) %>%
-    left_join(select(pool, -version), by = "item") %>%
-    rename(cognate = cognate_rater1) %>%
-    mutate_at(vars(include), ~as.logical(as.numeric(.))) %>%
-    filter(include) %>%
-    drop_na(cognate, age_bin) %>%
-    select(-c(survey, ipa, source, label, A, B, C, D, include, cognate_expert, cognate_rater2, agreement, comments))
+ aggregated <- responses %>% 
+    # group_by(item, version, sex, lp, age_bin, item_dominance, type) %>%
+    # summarise(n = sum(!is.na(response)),
+    #           successes = sum(response, na.rm = TRUE),
+    #           proportion = mean(response, na.rm = TRUE),
+    #           .groups = "drop") %>%
+    #  ungroup() %>%
+     arrange(age_bin, lp, item_dominance) %>%
+     left_join(select(pool, -version), by = "item") %>%
+     rename(cognate = cognate_rater1) %>%
+     mutate_at(vars(include), ~as.logical(as.numeric(.))) %>%
+     filter(include) %>%
+     drop_na(cognate, age_bin) %>%
+     select(-c(survey, ipa, source, label, A, B, C, D, include, cognate_expert, cognate_rater2, agreement, comments))
 
-#### prepare data ##########################3
-imputed <- aggregated %>%
-    rowwise() %>%
-    mutate(prop = prod(successes, 1/n, na.rm = TRUE))  %>%
-    filter(class %in% c("noun", "verb"),
-           !(type=="Productive" & version=="DevLex")) %>%  
-    ungroup() %>% 
-    mice(data = ., method = "norm", m = 5, maxit = 5,  seed = 888) %>%
-    complete() %>%
-    as_tibble() %>%
-    ungroup() %>%
-    filter(lp=="Bilingual") %>%
-    select(item, version, type, te, category, age_bin, item_dominance, frequency, cognate, n, successes, proportion) %>%
+#### prepare data ##############################################################
+prepared <- aggregated %>%
+    #mutate(prop = prod(successes, 1/n, na.rm = TRUE)) %>%
+    filter(class %in% c("nouns"),
+           !(type %in% "Productive" & version %in% "DevLex")) %>%
+    select(item, version, type, te, age_bin, age, item_dominance, cognate, response) %>%
     arrange(type, item, te, age_bin)
 
-fwrite(imputed, here("Data", "preprocessed.csv"), sep = ",", dec = ".", row.names = FALSE)
+fwrite(prepared, here("Data", "preprocessed.csv"), sep = ",", dec = ".", row.names = FALSE)
 
 
 
