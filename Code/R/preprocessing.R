@@ -127,12 +127,12 @@ fwrite(vocab, here("Data", "vocab.csv"), sep = ",", dec = ".", row.names = FALSE
 
 #### aggregate data #############################################################################
  aggregated <- responses %>% 
-    # group_by(item, version, sex, lp, age_bin, item_dominance, type) %>%
-    # summarise(n = sum(!is.na(response)),
-    #           successes = sum(response, na.rm = TRUE),
-    #           proportion = mean(response, na.rm = TRUE),
-    #           .groups = "drop") %>%
-    #  ungroup() %>%
+    group_by(item, version, sex, lp, age_bin, item_dominance, type) %>%
+    summarise(n = sum(!is.na(response)),
+              successes = sum(response, na.rm = TRUE),
+              proportion = mean(response, na.rm = TRUE),
+              .groups = "drop") %>%
+     ungroup() %>%
      arrange(age_bin, lp, item_dominance) %>%
      left_join(select(pool, -version), by = "item") %>%
      rename(cognate = cognate_rater1) %>%
@@ -143,10 +143,9 @@ fwrite(vocab, here("Data", "vocab.csv"), sep = ",", dec = ".", row.names = FALSE
 
 #### prepare data ##############################################################
 prepared <- aggregated %>%
-    #mutate(prop = prod(successes, 1/n, na.rm = TRUE)) %>%
     filter(class %in% c("nouns"),
            !(type %in% "Productive" & version %in% "DevLex")) %>%
-    select(item, version, type, te, age_bin, age, item_dominance, cognate, response) %>%
+    select(item, version, type, te, age_bin, category, item_dominance, cognate, proportion, successes, n) %>%
     arrange(type, item, te, age_bin)
 
 fwrite(prepared, here("Data", "preprocessed.csv"), sep = ",", dec = ".", row.names = FALSE)
