@@ -17,7 +17,7 @@ source(here("Code", "R", "functions.R"))
 # set params
 set.seed(888)
 bins <- c("< 10", "10-12", "12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34", "34-36", "36-38", "38-40", "> 40")
-bins_interest <- c("12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34")
+bins_interest <- bins[-c(1, length(bins))]
 breaks <- c(0, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 100)
 
 #### participant data ######################
@@ -102,10 +102,14 @@ fwrite(responses, here("Data", "raw.csv"), sep = ",", dec = ".", row.names = FAL
 studies <- fread(here("Data", "studies.csv"), na.strings = c("", "NA")) %>%
     distinct(q_version, language, q_items)
 
-vocab <- responses %>% 
+vocabulary <- responses %>% 
     as_tibble() %>%
     mutate_at(vars(id_db), as.character) %>%
-    mutate(version = factor(version, levels = c("CBC", "BL-Short-A", "BL-Short-B", "BL-Short-C", "BL-Short-D", "BL-Long-1", "BL-Long-2", "DevLex"), ordered = TRUE)) %>% 
+    mutate(version = factor(version, levels = c("CBC", paste0("BL-Short-", c("A", "B", "C", "D")),
+                                                paste0("BL-Long-", 1:2),
+                                                "DevLex",
+                                                paste0("BL-Lockdown-", c("A", "B", "C", "D")),
+                                                ordered = TRUE))) %>% 
     left_join(studies, by = c("version" = "q_version", "language")) %>% 
     select(id_db, study, version, age, age_bin, sex, language, item_dominance, dominance, doe1, doe2, lp, type, response, q_items) %>% 
     rename(dominance_doe = dominance) %>%
@@ -120,9 +124,9 @@ vocab <- responses %>%
     clean_names() %>% 
     rowwise() %>% 
     ungroup() %>% 
-    select(-c(q_items, n))
+    select(-c(q_items))
 
-fwrite(vocab, here("Data", "vocab.csv"), sep = ",", dec = ".", row.names = FALSE)
+fwrite(vocabulary, here("Data", "vocabulary.csv"), sep = ",", dec = ".", row.names = FALSE)
 
 
 #### aggregate data #############################################################################
