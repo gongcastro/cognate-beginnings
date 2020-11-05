@@ -70,9 +70,9 @@ ggplot(prior_dist, aes(.iteration, .value, colour = .chain)) +
 ggplot(prior_dist, aes(.value, fill = .variable)) +
     facet_wrap(~.variable, scales = "free_x") +
     stat_halfeye() +
-    scale_fill_brewer(palette = "BrBG") +
+    scale_fill_manual(values = c("#BF812D", "#01665E")) +
     theme_minimal() +
-    labs(x = "Iteration", y = "Value", fill = "Chain") +
+    labs(x = "Iteration", y = "Value", fill = "Parameter") +
     theme(axis.title = element_text(face = "bold"),
           strip.text = element_text(face = "bold"),
           legend.title = element_text(face = "bold"),
@@ -104,8 +104,9 @@ ggplot(posterior_dist, aes(.iteration, .value, colour = .chain)) +
     labs(x = "Iteration", y = "Value", colour = "Chain") +
     theme(axis.title = element_text(face = "bold"),
           strip.text = element_text(face = "bold"),
+          strip.background = element_rect(fill = "grey", colour = NA),
           legend.title = element_text(face = "bold"),
-          legend.position = "top")
+          legend.position = "top") 
 
 # distributions
 ggplot(posterior_dist, aes(.value, fill = .variable)) +
@@ -116,8 +117,9 @@ ggplot(posterior_dist, aes(.value, fill = .variable)) +
     labs(x = "Iteration", y = "Value", fill = "Chain") +
     theme(axis.title = element_text(face = "bold"),
           strip.text = element_text(face = "bold"),
+          strip.background = element_rect(fill = "grey", colour = NA),
           legend.title = element_text(face = "bold"),
-          legend.position = "top")
+          legend.position = "top") 
 
 # prior predictive distribution
 posterior_preds <- expand.grid(age_center = seq(min(dat$age_center),
