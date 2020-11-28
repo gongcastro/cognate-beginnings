@@ -34,7 +34,7 @@ dat <- list.files(here("Data", "Wordbank"), full.names = TRUE) %>%
     filter(num_item_id %in% sample(unique(.$num_item_id), size = 10))
 
 #### fit model #################################################################
-fit <- brm(successes | trials(n)  ~ age_bin + (1 + age_bin | language:num_item_id),
+fit <- brm(successes | trials(n)  ~ age_bin + (1 + age_bin | language),
            family = binomial("logit"),
            chains = 1,
            file = here("Results", "fitp_wordbank.rds"),
@@ -50,18 +50,21 @@ post_preds_fixed <- expand.grid(age_bin = seq(min(dat$age_bin), max(dat$age_bin)
                           n = 1) %>% 
     add_fitted_draws(fit, n = 10, re_formula = NA) 
 post_preds_group <- expand.grid(age_bin = seq(min(dat$age_bin), max(dat$age_bin), by = 0.1),
-                          num_item_id = unique(dat$num_item_id),
+                                language = unique(dat$language),
                           n = 1) %>% 
     left_join(distinct(dat, language, num_item_id)) %>% 
     add_fitted_draws(fit, n = 10) %>% 
     mutate(num_item_id = as.factor(num_item_id))
-ggplot(post_preds_group, aes(age_bin, .value)) +
-    facet_wrap(~language) +
-    geom_line(aes(group = interaction(.draw, num_item_id), colour = num_item_id),
-              size = 0.25, alpha = 0.5, show.legend = FALSE) +
+ggplot(post_preds_group, aes(age_bin, .value, colour = language)) +
+    stat_summary(data = post_preds_group, fun = "median", geom = "line", size = 0.5, alpha = 0.75) +
     stat_lineribbon(data = post_preds_fixed, .width = 0.95, alpha = 0.5, size = 0,
-                    colour = "black", show.legend = FALSE) +
-    stat_summary(data = post_preds_fixed, fun = "median", geom = "line", size = 1)
+                    colour = "black", fill = "black", show.legend = FALSE) +
+    stat_summary(data = post_preds_fixed, fun = "median", geom = "line", size = 1, colour = "black") +
+    labs(x = "Age (months)", y = "p(y|age)", colour = "Language") +
+    scale_color_viridis_d() +
+    theme_minimal() +
+    theme(axis.title = element_text(face = "bold"),
+          legend.title = element_text(face = "bold"))
 
 #### get AoAs ##################################################################
 aoa <- spread_draws(fit, b_age_bin, `r_language:num_item_id`[language_item, param]) %>%
@@ -72,9 +75,14 @@ aoa <- spread_draws(fit, b_age_bin, `r_language:num_item_id`[language_item, para
     ungroup() %>% 
     separate(language_item, c("language", "num_item_id"), sep = "_")
 
-ggplot(aoa, aes(num_item_id, aoa)) +
+ggplot(aoa, aes(num_item_id, aoa, fill = language)) +
     facet_wrap(~language, scales = "free") +
     stat_slab() +
     coord_flip() +
-    theme(axis.text.y = element_blank(),
+    labs(x = "Age (months)", y = "p(y|age)", colour = "Language") +
+    scale_fill_viridis_d() +
+    theme_minimal() +
+    theme(axis.title = element_text(face = "bold"),
+          legend.title = element_text(face = "bold"),
+          axis.text.y = element_blank(),
           axis.ticks.y = element_blank())
