@@ -1,0 +1,18 @@
+---
+title: 'Appendix 3: Session info'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r sessioninfo, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+sessionInfo()
+
+```
+
+
