@@ -57,7 +57,7 @@ model {
   vector[N] mu = rep_vector(0, N);
   // priors including all constants
   target += normal_lpdf(Intercept | 0.5, 0.5);
-  target += normal_lpdf(to_vector(bcs) | 0.5, 0.1);
+  target += normal_lpdf(bcs[1] | 0.1, 0.15);
   // likelihood including all constants
   if (!prior_only) {
     for (n in 1:N) {
@@ -68,4 +68,7 @@ model {
 generated quantities {
   // compute actual thresholds
   vector[nthres] b_Intercept = Intercept;
+  // additionally draw samples from priors
+  real prior_Intercept = normal_rng(0.5,0.5);
+  real prior_bcs_1 = normal_rng(0.1,0.15);
 }
