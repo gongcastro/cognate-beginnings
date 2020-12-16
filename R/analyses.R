@@ -9,8 +9,9 @@ library(tidybayes)
 library(here)
 
 #### import data ---------------------------------------------------------------
-participants <- ml_participants("gonzalo.garciadecastro@upf.edu")
-responses <- ml_responses(participants, "gonzalo.garciadecastro@upf.edu")  
+ml_connect("gonzalo.garciadecastro@upf.edu")
+participants <- ml_participants()
+responses <- ml_responses(participants)  
 logs <- ml_logs(participants, responses)
 vocabulary <- ml_vocabulary(participants, responses)
 
@@ -49,7 +50,7 @@ dat_responses <- responses %>%
         bilingualism = ifelse(dominance=="Catalan", doe_spanish, doe_catalan)/100
     ) %>% 
     select(id, version, age, sex, dominance, lp, bilingualism, time, item, language, item_dominance, response, completed) %>% 
-    left_join(select(pool, te, language, item, category, class, frequency, cognate, include),
+    left_join(select(pool, te, language, item, category, class, frequency_zipf, cognate, include),
               by = c("item", "language")) %>% 
     mutate(cognate = case_when(
         cognate ~ "Cognate",
@@ -68,7 +69,7 @@ dat_responses <- responses %>%
     filter(time==min(.$time)) %>% 
     ungroup() %>% 
     drop_na(response, te, cognate) %>% 
-    select(id, age, sex, dominance, lp, te, item, response, language, item_dominance, cognate, frequency, bilingualism) %>% 
+    select(id, age, sex, dominance, lp, te, item, response, language, item_dominance, cognate, frequency_zipf, bilingualism) %>% 
     #mutate(age_centred = scale(age, center = TRUE, scale = FALSE)[,1]) %>%
     mutate_at(vars(cognate, item_dominance), as.factor) %>%
     mutate(response = factor(
