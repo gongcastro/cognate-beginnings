@@ -29,7 +29,7 @@ model {
   vector[N] mu = Intercept + Xc * b;
   // priors including all constants
   target += normal_lpdf(b | 0, 0.5);
-  target += normal_lpdf(Intercept | 0, 1);
+  target += normal_lpdf(Intercept | 0, 0.5);
   // likelihood including all constants
   if (!prior_only) {
     target += binomial_logit_lpmf(Y | trials, mu);

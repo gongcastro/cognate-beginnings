@@ -3,8 +3,10 @@
 # load packages
 library(tidyverse)
 library(multilex)
-library(data.table)
 library(brms)
+library(janitor)
+library(scales)
+library(stringdist)
 library(tidybayes)
 library(here)
 
@@ -15,228 +17,412 @@ responses <- ml_responses(participants)
 logs <- ml_logs(participants, responses)
 vocabulary <- ml_vocabulary(participants, responses)
 
+#### items ---------------------------------------------------------------------
+dat_items <- pool %>% 
+  drop_na(cognate, ipa) %>% 
+  filter(
+    include,
+    class %in% c("Noun")
+  ) %>% 
+  rename(frequency = frequency_zipf) %>% 
+  select(te, language, item, ipa, frequency, cognate) %>% 
+  pivot_wider(
+    id_cols = c(te, cognate),
+    names_from = language,
+    values_from = c(item, ipa, frequency)
+  ) %>% 
+  clean_names() %>% 
+  mutate(
+    similarity = stringsim(ipa_catalan, ipa_spanish, method = "lv")
+  ) %>% 
+  pivot_longer(
+    cols = matches("_catalan|_spanish"),
+    names_to = c(".value", "language"),
+    names_sep = "_",
+  ) %>% 
+  mutate(language = str_to_sentence(language),
+         cognate = ifelse(cognate, "Cognate", "Non-Cognate")) %>% 
+  relocate(te, language, item, ipa, cognate, frequency)
+
+write.table(dat_items, "Data/items.csv", row.names = FALSE)
+
+#### participants -----------------------------------------------------------------
+dat_participants <- logs %>% 
+  filter(
+    completed,
+    !(version %in% c("DevLex", "CBC")),
+    lp %in% c("Monolingual", "Bilingual"),
+    between(age, 10, 40),
+  ) %>% 
+  group_by(id) %>% 
+  filter(time==max(time)) %>% 
+  ungroup() %>% 
+  select(id, time, age, dominance, doe_catalan, doe_spanish) %>% 
+  mutate_at(vars(matches("doe")), function(x) x*0.01) 
+
+write.table(dat_participants, "Data/participants.csv", row.names = FALSE)
+
 #### vocabulary sizes ----------------------------------------------------------
-dat_vocab <- logs %>% 
-    filter(
-        completed,
-        !(version %in% c("DevLex", "CBC")),
-        lp %in% c("Monolingual", "Bilingual"),
-        between(age, 10, 40),
-    ) %>% 
-    select(id, time, age, doe_catalan, doe_spanish) %>% 
-    left_join(
-        vocabulary, by = c("id", "time")
-    ) %>% 
-    group_by(id) %>% 
-    filter(time==min(.$time)) %>% 
-    ungroup() %>% 
-    mutate(
-        bilingualism = case_when(
-            doe_catalan > doe_spanish ~ doe_spanish/100,
-            doe_spanish > doe_catalan ~ doe_catalan/100,
-            TRUE ~ 0.5
-        ),
-        vocab_type = ifelse(vocab_type=="understands", 0, 1),
-        id = as.numeric(as.factor(id))
-    ) %>% 
-    mutate_at(vars(vocab_type), as.factor) 
+dat_vocab <- dat_participants %>%
+  left_join(vocabulary, by = c("id", "time")) %>% 
+  mutate(
+    id = as.numeric(as.factor(id)),
+    vocab_type = str_to_sentence(vocab_type)
+  )
+
+write.table(dat_vocab, "Data/vocabulary.csv", row.names = FALSE)
 
 #### process responses ---------------------------------------------------------
-dat_responses <- responses %>% 
-    select(id, time, item, response, language) %>% 
-    left_join(logs, by = c("id", "time")) %>% 
-    mutate(
-        item_dominance = ifelse(language==dominance, "L1", "L2"),
-        bilingualism = ifelse(dominance=="Catalan", doe_spanish, doe_catalan)/100
-    ) %>% 
-    select(id, version, age, sex, dominance, lp, bilingualism, time, item, language, item_dominance, response, completed) %>% 
-    left_join(select(pool, te, language, item, category, class, frequency_zipf, cognate, include),
-              by = c("item", "language")) %>% 
-    mutate(cognate = case_when(
-        cognate ~ "Cognate",
-        !cognate ~ "Non-cognate",
-        TRUE ~ NA_character_)
-    ) %>% 
-    filter(
-        completed,
-        !(version %in% c("DevLex", "CBC")),
-        lp %in% c("Monolingual", "Bilingual"),
-        between(age, 10, 40),
-        include,
-        class %in% c("Verb", "Noun", "Adjective")
-    ) %>% 
-    group_by(id) %>% 
-    filter(time==min(.$time)) %>% 
-    ungroup() %>% 
-    drop_na(response, te, cognate) %>% 
-    select(id, age, sex, dominance, lp, te, item, response, language, item_dominance, cognate, frequency_zipf, bilingualism) %>% 
-    #mutate(age_centred = scale(age, center = TRUE, scale = FALSE)[,1]) %>%
-    mutate_at(vars(cognate, item_dominance), as.factor) %>%
-    mutate(response = factor(
-        response, ordered = TRUE,
-        labels = c("No", "Understands", "Understands & Says"))
-    ) %>% 
-    arrange(item, te) %>% 
-    select(id, age, bilingualism, item, te, item_dominance, cognate, response) 
+cut_quantiles <- function(x, quantiles = seq(0.0, 1, 0.2)) {
+  cut(x,
+      breaks = quantile(x, probs = quantiles), 
+      labels = FALSE,
+      include.lowest = TRUE
+  )
+}
 
-contrasts(dat_responses$response) <- c(0, 1, 2)
-contrasts(dat_responses$cognate) <- c(1, 0)
-contrasts(dat_responses$item_dominance) <- c(0, 1)
+dat_responses <- expand_grid(
+  id = dat_participants$id,
+  item = dat_items$item
+) %>%
+  left_join(dat_participants, by = "id") %>% 
+  left_join(dat_items, by = "item") %>% 
+  left_join(select(responses, id, item, response), by = c("id", "item")) %>% 
+  select(id, age, dominance, doe_catalan, doe_spanish, te, language, item, ipa, cognate, frequency, response) %>% 
+  drop_na() %>%
+  distinct(id, te, age, item, .keep_all = TRUE) %>% 
+  mutate(
+    doe = case_when(
+      dominance=="Catalan" ~ doe_spanish,
+      dominance=="Spanish" ~ doe_catalan
+    ),
+    item_dominance = ifelse(dominance==language, "L1", "L2"),
+    understands = response %in% c(2, 3),
+    produces = response %in% 3,
+    age = cut_width(age, width = 2, labels = FALSE),
+    doe = round(doe, 1)*10,
+    frequency = cut_quantiles(frequency)
+  ) %>% 
+  group_by(age, doe, te, frequency, cognate, item_dominance) %>% 
+  summarise(
+    understands = sum(understands),
+    produces = sum(produces),
+    n = n(),
+    .groups = "drop"
+  ) %>% 
+  mutate_at(vars(age, frequency, doe), function(x) scale(x, scale = FALSE)[,1]) %>% 
+  mutate_at(vars(item_dominance, cognate), as.factor) %>% 
+  arrange(te) %>% 
+  select(age, doe, te, frequency, item_dominance, cognate, understands, produces, n) %>% 
+  drop_na() 
+
+write.table(dat_responses, "Data/responses.csv", row.names = FALSE)
 
 #### model fitting -------------------------------------------------------------
-priors <- c(
-    prior(normal(0.5, 0.5), class = Intercept),
-    prior(normal(0.1, 0.15), class = b, coef = "age"),
-    prior(normal(0, 0.5), class = b, coef = "item_dominance1"),
-    prior(normal(0, 0.5), class = b, coef = "age:item_dominance1"),
-    prior(normal(0, 0.5), class = b, coef = "cognateness1"),
-    prior(normal(0, 0.5), class = b, coef = "age:cognateness1"),
-    prior(normal(0, 0.5), class = b, coef = "item_dominance1:cognateness1"),
-    prior(normal(0, 0.5), class = b, coef = "age:item_dominance1:cognateness1")
+contrasts(dat_responses$item_dominance) <- contr.sum(2)/2
+contrasts(dat_responses$cognate) <- contr.sum(2)/2
+
+# fit comprehensive data
+comp_0 <- brm(
+  understands | trials(n) ~ 1,
+  data = dat_responses,
+  family = binomial("logit"),
+  prior = prior(normal(0, 0.5), class = Intercept),
+  save_model = "Stan/comp_0.stan",
+  file = "Results/comp_0.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
 )
 
-fit0 <- brm(
-    response ~ cs(age),
-    data = dat_responses,
-    family = acat(link = "logit", threshold = "flexible"),
-    prior = priors[1:2,],
-    save_all_pars = TRUE,
-    sample_prior = "yes",
-    save_model = here("Stan", "responses0.stan"),
-    file = here("Results", "responses0.rds"),
-    control = list(adapt_delta = 0.8, max_treedepth = 10),
-    seed = 888, iter = 4000, chains = 4, init = 0, cores = 4
+comp_1 <- update(
+  comp_0, . ~ . + age,
+  prior = c(prior(normal(0, 0.5), class = Intercept),
+            prior(normal(0, 0.5), class = b)),
+  newdata = dat_responses,
+  save_model = "Stan/comp_1.stan",
+  file = "Results/comp_1.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
 )
 
-fit1 <- update(
-    fit0, . ~ . -cs(age) + cs(age*item_dominance),
-    newdata = dat_responses,
-    file = here("Results", "responses1.rds"),
-    save_model = here("Stan", "responses1.stan")
+comp_2 <- update(
+  comp_1, 
+  . ~ . + frequency,
+  newdata = dat_responses,
+  save_model = "Stan/comp_2.stan",
+  file = "Results/comp_2.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
 )
 
-fit2 <- update(
-    fit1, . ~ . + cs(age*item_dominance*cognate),
-    newdata = dat_responses,
-    file = here("Results", "responses2.rds"),
-    save_model = here("Stan", "responses2.stan")
+comp_3 <- update(
+  comp_2, 
+  . ~ . + item_dominance,
+  newdata = dat_responses,
+  save_model = "Stan/comp_3.stan",
+  file = "Results/comp_3.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
+)
+
+comp_4 <- update(
+  comp_3, 
+  . ~ .  + doe,
+  newdata = dat_responses,
+  save_model = "Stan/comp_4.stan",
+  file = "Results/comp_4.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
+)
+
+comp_5 <- update(
+  comp_4, 
+  . ~ . + item_dominance:doe,
+  newdata = dat_responses,
+  save_model = "Stan/comp_5.stan",
+  file = "Results/comp_5.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
+)
+
+comp_6 <- update(
+  comp_5, 
+  . ~ . + cognate,
+  newdata = dat_responses,
+  save_model = "Stan/comp_6.stan",
+  file = "Results/comp_6.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
+)
+
+comp_7 <- update(
+  comp_6, 
+  . ~ . + item_dominance:cognate,
+  newdata = dat_responses,
+  save_model = "Stan/comp_7.stan",
+  file = "Results/comp_7.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
+)
+
+comp_8 <- update(
+  comp_7, 
+  . ~ . + doe:cognate,
+  newdata = dat_responses,
+  save_model = "Stan/comp_8.stan",
+  file = "Results/comp_8.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
+)
+
+comp_9 <- update(
+  comp_8, 
+  . ~ . + item_dominance:doe:cognate,
+  newdata = dat_responses,
+  save_model = "Stan/comp_9.stan",
+  file = "Results/comp_9.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
+)
+
+# fit productive data
+prod_0 <- brm(
+  produces ~ 1,
+  data = dat_responses,
+  family = bernoulli("logit"),
+  prior = prior(normal(0.5, 0.5), class = Intercept),
+  save_model = "Stan/prod_0.stan",
+  file = "Results/prod_0.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
+)
+
+prod_1 <- update(
+  prod_0, . ~ . + age,
+  prior = c(prior(normal(0.5, 0.5), class = Intercept),
+            prior(normal(0, 0.5), class = b)),
+  newdata = dat_responses,
+  save_model = "Stan/prod_1.stan",
+  file = "Results/prod_1.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
+)
+
+prod_2 <- update(
+  prod_1, 
+  . ~ . + frequency,
+  newdata = dat_responses,
+  save_model = "Stan/prod_2.stan",
+  file = "Results/prod_2.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
+)
+
+prod_3 <- update(
+  prod_2, 
+  . ~ .  + item_dominance,
+  newdata = dat_responses,
+  save_model = "Stan/prod_3.stan",
+  file = "Results/prod_3.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
+)
+
+prod_4 <- update(
+  prod_3, 
+  . ~ . + doe,
+  newdata = dat_responses,
+  save_model = "Stan/prod_4.stan",
+  file = "Results/prod_4.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
+)
+
+prod_5 <- update(
+  prod_4, 
+  . ~ . + item_dominance:doe,
+  newdata = dat_responses,
+  save_model = "Stan/prod_5.stan",
+  file = "Results/prod_5.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
+)
+
+prod_6 <- update(
+  prod_5, 
+  . ~ . + cognate,
+  newdata = dat_responses,
+  save_model = "Stan/prod_6.stan",
+  file = "Results/prod_6.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
+)
+
+prod_7 <- update(
+  prod_6, 
+  . ~ . + item_dominance:cognate,
+  newdata = dat_responses,
+  save_model = "Stan/prod_7.stan",
+  file = "Results/prod_7.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
+)
+
+prod_8 <- update(
+  prod_7, 
+  . ~ . + doe:cognate,
+  newdata = dat_responses,
+  save_model = "Stan/prod_8.stan",
+  file = "Results/prod_8.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
+)
+
+prod_9 <- update(
+  prod_8, 
+  . ~ . + item_dominance:doe:cognate,
+  newdata = dat_responses,
+  save_model = "Stan/prod_9.stan",
+  file = "Results/prod_9.rds",
+  seed = 888, iter = 2000, chains = 4, cores = 4
 )
 
 #### model comparison ----------------------------------------------------------
-map2(list(fit0, fit1, fit2, fit2),
-     list(here("Results", "responses0.rds"),
-          here("Results", "responses1.rds"),
-          here("Results", "responses2.rds")),
-     ~add_criterion(
-         .x,
-         criterion = c("loo", "waic", "bayes_R2", "loo_R2", "marglik"),
-         file = .y,
-         overwrite = TRUE
-     ))
+comp_0_loo <- loo(comp_0)
+comp_1_loo <- loo(comp_1)
+comp_2_loo <- loo(comp_2)
+comp_3_loo <- loo(comp_3)
+comp_4_loo <- loo(comp_4)
+comp_5_loo <- loo(comp_5)
+comp_6_loo <- loo(comp_6)
+comp_7_loo <- loo(comp_7)
+comp_8_loo <- loo(comp_8)
+comp_9_loo <- loo(comp_9)
 
-loos <- loo(fit0, fit1, fit2)
-waic <- WAIC(fit0, fit1, fit2)
-bf <-
+kfold_comp <- kfold(comp_0, comp_1, comp_2, comp_3, comp_4, comp_5, comp_6, comp_7, comp_8, comp_9)
+kfold_prod <- kfold(prod_0, prod_1, prod_2, prod_3, prod_4, prod_5, prod_6, prod_7, prod_8, prod_9)
 
 #### test interactions ---------------------------------------------------------
 
-h <- hypothesis(
-    fit2,
-    class = "bcs", seed = 888,
-    c("cognate1[1] + item_dominance1[1] = 0",
-      "cognate1[1] + age:item_dominance1[1] = 0",
-      "item_dominance1[1] + cognate1[1] = 0",
-      "item_dominance1[1] + age:cognate1[1] = 0",
-      "cognate1[2] + item_dominance1[2] = 0",
-      "cognate1[2] + age:item_dominance1[2] = 0",
-      "item_dominance1[2] + cognate1[2] = 0",
-      "item_dominance1[2] + age:cognate1[2] = 0",
-      "age[1] = age[2]",
-      "item_dominance1[1] = item_dominance1[2]",
-      "cognate1[1] = cognate1[2]",
-      "age:item_dominance1[1] = age:item_dominance1[2]",
-      "age:cognate1[1] = age:cognate1[2]",
-      "age:item_dominance1:cognate1[1] = age:item_dominance1:cognate1[2]"
-    )
-)
-#### posterior -----------------------------------------------------------------
-post <- list(posterior = gather_draws(fit0, `b.*`, regex = TRUE),
-             prior = gather_draws(fit0, `prior.*`, regex = TRUE)) %>% 
-    bind_rows(.id = "dist") %>% 
-    mutate(.chain = as.factor(.chain),
-           category = case_when(
-               str_detect(.variable, "\\[1\\]") ~ "No-Understands",
-               str_detect(.variable, "\\[2\\]") ~ "Understands-Produces",
-               str_detect(.variable, "prior") ~ "Prior"
-           ),
-           .variable = str_remove(.variable, "prior_"),
-           .variable = str_remove_all(.variable, "\\[.*?\\]")
-    )
+hypothesis(comp_9, c(
+  lowDoe_L1_cognate = "Intercept + 30*age - 1*doe - 0.5*item_dominance1 + 0.5*cognate1 - 0.5*item_dominance1:doe - 0.5*item_dominanceitem_dominance1 0.5*cognate1= 0"
+  
+))
 
-post %>% 
-    ggplot(aes(x = .iteration, y = .value, colour = .chain)) +
-    facet_wrap(category~.variable, scales = "free_y") +
-    geom_line() +
-    scale_colour_manual(values = c("#543005", "#BF812D", "#80CDC1", "#01665E")) +
-    theme_minimal() +
-    labs(x = "Iteration", y = "Value", colour = "Chain") +
-    theme(axis.title = element_text(face = "bold"),
-          strip.text = element_text(face = "bold"),
-          legend.title = element_text(face = "bold"),
-          legend.position = "top")
+#### examine posterior ---------------------------------------------------------
+post <- list(
+  comprehensive = gather_draws(comp_9, `b.*`, regex = TRUE),
+  productive = gather_draws(prod_9, `b.*`, regex = TRUE)
+)%>% 
+  bind_rows(.id = "type") %>% 
+  mutate(.chain = as.factor(.chain)) %>% 
+  filter(!(.variable %in% c("b_Intercept", "b_age")))
 
-post %>% 
-    filter(category != "Prior") %>% 
-    ggplot(aes(.value, fill = category)) +
-    facet_wrap(~.variable, scales = "free") +
-    stat_halfeye() +
-    labs(x = "Value", y = "Probability density",
-         fill = "CrI") +
-    #scale_fill_brewer(palette = "Oranges", direction = -1,) +
-    theme_minimal() +
-    theme(axis.title = element_text(face = "bold"),
-          strip.text = element_text(face = "bold"),
-          strip.background = element_rect(fill = "grey", colour = NA),
-          legend.title = element_text(face = "bold"),
-          legend.position = "top") +
-    ggsave(here("Figures", "responses-coefs.png"))
+ggplot(post, aes(x = .iteration, y = .value, colour = .chain)) +
+  facet_wrap(type~.variable, scales = "free_y", nrow = 4) +
+  geom_line() +
+  scale_colour_brewer(palette = "Dark2", direction = -1) +
+  theme_minimal() +
+  labs(x = "Iteration", y = "Value", colour = "Chain") +
+  theme(axis.title = element_text(face = "bold"),
+        strip.text = element_text(face = "bold"),
+        legend.title = element_text(face = "bold"),
+        legend.position = "top") +
+  ggsave(here("Figures", "responses-mcmc.png"))
+
+
+ggplot(post, aes(.value, .variable)) +
+  facet_wrap(~type, scales = "free", nrow = 4) +
+  stat_slab(aes(fill = stat(cut_cdf_qi(cdf, .width = c(.5, .8, .95, 0.99), # quantiles
+                                       labels = percent_format(accuracy = 1))))) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  labs(x = "Value", y = "Probability density",
+       fill = "CrI") +
+  scale_fill_brewer(palette = "Oranges", direction = -1, na.translate = FALSE) +
+  theme_minimal() +
+  theme(axis.title = element_text(face = "bold"),
+        strip.text = element_text(face = "bold"),
+        strip.background = element_rect(fill = "grey", colour = NA),
+        legend.title = element_text(face = "bold"),
+        legend.position = "top") +
+  ggsave(here("Figures", "responses-coefs.png"))
 
 #### posterior predictions -----------------------------------------------------
-post_preds <- expand_grid(
-    age = seq(min(dat_responses$age, na.rm = TRUE), max(dat_responses$age, na.rm = TRUE), by = 0.5),
-    #item_dominance = c("L1", "L2"),
-    #cognate = c("Cognate", "Non-cognate")
+nd <- expand_grid(
+  age = seq(10, 40, 1),
+  item_dominance = c("L1", "L2"),
+  doe = c(-1, 0, 1),
+  frequency = c(-1, 0, 1),
+  cognate = c("Cognate", "Non-Cognate")
+)
+post_preds <- list(
+  comprehensive = add_fitted_draws(nd, comp_8, n = 50),
+  productive = add_fitted_draws(nd, prod_8, n = 50)
 ) %>% 
-    add_fitted_draws(., fit0, n = 50) %>% 
-    mutate(
-        #bilingualism = ifelse(bilingualism==0, "Monolingual", "Bilingual"),
-        .category = case_when(
-            .category==1 ~ "No",
-            .category==2 ~ "Understands",
-            .category==3 ~ "Understands & Produces"
-        )
-    )
+  bind_rows(.id = "type") %>% 
+  mutate_at(vars(doe, frequency), as.character) %>% 
+  mutate_at(vars(doe, frequency), function(x){
+    str_replace_all(x, c("0" = "Mean", "1" = "1 SD")) %>% 
+      factor(levels = c("-1 SD", "Mean", "1 SD"), ordered = TRUE)
+  }) %>% 
+  rename(
+    DOE = doe,
+    Frequency = frequency
+  )
 
-ggplot(post_preds,
-       aes(age, .value,
-           #colour = interaction(item_dominance, cognate, lex.order = TRUE, sep = " - "),
-           #fill = interaction(item_dominance, cognate, lex.order = TRUE, sep = " - ")
-       )) +
-    facet_wrap(~.category) +
-    stat_lineribbon(.width = 0.95, alpha = 0.5) +
-    stat_summary(fun = mean, geom = "line", size = 1) +
-    scale_fill_brewer(palette = "Dark2") +
-    scale_colour_brewer(palette = "Dark2") +
-    scale_y_continuous(limits = c(0, 1)) +
-    scale_x_continuous(breaks = seq(-14, 17, by = 5), labels = seq(10, 40, by = 5)) +
-    labs(x = "Age (months)", y = "P(Y|X)") +
-    theme_minimal() +
-    theme(axis.title = element_text(face = "bold"),
-          strip.text = element_text(face = "bold"),
-          strip.background = element_rect(fill = "grey", colour = NA),
-          legend.title =element_blank(),
-          legend.position = "top",
-          text = element_text(size = 15)) +
-    ggsave(here("Figures", "responses-multinomial.png"), height = 4)
+post_preds %>% 
+  filter(type=="comprehensive") %>%
+  ggplot(aes(age, .value, colour = interaction(item_dominance, cognate, sep = " - "))) +
+  facet_grid(Frequency~DOE, labeller = label_both) +
+  #geom_line(aes(group = interaction(item_dominance, cognate, .draw)), alpha = 0.25) +
+  stat_summary(fun = mean, geom = "line", size = 1) +
+  labs(x = "Age (months)", y = "P(Understands)") +
+  scale_color_brewer(palette = "Dark2") +
+  scale_y_continuous(limits = c(0, 1)) +
+  theme_minimal() +
+  theme(axis.title = element_text(face = "bold"),
+        strip.text = element_text(face = "bold"),
+        strip.background = element_rect(fill = "grey", colour = NA),
+        legend.position = "top",
+        legend.title = element_blank(),
+        text = element_text(size = 15)) +
+  ggsave(here("Figures", "responses-post-preds-comp.png"), height = 8)
 
-
+post_preds %>% 
+  filter(type=="productive") %>%
+  ggplot(aes(age, .value, colour = interaction(item_dominance, cognate, sep = " - "))) +
+  facet_grid(Frequency~DOE, labeller = label_both) +
+  #geom_line(aes(group = interaction(item_dominance, cognate, .draw)), alpha = 0.25) +
+  stat_summary(fun = mean, geom = "line", size = 1) +
+  labs(x = "Age (months)", y = "P(Produces)") +
+  scale_color_brewer(palette = "Dark2") +
+  scale_y_continuous(limits = c(0, 1)) +
+  theme_minimal() +
+  theme(axis.title = element_text(face = "bold"),
+        strip.text = element_text(face = "bold"),
+        strip.background = element_rect(fill = "grey", colour = NA),
+        legend.position = "top",
+        legend.title = element_blank(),
+        text = element_text(size = 15)) +
+  ggsave(here("Figures", "responses-post-preds-prod.png"), height = 8)
