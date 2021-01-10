@@ -7,6 +7,7 @@ library(tidyverse)
 library(brms)
 library(scales)
 library(tidybayes)
+library(emmeans)
 library(here)
 
 # load helper functions
@@ -17,7 +18,7 @@ responses <- read_csv(here("Data", "responses.csv"))
 responses_subset <- filter(responses, te %in% sample(responses$te, 25))
 
 # summarise responses (for visualisation purposes)
-proportion <- dat_responses %>% 
+proportion <- responses %>% 
   mutate(
     understands = response %in% 2,
     says = response %in% 3, 
@@ -40,8 +41,9 @@ proportion <- dat_responses %>%
 
 
 # set sum contrasts (Schad et al., 2018, https://arxiv.org/abs/1807.10451)
-contrasts(dat_responses$item_dominance) <- contr.sum(2)/2
-contrasts(dat_responses$cognate) <- contr.sum(2)/2
+contrasts(responses_subset$item_dominance) <- contr.sum(2)/2
+contrasts(responses_subset$cognate) <- contr.sum(2)/2
+
 #### model fitting -------------------------------------------------------------
 
 # set weakly uninformative prior
@@ -62,7 +64,7 @@ fit_0 <- brm(
 
 fit_1 <- update(
   fit_0, . ~ . + age,
-  prior = ,
+  prior = prior,
   newdata = responses_subset,
   save_model = here("Stan", "fit_1.stan"),
   file = here("Results", "fit_1.rds"),
@@ -89,7 +91,7 @@ fit_4 <- update(
   fit_3, . ~ . + doe,
   newdata = responses_subset,
   save_model = here("Stan", "fit_4.stan"),
-  file = c("Results", "fit_4.rds"),
+  file = here("Results", "fit_4.rds"),
   seed = 888, iter = 1000, chains = 4, cores = 4
 )
 
@@ -152,7 +154,9 @@ loo_compare(loo_0, loo_1, loo_2, loo_3, loo_4, loo_5, loo_6, loo_7, loo_8, loo_9
 saveRDS(loo_list, here("Results", "loo.rds"))
 
 #### test interactions ---------------------------------------------------------
-
+cognate_by_dominance <- emmeans(fit_9, "item_dominance", specs = pairwise ~ cognate, type =  "response")
+dominance_by_cognate <- emmeans(fit_9, "cognate", specs = pairwise ~ item_dominance, type =  "response")
+dominance_by_cognate <- emmeans(fit_9, "cognate", specs = pairwise ~ item_dominance, type =  "response")
 
 #### examine posterior ---------------------------------------------------------
 
