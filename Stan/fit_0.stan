@@ -66,7 +66,7 @@ model {
   // initialize linear predictor term
   vector[N] mu = rep_vector(0, N);
   // priors including all constants
-  target += normal_lpdf(Intercept | 0, 0.5);
+  target += normal_lpdf(Intercept | 0, 1);
   // likelihood including all constants
   if (!prior_only) {
     for (n in 1:N) {

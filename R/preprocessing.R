@@ -26,21 +26,7 @@ items <- pool %>%  # from multilex::pool
         class %in% c("Noun")
     ) %>% 
     rename(frequency = frequency_zipf) %>% 
-    select(te, language, item, ipa, frequency, cognate) %>% 
-    pivot_wider(
-        id_cols = c(te, cognate),
-        names_from = language,
-        values_from = c(item, ipa, frequency)
-    ) %>% 
-    clean_names() %>% 
-    mutate(
-        similarity = stringsim(ipa_catalan, ipa_spanish, method = "lv")
-    ) %>% 
-    pivot_longer(
-        cols = matches("_catalan|_spanish"),
-        names_to = c(".value", "language"),
-        names_sep = "_",
-    ) %>% 
+    select(te, language, category, item, ipa, frequency, cognate) %>% 
     mutate(
         language = str_to_sentence(language),
         cognate = ifelse(cognate, "Cognate", "Non-Cognate")
@@ -60,8 +46,12 @@ participants <- l %>%
     group_by(id) %>% 
     filter(time==max(time)) %>% 
     ungroup() %>% 
-    select(id, time, age, dominance, doe_catalan, doe_spanish) %>% 
-    mutate_at(vars(matches("doe")), function(x) x*0.01) 
+    mutate(doe = case_when(
+        dominance=="Catalan" ~ doe_spanish,
+        dominance=="Spanish" ~ doe_catalan
+    )) %>% 
+    mutate_at(vars(matches("doe")), function(x) x*0.01) %>% 
+    select(id, time_stamp, time, age, sex, dominance, doe)
 
 write_csv(participants, here("Data", "participants.csv"))
 
@@ -82,25 +72,18 @@ responses <- expand_grid(
 ) %>%
     left_join(participants, by = "id") %>% 
     left_join(items, by = "item") %>% 
-    left_join(select(responses, id, item, response), by = c("id", "item")) %>% 
-    select(id, age, dominance, doe_catalan, doe_spanish, te, language, item, ipa, cognate, frequency, response) %>% 
+    left_join(select(r, id, item, response), by = c("id", "item")) %>% 
+    select(id, age, dominance, doe, te, language, item, ipa, cognate, frequency, response) %>% 
     drop_na() %>%
     distinct(id, te, age, item, .keep_all = TRUE) %>% 
     mutate(
-        doe = case_when(
-            dominance=="Catalan" ~ doe_spanish,
-            dominance=="Spanish" ~ doe_catalan
-        ),
         item_dominance = ifelse(dominance==language, "L1", "L2"),
         doe = round(doe, 1)*10,
         understands = response %in% c(2, 3),
         produces = response %in% 3
     ) %>% 
-    mutate_at(vars(age, frequency, doe), function(x) scale(x, scale = FALSE)[,1]) %>% 
-    mutate_at(vars(item_dominance, cognate), as.factor) %>% 
     arrange(te) %>% 
     select(age, doe, te, frequency, item_dominance, cognate, response) %>% 
     drop_na() 
 
 write_csv(responses, here("Data", "responses.csv"))
-

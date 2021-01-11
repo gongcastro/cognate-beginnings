@@ -14,8 +14,14 @@ library(here)
 source(here("R", "utils.R"))
 
 #### import data ---------------------------------------------------------------
-responses <- read_csv(here("Data", "responses.csv"))
-responses_subset <- filter(responses, te %in% sample(responses$te, 25))
+responses <- read_csv(here("Data", "responses.csv")) %>% 
+  mutate_at(vars(age, frequency, doe), function(x) scale(x, scale = FALSE)[,1]) %>% 
+  mutate_at(vars(item_dominance, cognate, response), as.factor) 
+
+responses_subset <- filter(responses, te %in% sample(responses$te, 25)) %>% 
+  mutate_at(vars(age, frequency, doe), function(x) scale(x, scale = FALSE)[,1]) %>% 
+  mutate_at(vars(item_dominance, cognate), as.factor) %>% 
+  mutate(response = factor(response, ordered = TRUE))
 
 # summarise responses (for visualisation purposes)
 proportion <- responses %>% 
@@ -27,8 +33,10 @@ proportion <- responses %>%
   ) %>%
   select(-doe) %>% 
   pivot_longer(c(understands, says), names_to = ".category", values_to = ".value") %>% 
-  mutate(.category = str_to_sentence(.category),
-         .value = as.numeric(.value)) %>% 
+  mutate(
+    .category = str_to_sentence(.category),
+    .value = as.numeric(.value)
+  ) %>% 
   group_by(age, cognate, item_dominance, .category) %>%
   summarise(
     .value = sum(.value),
@@ -37,7 +45,7 @@ proportion <- responses %>%
   ) %>% 
   rowwise() %>% 
   mutate(.value = prop_adj(.value, n)) %>% 
-  ungroup()
+  ungroup() 
 
 
 # set sum contrasts (Schad et al., 2018, https://arxiv.org/abs/1807.10451)
@@ -139,19 +147,19 @@ fit_9 <- update(
 #### model comparison ----------------------------------------------------------
 
 # paretho-smooth leave-one-out cross-validation
-loo_0 <- loo(fit_0)
-loo_1 <- loo(fit_1)
-loo_2 <- loo(fit_2)
-loo_3 <- loo(fit_3)
-loo_4 <- loo(fit_4)
-loo_5 <- loo(fit_5)
-loo_6 <- loo(fit_6)
-loo_7 <- loo(fit_7)
-loo_8 <- loo(fit_8)
-loo_9 <- loo(fit_9)
-loo_list <- list(loo_0, loo_1, loo_2, loo_3, loo_4, loo_5, loo_6, loo_7, loo_8, loo_9)
-loo_compare(loo_0, loo_1, loo_2, loo_3, loo_4, loo_5, loo_6, loo_7, loo_8, loo_9)
-saveRDS(loo_list, here("Results", "loo.rds"))
+fit_0 <- add_criterion(fit_0, c("loo", "waic"))
+fit_1 <- add_criterion(fit_1, c("loo", "waic"))
+fit_2 <- add_criterion(fit_2, c("loo", "waic"))
+fit_3 <- add_criterion(fit_3, c("loo", "waic"))
+fit_4 <- add_criterion(fit_4, c("loo", "waic"))
+fit_5 <- add_criterion(fit_5, c("loo", "waic"))
+fit_6 <- add_criterion(fit_6, c("loo", "waic"))
+fit_7 <- add_criterion(fit_7, c("loo", "waic"))
+fit_8 <- add_criterion(fit_8, c("loo", "waic"))
+fit_9 <- add_criterion(fit_9, c("loo", "waic"))
+
+loos <- loo_compare(fit_0, fit_1, fit_2, fit_3, fit_4, fit_5, fit_6, fit_7, fit_8, fit_9, criterion = c("loo", "waic"))
+saveRDS(loos, here("Results", "loo.rds"))
 
 #### test interactions ---------------------------------------------------------
 cognate_by_dominance <- emmeans(fit_9, "item_dominance", specs = pairwise ~ cognate, type =  "response")
