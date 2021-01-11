@@ -13,6 +13,12 @@ library(tidyverse)
 library(papaja)
 library(gt)
 library(knitr)
+library(here)
+
+participants <- read.csv(here("Data", "participants.csv"))
+items <- read.csv(here("Data", "items.csv"))
+vocabulary <- read.csv(here("Data", "vocabulary.csv"))
+responses <- read.csv(here("Data", "responses.csv"))
 
 ```
 
@@ -21,88 +27,123 @@ library(knitr)
 
 ## Participants
 
+```{r participants}
+n_participants <- length(unique(participants$id))
+dates <- range(participants$time_stamp, na.rm = TRUE)
+sex <- participants %>% drop_na(sex) %>% count(sex) %>% pull(n) %>% set_names(c("female", "male"))
 
-We collected data from `r dat_raw$id_db %>% unique %>% length() %>% printnum()` bilinguals from the Metropolitan Area of Barcelona, between `r min(dat_raw$time_stamp, na.rm = TRUE) %>% format(., "%dth %B, %Y")` and `r max(dat_raw$time_stamp, na.rm = TRUE) %>% format(., "%dth %B, %Y")`. All families participated voluntarily. This study was approved by the Comitè d'Ètica de la Investigació amb Medicaments (CEIm) from Hospital del Mar (Barcelona, Spain), code XXXXXXXXX.
+```
+
+We collected data from `r printnum(n_participants)` bilinguals (`r sex[1]` female), from the Metropolitan Area of Barcelona, between `r format(dates[1], "%dth %B, %Y")` and `r format(dates[2], "%dth %B, %Y")`. All families gave informed consent before participating. This study was approved by the Comitè d'Ètica de la Investigació amb Medicaments (CEIm) from Hospital del Mar (Barcelona, Spain), code XXXXXXXXX.
 
 
-We assessed toddlers' language background asking parents for an estimated proportion of exposure to each language. We defined participants as Spanish- or Catalan-dominant according to the language they were exposed the most to. Participants were considered bilingual - therefore included - if exposed 50-90% of the time to the non-dominant language. We excluded participants with >10% exposure to a third language. Fig. \@ref(fig:lpdist) shows how participants were distributed across age bins and language profiles.
+We assessed toddlers' language profile asking parents for an estimated proportion of exposure to each language. We excluded participants with >10% exposure to a third language. Fig. \@ref(tab:lps) illustrates the distribution of participants across language profiles and ages.
 
 
-```{r lpdist, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+```{r lps, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 
-dat_participants %>%
-  filter(lp %in% "Bilingual") %>% 
-    mutate(bilingualism = cut_interval(bilingualism, n = 6,
-                                       labels = paste0(seq(0, 50, by = 10), "%"))) %>%
-    ggplot(aes(x = age_bin, y = bilingualism)) +
-    stat_bin_2d(colour = "white") +
-  scale_x_discrete(guide = guide_axis(n.dodge = 1)) +
-    scale_fill_viridis_c(option = "plasma") +
-    labs(x = "Age (months)", y = "L2 exposure", fill = "Participants") +
-    theme_classic() +
-    theme(axis.text = element_text(colour = "black"))
-ggsave(here("Figures", "participants.png"), height = 4, width = 5)
+participants %>%
+  mutate(age = cut_width(age, width = 4, boundary = 0),
+         doe = round(doe, 1)) %>%
+  count(age, doe) %>% 
+  mutate(doe = scales::percent(doe)) %>% 
+  pivot_wider(names_from = doe, values_from = n) %>% 
+  gt() %>% 
+  tab_spanner(columns = 2:7, label = md("**Exposure to L2**")) %>% 
+  fmt_missing(columns = everything(), missing_text = 0) %>% 
+  cols_label(age = md("**Age (months)**"))
+
 ```
 
 
 ## Questionnaire
 
+```{r items}
+pool <- pool %>% 
+  drop_na(cognate)
+n_categories <- distinct(pool, category) %>% nrow()
+n_items <- length(unique(pool$item))
+n_item_language <- count(pool, language) %>% pull(n) %>% set_names(c("catalan", "spanish"))
+n_item_cognate <- count(pool, language, cognate) %>% 
+  pull(n) %>% 
+  set_names(c("catalan-cognate", "catalan-noncognate", "spanish-cognate", "spanish-noncognate"))
 
-Parents completed an on-line questionnaire that gathered information about their demographic status, language environment of the child, and that included two vocabulary inventories: one for Catalan and one for Spanish. We implemented the questionnaire in `formr` [@arslan2020], a free, open-source platform. Participants were randomly allocated into one of four list of items. Each list contained a distinct inventory of translation equivalents. We included items from a diverse sample of `r distinct(dat_items, category) %>% nrow()` semantic/functional categories:  Action words, adventures, animals, body parts, clothes, colour, descriptive words, food and drink, furniture and rooms, household items, on-line, outside, parts of animals, parts of things, people, pronouns, quantifiers, question words, time, toys, and vehicles. We discarded the following categories: adverbs, auxiliary words, connectives, interjections and games and routines. Those categories that did not entail more than 16 items - thus resulting in less than four items after dividing it in four lists - were not divided: all of their items were included in the four lists. Another subset of items that were part of the trial lists of some experiments in the lab were also included in all versions.
+```
 
-Each item of the inventory presented a word-form, to which parents were instructed to report whether the toddlers was able to understand it, understand ans say it, or neither. The Catalan inventory contained `r filter(dat_items, language=="Catalan") %>% pull(item) %>% unique() %>% length()` items (`r filter(dat_items, cognate_rater1, language=="Catalan") %>% pull(item) %>% unique() %>% length()` cognates, `r filter(dat_items, !cognate_rater1, language=="Catalan") %>% pull(item) %>% unique() %>% length()` non-cognates) and the Spanish inventory contained `r filter(dat_items, language=="Spanish") %>% pull(item) %>% unique() %>% length()` (`r filter(dat_items, cognate_rater1, language=="Spanish") %>% pull(item) %>% unique() %>% length()` cognates, `r filter(dat_items, !cognate_rater1, language=="Spanish") %>% pull(item) %>% unique() %>% length()` non-cognates) . Items of one language were translation equivalents from the other (e.g., whenever *gos* [dog] was included in the Catalan inventory, the word *perro* was included in the Spanish inventory), roughly following a one-to-one mapping. When there were two acceptable translation equivalents for a given word, we included both (e.g., Catalan *acabar* [*to finish*] and Spanish *acabar* and *terminar*), or merged them into the same one (e.g., Spanish *mono* [*monkey*] and Catalan *mono/mico*). We excluded from the analysis multi-word items (e.g., *barrita de cereales* [cereal bar]) and items that included more than one word-form (e.g., *mono / mico*).
+We implemented an on-line questionnaire using `formr` [@arslan2020], divided in three forms: a (1) language questionnaire, a (2) demographic survey, and a (3) Catalan and a Spanish vocabulary checklists. Vocabulary checklists followed a similar structure as the Oxford Communicative Developmental Inventory [@hamilton2000] and consisted in two lists of words, one in Catalan and one in Spanish). Items in one language were translation equivalents of the items in the other (e.g., whenever *gos* [dog] was included in the Catalan inventory, the word *perro* was included in the Spanish inventory), roughly following a one-to-one mapping. When there were two acceptable translation equivalents for a given word, we included both (e.g., Catalan *acabar* [*to finish*] and Spanish *acabar* and *terminar*), or merged them into the same one (e.g., Spanish *mono* [*monkey*] and Catalan *mono/mico*). We included items from a diverse sample of `r n_categories` semantic/functional categorie (see Appendix 1). We discarded the following categories: adverbs, auxiliary words, connectives, interjections and games and routines. The Catalan inventory contained `r n_item_language["catalan"]` items (`r n_item_cognate["catalan-cognate"]` cognates, `r n_item_cognate["catalan-noncognate"]` non-cognates) and the Spanish inventory contained `r n_item_language["spanish"]` (`r n_item_cognate["spanish-cognate"]` cognates, `r n_item_cognate["spanish-noncognate"]` non-cognates).
+
+
+For each word in the vocabulary checklists, we asked parents to report whether their child was able to understand it, understand and say it, or did not understand or say it (marked by default). Participants filled a long or a short version of the questionnaire. Participants presented with the long version filled a list of 800 translation equivalents (800 items in Catalan and 800 items in Spanish), while participants presented with a short were randomly allocated into one of four list of items. Each list contained a different set of ~400 translation equivalents (~400 in Catalan, ~400 in Spanish). Semantic/functional categories with less than 16 items--thus resulting in less than four items after dividing it in four lists - were not divided in the short version of the questionnaire: all of their items were included in the four lists. Another subset of items that were part of the trial lists of some experiments in the lab were also included in all versions. Table 2 in Appendix 1 shows the distribution of items accross questionnaire versions.
+
 
 
 ## Data analysis
 
+```{r n_responses}
+n_obs <- nrow(responses)
+sum_obs <- responses %>%
+  group_by(te) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  summarise(
+    mean = mean(n),
+    sd = sd(n),
+    min = min(n),
+    max = max(n)
+  )
 
-For testing Hypothesis 1, we modelled the proportion of infants that understood or produced each item in the non-dominant language within age bins of 2 months. Our model assumes that this proportion follows a logistic curve across ages, an that the age of acquisition of each item is generated from a linear model that adjusts for the degree of exposure to the non-dominant language (*bilingualism*, 0-50%), the cognate status of the word (*cognateness*, Non-cognate vs. Cognate), and their interaction. Our prediction is that the age of acquisition will be lower for cognate words, compared to that of non-cognate words, and that this effect will be larger for more balanced bilinguals.
+```
 
+We gathered `r printnum(n_obs, big.mark = ",")` responses. Translation equivalents received an average of `r printnum(sum_obs$mean, digits = 2)` (*SD* = `r printnum(sum_obs$sd, digits = 2)`, `r Min = printnum(sum_obs$min, digits = 2)`, Max = `r printnum(sum_obs$max, digits = 2)`), both languages summed together. We modelled the probability of participants' being reported to understand/produce a translation equivalent adjusting by:
 
-Items were classified into cognates and non-cognates by a trained Catalan-Spanish bilingual with broad experience in phonology and phonetics. Items were classified as L1 if the item was included in the inventory of the language the participant was dominant in, and as L2 if otherwise For instance, the item *porta* (*door*, in Catalan) was classified as L1 when answered by Catalan-dominant participants, and as L2 when answered by Spanish-dominant participants. Table \@ref(tab:itemsinfo) shows the classification of items in cognates and non-cognates and their frequency scores across the four lists of the inventories.
+* $Age$ (in months), calculated as the number of days passed from birth date to the day the questionnaire was completed, divided by 30.
+* $Exposure$: composite score of the lexical frequency of the word form in Catalan or Spanish, as extracted from SUBTLEX-ESP [@cuetos2011] or SUBTLEX-CAT [@]
+
+We modelled comprehensive and productive data separately, following a similar procedure. First, we fit a base logistic regression model with a Bernoulli distribution that adjusted by the age of participants. Then we extended this model including the main effect of exposure
+To address our hypothesis, we modelled the probability of parents reporting that their child understood and/or produced translation equivalents, conditional to how much the child is exposed to it, and to the phonological similarity between both translation equivalents.
+We excluded from the analysis multi-word items (e.g., *barrita de cereales* [cereal bar]) and items that included more than one word-form (e.g., *mono / mico*).
+
+Table \@ref(tab:itemsinfo) shows the classification of items in cognates and non-cognates and their frequency scores across the four lists of the inventories.
 
 
 ```{r itemsinfo, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 
-dat_items %>%
-    drop_na(cognate_rater1) %>%
-    filter(include) %>%
-    select(A, B, C, D, cognate_rater1, frequency, language) %>% 
-    mutate(cognate_rater1 = ifelse(cognate_rater1, "Cognate", "Non-cognate")) %>%
-    pivot_longer(c(A, B, C, D), names_to = c("list"), values_to = "n") %>% 
-    filter(n) %>% 
-    group_by(list, language, cognate_rater1) %>% 
-    summarise(n = sum(n, na.rm = TRUE),
-              mean = mean(frequency, na.rm = TRUE),
-              sd = sd(frequency, na.rm = TRUE),
-              min = min(frequency, na.rm = TRUE),
-              max = max(frequency, na.rm = TRUE),
-              .groups = "drop") %>%
-    ungroup() %>% 
-    rename(cognateness = cognate_rater1) %>%
-    relocate(list, language, cognateness, n, mean, sd, min, max) %>%
-    arrange(list, language, cognateness) %>%
-    mutate(list = paste("List", list)) %>% 
-    pivot_wider(names_from = cognateness, values_from = c(n, mean, sd, min, max)) %>%
-    clean_names() %>%
-    gt(groupname_col = c("language")) %>% 
-    fmt_number(columns = contains("cognate"), decimals = 2) %>%
-    fmt_number(columns = starts_with("n_"), decimals = 0) %>%
-    tab_header(title = md("**Questionnaire and item properties**"),
-               subtitle = "Participants were randomly allocated on of the the four lists, and completed both the Catalan and the Spanish versions.") %>% 
-    tab_spanner(label = "Frequency (Cognates)", columns = vars("n_cognate", "mean_cognate", "sd_cognate", "min_cognate", "max_cognate")) %>% 
-    tab_spanner(label = "Frequency (Non-cognates)", columns = contains("non_cognate")) %>% 
-    cols_label(list = md("**List**"), 
-               n_cognate = md("*N*"),
-               mean_cognate = md("*Mean*"),
-               sd_cognate = md("*SD*"),
-               min_cognate = md("*Min*"),
-               max_cognate = md("*Max*"),
-               n_non_cognate = md("*N*"),
-               mean_non_cognate = md("*Mean*"),
-               sd_non_cognate = md("*SD*"),
-               min_non_cognate = md("*Min*"),
-               max_non_cognate = md("*Max*")) 
+pool %>%
+  filter(include) %>%
+  select(version, cognate, frequency = frequency_zipf, language) %>% 
+  mutate(cognate = ifelse(cognate, "Cognate", "Non-cognate")) %>%
+  group_by(version, language, cognate) %>% 
+  summarise(
+    n = sum(n, na.rm = TRUE),
+    mean = mean(frequency, na.rm = TRUE),
+    sd = sd(frequency, na.rm = TRUE),
+    min = min(frequency, na.rm = TRUE),
+    max = max(frequency, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ungroup() %>% 
+  relocate(version, language, cognate, n, mean, sd, min, max) %>%
+  arrange(version, language, cognate) %>%
+  mutate(version = collapse(version, ",")) %>% 
+  pivot_wider(names_from = cognate, values_from = c(n, mean, sd, min, max)) %>%
+  clean_names() %>%
+  gt(groupname_col = c("language")) %>% 
+  fmt_number(columns = contains("cognate"), decimals = 2) %>%
+  fmt_number(columns = starts_with("n_"), decimals = 0) %>%
+  tab_header(title = md("**Questionnaire and item properties**"),
+             subtitle = "Participants were randomly allocated on of the the four lists, and completed both the Catalan and the Spanish versions.") %>% 
+  tab_spanner(label = "Frequency (Cognates)", columns = vars("n_cognate", "mean_cognate", "sd_cognate", "min_cognate", "max_cognate")) %>% 
+  tab_spanner(label = "Frequency (Non-cognates)", columns = contains("non_cognate")) %>% 
+  cols_label(list = md("**List**"), 
+             n_cognate = md("*N*"),
+             mean_cognate = md("*Mean*"),
+             sd_cognate = md("*SD*"),
+             min_cognate = md("*Min*"),
+             max_cognate = md("*Max*"),
+             n_non_cognate = md("*N*"),
+             mean_non_cognate = md("*Mean*"),
+             sd_non_cognate = md("*SD*"),
+             min_non_cognate = md("*Min*"),
+             max_non_cognate = md("*Max*")) 
 
 ```
 
