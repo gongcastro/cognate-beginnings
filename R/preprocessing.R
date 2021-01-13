@@ -19,7 +19,7 @@ l <- ml_logs(p, r)
 v <- ml_vocabulary(p, r)
 
 # items ------------------------------------------------------------------------
-items <- pool %>%  # from multilex::pool
+items <- multilex::pool %>%
     drop_na(cognate, ipa) %>% 
     filter(
         include,
@@ -87,3 +87,4 @@ responses <- expand_grid(
     drop_na() 
 
 write_csv(responses, here("Data", "responses.csv"))
+

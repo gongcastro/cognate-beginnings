@@ -1,4 +1,4 @@
-// generated with brms 2.13.5
+// generated with brms 2.14.4
 functions {
   /* cumulative-logit log-PDF for a single response
    * Args:
@@ -49,7 +49,7 @@ functions {
    }
 }
 data {
-  int<lower=1> N;  // number of observations
+  int<lower=1> N;  // total number of observations
   int Y[N];  // response variable
   int<lower=2> nthres;  // number of thresholds
   int prior_only;  // should the likelihood be ignored?
@@ -63,16 +63,16 @@ transformed parameters {
   real<lower=0> disc = 1;  // discrimination parameters
 }
 model {
-  // initialize linear predictor term
-  vector[N] mu = rep_vector(0, N);
-  // priors including all constants
-  target += normal_lpdf(Intercept | 0, 1);
   // likelihood including all constants
   if (!prior_only) {
+    // initialize linear predictor term
+    vector[N] mu = rep_vector(0.0, N);
     for (n in 1:N) {
       target += ordered_logistic_lpmf(Y[n] | mu[n], Intercept);
     }
   }
+  // priors including all constants
+  target += normal_lpdf(Intercept | 0, 10);
 }
 generated quantities {
   // compute actual thresholds
