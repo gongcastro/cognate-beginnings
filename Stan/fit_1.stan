@@ -73,6 +73,14 @@ transformed parameters {
   real<lower=0> disc = 1;  // discrimination parameters
 }
 model {
+<<<<<<< HEAD
+=======
+  // initialize linear predictor term
+  vector[N] mu = Xc * b;
+  // priors including all constants
+  target += normal_lpdf(b | 0, 10);
+  target += normal_lpdf(Intercept | 0, 10);
+>>>>>>> f1e56def2f86a4253b6ca9672f509f476dfe2453
   // likelihood including all constants
   if (!prior_only) {
     // initialize linear predictor term
