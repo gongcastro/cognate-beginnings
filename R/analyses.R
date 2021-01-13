@@ -67,7 +67,7 @@ fit_0 <- brm(
   prior = prior[1,],
   save_model = here("Stan", "fit_0.stan"), # save Stan code
   file = here("Results", "fit_0.rds"),
-  seed = 888, iter = 1000, chains = 4, cores = 4
+  seed = 888, iter = 4000, chains = 4, cores = 4
 )
 
 fit_1 <- update(
@@ -76,7 +76,7 @@ fit_1 <- update(
   newdata = responses_subset,
   save_model = here("Stan", "fit_1.stan"),
   file = here("Results", "fit_1.rds"),
-  seed = 888, iter = 1000, chains = 4, cores = 4
+  seed = 888, iter = 4000, chains = 4, cores = 4
 )
 
 fit_2 <- update(
@@ -84,7 +84,7 @@ fit_2 <- update(
   newdata = responses_subset,
   save_model = here("Stan", "fit_2.stan"),
   file = here("Results", "fit_2.rds"),
-  seed = 888, iter = 1000, chains = 4, cores = 4
+  seed = 888, iter = 4000, chains = 4, cores = 4
 )
 
 fit_3 <- update(
@@ -92,7 +92,7 @@ fit_3 <- update(
   newdata = responses_subset,
   save_model = here("Stan", "fit_3.stan"),
   file = here("Results", "fit_3.rds"),
-  seed = 888, iter = 1000, chains = 4, cores = 4
+  seed = 888, iter = 4000, chains = 4, cores = 4
 )
 
 fit_4 <- update(
@@ -100,7 +100,7 @@ fit_4 <- update(
   newdata = responses_subset,
   save_model = here("Stan", "fit_4.stan"),
   file = here("Results", "fit_4.rds"),
-  seed = 888, iter = 1000, chains = 4, cores = 4
+  seed = 888, iter = 4000, chains = 4, cores = 4
 )
 
 fit_5 <- update(
@@ -108,7 +108,7 @@ fit_5 <- update(
   newdata = responses_subset,
   save_model = here("Stan", "fit_5.stan"),
   file = here("Results", "fit_5.rds"),
-  seed = 888, iter = 1000, chains = 4, cores = 4
+  seed = 888, iter = 4000, chains = 4, cores = 4
 )
 
 fit_6 <- update(
@@ -116,7 +116,7 @@ fit_6 <- update(
   newdata = responses_subset,
   save_model = here("Stan", "fit_6.stan"),
   file = "Results/fit_6.rds",
-  seed = 888, iter = 1000, chains = 4, cores = 4
+  seed = 888, iter = 4000, chains = 4, cores = 4
 )
 
 fit_7 <- update(
@@ -124,7 +124,7 @@ fit_7 <- update(
   newdata = responses_subset,
   save_model = here("Stan", "fit_7.stan"),
   file = here("Results", "fit_7.rds"),
-  seed = 888, iter = 1000, chains = 4, cores = 4
+  seed = 888, iter = 4000, chains = 4, cores = 4
 )
 
 fit_8 <- update(
@@ -132,7 +132,7 @@ fit_8 <- update(
   newdata = responses_subset,
   save_model = here("Stan", "fit_8.stan"),
   file = here("Results", "fit_8.rds"),
-  seed = 888, iter = 1000, chains = 4, cores = 4
+  seed = 888, iter = 4000, chains = 4, cores = 4
 )
 
 fit_9 <- update(
@@ -140,25 +140,14 @@ fit_9 <- update(
   newdata = responses_subset,
   save_model = here("Stan", "fit_9.stan"),
   file = here("Results", "fit_9.rds"),
-  seed = 888, iter = 1000, chains = 4, cores = 4
+  seed = 888, iter = 4000, chains = 4, cores = 4
 )
 
 
 #### model comparison ----------------------------------------------------------
 
 # paretho-smooth leave-one-out cross-validation
-fit_0 <- add_criterion(fit_0, c("loo", "waic"))
-fit_1 <- add_criterion(fit_1, c("loo", "waic"))
-fit_2 <- add_criterion(fit_2, c("loo", "waic"))
-fit_3 <- add_criterion(fit_3, c("loo", "waic"))
-fit_4 <- add_criterion(fit_4, c("loo", "waic"))
-fit_5 <- add_criterion(fit_5, c("loo", "waic"))
-fit_6 <- add_criterion(fit_6, c("loo", "waic"))
-fit_7 <- add_criterion(fit_7, c("loo", "waic"))
-fit_8 <- add_criterion(fit_8, c("loo", "waic"))
-fit_9 <- add_criterion(fit_9, c("loo", "waic"))
-
-loos <- loo_compare(fit_0, fit_1, fit_2, fit_3, fit_4, fit_5, fit_6, fit_7, fit_8, fit_9, criterion = c("loo", "waic"))
+loos <- loo_subsample(fit_0, fit_1, fit_2, fit_3, fit_4, fit_5, fit_6, fit_7, fit_8, fit_9)
 saveRDS(loos, here("Results", "loo.rds"))
 
 #### test interactions ---------------------------------------------------------
@@ -166,13 +155,16 @@ cognate_by_dominance <- emmeans(fit_9, "item_dominance", specs = pairwise ~ cogn
 dominance_by_cognate <- emmeans(fit_9, "cognate", specs = pairwise ~ item_dominance, type =  "response")
 dominance_by_cognate <- emmeans(fit_9, "cognate", specs = pairwise ~ item_dominance, type =  "response")
 
-h1 <- hypothesis(fit_9, hypothesis = "abs(exp(item_dominanceL2:cognateNonMCognate)) = 0.5", )
-hypothesis(fit_9, hypothesis = "abs(inv_logit_scaled(item_dominanceL2:doe)) > 0.1")
-hypothesis(fit_9, hypothesis = "abs(inv_logit_scaled(item_dominanceL2:doe:cognateNonMCognate)) > 0.1")
-hypothesis(fit_9, hypothesis = "abs(inv_logit_scaled(doe:cognateNonMCognate)) > 0.1")
-hypothesis(fit_9, hypothesis = "abs(inv_logit_scaled(doe:cognateNonMCognate)) > 0.1")
-hypothesis(fit_9, hypothesis = "abs(inv_logit_scaled(doe:cognateNonMCognate)) > 0.1")
-hypothesis(fit_9, hypothesis = "abs(inv_logit_scaled(doe:cognateNonMCognate)) > 0.1")
+h <- hypothesis(
+  c("abs(exp(item_dominanceL2:cognateNonMCognate)) = 0.5",
+    "abs(inv_logit_scaled(item_dominanceL2:doe)) > 0.1",
+    "abs(inv_logit_scaled(item_dominanceL2:doe:cognateNonMCognate)) > 0.1",
+    "abs(inv_logit_scaled(doe:cognateNonMCognate)) > 0.1",
+    "abs(inv_logit_scaled(doe:cognateNonMCognate)) > 0.1",
+    "abs(inv_logit_scaled(doe:cognateNonMCognate)) > 0.1",
+    "abs(inv_logit_scaled(doe:cognateNonMCognate)) > 0.1"
+  )
+)
 
 
 #### examine posterior ---------------------------------------------------------
@@ -205,6 +197,7 @@ ggplot(post, aes(p, .variable)) +
   theme(legend.position = "top") +
   ggsave(here("Figures", "coefs.png"))
 
+
 #### posterior linear predictions ----------------------------------------------
 
 # values to get posterior draws for (set frequency at mean = 0)
@@ -218,23 +211,23 @@ nd <- expand_grid(
 
 # get 20 posterior draws
 post_preds <- add_predicted_draws(nd, fit_9, n = 20, prediction = ".category", scale = "response")  
-  mutate(
-    doe = doe %>%
-      as.character() %>%  
-      str_replace_all(c(
-        "0" = "Mean",
-        "1" = "1 SD"
-      )) %>% 
-      paste0("DOE = ", .) %>% 
-      factor(
-        levels = c(
-          "DOE = -1 SD",
-          "DOE = Mean",
-          "DOE = 1 SD"
-        ),
-        ordered = TRUE
-      )
-  ) %>%  
+mutate(
+  doe = doe %>%
+    as.character() %>%  
+    str_replace_all(c(
+      "0" = "Mean",
+      "1" = "1 SD"
+    )) %>% 
+    paste0("DOE = ", .) %>% 
+    factor(
+      levels = c(
+        "DOE = -1 SD",
+        "DOE = Mean",
+        "DOE = 1 SD"
+      ),
+      ordered = TRUE
+    )
+) %>%  
   mutate(
     .category = case_when(
       .category==1 ~ "None",
@@ -268,9 +261,6 @@ post_preds %>%
     legend.title = element_blank(),
     legend.direction = "horizontal"
   ) +
-  ggsave(here("Figures", "responses-post-preds.png"), width = 7)
+  ggsave(here("Figures", "post-preds.png"), width = 7)
 
-# posterior predictions
-pp <- fitted_draws(fit_9, newdata = mutate(responses, response = as.numeric(response)))
 
-                   
