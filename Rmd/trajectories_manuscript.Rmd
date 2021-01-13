@@ -29,7 +29,7 @@ abstract: |
 keywords          : "lexical acquisition, vocabulary, bilingualism"
 wordcount         : "X"
 
-bibliography      : ["../References/trajectories.bib"]
+bibliography      : ["trajectories.bib"]
 
 floatsintext      : yes
 figurelist        : no
@@ -78,38 +78,167 @@ library(gt)
 library(data.table)
 library(here)
 
-```
-
-
-```{r, child= "00_introduction.Rmd"}
 
 ```
 
-```{r, child= "01_method.Rmd"}
+# Introduction
+
+Learning words involves two key steps: (1) the encoding of a word form (e.g, /dɒɡ/)
+ and (2) its association with a referent (e.g., a DOG). There is evidence that word learning occurs at early ages: six-month-old infants show a preference toward named pictures, relative to unnamed pictures displayed side-by-side [@bergleson2012]. At 7.5 months, the phonological representations of familiar words seem to be quite detailed, as infants show evidence of recognition when the whole word is uttered [@jusczyk1995], as opposed to when only part of the word is uttered. At 12 months, infants show sensitivity to both vowel and consonant mispronunciations [@mani2010a], looking shorter to named pictures when their label is mispronounced. Remarkable as it is, the phonological specificity of infants' lexical entries is only the foundation of following developmental milestones. One of them, central to this study, is the emergence of excitatory and inhibitory links between word representations, which represents one of the essential characteristics of the adult lexicon [@mcclelland2003].
+
+
+Words are not learnt in isolation, but in contexts rich in word tokens and referents. The structure of toddlers' lexicon reflects this high connectivity [@wojcik2018; @hills2010; @fourtassi2020]. At 18 months, infants' recognition of spoken words is sensitive to phonological priming effects, suggesting that their lexical entries are phonological linked, and co-activated during speech processing [@mani2010b; @mani2011]. The emergence of semantic links in the developing lexicon occurs somewhat later, at 24 months of age, when infants show sensitivity to semantic priming  [@styles2009; @arias-trejo2013; @wojcik2013], and show evidence of inhibitory links between lexical-semantic entries [@chow2016]. By 24 months, toddlers' recognition of familiar words also seems to follow a hierarchical fashion, as revealed by their sensitivity to the phonology and semantic similarity of distractor pictures presented along the named picture: the interference of phonological distractors is stronger at earlier stages of spoken word recognition, that of semantic distractors is stronger at later stages [@chow2017]. Vocabulary size predicts the emergence and the strength of these effects: 18 months-old toddlers are sensitive to semantic priming and interference too, provided they know a similar amount of words [@chow2017; @rama2013], and  the strength of the phonological and semantic distractors during spoken word recognition grows stronger along the vocabulary size of the toddlers. This suggests that the emergence of rich lexical networks -- both at the phonological and the semantic levels -- grows as a function of the number of words acquired by the toddler.
+
+
+The structure of the lexicon also impacts the order of acquisition of new words. Words that share a high degree of phonological and/or semantic overlap with words already acquired are more likely to be acquired next [@hills2009]. @borosky2016 and @borovsky2018 showed that the connectivity of a given semantic category (i.e., animals) in a child's lexicon predicts a better performance in a disambiguation task, where participants are presented with a novel label in the presence of a familiar and a novel object: infants show stronger looking preference for the novel object if it belonged to a category for which many words had already been acquired. This points to the structure of the lexicon facilitating the strategies children engage during word learning.
+
+
+The case of bilingual children (here defined as those learning two languages from birth) presents an opportunity to study how lexical acquisition takes placed under a more complex environment, as they  face the challenge of learning two distinct sets of words -- one for each language -- that partially overlap in sound and meaning. 
+
+EARLY STAGES IN BILINGUAL LANGUAGE ACQUISITION
+
+
+When compared to their monolingual peers, they know fewer words only when just on language is considered (e.g., English monolinguals know more words in English than English-Spanish bilinguals). When both languages are taken into account, bilingual children  seem to know, at least, as many words as monolinguals do [@ben-zeev_influence_1977; @doyle1977some; @rosenblum1983word; @fernandez1992bilingual; @pearson_patterns_1994; @bialystok_receptive_2010; @hoff_dual_2012; @core_total_2013; @hoff_expressive_2014; @blom_cross-language_2019; but see @pearson_lexical_1993; @houwer_bilingualmonolingual_2014].
+
+
+@floccia_i_2018, gathered parental vocabulary estimates [@hamilton2000infant] from a large sample of 24-month-old toddlers learning English and an additional language (from a pool of 13 linguistically diverse languages). They computed the average phonological similarity between translation equivalents (TEs from now on; e.g.,  *table* in English and *tafel* in Dutch) for each pair of languages, and found a positive association between this measure of phonological similarity and participants' productive vocabulary sizes in their additional language. Using a similar measure of lexical similarity, @blom_cross-language_2019 extended these results to bilingual children aged three to 10, and reported a positive association between the lexical distance and comprehensive vocabulary size: bilinguals learning lexically close languages showed similar vocabulary sizes to those of monolinguals, but those learning the more distant languages showed lower vocabulary sizes.
+
+
+These results suggest that linguistic distance between languages plays an important role during bilingual lexical acquisition, and that this effect operates within TEs. What mechanisms underlie this effect, and why they seem to operate differently across comprehension and production, or across the dominant and the non-dominant language, remain open issues. @floccia_i_2018 pointed to parallel activation as a candidate mechanism behind this facilitation effect. The parallel activation principle suggests that bilinguals activate lexical representations in a language non-selective way: during the comprehension or production of a word in one language (e.g., *cat*, in English) its corresponding translation in the other language is activated too [e.g., *gato*, in Spanish. There is a vast body of evidence supporting language non-selective lexical access in both adults [e.g., @dell1991mediated; @spivey1999cross; @costa2000lexical; @dijkstra_bilingual_2005; @thierry_brain_2007; @hoshino_cognate_2008; @yudes_cognate_2010; @kroll_multilingual_2013; @singh2014one; @von_holzen_impact_2019; @bobb_co-activation_2020; see @costa2005facilitatory for review], and children [e.g. @von_holzen_language_2012; @poulin2013lexical; @jardak2019labels; @bosma2020cognate]. A critical implication of parallel activation is that the word form (i.e., phonology, orthography, etc.) of both translation equivalents are available to each other, impacting the comprehension or production dynamic of any of them.
+
+
+@floccia_i_2018 argue that the degree of phonological similarity between TEs (*cognateness* from now on) of both languages should lead to increased parallel activation of both languages during language exposure, facilitating the acquisition of words in both languages, and leading participants leading two lexically close languages to show larger vocabulary sizes than those learning two lexically distant languages. This account, however, neglects the fact that for parallel activation to take place and play a facilitation role, lexical representations of both pairs of the TE must have been already established in the lexicon, and their corresponding phonological forms must have been encoded. This is not the case during lexical acquisition, where at least one of the members of the pair has not being acquired yet. A more lenient definition of parallel activation could adjust to the context of lexical acquisition more easily: when only one of the members of the TE has been acquired, its lexical representation is activated when, in the presence of its referent, a phonologically similar label is uttered. Consider the case of a Catalan-Spanish bilingual that has already learned the word *gat* (Catalan for *cat*), but not *gato* (in Spanish). It is possible that, when presented with *gato* in the presence of a cat, she maps this novel label to the familiar word *gat*, and creates a lexical representation for *gato* as a synonym for *gat*. The case of a non-cognate is differing. Consider now the case of a toddler that has already learnt *gos* (Catalan for *dog*), but not *perro* (Spanish). In this case, it would not be possible to map both labels via phonology, give their lack of phonological similarity.
+
+
+Under this account, cognates (i.e., phonologically similar TEs) would be acquired earlier than non-cognates, but this effect would only play a role once one of the members of the TE has been acquired. The evidence supporting an earlier age of acquisition of cognates relative to non-cognates if sparse. @schelletter2002effect's reported a longitudinal case-study of a German/English child who produced cognate TEs earlier than non-cognate TE. @bosch_first_2014, showed converging results from a sample of 48 monolingual and bilingual infants aged 24 months. The low number of words included in the analyses of both studies, and the lack of adjustment for lexical frequency, limits severely the strength of any conclusions concerning the difference in age of acquisition of cognates and non-cognates. On the other hand @floccia_i_2018 worked with aggregated estimates of participants' vocabulary size, losing item-level information that could provide information about change in age of acquisition of TEs associated with their degree of phonological similarity. Therefore, their results can only be considered as compatible with cognateness playing a role on age of acquisition. In this study, we aimed at overcoming these pitfalls by using unaggregated data from individual responses, testing the role of cognateness explicitly and adjusting for lexical frequency.
+
+
+It also follows from the fact that cognateness operates *within* TEs that the effect of cognateness can only play a role once one of the members of the TE has been acquired, and its phonological form is available during the acquisition of its translation. Words that belong to the language of most exposure (dominant language) are likely to be acquired earlier than words in the non-dominant language [@floccia_i_2018]. @dijkstra2013 tested Dutch-Frisian bilingual children aged 2.5 to four years in a comprehension task (PPVT-NL) that involved Frisian words with different degrees of phonological similarity with their Dutch TE. Infants with lower exposure to Frisian showed a better performance for words with high similarity, while no such benefit was found in children who were exposed mostly to Frisian. This suggests that infants that were mostly exposed to Dutch used the phonology of  dutch words when processing Frisian words, as revealed by a better performance for cognates than for non-cognates.
+A study by @dijkstra2013 showed that the degree of phonological similarity between 
+the performance of  was better for cognates than for non-cognates, only for those children
+
+
+Finally, previous studies have reported that the properties that describe the form of a word play a stronger role in production than comprehension than in production. This is the case of the number of phonemes [@braginsky_consistency_2019], phonological neighbourhood density [@jones_children_2019]. These results converge with @floccia_i_2018's finding that the effect of the average cognateness between languages was larger in production than in comprehension^[Although @bosch_first_2014 found that participants in their sample produced cognates earlier than non-cognates, no analyses were conducted on comprehensive data, and therefore they cannot be taken as supporting evidence for a larger effect of cognateness on production than in comprehension].  Accordingly, we expected the role of cognateness to be more central in production than in comprehension.
+
+
+In summary, we investigated the effect of cognateness on the probability of acquisition of TEs, and predicted that (1) cognate TEs are acquired earlier than non-cognate TEs, that this effect will be larger in the dominant than in the non-dominant language, and larger in production than in comprehension. 
+
+
+```{r prepare, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+participants <- read.csv(here("Data", "participants.csv"))
+items <- read.csv(here("Data", "items.csv"))
+vocabulary <- read.csv(here("Data", "vocabulary.csv"))
+responses <- read.csv(here("Data", "responses.csv"))
 
 ```
 
-```{r, child= "02_results.Rmd"}
+
+# Method
+
+
+## Participants
+
+```{r participants, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+n_participants <- length(unique(participants$id))
+dates <- as_date(range(participants$time_stamp, na.rm = TRUE))
+sex <- participants %>% drop_na(sex) %>% count(sex) %>% pull(n) %>% set_names(c("female", "male"))
 
 ```
 
-```{r, child= "03_discussion.Rmd"}
+We collected data from `r printnum(n_participants)` bilinguals (`r sex[1]` female), from the Metropolitan Area of Barcelona, between `r format(dates[1], "%dth %B, %Y")` and `r format(dates[2], "%dth %B, %Y")`. All families gave informed consent before participating. This study was approved by the Comitè d'Ètica de la Investigació amb Medicaments (CEIm) from Hospital del Mar (Barcelona, Spain), code XXXXXXXXX. We assessed toddlers' language profile asking parents for an estimated proportion of exposure to each language. We excluded participants with >10% exposure to a third language. Fig. \@ref(tab:lps) illustrates the distribution of participants across language profiles and ages.
+
+
+## Questionnaire
+
+```{r items, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+pool <- multilex::pool %>% 
+  drop_na(cognate)
+n_categories <- distinct(pool, category) %>% nrow()
+n_items <- length(unique(pool$item))
+n_item_language <- count(pool, language) %>% pull(n) %>% set_names(c("catalan", "spanish"))
+n_item_cognate <- count(pool, language, cognate) %>% 
+  pull(n) %>% 
+  set_names(c("catalan-cognate", "catalan-noncognate", "spanish-cognate", "spanish-noncognate"))
+```
+
+We implemented an on-line questionnaire using `formr` [@arslan_formr_2020], divided in three forms: a (1) language questionnaire, a (2) demographic survey, and a (3) Catalan and a Spanish vocabulary checklists. Vocabulary checklists followed a similar structure as the Oxford Communicative Developmental Inventory [@hamilton_infant_2000] and consisted in two lists of words, one in Catalan and one in Spanish). Items in one language were translation equivalents of the items in the other (e.g., whenever *gos* [dog] was included in the Catalan inventory, the word *perro* was included in the Spanish inventory), roughly following a one-to-one mapping. When there were two acceptable translation equivalents for a given word, we included both (e.g., Catalan *acabar* [*to finish*] and Spanish *acabar* and *terminar*), or merged them into the same one (e.g., Spanish *mono* [*monkey*] and Catalan *mono/mico*). We included items from a diverse sample of `r n_categories` semantic/functional categories (see Appendix 1). We discarded the following categories: adverbs, auxiliary words, connectives, interjections and games and routines. The Catalan inventory contained `r n_item_language["catalan"]` items (`r n_item_cognate["catalan-cognate"]` cognates, `r n_item_cognate["catalan-noncognate"]` non-cognates) and the Spanish inventory contained `r n_item_language["spanish"]` (`r n_item_cognate["spanish-cognate"]` cognates, `r n_item_cognate["spanish-noncognate"]` non-cognates).
+
+
+For each word in the vocabulary checklists, we asked parents to report whether their child was able to understand it, understand and say it, or did not understand or say it (marked by default). Participants filled a long or a short version of the questionnaire. Participants presented with the long version filled a list of 800 translation equivalents (800 items in Catalan and 800 items in Spanish), while participants presented with a short were randomly allocated into one of four list of items. Each list contained a different set of ~400 translation equivalents (~400 in Catalan, ~400 in Spanish). Semantic/functional categories with less than 16 items--thus resulting in less than four items after dividing it in four lists - were not divided in the short version of the questionnaire: all of their items were included in the four lists. Another subset of items that were part of the trial lists of some experiments in the lab were also included in all versions. Table 2 in Appendix 1 shows the distribution of items across questionnaire versions. We excluded from the analysis multi-word items (e.g., *barrita de cereales* [cereal bar]) and items that included more than one word-form (e.g., *mono / mico*). Table \@ref(tab:itemsinfo) shows the classification of items in cognates and non-cognates and their frequency scores across the four lists of the inventories.
+
+
+## Data analysis
+
+```{r n_responses, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+n_obs <- nrow(responses)
+sum_obs <- responses %>%
+  group_by(te) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  summarise(
+    mean = mean(n),
+    sd = sd(n),
+    min = min(n),
+    max = max(n)
+  )
 
 ```
 
-```{r, child= "04_appendix_1.Rmd"}
+We gathered `r printnum(n_obs, big.mark = ",")` responses. Translation equivalents received an average of `r printnum(sum_obs$mean, digits = 2)` (*SD* = `r printnum(sum_obs$sd, digits = 2)`, `r Min = printnum(sum_obs$min, digits = 2)`, Max = `r printnum(sum_obs$max, digits = 2)`), both languages summed together. We modelled the probability of responses ($y_i$) belonging to any of the three possible categories $k$--1 = *No* or say, 2 = *Understands*, and 3 = *Understands and Says*-- using an ordinal regression model with a cumulative logit link function [@agresti_analysis_2010; @burkner_ordinal_2019]. This model estimates the probability of response $y_i$ to belong to category $k$ or lower. In our case, this will result in the estimation of the probability of $y_i \leq 1$,  $y_i \leq 2$, and  $y_i \leq 3$, where
 
-```
+$$
+p_k = Pr(y_i = k) = Pr(y_i \leq k) - Pr(y_i \leq k-1).
+$$
 
-```{r, child= "04_appendix_2.Rmd"}
+We include several predictors of interest to adjust this probability to participants' and items' (lexical frequency, dominance, cognateness) characteristics. These predictors are:
 
-```
+* Age of participant in months (`age`, $Age$) calculated as the difference in days between participants' birth date and questionnaire completion divided by 30 and centred around the mean
+* Degree of bilingualism of participant (`bilingualism`, $Bilingualism$) computed as the percentage of exposure to a second language (Spanish for participants exposed to >50% to Catalan an *vice versa*) rounded to units and centered around the mean
+* Lexical frequency of item (`frequency`, $Frequency$) retrieved from SUBTLEX-CAT [@boada_subtlex-cat_2019] for Catalan words and from SUBTLEX-ESP [@cuetos_subtlex-esp_2011] for Spanish words, expressed as Zipf scores [@heuven_subtlex-uk_2014], and centred around the mean
+* Language the item belongs to (`dominance`, $Dominance$) labelled as `L1` if the item belongs to the dominant language (e.g., a Catalan item is labelled as `L1` for Catalan-dominant participants and as `L2` for Spanish-dominant participants), coded as `L2` = -0.5 and `L1` = 0.5
+* Cognateness of the item (`cognate`, $Cognate$), coded as `Non-cognate` = -0.5 and `Cognate` = 0.5
 
-```{r, child= "04_appendix_3.Rmd"}
-
-```
+We adopted a Bayesian approach toward statistical inference, which allows to (1) incorporate previous domain knowledge into the inference process implementing the Bayes theorem, and (2) to quantify the uncertainty associated to the estimated parameters in our model. Our extended model can be formalised as follows:
 
 
+$$
+\begin{aligned}
+y_i \sim Ordered(p) \\
+log\frac{Pr(y_i \leq k)}{1-Pr(y_i \leq k)} &= \alpha_k - \dots \\
+& \beta_1 \times Age_i + \dots \\
+& \beta_2 \times Frequency_i + \dots \\
+& \beta_3 \times Dominance_i + \dots \\
+& \beta_4 \times Bilingualism_i + \dots \\
+& \beta_5 \times Cognate_i + \dots \\
+& \beta_6 \times (Dominance_i \times Bilingualism_i) + \dots \\
+& \beta_7 \times (Dominance_i \times Cognate_i) + \dots \\
+& \beta_8 \times (Bilingualism_i \times Cognate_i) + \dots \\
+& \beta_9 \times (Dominance_i \times Bilingualism_i \times Cognate_i), \\
+\alpha \sim Normal(0, 10) \\
+\beta_{0-9} \sim Normal(0, 10)
+\end{aligned}
+$$
+
+Where:
+
+* $k$ is one of the possible categories (coded as ) responses can take
+* $y_i$ is the `response` value of observation $i$
+* $\alpha_k$ is the mean probability of responses to belong to category $k$
+* $\beta_{1, \dots, 9}$ are the coefficients of the predictors
+
+We implemented the model using the R package `brms` [@burkner_brms_2017] as `response ~  age + frequency + dominance*bilingualism*cognate`, running four MCMC sampling chains with 4,000 iterations (including 2,000 warm-up iterations per chain). We used weakly regularising prior for the parameters in our model, given that its weight in the estimation of the posterior will be marginal due to the large amount of observations introduced in the model. We report the 95% credible intervals (CrI) of the estimated posterior distribution of each parameter, which denotes a range of values we are 95% certain contain the true value, given our prior and observed data. We report analyses on the probability scale, having transformed the log-odds returned by the model using an inverse logit transformation.
+
+We then fit increasingly simpler models dropping predictors one by one in the following order: (1) `dominance:bilingualism:cognate`, (2) `bilingualism:cognate`, (3) `dominance:cognate:`, (4) `cognate`, (5) `dominance:bilingualism`, (6) `bilingualism`, (7) `dominance`, (8) `frequency`, and (9) `age`. We compared all models using leave-one-out cross-validation (LOO-CV) [@vehtari_practical_2017] and widely applicable information criterion (WAIC) [@watanabe_asymptotic_2010]. We then explored the posterior distribution of each parameter in the model that fitted the data the best, computing the 95% credible intervals and testing whether this interval excluded 0. We performed follow-up tests on interactions whose 95% credible interval excluded 0 by comparing the 95% credible interval of their estimated marginal means using the `emmeans` package [@lenth_emmeans_2020]. Data processing and visualisation was done in R [@rcoreteam_r_2020] using the `tidyverse` family of packages [@wickham_welcome_2019], and posterior samples were extracted using the `tidybayes` R package [@kay_tidybayes_2020].
+
+
+
+# Results
+
+
+
+
+
+# Discussion
 
 
 # References
