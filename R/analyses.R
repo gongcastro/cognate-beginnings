@@ -56,8 +56,8 @@ contrasts(responses_subset$cognate) <- contr.sum(2)/2
 
 # set weakly uninformative prior
 prior <- c(
-  prior(normal(0, 1), class = Intercept),
-  prior(normal(0, 0.5), class = b)
+  prior(normal(0, 10), class = Intercept),
+  prior(normal(0, 10), class = b)
 )
 
 fit_0 <- brm(
@@ -166,39 +166,50 @@ cognate_by_dominance <- emmeans(fit_9, "item_dominance", specs = pairwise ~ cogn
 dominance_by_cognate <- emmeans(fit_9, "cognate", specs = pairwise ~ item_dominance, type =  "response")
 dominance_by_cognate <- emmeans(fit_9, "cognate", specs = pairwise ~ item_dominance, type =  "response")
 
+h1 <- hypothesis(fit_9, hypothesis = "abs(exp(item_dominanceL2:cognateNonMCognate)) = 0.5", )
+hypothesis(fit_9, hypothesis = "abs(inv_logit_scaled(item_dominanceL2:doe)) > 0.1")
+hypothesis(fit_9, hypothesis = "abs(inv_logit_scaled(item_dominanceL2:doe:cognateNonMCognate)) > 0.1")
+hypothesis(fit_9, hypothesis = "abs(inv_logit_scaled(doe:cognateNonMCognate)) > 0.1")
+hypothesis(fit_9, hypothesis = "abs(inv_logit_scaled(doe:cognateNonMCognate)) > 0.1")
+hypothesis(fit_9, hypothesis = "abs(inv_logit_scaled(doe:cognateNonMCognate)) > 0.1")
+hypothesis(fit_9, hypothesis = "abs(inv_logit_scaled(doe:cognateNonMCognate)) > 0.1")
+
+
 #### examine posterior ---------------------------------------------------------
 
 # extract posterior draws for estimated parameters
 post <- gather_draws(fit_9, `b.*`, regex = TRUE) %>% 
-  mutate(.chain = as.factor(.chain)) 
+  mutate(.chain = as.factor(.chain),
+         p = inv_logit_scaled(.value)) 
 
 # check convergence of MCMC chains
-ggplot(post, aes(x = .iteration, y = .value, colour = .chain)) +
+ggplot(post, aes(x = .iteration, y = p, colour = .chain)) +
   facet_wrap(~.variable, scales = "free_y", nrow = 4) +
   geom_line() +
   labs(x = "Iteration", y = "Value", colour = "Chain") +
   scale_colour_brewer(palette = "Dark2", direction = -1) +
   theme_custom() +
   theme(legend.position = "top") +
-  ggsave(here("Figures", "responses-mcmc.png"))
+  ggsave(here("Figures", "mcmc.png"))
 
 # posterior density by parameter
-ggplot(post, aes(.value, .variable)) +
+ggplot(post, aes(p, .variable)) +
   stat_slab(aes(fill = stat(cut_cdf_qi(cdf, .width = c(.5, .8, .95, 0.99), # quantiles
                                        labels = percent_format(accuracy = 1))))) +
-  geom_vline(xintercept = 0, linetype = "dashed") +
+  geom_vline(xintercept = 0.5, linetype = "dashed") +
   labs(x = "Value", y = "Probability density",
        fill = "CrI") +
+  scale_x_continuous(limits = c(0, 1)) +
   scale_fill_brewer(palette = "Oranges", direction = -1, na.translate = FALSE) +
   theme_custom() +
   theme(legend.position = "top") +
-  ggsave(here("Figures", "responses-coefs.png"))
+  ggsave(here("Figures", "coefs.png"))
 
-#### posterior predictions -----------------------------------------------------
+#### posterior linear predictions ----------------------------------------------
 
 # values to get posterior draws for (set frequency at mean = 0)
 nd <- expand_grid(
-  age = seq(min(dat_responses$age), max(dat_responses$age), 1),
+  age = seq(min(responses$age), max(responses$age), 1),
   item_dominance = c("L1", "L2"),
   doe = c(-1, 0, 1),
   frequency = 0,
@@ -206,7 +217,7 @@ nd <- expand_grid(
 )
 
 # get 20 posterior draws
-post_preds <- add_fitted_draws(nd, fit_9, n = 20) %>% 
+post_preds <- add_predicted_draws(nd, fit_9, n = 20, prediction = ".category", scale = "response")  
   mutate(
     doe = doe %>%
       as.character() %>%  
@@ -223,7 +234,7 @@ post_preds <- add_fitted_draws(nd, fit_9, n = 20) %>%
         ),
         ordered = TRUE
       )
-  ) %>% 
+  ) %>%  
   mutate(
     .category = case_when(
       .category==1 ~ "None",
@@ -233,7 +244,7 @@ post_preds <- add_fitted_draws(nd, fit_9, n = 20) %>%
     .category = factor(.category, levels = c("None", "Understands", "Says"), ordered = TRUE)
   ) 
 
-# visualise posterior predictions
+# visualise the distribution of linear predictors
 post_preds %>% 
   filter(.category!="None") %>% 
   ggplot(aes(
@@ -241,7 +252,7 @@ post_preds %>%
     colour = interaction(item_dominance, cognate, sep = " - "),
     fill = interaction(item_dominance, cognate, sep = " - ")
   )) +
-  facet_grid(doe~.category) +
+  facet_grid(doe~.prediction) +
   #geom_line(aes(group = interaction(item_dominance, cognate, doe, .draw)), size = 0.4) +
   stat_lineribbon(.width = 0.95, colour = NA, alpha = 0.5) +
   stat_summary(fun = "median", geom = "line", size = 0.75) +
@@ -259,3 +270,7 @@ post_preds %>%
   ) +
   ggsave(here("Figures", "responses-post-preds.png"), width = 7)
 
+# posterior predictions
+pp <- fitted_draws(fit_9, newdata = mutate(responses, response = as.numeric(response)))
+
+                   
