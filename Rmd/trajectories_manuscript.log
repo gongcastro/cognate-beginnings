@@ -1,11 +1,11 @@
-This is XeTeX, Version 3.14159265-2.6-0.999992 (TeX Live 2020/W32TeX) (preloaded format=xelatex 2021.1.11)  12 JAN 2021 23:28
+This is XeTeX, Version 3.14159265-2.6-0.999992 (TeX Live 2020/W32TeX) (preloaded format=xelatex 2021.1.13)  13 JAN 2021 20:15
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **trajectories_manuscript.tex
 (./trajectories_manuscript.tex
 LaTeX2e <2020-10-01> patch level 4
-L3 programming layer <2020-12-07> xparse <2020-03-03> (c:/Users/gonza/AppData/R
+L3 programming layer <2021-01-09> xparse <2020-03-03> (c:/Users/gonza/AppData/R
 oaming/TinyTeX/texmf-dist/tex/latex/apa6/apa6.cls
 Document Class: apa6 2020/01/13 v2.34 APA formatting (6th edition)
 (c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/article.cls
@@ -313,15 +313,20 @@ Package: ifluatex 2019/10/25 v1.5 ifluatex legacy package. Use iftex instead.
 (c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/unicode-math/unico
 de-math.sty
 (c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/l3kernel/expl3.sty
-Package: expl3 2020-12-07 L3 programming layer (loader) 
+Package: expl3 2021-01-09 L3 programming layer (loader) 
 
 (c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/l3backend/l3backen
 d-xetex.def
-File: l3backend-xetex.def 2020-09-24 L3 backend support: XeTeX
-\g__graphics_track_int=\count276
+File: l3backend-xetex.def 2021-01-09 L3 backend support: XeTeX
+(|extractbb --version)
+\c__kernel_sys_dvipdfmx_version_int=\count276
+\g__color_stack_int=\count277
+\l__kernel_color_stack_int=\count278
+\g__graphics_track_int=\count279
 \l__pdf_internal_box=\box53
-\g__pdf_backend_object_int=\count277
-\g__pdf_backend_annotation_int=\count278
+\g__pdf_backend_object_int=\count280
+\g__pdf_backend_annotation_int=\count281
+\g__pdf_backend_link_int=\count282
 ))
 Package: unicode-math 2020/01/31 v0.8q Unicode maths in XeLaTeX and LuaLaTeX
 
@@ -348,17 +353,17 @@ Package: fontspec 2020/02/21 v2.7i Font selection for XeLaTeX and LuaLaTeX
 xetex.sty
 Package: fontspec-xetex 2020/02/21 v2.7i Font selection for XeLaTeX and LuaLaTe
 X
-\l__fontspec_script_int=\count279
-\l__fontspec_language_int=\count280
-\l__fontspec_strnum_int=\count281
-\l__fontspec_tmp_int=\count282
-\l__fontspec_tmpa_int=\count283
-\l__fontspec_tmpb_int=\count284
-\l__fontspec_tmpc_int=\count285
-\l__fontspec_em_int=\count286
-\l__fontspec_emdef_int=\count287
-\l__fontspec_strong_int=\count288
-\l__fontspec_strongdef_int=\count289
+\l__fontspec_script_int=\count283
+\l__fontspec_language_int=\count284
+\l__fontspec_strnum_int=\count285
+\l__fontspec_tmp_int=\count286
+\l__fontspec_tmpa_int=\count287
+\l__fontspec_tmpb_int=\count288
+\l__fontspec_tmpc_int=\count289
+\l__fontspec_em_int=\count290
+\l__fontspec_emdef_int=\count291
+\l__fontspec_strong_int=\count292
+\l__fontspec_strongdef_int=\count293
 \l__fontspec_tmpa_dim=\dimen178
 \l__fontspec_tmpb_dim=\dimen179
 \l__fontspec_tmpc_dim=\dimen180
@@ -373,9 +378,9 @@ Package: fix-cm 2015/01/14 v1.1t fixes to LaTeX
 File: ts1enc.def 2001/06/05 v3.0e (jk/car/fm) Standard LaTeX file
 LaTeX Font Info:    Redeclaring font encoding TS1 on input line 47.
 ))
-\g__um_fam_int=\count290
-\g__um_fonts_used_int=\count291
-\l__um_primecount_int=\count292
+\g__um_fam_int=\count294
+\g__um_fonts_used_int=\count295
+\l__um_primecount_int=\count296
 \g__um_primekern_muskip=\muskip17
 
 (c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/unicode-math/unico
@@ -447,8 +452,8 @@ s.sty
 Package: kvoptions 2020-10-07 v3.14 Key value format for package options (HO)
 )
 \@linkdim=\dimen181
-\Hy@linkcounter=\count293
-\Hy@pagecounter=\count294
+\Hy@linkcounter=\count297
+\Hy@pagecounter=\count298
 
 (c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/hyperref/pd1enc.de
 f
@@ -462,7 +467,7 @@ Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 s.sty
 Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
 )
-\Hy@SavedSpaceFactor=\count295
+\Hy@SavedSpaceFactor=\count299
 Package hyperref Info: Option `unicode' set `true' on input line 4338.
 
 (c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/hyperref/puenc.def
@@ -475,7 +480,7 @@ Package hyperref Info: Plain pages OFF on input line 4479.
 Package hyperref Info: Backreferencing OFF on input line 4484.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4717.
-\c@Hy@tempcnt=\count296
+\c@Hy@tempcnt=\count300
 (c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/url/url.sty
 \Urlmuskip=\muskip18
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
@@ -492,7 +497,7 @@ tcalc.sty
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
 )
 ))
-\Fld@menulength=\count297
+\Fld@menulength=\count301
 \Field@Width=\dimen183
 \Fld@charsize=\dimen184
 Package hyperref Info: Hyper figures OFF on input line 6347.
@@ -511,9 +516,9 @@ Package: atbegshi-ltx 2020/08/17 v1.0a Emulation of the original atbegshi packa
 ge
 with kernel methods
 )
-\Hy@abspage=\count298
-\c@Item=\count299
-\c@Hfootnote=\count300
+\Hy@abspage=\count302
+\c@Item=\count303
+\c@Hfootnote=\count304
 )
 Package hyperref Info: Driver (autodetected): hxetex.
 
@@ -527,10 +532,10 @@ Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO
 )
 )
 \pdfm@box=\box54
-\c@Hy@AnnotLevel=\count301
-\HyField@AnnotCount=\count302
-\Fld@listcount=\count303
-\c@bookmark@seq@number=\count304
+\c@Hy@AnnotLevel=\count305
+\HyField@AnnotCount=\count306
+\Fld@listcount=\count307
+\c@bookmark@seq@number=\count308
 
 (c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/rerunfilecheck/rer
 unfilecheck.sty
@@ -564,16 +569,16 @@ Package: longtable 2020/01/07 v4.13 Multi-page Table package (DPC)
 \LTright=\skip76
 \LTpre=\skip77
 \LTpost=\skip78
-\LTchunksize=\count305
+\LTchunksize=\count309
 \LTcapwidth=\dimen185
 \LT@head=\box55
 \LT@firsthead=\box56
 \LT@foot=\box57
 \LT@lastfoot=\box58
-\LT@cols=\count306
-\LT@rows=\count307
-\c@LT@tables=\count308
-\c@LT@chunks=\count309
+\LT@cols=\count310
+\LT@rows=\count311
+\c@LT@tables=\count312
+\c@LT@chunks=\count313
 \LT@p@ftn=\toks25
 )
 (c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics/lscape.st
@@ -584,7 +589,7 @@ Package: lscape 2020/05/28 v3.02 Landscape Pages (DPC)
 sty
 Package: multirow 2021/01/02 v2.6 Span multiple rows of a table
 \multirow@colwidth=\skip79
-\multirow@cntb=\count310
+\multirow@cntb=\count314
 \multirow@dima=\skip80
 \bigstrutjot=\dimen186
 )
@@ -605,7 +610,7 @@ Package: array 2020/10/01 v2.5c Tabular extension package (FMi)
 \TX@old@col=\dimen191
 \TX@target=\dimen192
 \TX@delta=\dimen193
-\TX@cols=\count311
+\TX@cols=\count315
 \TX@ftn=\toks27
 )
 (c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/threeparttablex/th
@@ -626,16 +631,16 @@ Package: trimspaces 2009/09/17 v1.1 Trim spaces around a token list
 (c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lineno/lineno.sty
 Package: lineno 2005/11/02 line numbers on paragraphs v4.41
 Invalid UTF-8 byte or sequence at line 296 replaced by U+FFFD.
-\linenopenalty=\count312
+\linenopenalty=\count316
 \output=\toks28
-\linenoprevgraf=\count313
+\linenoprevgraf=\count317
 \linenumbersep=\dimen194
 \linenumberwidth=\dimen195
-\c@linenumber=\count314
-\c@pagewiselinenumber=\count315
-\c@LN@truepage=\count316
-\c@internallinenumber=\count317
-\c@internallinenumbers=\count318
+\c@linenumber=\count318
+\c@pagewiselinenumber=\count319
+\c@LN@truepage=\count320
+\c@internallinenumber=\count321
+\c@internallinenumbers=\count322
 \quotelinenumbersep=\dimen196
 \bframerule=\dimen197
 \bframesep=\dimen198
@@ -645,12 +650,12 @@ LaTeX Info: Redefining \\ on input line 3056.
 (c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/csquotes/csquotes.
 sty
 Package: csquotes 2021-01-04 v5.2k context-sensitive quotations (JAW)
-\csq@reset=\count319
-\csq@gtype=\count320
-\csq@glevel=\count321
-\csq@qlevel=\count322
-\csq@maxlvl=\count323
-\csq@tshold=\count324
+\csq@reset=\count323
+\csq@gtype=\count324
+\csq@glevel=\count325
+\csq@qlevel=\count326
+\csq@maxlvl=\count327
+\csq@tshold=\count328
 \csq@ltx@everypar=\toks29
 
 (c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/csquotes/csquotes.
@@ -684,7 +689,7 @@ tex
 \XKV@toks=\toks30
 \XKV@tempa@toks=\toks31
 )
-\XKV@depth=\count325
+\XKV@depth=\count329
 File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
 ))
 \xpg@normalclass=\XeTeXcharclass1
@@ -1115,7 +1120,7 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 ettitlestring.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count326
+\c@section@level=\count330
 )
 LaTeX Info: Redefining \ref on input line 155.
 LaTeX Info: Redefining \pageref on input line 155.
@@ -1173,9 +1178,6 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 Missing character: There is no ɒ in font [lmroman12-regular]:mapping=tex-text;!
 Missing character: There is no ɡ in font [lmroman12-regular]:mapping=tex-text;!
 [3] [4] [5] [6]
-Underfull \vbox (badness 7649) has occurred while \output is active []
-
-[7]
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
 (Font)              scaled to size 10.0pt on input line 186.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
@@ -1194,8 +1196,12 @@ LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 6.99925pt on input line 186.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 4.99947pt on input line 186.
+[7]
 
 LaTeX Warning: Reference `tab:lps' on page 8 undefined on input line 196.
+
+
+Underfull \vbox (badness 1803) has occurred while \output is active []
 
 [8]
 
@@ -1208,8 +1214,53 @@ Underfull \vbox (badness 1838) has occurred while \output is active []
 [9] [10]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[11] [12] [13] [14] [15] [16] [17] [18] AED endfloat: Processing end Figures an
-d Tables [19]
+[11] [12]
+Overfull \hbox (15.65741pt too wide) in alignment at lines 274--291
+ [] [] [] [] [] [] 
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 291
+ []
+
+[13]
+Underfull \hbox (badness 10000) in paragraph at lines 294--297
+
+ []
+
+
+Overfull \hbox (28.90755pt too wide) in paragraph at lines 293--298
+[]$[]$  
+ []
+
+
+Overfull \hbox (2.97752pt too wide) in alignment at lines 302--320
+ [] [] [] [] [] [] [] 
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 320
+ []
+
+[14]
+Underfull \hbox (badness 10000) in paragraph at lines 323--325
+
+ []
+
+
+Overfull \hbox (28.90755pt too wide) in paragraph at lines 322--326
+[]$[]$  
+ []
+
+File: trajectories_manuscript_files/figure-latex/marginalmeans-1.pdf Graphic fi
+le (type pdf)
+<use trajectories_manuscript_files/figure-latex/marginalmeans-1.pdf>
+[15] [16] [17] [18] [19] [20]
+
+Package caption Warning: Unused \captionsetup[table] on input line 273.
+See the caption package documentation for explanation.
+
+AED endfloat: Processing end Figures and Tables [21]
 The property list \polyglossia@langsetup contains the pairs (without outer
 braces):
 >  {latex/script}  =>  {latin}
@@ -1254,15 +1305,15 @@ LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `trajectories_manuscript.out' has not changed
 .
-(rerunfilecheck)             Checksum: 94463BFE8E246513B0F25B7DF8315C36;627.
+(rerunfilecheck)             Checksum: D3C4721CC4A130170498D5C2ED7E39A3;802.
  ) 
 Here is how much of TeX's memory you used:
- 20754 strings out of 479215
- 367984 string characters out of 5873080
- 847289 words of memory out of 5000000
- 39990 multiletter control sequences out of 15000+600000
+ 20782 strings out of 479212
+ 368624 string characters out of 5873273
+ 858848 words of memory out of 5000000
+ 40019 multiletter control sequences out of 15000+600000
  436137 words of font info for 101 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 98i,12n,118p,2262b,466s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 98i,12n,122p,2262b,506s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on trajectories_manuscript.pdf (19 pages).
+Output written on trajectories_manuscript.pdf (21 pages).

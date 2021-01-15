@@ -36,22 +36,20 @@ items <- multilex::pool %>%
 write_csv(items, here("Data", "items.csv"))
 
 # participants -----------------------------------------------------------------
-participants <- l %>% 
+participants <- l %>%
+    rename(dominant_language = dominance) %>% 
     filter(
         completed,
         !(version %in% c("DevLex", "CBC")),
         lp %in% c("Monolingual", "Bilingual"),
         between(age, 10, 40),
     ) %>% 
-    group_by(id) %>% 
-    filter(time==max(time)) %>% 
-    ungroup() %>% 
-    mutate(doe = case_when(
-        dominance=="Catalan" ~ doe_spanish,
-        dominance=="Spanish" ~ doe_catalan
+    mutate(bilingualism = case_when(
+        dominant_language=="Catalan" ~ doe_spanish,
+        dominant_language=="Spanish" ~ doe_catalan
     )) %>% 
     mutate_at(vars(matches("doe")), function(x) x*0.01) %>% 
-    select(id, time_stamp, time, age, sex, dominance, doe)
+    select(id, time_stamp, time, age, sex, dominant_language, bilingualism)
 
 write_csv(participants, here("Data", "participants.csv"))
 
@@ -73,18 +71,26 @@ responses <- expand_grid(
     left_join(participants, by = "id") %>% 
     left_join(items, by = "item") %>% 
     left_join(select(r, id, item, response), by = c("id", "item")) %>% 
-    select(id, age, dominance, doe, te, language, item, ipa, cognate, frequency, response) %>% 
+    select(id, age, dominant_language, bilingualism, te, language, item, ipa, cognate, frequency, response) %>% 
     drop_na() %>%
     distinct(id, te, age, item, .keep_all = TRUE) %>% 
     mutate(
-        item_dominance = ifelse(dominance==language, "L1", "L2"),
-        doe = round(doe, 1)*10,
+        dominance = ifelse(dominant_language==language, "L1", "L2"),
+        bilingualism = round(bilingualism/10),
+        age = cut_width(age, 2, labels = FALSE),
+        frequency = cut_quantiles(frequency),
         understands = response %in% c(2, 3),
         produces = response %in% 3
     ) %>% 
-    arrange(te) %>% 
-    select(age, doe, te, frequency, item_dominance, cognate, response) %>% 
-    drop_na() 
-
+    select(age, bilingualism, te, frequency, dominance, cognate, understands, produces) %>% 
+    group_by(te, age, bilingualism, frequency, dominance, cognate) %>% 
+    summarise(
+        understands = sum(understands, na.rm = TRUE),
+        produces = sum(produces, na.rm = TRUE),
+        n = n(),
+        .groups = "drop"
+    ) %>% 
+    arrange(te, age, bilingualism)
+    
 write_csv(responses, here("Data", "responses.csv"))
 
