@@ -14,7 +14,7 @@ source(here("R", "utils.R"))
 # import data ------------------------------------------------------------------
 ml_connect("gonzalo.garciadecastro@upf.edu")
 p <- ml_participants()
-r <- ml_responses(p)  
+r <- ml_responses(p, longitudinal = "first")  
 l <- ml_logs(p, r)
 v <- ml_vocabulary(p, r)
 

@@ -1,8 +1,8 @@
-// generated with brms 2.13.5
+// generated with brms 2.14.4
 functions {
 }
 data {
-  int<lower=1> N;  // number of observations
+  int<lower=1> N;  // total number of observations
   int Y[N];  // response variable
   int trials[N];  // number of trials
   int<lower=1> K;  // number of population-level effects
@@ -25,15 +25,15 @@ parameters {
 transformed parameters {
 }
 model {
-  // initialize linear predictor term
-  vector[N] mu = Intercept + Xc * b;
+  // likelihood including all constants
+  if (!prior_only) {
+    // initialize linear predictor term
+    vector[N] mu = Intercept + Xc * b;
+    target += binomial_logit_lpmf(Y | trials, mu);
+  }
   // priors including all constants
   target += normal_lpdf(b | 0, 0.5);
   target += normal_lpdf(Intercept | 0, 0.5);
-  // likelihood including all constants
-  if (!prior_only) {
-    target += binomial_logit_lpmf(Y | trials, mu);
-  }
 }
 generated quantities {
   // actual population-level intercept
