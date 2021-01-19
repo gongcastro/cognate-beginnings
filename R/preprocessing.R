@@ -76,14 +76,17 @@ responses <- expand_grid(
     distinct(id, te, age, item, .keep_all = TRUE) %>% 
     mutate(
         dominance = ifelse(dominant_language==language, "L1", "L2"),
+        bilingualism_scaled = round(bilingualism),
         bilingualism = round(bilingualism/10),
+        age_scaled = 10+(2*cut_width(age, 2, labels = FALSE)),
         age = cut_width(age, 2, labels = FALSE),
+        frequency_scaled = cut_quantiles(frequency),
         frequency = cut_quantiles(frequency),
         understands = response %in% c(2, 3),
         produces = response %in% 3
     ) %>% 
-    select(age, bilingualism, te, frequency, dominance, cognate, understands, produces) %>% 
-    group_by(te, age, bilingualism, frequency, dominance, cognate) %>% 
+    select(age, bilingualism, te, frequency, dominance, cognate, understands, produces, matches("scaled")) %>% 
+    group_by(te, age, bilingualism, frequency, dominance, cognate, age_scaled, frequency_scaled, bilingualism_scaled) %>% 
     summarise(
         understands = sum(understands, na.rm = TRUE),
         produces = sum(produces, na.rm = TRUE),
