@@ -22,6 +22,9 @@ prop_adj_se <- function(x, n) {
     return(se)
 }
 
+# inverse logit function
+inv_logit <- function(x) 1/(1 + exp(-x))
+
 
 theme_custom <- function(){
     theme(

@@ -38,7 +38,6 @@ proportion <- responses %>%
   mutate(.value = prop_adj(.value, n)) %>% 
   ungroup() 
 
-
 # set sum contrasts (Schad et al., 2018, https://arxiv.org/abs/1807.10451)
 contrasts(responses$dominance) <- contr.sum(2)/2
 contrasts(responses$cognate) <- contr.sum(2)/2
@@ -46,161 +45,110 @@ contrasts(responses$cognate) <- contr.sum(2)/2
 #### model fitting -------------------------------------------------------------
 
 # comprehensive data
-comp_0 <- brm(
-  understands | trials(n) ~ 1 + age + frequency,
-  data = responses,
-  family = binomial("logit"),
-  # set weakly uninformative prior
-  prior = c(prior(normal(0, 0.5), class = Intercept),
-            prior(normal(0, 0.5), class = b)),
-  save_model = here("Stan", "comp_0.stan"), # save Stan code
-  save_all_pars = TRUE,
-  file = here("Results", "comp_0.rds")
-)
+if (file.exists(here("Results", "comp_fits.RData"))) {
+  load(here("Results", "comp_fits.RData"))
+} else {
+  comp_0 <- brm(
+    understands | trials(n) ~ 1 + age + frequency,
+    data = responses,
+    family = binomial("logit"),
+    # set weakly informative prior
+    prior = c(prior(normal(0, 1.5), class = Intercept),
+              prior(normal(0, 0.5), class = b)),
+    save_all_pars = TRUE
+  )
+  comp_1 <- update(comp_0, . ~ . + dominance, newdata = responses)
+  comp_2 <- update(comp_1, . ~ . + bilingualism, newdata = responses)
+  comp_3 <- update(comp_2, . ~ . + dominance:bilingualism, newdata = responses)
+  comp_4 <- update(comp_3, . ~ . + cognate, newdata = responses)
+  comp_5 <- update(comp_4, . ~ . + dominance:cognate, newdata = responses)
+  comp_6 <- update(comp_5, . ~ . + bilingualism:cognate, newdata = responses)
+  comp_7 <- update(comp_6, . ~ . + dominance:bilingualism:cognate, newdata = responses, sample_prior = "yes")
 
-comp_1 <- update(
-  comp_0, . ~ . + dominance,
-  newdata = responses,
-  save_model = here("Stan", "comp_1.stan"),
-  file = here("Results", "comp_1.rds"),
-)
-
-comp_2 <- update(
-  comp_1, . ~ . + bilingualism,
-  newdata = responses,
-  save_model = here("Stan", "comp_2.stan"),
-  file = here("Results", "comp_2.rds"),
-)
-
-comp_3 <- update(
-  comp_2, . ~ . + dominance:bilingualism,
-  newdata = responses,
-  save_model = here("Stan", "comp_3.stan"),
-  file = here("Results", "comp_3.rds"),
-)
-
-comp_4 <- update(
-  comp_3, . ~ . + cognate,
-  newdata = responses,
-  save_model = here("Stan", "comp_4.stan"),
-  file = here("Results", "comp_4.rds"),
-)
-
-comp_5 <- update(
-  comp_4, . ~ . + dominance:cognate,
-  newdata = responses,
-  save_model = here("Stan", "comp_5.stan"),
-  file = here("Results", "comp_5.rds"),
-)
-
-comp_6 <- update(
-  comp_5, . ~ . + bilingualism:cognate,
-  newdata = responses,
-  save_model = here("Stan", "comp_6.stan"),
-  file = here("Results", "comp_6.rds")
-)
-
-comp_7 <- update(
-  comp_6, . ~ . + dominance:bilingualism:cognate,
-  newdata = responses,
-  save_model = here("Stan", "comp_7.stan"),
-  file = here("Results", "comp_7.rds")
-)
-
+  save(comp_0, comp_1, comp_2, comp_3, comp_4, comp_5, comp_6, comp_7,
+       file = here("Results", "comp_fits.RData"))
+}
 
 # productive data
-prod_0 <- brm(
-  produces | trials(n) ~ 1 + age + frequency,
-  data = responses,
-  family = binomial("logit"),
-  # set weakly uninformative prior
-  prior = c(prior(normal(0, 0.5), class = Intercept),
-            prior(normal(0, 0.5), class = b)),
-  save_model = here("Stan", "prod_0.stan"), # save Stan code
-  save_all_pars = TRUE,
-  file = here("Results", "prod_0.rds")
-)
+if (file.exists(here("Results", "prod_fits.RData"))) {
+  load(here("Results", "prod_fits.RData"))
+} else {
+  prod_0 <- brm(
+    understands | trials(n) ~ 1 + age + frequency,
+    data = responses,
+    family = binomial("logit"),
+    # set weakly uninformative prior
+    prior = c(prior(normal(0, 1.5), class = Intercept),
+              prior(normal(0, 0.5), class = b)),
+    save_all_pars = TRUE,
+    file = here("Results", "prod_0.rds")
+  )
+  prod_1 <- update(prod_0, . ~ . + dominance, newdata = responses)
+  prod_2 <- update(prod_1, . ~ . + bilingualism, newdata = responses)
+  prod_3 <- update(prod_2, . ~ . + dominance:bilingualism, newdata = responses)
+  prod_4 <- update(prod_3, . ~ . + cognate, newdata = responses)
+  prod_5 <- update(prod_4, . ~ . + dominance:cognate, newdata = responses)
+  prod_6 <- update(prod_5, . ~ . + bilingualism:cognate, newdata = responses)
+  prod_7 <- update(prod_6, . ~ . + dominance:bilingualism:cognate, newdata = responses, sample_prior = "yes")
 
-prod_1 <- update(
-  prod_0, . ~ . + dominance,
-  newdata = responses,
-  save_model = here("Stan", "prod_1.stan"),
-  file = here("Results", "prod_1.rds"),
-)
-
-prod_2 <- update(
-  prod_1, . ~ . + bilingualism,
-  newdata = responses,
-  save_model = here("Stan", "prod_2.stan"),
-  file = here("Results", "prod_2.rds"),
-)
-
-prod_3 <- update(
-  prod_2, . ~ . + dominance:bilingualism,
-  newdata = responses,
-  save_model = here("Stan", "prod_3.stan"),
-  file = here("Results", "prod_3.rds"),
-)
-
-prod_4 <- update(
-  prod_3, . ~ . + cognate,
-  newdata = responses,
-  save_model = here("Stan", "prod_4.stan"),
-  file = here("Results", "prod_4.rds"),
-)
-
-prod_5 <- update(
-  prod_4, . ~ . + dominance:cognate,
-  newdata = responses,
-  save_model = here("Stan", "prod_5.stan"),
-  file = here("Results", "prod_5.rds"),
-)
-
-prod_6 <- update(
-  prod_5, . ~ . + bilingualism:cognate,
-  newdata = responses,
-  save_model = here("Stan", "prod_6.stan"),
-  file = here("Results", "prod_6.rds")
-)
-
-prod_7 <- update(
-  prod_6, . ~ . + dominance:bilingualism:cognate,
-  newdata = responses,
-  save_model = here("Stan", "prod_7.stan"),
-  file = here("Results", "prod_7.rds")
-)
-
+  save(prod_0, prod_1, prod_2, prod_3, prod_4, prod_5, prod_6, prod_7,
+       file = here("Results", "prod_fits.RData"))
+}
 
 #### model comparison ----------------------------------------------------------
-loos_comp <- loo_subsample(comp_0, comp_1, comp_2, comp_3, comp_4, comp_5, comp_6, comp_7, nsamples = 500)
-loos_prod <- loo_subsample(prod_0, prod_1, prod_2, prod_3, prod_4, prod_5, prod_6, prod_7, nsamples = 500)
-
-saveRDS(list(loos_comp, loos_prod), here("Results", "loos.rds"))
+if (file.exists(here("Results", "loos.RData"))) {
+  load(here("Results", "loos.RData"))
+} else {
+  loos_comp <- loo_subsample(comp_0, comp_1, comp_2, comp_3, comp_4, comp_5, comp_6, comp_7, nsamples = 500)
+  loos_prod <- loo_subsample(prod_0, prod_1, prod_2, prod_3, prod_4, prod_5, prod_6, prod_7, nsamples = 500)
+  save(loos_comp, loos_prod, file = here("Results", "loos.RData"))
+}
 
 #### test interactions ---------------------------------------------------------
-cognate_by_dominance <- emmeans(comp_7, "dominance", specs = pairwise ~ cognate, type =  "response")
-dominance_by_cognate <- emmeans(comp_7, "cognate", specs = pairwise ~ dominance, type =  "response")
-doe <- emmeans(comp_7, "cognate", specs = pairwise ~ dominance, type =  "response")
+
+# three-way interactions
+ems <- emmeans(comp_7, ~dominance*bilingualism*cognate, cov.reduce = FALSE, at = list(bilingualism = c(-1, 0, 1)))
+cont <- contrast(a, "consec", simple = "each", combine = TRUE)
+cbpp_prior.rg <- ref_grid(comp_7)
+
+bayestestR::bayesfactor_parameters(pairs(ems), prior = pairs(ems))
+
+ems_cog_dom_bil <- emmeans(comp_7, ~cognate, by = c("dominance", "bilingualism"), cov.reduce = FALSE, at = list(bilingualism = c(-1, 0, 1)), )
+ems_dom_bil_cog <- emmeans(comp_7, ~dominance, by = c("bilingualism", "cognate"), cov.reduce = FALSE)
+ems_bil_dom_cog <- emmeans(comp_7, ~bilingualism, by = c("dominance", "cognate"), cov.reduce = FALSE)
+
+# two-way interactions
+ems_cog_bil <- emmeans(comp_7, ~cognate, by = c("bilingualism"), cov.reduce = FALSE)
+
+ems_dom_cog <- emmeans(comp_7, ~dominance, by = c("cognate"))
+ems_bil_dom <- emtrends(comp_7, ~dominance, var = c("bilingualism"))
+ems_bil_cog <- emtrends(comp_7, ~cognate, var = c("bilingualism"))
+emmip(comp_7, cognate ~ bilingualism | dominance, cov.reduce = FALSE)
 
 
-hypotheses <- hypothesis(
-  comp_7, alpha = 0.99, 
-  c(
-    "exp(cognate1)*-0.5 = exp(cognate1)*0.5",
-    "dominance1*-0.5 = dominance1*0.5",
-    "exp(cognate1) + exp(dominance1:cognate1)*-0.5 = exp(cognate1) + exp(dominance1:cognate1)*0.5 ",
-    "exp(dominance1) + exp(dominance1:cognate1)*-0.5 = exp(dominance1) + exp(dominance1:cognate1)*0.5 "
-  )
-)
+summary(pairs(ems_dom), point.est = mean)
+contrasts(ems_dom)
+
 #### examine posterior ---------------------------------------------------------
 
 # extract posterior draws for estimated parameters
-post <- gather_draws(comp_7, `b.*`, regex = TRUE) %>% 
-  mutate(.chain = as.factor(.chain)) 
+post <- bind_rows(
+  Understands = gather_draws(comp_7, `b.*`, regex = TRUE),
+  Produces = gather_draws(prod_7, `b.*`, regex = TRUE),
+  .id = "type") %>% 
+  mutate(
+    .chain = as.factor(.chain),
+    .variable = factor(.variable, levels = c(
+      "b_dominance1", "b_bilingualism", "b_cognate1", 
+      "b_dominance1:bilingualism", "b_dominance1:cognate1", "b_bilingualism:cognate1",
+      "b_dominance1:bilingualism:cognate1"
+    ), ordered = TRUE),
+    type = factor(type, levels = c("Understands", "Produces"), ordered = TRUE)
+  )
 
 # check convergence of MCMC chains
 ggplot(post, aes(x = .iteration, y = .value, colour = .chain)) +
-  facet_wrap(~.variable, scales = "free_y", nrow = 4) +
+  facet_wrap(type~.variable, scales = "free_y", nrow = 4) +
   geom_line() +
   labs(x = "Iteration", y = "Value", colour = "Chain") +
   scale_colour_brewer(palette = "Dark2", direction = -1) +
@@ -209,23 +157,27 @@ ggplot(post, aes(x = .iteration, y = .value, colour = .chain)) +
   ggsave(here("Figures", "mcmc.png"))
 
 # posterior density by parameter
-ggplot(post, aes(exp(.value), .variable)) +
-  stat_slab(aes(fill = stat(cut_cdf_qi(cdf, .width = c(.5, .8, .95, 0.99), # quantiles
-                                       labels = percent_format(accuracy = 1))))) +
-  geom_vline(xintercept = 1, linetype = "dashed") +
+post %>% 
+  filter(str_detect(.variable, "dominance|bilingualism|cognate")) %>% 
+  ggplot(aes(inv_logit_scaled(.value), reorder(.variable, desc(.variable)), fill = type)) +
+  #facet_wrap(~type) +
+  stat_slab(aes(alpha = stat(cut_cdf_qi(cdf, .width = c(.5, .8, .95, 0.99), # quantiles
+                                        labels = percent_format(accuracy = 1))))) +
+  geom_vline(xintercept = 0.5, linetype = "dashed") +
   labs(x = "Value", y = "Probability density",
-       fill = "CrI") +
-  scale_fill_brewer(palette = "Oranges", direction = -1, na.translate = FALSE) +
+       fill = "CrI", alpha = "CrI") +
+  scale_alpha_discrete(range = c(1, 0.25), na.translate = FALSE) +
+  scale_fill_brewer(palette = "Dark2") +
   theme_custom() +
   theme(legend.position = "top") +
-  ggsave(here("Figures", "coefs.png"))
+  ggsave(here("Figures", "coefs.png"), height = 4)
 
 #### posterior predictions -----------------------------------------------------
 
 # values to get posterior draws for (set frequency at mean = 0)
 nd <- expand_grid(
   n = 1,
-  age = seq(min(responses$age), max(responses$age), 1),
+  age = seq(min(responses$age), max(responses$age), 0.1),
   dominance = c("L1", "L2"),
   bilingualism = c(min(responses$bilingualism), 0, max(responses$bilingualism)),
   frequency = 0,
@@ -233,11 +185,19 @@ nd <- expand_grid(
 )
 
 # get 20 posterior draws
-post_preds <- add_fitted_draws(nd, comp_7, n = 50) %>% 
-  mutate(bilingualism = factor(
-    bilingualism,
-    levels = unique(.$bilingualism),
-    labels = c("Bilingualism = 0%", "Bilingualism = Mean", "Bilingualism = 50%")))
+post_preds <- bind_rows(
+  Understands = add_fitted_draws(nd, comp_7, n = 20),
+  Produces = add_fitted_draws(nd, prod_7, n = 20),
+  .id = "type"
+) %>% 
+  mutate(
+    bilingualism = factor(
+      bilingualism,
+      levels = unique(.$bilingualism),
+      labels = c("Bilingualism = 0%", "Bilingualism = Mean", "Bilingualism = 50%")),
+    type = factor(type, levels = c("Understands", "Produces"), ordered = TRUE)
+  )
+
 
 # visualise posterior predictions
 post_preds %>% 
@@ -246,7 +206,7 @@ post_preds %>%
     colour = interaction(dominance, cognate, sep = " - "),
     fill = interaction(dominance, cognate, sep = " - ")
   )) +
-  facet_wrap(~bilingualism) +
+  facet_wrap(type~bilingualism) +
   #geom_line(aes(group = interaction(item_dominance, cognate, doe, .draw)), size = 0.4) +
   stat_lineribbon(.width = 0.95, colour = NA, alpha = 0.5) +
   stat_summary(fun = "mean", geom = "line", size = 0.75) +
@@ -263,3 +223,4 @@ post_preds %>%
     legend.direction = "horizontal"
   ) +
   ggsave(here("Figures", "post-preds.png"), width = 7)
+
