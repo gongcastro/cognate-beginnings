@@ -8,6 +8,7 @@ library(brms)
 library(scales)
 library(tidybayes)
 library(emmeans)
+library(bayestestR)
 library(here)
 
 # load helper functions
@@ -69,6 +70,7 @@ if (file.exists(here("Results", "comp_fits.RData"))) {
        file = here("Results", "comp_fits.RData"))
 }
 
+
 # productive data
 if (file.exists(here("Results", "prod_fits.RData"))) {
   load(here("Results", "prod_fits.RData"))
@@ -104,36 +106,6 @@ if (file.exists(here("Results", "loos.RData"))) {
   save(loos_comp, loos_prod, file = here("Results", "loos.RData"))
 }
 
-#### test interactions ---------------------------------------------------------
-
-# three-way interactions
-ems <- emmeans(comp_7, ~dominance*bilingualism*cognate, cov.reduce = FALSE, at = list(bilingualism = c(-1, 0, 1)))
-cont <- contrast(a, "consec", simple = "each", combine = TRUE)
-cbpp_prior.rg <- ref_grid(comp_7)
-
-bayestestR::bayesfactor_parameters(pairs(ems), prior = pairs(ems))
-
-ems_cog_dom_bil <- emmeans(comp_7, ~cognate, by = c("dominance", "bilingualism"), cov.reduce = FALSE, at = list(bilingualism = c(-1, 0, 1)), )
-ems_dom_bil_cog <- emmeans(comp_7, ~dominance, by = c("bilingualism", "cognate"), cov.reduce = FALSE)
-ems_bil_dom_cog <- emmeans(comp_7, ~bilingualism, by = c("dominance", "cognate"), cov.reduce = FALSE)
-
-
-#### model comparison ----------------------------------------------------------
-loos_comp <- loo_subsample(comp_0, comp_1, comp_2, comp_3, comp_4, comp_5, comp_6, comp_7, nsamples = 500)
-loos_prod <- loo_subsample(prod_0, prod_1, prod_2, prod_3, prod_4, prod_5, prod_6, prod_7, nsamples = 500)
-saveRDS(list(loos_comp, loos_prod), here("Results", "loos.rds"))
-
-# two-way interactions
-ems_cog_bil <- emmeans(comp_7, ~cognate, by = c("bilingualism"), cov.reduce = FALSE)
-
-ems_dom_cog <- emmeans(comp_7, ~dominance, by = c("cognate"))
-ems_bil_dom <- emtrends(comp_7, ~dominance, var = c("bilingualism"))
-ems_bil_cog <- emtrends(comp_7, ~cognate, var = c("bilingualism"))
-emmip(comp_7, cognate ~ bilingualism | dominance, cov.reduce = FALSE)
-
-
-summary(pairs(ems_dom), point.est = mean)
-contrasts(ems_dom)
 
 #### examine posterior ---------------------------------------------------------
 
@@ -229,3 +201,51 @@ post_preds %>%
   ) +
   ggsave(here("Figures", "post-preds.png"), width = 7)
 
+#### test interactions ---------------------------------------------------------
+
+# three-way interactions
+deltas <- map(
+  list(comp_7, prod_7),
+  ~emmeans(., pairwise~dominance*cognate, by = "bilingualism",
+           at = list(bilingualism = c(-1, 0, 1)))$contrasts 
+) %>% 
+  map(~as.mcmc(.) %>% 
+        as_tibble() %>% 
+        pivot_longer(everything(), names_to = "contrast", values_to = "delta")
+  ) %>% 
+  set_names(c("Comprehension", "Production")) %>% 
+  bind_rows(.id = "type") %>% 
+  separate(contrast, c("contrast", "bilingualism"), sep = ",") %>% 
+  mutate(
+    delta = delta/4,
+    contrast = str_remove_all(contrast, "contrast"),
+    bilingualism = str_remove_all(bilingualism, " bilingualism ") %>% 
+      paste0(., " SD") %>% 
+      str_replace(., "0 SD", "Mean") %>%
+      paste0("Bilingualism: ", .) %>% 
+      factor(., levels = c("Bilingualism: -1 SD", "Bilingualism: Mean", "Bilingualism: 1 SD"), ordered = TRUE)
+  ) %>% 
+  group_by(type, contrast, bilingualism) %>%
+  mean_qi() %>% 
+  select(type, bilingualism, contrast, delta, .lower, .upper) %>% 
+  arrange(type, bilingualism, contrast)
+
+ggplot(deltas,
+       aes(delta, contrast, colour = type)) +
+  facet_wrap(~bilingualism) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  stat_pointinterval(size = 0.5) + 
+  labs(
+    x = "Marginal mean posterior difference",
+    y = "Contrast",
+    colour = "Type",
+    fill = "Type",
+    alpha = "CrI"
+  ) +
+  scale_colour_brewer(palette = "Dark2") +
+  theme_custom() +
+  theme(
+    legend.position = "top",
+    axis.title.y = element_blank()
+  ) +
+  ggsave(here("Figures", "contrasts.png"), height = 4)
