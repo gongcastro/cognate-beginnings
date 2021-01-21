@@ -193,7 +193,7 @@ In summary, we investigated the effect of cognateness on the probability of acqu
 \hypertarget{participants}{%
 \subsection{Participants}\label{participants}}
 
-We collected data from 349 bilinguals (167 female), from the Metropolitan Area of Barcelona, between 28th October, 2019 and 09th January, 2021. All families gave informed consent before participating. This study was approved by the Comitè d'Ètica de la Investigació amb Medicaments (CEIm) from Hospital del Mar (Barcelona, Spain), code XXXXXXXXX. We assessed toddlers' language profile asking parents for an estimated proportion of exposure to each language. We excluded participants with \textgreater10\% exposure to a third language. Fig. \ref{tab:lps} illustrates the distribution of participants across language profiles and ages.
+We collected data from 349 bilinguals (182 female), from the Metropolitan Area of Barcelona, between 28th October, 2019 and 09th January, 2021. All families gave informed consent before participating. This study was approved by the Comitè d'Ètica de la Investigació amb Medicaments (CEIm) from Hospital del Mar (Barcelona, Spain), code XXXXXXXXX. We assessed toddlers' language profile asking parents for an estimated proportion of exposure to each language. We excluded participants with \textgreater10\% exposure to a third language. Fig. \ref{tab:lps} illustrates the distribution of participants across language profiles and ages.
 
 \hypertarget{questionnaire}{%
 \subsection{Questionnaire}\label{questionnaire}}
@@ -205,34 +205,30 @@ For each word in the vocabulary checklists, we asked parents to report whether t
 \hypertarget{data-analysis}{%
 \subsection{Data analysis}\label{data-analysis}}
 
-We gathered 181587 responses. Translation equivalents received an average of 386.36 (\emph{SD} = 228.76, , Max = 698), both languages summed together. We modelled the probability of responses (\(y_i\)) belonging to any of the three possible categories \(k\)--1 = \emph{No} or say, 2 = \emph{Understands}, and 3 = \emph{Understands and Says}-- using an ordinal regression model with a cumulative logit link function (Agresti, 2010; Bürkner \& Vuorre, 2019). This model estimates the probability of response \(y_i\) to belong to category \(k\) or lower. In our case, this will result in the estimation of the probability of \(y_i \leq 1\), \(y_i \leq 2\), and \(y_i \leq 3\), where
-
-\[
-p_k = Pr(y_i = k) = Pr(y_i \leq k) - Pr(y_i \leq k-1).
-\]
-
-We include several predictors of interest to adjust this probability to participants' and items' (lexical frequency, dominance, cognateness) characteristics. These predictors are:
+We gathered 89220 responses. Translation equivalents received an average of 189.83 (\emph{SD} = 67.27, \emph{Min} = 75, Max = 312), both languages summed together. We modelled the probability of children understanding or producing TEs separately using logistic regression model with a binomial distribution and a logit link function. (Agresti, 2010). We included several predictors of interest to adjust this probability to participants' and items' properties of interest. These predictors are:
 
 \begin{itemize}
 \tightlist
 \item
-  Age of participant in months (\texttt{age}, \(Age\)) calculated as the difference in days between participants' birth date and questionnaire completion divided by 30 and centred around the mean
+  Age of participant in months (\texttt{age}, \(Age\)) calculated as the difference in days between participants' birth date and questionnaire completion divided by 30, chunked into bins of two months width.
 \item
-  Degree of bilingualism of participant (\texttt{bilingualism}, \(Bilingualism\)) computed as the percentage of exposure to a second language (Spanish for participants exposed to \textgreater50\% to Catalan an \emph{vice versa}) rounded to units and centered around the mean
+  Degree of bilingualism of participant (\texttt{bilingualism}, \(Bilingualism\)) computed as the percentage of exposure to a second language (Spanish for participants exposed to \textgreater50\% to Catalan an \emph{vice versa}), chunked into six groups of participants, with degree of bilingualism 0\%, 10\%, 20\%, 30\%, 40\% and 50\%)
 \item
   Lexical frequency of item (\texttt{frequency}, \(Frequency\)) retrieved from SUBTLEX-CAT (Boada, Guasch, Haro, Demestre, \& Ferré, 2019) for Catalan words and from SUBTLEX-ESP (Cuetos, Glez-Nosti, Barbón, \& Brysbaert, 2011) for Spanish words, expressed as Zipf scores (Heuven, Mandera, Keuleers, \& Brysbaert, 2014), and centred around the mean
 \item
-  Language the item belongs to (\texttt{dominance}, \(Dominance\)) labelled as \texttt{L1} if the item belongs to the dominant language (e.g., a Catalan item is labelled as \texttt{L1} for Catalan-dominant participants and as \texttt{L2} for Spanish-dominant participants), coded as \texttt{L2} = -0.5 and \texttt{L1} = 0.5
+  Language the item belongs to (\texttt{dominance}, \(Dominance\)) labelled as \texttt{L1} if the item belongs to the dominant language (e.g., a Catalan item is labelled as \texttt{L1} for Catalan-dominant participants and as \texttt{L2} for Spanish-dominant participants)
 \item
-  Cognateness of the item (\texttt{cognate}, \(Cognate\)), coded as \texttt{Non-cognate} = -0.5 and \texttt{Cognate} = 0.5
+  Cognateness of the item (\texttt{cognate}, \(Cognate\)), as rated by a trained Spanish-Catalan bilingual linguist.
 \end{itemize}
 
-We adopted a Bayesian approach toward statistical inference, which allows to (1) incorporate previous domain knowledge into the inference process implementing the Bayes theorem, and (2) to quantify the uncertainty associated to the estimated parameters in our model. Our extended model can be formalised as follows:
+We aggregated the data across participants. We summed the number of participants that \emph{understood}, or \emph{understood and produced} each TE for each combination of the \texttt{age}, \texttt{bilingualism} levels. Numerical variables (\texttt{age}, \texttt{bilingualism}, and \texttt{frequency}) were standardized, and categorical predictors were sum-coded. \texttt{dominance} was coded as \texttt{L2} = -0.5 and \texttt{L1} = +0.5, and \texttt{cognate} was coded as \texttt{Non-cognate} = -0.5 and \texttt{Cognate} = +0.5. In summary, each TE provided four data points per age bin: L1-Cognate, L1-Non-cognate, L2-Cognate, and L2-Non-cognate.
+
+We adopted a Bayesian approach toward statistical inference. This approach allows to (1) incorporate previous domain knowledge into the inference process implementing the Bayes theorem, and (2) to quantify the uncertainty associated to the estimated parameters in our model ({\textbf{???}}). We first fit a base model that only adjusted for the age of participants and the lexical frequency of the items ({\textbf{???}} @jones\_do\_2018). We then introduced our predictors of interest in the following order: (1) \texttt{dominance}, (2) \texttt{bilingualism}, (3) \texttt{dominance} per \texttt{bilingualism} interaction, (4) \texttt{cognate}, (5) \texttt{dominance} per \texttt{cognate} interaction, (6) \texttt{bilingualism} per \texttt{cognate} interaction, and (7) \texttt{dominance} per \texttt{bilingualism} per \texttt{cognate} interaction. Our extended model can be formalised as follows:
 
 \[
 \begin{aligned}
-y_i \sim Ordered(p) \\
-log\frac{Pr(y_i \leq k)}{1-Pr(y_i \leq k)} &= \alpha_k - \dots \\
+y_i \sim Binomial(n_i, p_i), \\
+logit(p_i) &=& \alpha - \dots \\
 & \beta_1 \times Age_i + \dots \\
 & \beta_2 \times Frequency_i + \dots \\
 & \beta_3 \times Dominance_i + \dots \\
@@ -242,8 +238,9 @@ log\frac{Pr(y_i \leq k)}{1-Pr(y_i \leq k)} &= \alpha_k - \dots \\
 & \beta_7 \times (Dominance_i \times Cognate_i) + \dots \\
 & \beta_8 \times (Bilingualism_i \times Cognate_i) + \dots \\
 & \beta_9 \times (Dominance_i \times Bilingualism_i \times Cognate_i), \\
-\alpha \sim Normal(0, 10) \\
-\beta_{0-9} \sim Normal(0, 10)
+logit(p_i) = log\frac{y_i}{n_i-y_i} \\
+\alpha \sim Normal(0, 1.5) \\
+\beta_{0-9} \sim Normal(0, 0.5)
 \end{aligned}
 \]
 
@@ -252,41 +249,55 @@ Where:
 \begin{itemize}
 \tightlist
 \item
-  \(k\) is one of the possible categories (coded as ) responses can take
+  \(y_i\) is the sum of positive responses to \emph{Understands} or \emph{Understands and Says} for translation equivalent \(i\)
 \item
-  \(y_i\) is the \texttt{response} value of observation \(i\)
+  \(n_i\) is the total number of responses for translation equivalent \(i\)
 \item
-  \(\alpha_k\) is the mean probability of responses to belong to category \(k\)
+  \(\alpha\) is the intercept, which corresponds to the probability of a positive response when all predictors equal 0
 \item
   \(\beta_{1, \dots, 9}\) are the coefficients of the predictors
 \end{itemize}
 
-We implemented the model using the R package \texttt{brms} (Bürkner, 2017) as \texttt{response\ \textasciitilde{}\ \ age\ +\ frequency\ +\ dominance*bilingualism*cognate}, running four MCMC sampling chains with 4,000 iterations (including 2,000 warm-up iterations per chain). We used weakly regularising prior for the parameters in our model, given that its weight in the estimation of the posterior will be marginal due to the large amount of observations introduced in the model. We report the 95\% credible intervals (CrI) of the estimated posterior distribution of each parameter, which denotes a range of values we are 95\% certain contain the true value, given our prior and observed data. We report analyses on the probability scale, having transformed the log-odds returned by the model using an inverse logit transformation.
+We implemented this model using the R package \texttt{brms} (Bürkner, 2017) as \texttt{response\ \textasciitilde{}\ \ age\ +\ frequency\ +\ dominance*bilingualism*cognate}, running four MCMC sampling chains with 1,000 iterations each, including 500 warm-up iterations per chain. Appendix 2 shows different diagnostics of chain convergence. We compared all models using leave-one-out cross-validation (LOO-CV) (Vehtari, Gelman, \& Gabry, 2017)\footnote{Due to the high computational cost associated with a large dataset, we used a sub-sampling approach for performing Bayesian LOO with 1,000 samples (Magnusson, Andersen, Jonasson, \& Vehtari, 2019)}. This method computes, for a given model, the sum of the log scores of the posterior predictive distributions that result from removing one data-point at a time, providing an estimate of the model fit. The LOO estimates are adjusted for the number of parameters estimated in the model, therefore accounting for overfitting. We compared the expected log posterior density of each each model to test which one fitted the data the best.
 
-We fit increasingly simpler models dropping predictors one by one in the following order: (1) \texttt{dominance:bilingualism:cognate}, (2) \texttt{bilingualism:cognate}, (3) \texttt{dominance:cognate:}, (4) \texttt{cognate}, (5) \texttt{dominance:bilingualism}, (6) \texttt{bilingualism}, (7) \texttt{dominance}, (8) \texttt{frequency}, and (9) \texttt{age}. We compared all models using leave-one-out cross-validation (LOO-CV) (Vehtari, Gelman, \& Gabry, 2017)\footnote{Due to the high computational cost associated with a large dataset, we used a sub-sampling approach for performing Bayesian LOO with 1000 samples (Magnusson, Andersen, Jonasson, \& Vehtari, 2019)}. We then explored the posterior distribution of each parameter in the model that fitted the data the best, computing the 95\% credible intervals and testing whether this interval excluded 0. We performed follow-up tests on interactions whose 95\% credible interval excluded 0 by comparing the 95\% credible interval of their estimated marginal means using the \texttt{emmeans} package (Lenth, 2020). Data processing and visualisation was done in R (R Core Team, 2020) using the \texttt{tidyverse} family of packages (Wickham et al., 2019), and posterior samples were extracted using the \texttt{tidybayes} R package (Kay, 2020).
+We then explored the posterior distribution of each parameter in the model that fitted the data the best computing the 95\% credible intervals and testing whether this interval excluded 0. Credible intervals (CrI) indicate the range of values we are 95\% certain contain the true value of the parameter, given our prior and observed data. We performed follow-up tests on interactions whose 95\% credible interval excluded 0 by comparing the 95\% credible interval of their estimated marginal means using the \texttt{emmeans} package (Lenth, 2020). Data processing and visualisation was done in R (R Core Team, 2020) using the \texttt{tidyverse} family of packages (Wickham et al., 2019), and posterior samples were extracted using the \texttt{tidybayes} R package (Kay, 2020).
 
 \hypertarget{results}{%
 \section{Results}\label{results}}
 
-Table 2 summarises shows the outcome of the LOO-CV model comparison. The extended model was most favoured by the data.
+\hypertarget{comprehension}{%
+\subsection{Comprehension}\label{comprehension}}
+
+The extended model, including the three-way interaction \texttt{dominance1:bilingualism;cognate1} fitted comprehension data the best: it showed the smallest absolute expected log predictive density. This estimate is several times larger than its standard error indicating high predictive accuracy. Table 2 summarises the LOO scores of the fitted models.
 
 \captionsetup[table]{labelformat=empty,skip=1pt}
-\begin{longtable}{crrrrr}
+\begin{longtable}{lrrrrr}
 \toprule
 & & & & \multicolumn{2}{c}{\textbf{Comparison}} \\ 
  \cmidrule(lr){5-6}
 \textbf{Model} & \textbf{ELPD}\textsuperscript{a} & \textbf{SE}\textsuperscript{b} & \textbf{p}\textsuperscript{c} & \emph{LOOdiff} & \emph{SEdiff} \\ 
 \midrule
-\textasciitilde  1 (intercept only) & $-157,272.37$ & $250.56$ & $12.00$ & $0.00$ & 0.0000 \\ 
-... + age & $-157,308.76$ & $250.47$ & $10.37$ & $36.39$ & 354.2836 \\ 
-... + frequency & $-157,318.93$ & $250.45$ & $9.93$ & $46.56$ & 354.2703 \\ 
-... + dominance & $-157,463.31$ & $250.25$ & $8.08$ & $190.94$ & 354.1293 \\ 
-... + bilingualism & $-157,472.54$ & $250.29$ & $7.67$ & $200.17$ & 354.1564 \\ 
-... + dominance:bilingualism & $-158,724.35$ & $246.22$ & $6.33$ & $1,451.98$ & 351.2863 \\ 
-... + cognate & $-159,063.42$ & $245.10$ & $5.09$ & $1,791.06$ & 350.5085 \\ 
-... + dominance:cognate & $-161,704.16$ & $237.62$ & $3.95$ & $4,431.79$ & 345.3184 \\ 
-... + bilingualism:cognate & $-165,570.87$ & $228.08$ & $3.13$ & $8,298.50$ & 338.8223 \\ 
-... + dominance:bilingualism:cognate & $-184,511.91$ & $172.86$ & $2.04$ & $27,239.54$ & 304.4033 \\ 
+\multicolumn{1}{l}{Production} \\ 
+\midrule
+\textasciitilde  1 + age + frequency & $-73,655.36$ & $277.24$ & $5.93$ & 4577.29336 & 380.0306 \\ 
+... + dominance & $-71,344.56$ & $271.05$ & $7.19$ & 2266.48651 & 375.5426 \\ 
+... + bilingualism & $-70,706.33$ & $267.57$ & $9.23$ & 1628.26183 & 373.0344 \\ 
+... + dominance:bilingualism & $-69,246.49$ & $261.81$ & $11.57$ & 168.42565 & 368.9302 \\ 
+... + cognate & $-69,242.57$ & $261.70$ & $10.65$ & 164.49868 & 368.8513 \\ 
+... + dominance:cognate & $-69,143.92$ & $260.65$ & $13.29$ & 65.84950 & 368.1056 \\ 
+... + bilingualism:cognate & $-69,129.05$ & $260.58$ & $14.47$ & 50.98597 & 368.0542 \\ 
+... + dominance:bilingualism:cognate & $-69,078.07$ & $259.93$ & $15.72$ & 0.00000 & 0.0000 \\ 
+\midrule
+\multicolumn{1}{l}{Comprehension} \\ 
+\midrule
+\textasciitilde  1 + age + frequency & $-73,653.35$ & $277.26$ & $5.03$ & 4577.41755 & 380.0019 \\ 
+... + dominance & $-71,348.67$ & $271.01$ & $6.44$ & 2272.73124 & 375.4690 \\ 
+... + bilingualism & $-70,702.30$ & $267.45$ & $6.57$ & 1626.36697 & 372.9028 \\ 
+... + dominance:bilingualism & $-69,245.99$ & $261.71$ & $8.87$ & 170.05482 & 368.8094 \\ 
+... + cognate & $-69,240.75$ & $261.61$ & $9.43$ & 164.81145 & 368.7373 \\ 
+... + dominance:cognate & $-69,142.47$ & $260.63$ & $9.67$ & 66.53140 & 368.0479 \\ 
+... + bilingualism:cognate & $-69,134.13$ & $260.64$ & $15.77$ & 58.19037 & 368.0546 \\ 
+... + dominance:bilingualism:cognate & $-69,075.94$ & $259.86$ & $17.30$ & 0.00000 & 0.0000 \\ 
 \bottomrule
 \end{longtable}
 \vspace{-5mm}
@@ -296,26 +307,25 @@ Table 2 summarises shows the outcome of the LOO-CV model comparison. The extende
 \textsuperscript{c}p: effective number of parameters \\ 
 \end{minipage}
 
-Table 3 shows the mean and 95\% CrI of each regression coefficient of the best fitting model.
+We report the mean of each coefficient's posterior distribution along with standard errors and 95\% CrI in Table 3. For interpretability, we report de derivative of the logistic function\footnote{The derivative is calculated as \(\hat{\beta_j}/4\), where \(\hat{\beta_j}\) is the estimated mean of the posterior distribution of coefficient \(j\). This value corresponds to the slope of the logistic curve at the midpoint, where it is steepest.} for each coefficient, which indicates the maximum difference in probability corresponding to one unit different in the input variable ({\textbf{???}}).
 
 \captionsetup[table]{labelformat=empty,skip=1pt}
 \begin{longtable}{lrrrrrr}
 \toprule
-& \multicolumn{3}{c}{\textbf{Odds Ratio}} & \multicolumn{3}{c}{\textbf{Probability}} \\ 
+& \multicolumn{3}{c}{\textbf{Comprehension}} & \multicolumn{3}{c}{\textbf{Production}} \\ 
  \cmidrule(lr){2-4}\cmidrule(lr){5-7}
-\textbf{Coefficient} & \emph{Mean} & \emph{SE}\textsuperscript{1} & \emph{95\% CrI}\textsuperscript{2} & \emph{Mean} & \emph{SE} & \emph{95\% CrI} \\ 
+\textbf{Coefficient} & \emph{Mean} & \emph{SE}\textsuperscript{1} & \emph{95\% CrI}\textsuperscript{2} & \emph{Mean} & \emph{SE}\textsuperscript{1} & \emph{95\% CrI}\textsuperscript{2} \\ 
 \midrule
-Intercept 1 (Understands) & $1.12$ & $1.01$ & $1.11$–$1.14$ & $0.53$ & $0.50$ & $0.53$–$0.53$ \\ 
-Intercept 2 (Understands \& Says) & $5.31$ & $1.01$ & $5.24$–$5.38$ & $0.84$ & $0.50$ & $0.84$–$0.84$ \\ 
-Age & $1.16$ & $1.00$ & $1.16$–$1.17$ & $0.54$ & $0.50$ & $0.54$–$0.54$ \\ 
-Frequency & $1.86$ & $1.01$ & $1.83$–$1.88$ & $0.65$ & $0.50$ & $0.65$–$0.65$ \\ 
-Dominance & $2.27$ & $1.01$ & $2.22$–$2.32$ & $0.69$ & $0.50$ & $0.69$–$0.70$ \\ 
-Bilingualism & $1.10$ & $1.00$ & $1.09$–$1.11$ & $0.52$ & $0.50$ & $0.52$–$0.53$ \\ 
-Cognate & $1.08$ & $1.01$ & $1.06$–$1.10$ & $0.52$ & $0.50$ & $0.51$–$0.52$ \\ 
-Dominance * Bilingualism & $0.73$ & $1.01$ & $0.73$–$0.74$ & $0.42$ & $0.50$ & $0.42$–$0.43$ \\ 
-Dominance * Cognate & $0.68$ & $1.02$ & $0.65$–$0.71$ & $0.40$ & $0.51$ & $0.39$–$0.42$ \\ 
-Bilingualism * Cognate & $0.97$ & $1.01$ & $0.96$–$0.98$ & $0.49$ & $0.50$ & $0.49$–$0.50$ \\ 
-Dominance * Bilingualism * Cognate & $1.13$ & $1.01$ & $1.10$–$1.15$ & $0.53$ & $0.50$ & $0.52$–$0.54$ \\ 
+Intercept & $0.48$ & $0.50$ & $0.48$–$0.48$ & $0.14$ & $0.50$ & $0.14$–$0.14$ \\ 
+Age & $0.76$ & $0.50$ & $0.75$–$0.76$ & $0.81$ & $0.50$ & $0.81$–$0.81$ \\ 
+Frequency & $0.61$ & $0.50$ & $0.61$–$0.62$ & $0.61$ & $0.50$ & $0.61$–$0.61$ \\ 
+Dominance & $0.68$ & $0.50$ & $0.68$–$0.69$ & $0.71$ & $0.50$ & $0.71$–$0.72$ \\ 
+Bilingualism & $0.55$ & $0.50$ & $0.55$–$0.56$ & $0.54$ & $0.50$ & $0.53$–$0.54$ \\ 
+Cognate & $0.51$ & $0.50$ & $0.50$–$0.51$ & $0.55$ & $0.50$ & $0.54$–$0.55$ \\ 
+Dominance * Bilingualism & $0.34$ & $0.50$ & $0.34$–$0.35$ & $0.37$ & $0.50$ & $0.37$–$0.38$ \\ 
+Dominance * Cognate & $0.42$ & $0.51$ & $0.41$–$0.43$ & $0.39$ & $0.51$ & $0.38$–$0.41$ \\ 
+Bilingualism * Cognate & $0.48$ & $0.50$ & $0.48$–$0.49$ & $0.49$ & $0.50$ & $0.48$–$0.50$ \\ 
+Dominance * Bilingualism * Cognate & $0.56$ & $0.51$ & $0.55$–$0.57$ & $0.56$ & $0.51$ & $0.54$–$0.57$ \\ 
 \bottomrule
 \end{longtable}
 \vspace{-5mm}
@@ -323,6 +333,12 @@ Dominance * Bilingualism * Cognate & $1.13$ & $1.01$ & $1.10$–$1.15$ & $0.53$ 
 \textsuperscript{1}SE: Standard Error of the mean \\ 
 \textsuperscript{2}95\% CrI: 95\% credible interval \\ 
 \end{minipage}
+
+The intercept (47.98\%) indicates probability of participants understanding TEs at mean age (25.48 months), mean frequency (2.93 Zipf score), and mean L2 exposure (24.22\%), across the levels of the \texttt{dominance} and \texttt{cognate} factors. An increase in one standard deviation increment in age (1 \emph{SD} = 7.30 months) is associated with a 28.20\% increment in comprehension probability. A one standard deviation increase in lexical frequency (1 \emph{SD} = 1.41 Zipf scores) is associated with a 11.49\% increment in comprehension probability. Items in the dominant language were 19.23\% more likely to be understood than items in the non-dominant language. A one standard deviation increase in exposure to the non-dominant language (1 \emph{SD} = \texttt{printnum(sd(responses\$bilingualism\_scaled))}\%) is associated with a 5.48 increment in comprehension probability. Cognates were 0.62\% more like to be understood than non-cognates. The 95\% credible interval of the three-way interaction (\texttt{dominance:bilingualism:cognate}) excluded 0, indicating that that the cognate status of the items changed the effect of dominance differently depending on the amount of exposure to the second language. Figure 1 shows the estimated marginal mean posterior probability of comprehension and production across ages, and the different levels of \texttt{dominance}, \texttt{bilingualism}, and \texttt{cognate}.
+
+Children exposed to their second language more than -1 SD away from the mean (7.33\%) were more likely to understand cognates than non-cognates in their non-dominance language (\(M_{Cognate}-M_{Non-cognate}\) = 9.61\%, 95\% CrI = {[}8.33-10.87{]}), but not in their dominant language (\(M_{Cognate}-M_{Non-cognate}\) = -5.11\%, 95\% CrI = {[}-6.14--4.07{]}). This difference was smaller for participants with mean exposure to the non-dominant language (24.22\%): in the non-dominant language cognates were slight more likely to be understood than non-cognates (\(M_{Cognate}-M_{Non-cognate}\) = 4.83\%, 95\% CrI = {[}3.96-5.69{]}), but not in the dominant language (\(M_{Cognate}-M_{Non-cognate}\) = -3.58\%, 95\% CrI = {[}-4.36--2.81{]}). Finally this effect was negligible for participants exposed to their second language more than -1 SD away from the mean (41.11\%). Cognates and non-cognates were equally likely to be understood in both the non-dominant (\(M_{Cognate}-M_{Non-cognate}\) = 0.05\%, 95\% CrI = {[}-1.18-1.19{]}), and the dominant language (\(M_{Cognate}-M_{Non-cognate}\) = -2.05\%, 95\% CrI = {[}-3.20--0.91{]}).
+
+The difference in probability of comprehension between the dominant and the non-dominant languages differed between cognates and non-cognates and different levels of exposure to the non-dominant language. For children exposed. For children exposed to their non-dominant language less than 1 SD from the mean, difference in probability between the dominant and the non-dominant language was smaller for cognates (\(M_{Dominant}-M_{Non-dominant}\) = 27.97\%, 95\% CrI = {[}27.06-28.88{]}) than for non-cognates (\(M_{Dominant}-M_{Non-dominant}\) = 42.68\%, 95\% CrI = {[}41.31-44.03{]}). For children with mean exposure to the non-dominant language, this effect was smaller: the difference between the comprehension probability of items in L1 and L2 was slightly smaller for cognates (\(M_{Dominant}-M_{Non-dominant}\) = 15.03\%, 95\% CrI = {[}14.39-15.68{]}) than for non-cognates (\(M_{Dominant}-M_{Non-dominant}\) = 23.44\%, 95\% CrI = {[}22.48-24.37{]}). Finally this effect was negligible for children exposed more than 1 SD than the mean to their non-dominant language: the difference in comprehension probability between items in the dominant and the non-dominant language was roughly similar for cognates (\(M_{Dominant}-M_{Non-dominant}\) = 2.09\%, 95\% CrI = {[}1.19-3.03{]}) and non-cognates (\(M_{Dominant}-M_{Non-dominant}\) = 4.19\%, 95\% CrI = {[}2.81-5.58{]}).
 
 \begin{figure}
 
@@ -374,9 +390,6 @@ Braginsky, M., Yurovsky, D., Marchman, V. A., \& Frank, M. C. (2019). Consistenc
 
 \leavevmode\hypertarget{ref-burkner_brms_2017}{}%
 Bürkner, P.-C. (2017). Brms: An R Package for Bayesian Multilevel Models Using Stan. \emph{Journal of Statistical Software}, \emph{80}(1), 1--28. \url{https://doi.org/10.18637/jss.v080.i01}
-
-\leavevmode\hypertarget{ref-burkner_ordinal_2019}{}%
-Bürkner, P.-C., \& Vuorre, M. (2019). Ordinal regression models in psychology: A tutorial. \emph{Advances in Methods and Practices in Psychological Science}, \emph{2}(1), 77--101.
 
 \leavevmode\hypertarget{ref-core_total_2013}{}%
 Core, C., Hoff, E., Rumiche, R., \& Señor, M. (2013). Total and Conceptual Vocabulary in Spanish--English Bilinguals From 22 to 30 Months: Implications for Assessment. \emph{Journal of Speech, Language, and Hearing Research}, \emph{56}(5), 1637--1649. \url{https://doi.org/10.1044/1092-4388(2013/11-0044)}

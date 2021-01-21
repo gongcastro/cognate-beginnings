@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999992 (TeX Live 2020/W32TeX) (preloaded format=xelatex 2021.1.13)  13 JAN 2021 20:15
+This is XeTeX, Version 3.14159265-2.6-0.999992 (TeX Live 2020/W32TeX) (preloaded format=xelatex 2021.1.13)  19 JAN 2021 22:29
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1214,53 +1214,59 @@ Underfull \vbox (badness 1838) has occurred while \output is active []
 [9] [10]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[11] [12]
-Overfull \hbox (15.65741pt too wide) in alignment at lines 274--291
+[11] [12] [13]
+Overfull \hbox (15.16927pt too wide) in alignment at lines 274--301
  [] [] [] [] [] [] 
  []
 
 
-Underfull \vbox (badness 10000) detected at line 291
- []
-
-[13]
-Underfull \hbox (badness 10000) in paragraph at lines 294--297
-
+Underfull \vbox (badness 10000) detected at line 301
  []
 
 
-Overfull \hbox (28.90755pt too wide) in paragraph at lines 293--298
+Overfull \hbox (15.16927pt too wide) in alignment at lines 301--302
+ [] [] [] [] [] [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 305--308
+
+ []
+
+
+Overfull \hbox (28.90755pt too wide) in paragraph at lines 304--309
 []$[]$  
  []
 
-
-Overfull \hbox (2.97752pt too wide) in alignment at lines 302--320
+[14]
+Overfull \hbox (4.20593pt too wide) in alignment at lines 313--330
  [] [] [] [] [] [] [] 
  []
 
 
-Underfull \vbox (badness 10000) detected at line 320
- []
-
-[14]
-Underfull \hbox (badness 10000) in paragraph at lines 323--325
-
+Underfull \vbox (badness 10000) detected at line 330
  []
 
 
-Overfull \hbox (28.90755pt too wide) in paragraph at lines 322--326
+Underfull \hbox (badness 10000) in paragraph at lines 333--335
+
+ []
+
+
+Overfull \hbox (28.90755pt too wide) in paragraph at lines 332--336
 []$[]$  
  []
 
+[15] [16]
 File: trajectories_manuscript_files/figure-latex/marginalmeans-1.pdf Graphic fi
 le (type pdf)
 <use trajectories_manuscript_files/figure-latex/marginalmeans-1.pdf>
-[15] [16] [17] [18] [19] [20]
+[17] [18] [19] [20] [21] [22]
 
 Package caption Warning: Unused \captionsetup[table] on input line 273.
 See the caption package documentation for explanation.
 
-AED endfloat: Processing end Figures and Tables [21]
+AED endfloat: Processing end Figures and Tables [23]
 The property list \polyglossia@langsetup contains the pairs (without outer
 braces):
 >  {latex/script}  =>  {latin}
@@ -1305,15 +1311,15 @@ LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `trajectories_manuscript.out' has not changed
 .
-(rerunfilecheck)             Checksum: D3C4721CC4A130170498D5C2ED7E39A3;802.
+(rerunfilecheck)             Checksum: 4DFA8D6C8874E81EA3F2A374B691F762;921.
  ) 
 Here is how much of TeX's memory you used:
- 20782 strings out of 479212
- 368624 string characters out of 5873273
- 858848 words of memory out of 5000000
- 40019 multiletter control sequences out of 15000+600000
+ 20784 strings out of 479212
+ 368651 string characters out of 5873273
+ 855886 words of memory out of 5000000
+ 40021 multiletter control sequences out of 15000+600000
  436137 words of font info for 101 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 98i,12n,122p,2262b,506s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 98i,12n,122p,2262b,464s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on trajectories_manuscript.pdf (21 pages).
+Output written on trajectories_manuscript.pdf (23 pages).
