@@ -8,36 +8,27 @@ library(brms)
 library(scales)
 library(tidybayes)
 library(emmeans)
-library(bayestestR)
 library(here)
 
 # load helper functions
 source(here("R", "utils.R"))
 options(mc.cores = 4)
+set.seed(888)
 
 #### import data ---------------------------------------------------------------
 responses <- read_csv(here("Data", "responses.csv")) %>% 
+  mutate(
+    age_scaled = age,
+    frequency_scaled = frequency,
+    bilingualism_scaled = bilingualism
+  ) %>% 
   mutate_at(vars(age, frequency, bilingualism), function(x) scale(x)[,1]) %>% 
-  mutate_at(vars(dominance, cognate), as.factor)
+  mutate_at(vars(dominance, cognate), as.factor) 
 
 # responses_subset <- filter(responses, te %in% sample(responses$te, 25)) %>% 
 #   mutate_at(vars(age, frequency, doe), function(x) scale(x, scale = FALSE)[,1]) %>% 
 #   mutate_at(vars(item_dominance, cognate), as.factor) %>% 
 #   mutate(response = factor(response, ordered = TRUE))
-
-# summarise responses (for visualisation purposes)
-proportion <- responses %>% 
-  pivot_longer(c(understands, produces), names_to = "type", values_to = ".value") %>% 
-  mutate(type = str_to_sentence(type)) %>% 
-  group_by(age, frequency, bilingualism, cognate, dominance, type) %>%
-  summarise(
-    .value = (.value+0.5)/(n()-.value+0.5),
-    n = n(),
-    .groups = "drop"
-  ) %>% 
-  rowwise() %>% 
-  mutate(.value = prop_adj(.value, n)) %>% 
-  ungroup() 
 
 # set sum contrasts (Schad et al., 2018, https://arxiv.org/abs/1807.10451)
 contrasts(responses$dominance) <- contr.sum(2)/2
@@ -50,13 +41,16 @@ if (file.exists(here("Results", "comp_fits.RData"))) {
   load(here("Results", "comp_fits.RData"))
 } else {
   comp_0 <- brm(
-    understands | trials(n) ~ 1 + age + frequency,
+    understands ~ 1 + age + frequency + (1 + age | te),
     data = responses,
-    family = binomial("logit"),
+    family = bernoulli("logit"),
     # set weakly informative prior
     prior = c(prior(normal(0, 1.5), class = Intercept),
-              prior(normal(0, 0.5), class = b)),
-    save_all_pars = TRUE
+              prior(normal(0, 0.5), class = b),
+              prior(student_t(20, 0, 2.5), class = sd),
+              prior(lkj(3), class = cor)),
+    iter = 3000,
+    save_pars = save_pars(all = TRUE)
   )
   comp_1 <- update(comp_0, . ~ . + dominance, newdata = responses)
   comp_2 <- update(comp_1, . ~ . + bilingualism, newdata = responses)
@@ -76,14 +70,16 @@ if (file.exists(here("Results", "prod_fits.RData"))) {
   load(here("Results", "prod_fits.RData"))
 } else {
   prod_0 <- brm(
-    understands | trials(n) ~ 1 + age + frequency,
+    produces ~ 1 + age + frequency + (1 + age | te),
     data = responses,
-    family = binomial("logit"),
+    family = bernoulli("logit"),
     # set weakly uninformative prior
     prior = c(prior(normal(0, 1.5), class = Intercept),
-              prior(normal(0, 0.5), class = b)),
-    save_all_pars = TRUE,
-    file = here("Results", "prod_0.rds")
+              prior(normal(0, 0.5), class = b),
+              prior(student_t(20, 0, 2.5), class = sd),
+              prior(lkj(3), class = cor)),
+    iter = 3000,
+    save_pars = save_pars(all = TRUE)
   )
   prod_1 <- update(prod_0, . ~ . + dominance, newdata = responses)
   prod_2 <- update(prod_1, . ~ . + bilingualism, newdata = responses)
@@ -106,9 +102,7 @@ if (file.exists(here("Results", "loos.RData"))) {
   save(loos_comp, loos_prod, file = here("Results", "loos.RData"))
 }
 
-
 #### examine posterior ---------------------------------------------------------
-
 # extract posterior draws for estimated parameters
 post <- bind_rows(
   Understands = gather_draws(comp_7, `b.*`, regex = TRUE),
@@ -164,8 +158,8 @@ nd <- expand_grid(
 
 # get 20 posterior draws
 post_preds <- bind_rows(
-  Understands = add_fitted_draws(nd, comp_7, n = 20),
-  Produces = add_fitted_draws(nd, prod_7, n = 20),
+  Understands = add_fitted_draws(nd, comp_7, n = 20, re_formula = NULL),
+  Produces = add_fitted_draws(nd, prod_7, n = 20, re_formula = NA),
   .id = "type"
 ) %>% 
   mutate(
@@ -209,8 +203,9 @@ deltas <- map(
   ~emmeans(., pairwise~dominance*cognate, by = "bilingualism",
            at = list(bilingualism = c(-1, 0, 1)))$contrasts 
 ) %>% 
-  map(~as.mcmc(.) %>% 
-        as_tibble() %>% 
+  map(~as.mcmc(.) %>%
+        as.matrix() %>% 
+        as.data.frame() %>% 
         pivot_longer(everything(), names_to = "contrast", values_to = "delta")
   ) %>% 
   set_names(c("Comprehension", "Production")) %>% 
