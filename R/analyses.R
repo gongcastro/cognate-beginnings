@@ -107,8 +107,8 @@ if (file.exists(here("Results", "loos.RData"))) {
 #### examine posterior ---------------------------------------------------------
 # extract posterior draws for estimated parameters
 post <- bind_rows(
-  Understands = gather_draws(comp_7, `b.*`, regex = TRUE),
-  Produces = gather_draws(prod_7, `b.*`, regex = TRUE),
+  Understands = gather_draws(comp_7, `b_.*`, regex = TRUE),
+  Produces = gather_draws(prod_7, `b_.*`, regex = TRUE),
   .id = "type") %>% 
   mutate(
     .chain = as.factor(.chain),
@@ -160,8 +160,8 @@ nd <- expand_grid(
 
 # get 20 posterior draws
 post_preds <- bind_rows(
-  Understands = add_fitted_draws(nd, comp_7, n = 20, re_formula = NA),
-  Produces = add_fitted_draws(nd, prod_7, n = 20, re_formula = NA),
+  Understands = add_fitted_draws(nd, comp_5, n = 20, re_formula = NA),
+  Produces = add_fitted_draws(nd, prod_4, n = 20, re_formula = NA),
   .id = "type"
 ) %>% 
   mutate(
@@ -180,7 +180,7 @@ post_preds %>%
     fill = interaction(dominance, cognate, sep = " - ")
   )) +
   facet_wrap(type~bilingualism) +
-  geom_line(aes(group = interaction(dominance, cognate, bilingualism, .draw)), size = 0.4) +
+  geom_line(aes(group = interaction(dominance, cognate, bilingualism, .draw)), size = 0.4, alpha = 0.5) +
   #stat_lineribbon(.width = 0.95, colour = NA, alpha = 0.5) +
   stat_summary(fun = "mean", geom = "line", size = 0.75) +
   #geom_point(data = proportion, alpha = 0.5) +
@@ -195,7 +195,7 @@ post_preds %>%
     legend.title = element_blank(),
     legend.direction = "horizontal"
   ) +
-  ggsave(here("Figures", "post-preds.png"), width = 7)
+  ggsave(here("Figures", "post-preds.png"), width = 8)
 
 #### test interactions ---------------------------------------------------------
 

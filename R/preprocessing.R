@@ -14,7 +14,7 @@ source(here("R", "utils.R"))
 # import data ------------------------------------------------------------------
 ml_connect("gonzalo.garciadecastro@upf.edu")
 p <- ml_participants()
-r <- ml_responses(p, longitudinal = "first", update = TRUE)  
+r <- ml_responses(p, longitudinal = "first", update = FALSE)  
 l <- ml_logs(p, r)
 v <- ml_vocabulary(p, r)
 
@@ -23,7 +23,7 @@ items <- multilex::pool %>%
     drop_na(cognate, ipa) %>% 
     filter(
         include,
-        class %in% c("Noun")
+        class %in% c("Noun", "Verb", "Adjective")
     ) %>% 
     rename(frequency = frequency_zipf) %>% 
     select(te, language, category, item, ipa, frequency, cognate) %>% 
