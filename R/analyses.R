@@ -18,7 +18,8 @@ options(mc.cores = 4)
 #### import data ---------------------------------------------------------------
 responses <- read_csv(here("Data", "responses.csv")) %>% 
   mutate_at(vars(age, frequency, bilingualism), function(x) scale(x)[,1]) %>% 
-  mutate_at(vars(dominance, cognate), as.factor)
+  mutate_at(vars(dominance, cognate), as.factor) %>% 
+  filter(te %in% sample(.$te, 25))
 
 # responses_subset <- filter(responses, te %in% sample(responses$te, 25)) %>% 
 #   mutate_at(vars(age, frequency, doe), function(x) scale(x, scale = FALSE)[,1]) %>% 
@@ -50,12 +51,14 @@ if (file.exists(here("Results", "comp_fits.RData"))) {
   load(here("Results", "comp_fits.RData"))
 } else {
   comp_0 <- brm(
-    understands | trials(n) ~ 1 + age + frequency,
+    understands | trials(n) ~ 1 + age + frequency + (1 + age | te),
     data = responses,
     family = binomial("logit"),
     # set weakly informative prior
     prior = c(prior(normal(0, 1.5), class = Intercept),
-              prior(normal(0, 0.5), class = b)),
+              prior(normal(0, 0.5), class = b),
+              prior(normal(0, 1), class = sd),
+              prior(lkj(3), class = cor)),
     save_all_pars = TRUE
   )
   comp_1 <- update(comp_0, . ~ . + dominance, newdata = responses)
@@ -76,7 +79,7 @@ if (file.exists(here("Results", "prod_fits.RData"))) {
   load(here("Results", "prod_fits.RData"))
 } else {
   prod_0 <- brm(
-    understands | trials(n) ~ 1 + age + frequency,
+    production | trials(n) ~ 1 + age + frequency,
     data = responses,
     family = binomial("logit"),
     # set weakly uninformative prior
@@ -164,8 +167,8 @@ nd <- expand_grid(
 
 # get 20 posterior draws
 post_preds <- bind_rows(
-  Understands = add_fitted_draws(nd, comp_7, n = 20),
-  Produces = add_fitted_draws(nd, prod_7, n = 20),
+  Understands = add_fitted_draws(nd, comp_7, n = 20, re_formula = NA),
+  Produces = add_fitted_draws(nd, prod_7, n = 20, re_formula = NA),
   .id = "type"
 ) %>% 
   mutate(
@@ -184,8 +187,8 @@ post_preds %>%
     fill = interaction(dominance, cognate, sep = " - ")
   )) +
   facet_wrap(type~bilingualism) +
-  #geom_line(aes(group = interaction(item_dominance, cognate, doe, .draw)), size = 0.4) +
-  stat_lineribbon(.width = 0.95, colour = NA, alpha = 0.5) +
+  geom_line(aes(group = interaction(dominance, cognate, bilingualism, .draw)), size = 0.4) +
+  #stat_lineribbon(.width = 0.95, colour = NA, alpha = 0.5) +
   stat_summary(fun = "mean", geom = "line", size = 0.75) +
   #geom_point(data = proportion, alpha = 0.5) +
   labs(x = "Age (months)", y = "P(Y|X)") +
