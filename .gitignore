@@ -3,9 +3,9 @@
 .RData
 .Rproj
 .Ruserdata
-Data/
-Results/
-Figures/
+Data/*
+Results/*
+Figures/*
 Communications/
 .secrets
 *.png
