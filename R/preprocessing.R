@@ -16,7 +16,7 @@ ml_connect("gonzalo.garciadecastro@upf.edu")
 p <- ml_participants()
 r <- ml_responses(p, longitudinal = "first", update = FALSE)  
 l <- ml_logs(p, r)
-v <- ml_vocabulary(p, r)
+v <- ml_vocabulary(p, r, by = c("dominance", "language"), scale = "prop")
 
 # items ------------------------------------------------------------------------
 items <- multilex::pool %>%
@@ -33,8 +33,6 @@ items <- multilex::pool %>%
     ) %>% 
     relocate(te, language, item, ipa, cognate, frequency)
 
-write_csv(items, here("Data", "items.csv"))
-
 # participants -----------------------------------------------------------------
 participants <- l %>%
     rename(dominant_language = dominance) %>% 
@@ -42,54 +40,41 @@ participants <- l %>%
         completed,
         !(version %in% c("DevLex", "CBC")),
         lp %in% c("Monolingual", "Bilingual"),
-        between(age, 10, 40),
+        between(age, 12, 36),
     ) %>% 
-    mutate(bilingualism = case_when(
-        dominant_language=="Catalan" ~ doe_spanish,
-        dominant_language=="Spanish" ~ doe_catalan
-    )) %>% 
-    mutate_at(vars(matches("doe")), function(x) x*0.01) %>% 
-    select(id, time_stamp, time, age, sex, dominant_language, bilingualism)
-
-write_csv(participants, here("Data", "participants.csv"))
-
-# vocabulary sizes -------------------------------------------------------------
-vocabulary <- participants %>%
-    left_join(v, by = c("id", "time")) %>% 
-    mutate(
-        id = as.numeric(as.factor(id)),
-        vocab_type = str_to_sentence(vocab_type)
-    )
-
-write_csv(vocabulary, here("Data", "vocabulary.csv"))
+    pivot_longer(c(doe_catalan, doe_spanish), names_to = "language", values_to = "doe") %>% 
+    mutate(language = str_remove(language, "doe_") %>% str_to_sentence()) %>% 
+    select(id, time_stamp, time, age, sex, dominant_language, language, doe) %>% 
+    mutate_at(vars(matches("doe")), function(x) x*0.01)  
 
 # responses --------------------------------------------------------------------
 responses <- expand_grid(
     id = participants$id,
     item = items$item
 ) %>%
-    left_join(participants, by = "id") %>% 
-    left_join(items, by = "item") %>% 
-    left_join(select(r, id, item, response), by = c("id", "item")) %>% 
-    select(id, age, dominant_language, bilingualism, te, language, item, ipa, cognate, frequency, response) %>% 
+    left_join(participants) %>% 
+    left_join(items) %>% 
+    left_join(select(r, id, item, response)) %>% 
+    select(id, age, dominant_language, doe, te, language, item, ipa, cognate, frequency, response) %>% 
     drop_na() %>%
     distinct(id, te, age, item, .keep_all = TRUE) %>% 
     mutate(
-        dominance = ifelse(dominant_language==language, "L1", "L2"),
-        bilingualism = bilingualism/10,
         age = age,
-        understands = as.numeric(response %in% c(2, 3)),
-        produces = as.numeric(response %in% 3)
+        response = response-1,
+        response = factor(
+            response,
+            levels = c(0, 1, 2),
+            labels = c("No", "Understands", "Understands & Says"),
+            ordered = TRUE)
     ) %>% 
-    select(id, age, bilingualism, te, frequency, dominance, cognate, understands, produces) %>% 
-    # group_by(te, age, bilingualism, frequency, dominance, cognate, age_scaled, frequency_scaled, bilingualism_scaled) %>% 
-    # summarise(
-    #     understands = sum(understands, na.rm = TRUE),
-    #     produces = sum(produces, na.rm = TRUE),
-    #     n = n(),
-    #     .groups = "drop"
-    # ) %>% 
-    arrange(id, te, age, bilingualism)
-    
+    mutate_at(vars(cognate), as.factor) %>% 
+    select(id, age, doe, te, frequency, cognate, response) %>% 
+    arrange(id, te, age, doe)
+
+# export data
+saveRDS(items, here("Data", "items.rds"))
+saveRDS(participants, here("Data", "participants.rds"))
+saveRDS(v, here("Data", "vocabulary.rds"))
+saveRDS(responses, here("Data", "responses.rds"))
 write_csv(responses, here("Data", "responses.csv"))
 
