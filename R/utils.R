@@ -1,5 +1,8 @@
 #### helper functions ----------------------------------------------------------
 
+# inverse logit
+inv_logit <- function(x) 1 / (1 + exp(-x))
+
 # discretize a continuous variable into arbitrary quantiles
 cut_quantiles <- function(x, quantiles = seq(0.0, 1, 0.2)) {
     cut(x,
