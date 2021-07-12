@@ -1,0 +1,30 @@
+---
+title: "Methods"
+author: "Gonzalo García-Castro"
+date: "6/22/2021"
+output:
+  word_document:
+    reference_docx: trajectories_template.docx
+  pdf_document:
+      latex_engine: xelatex
+bibliography: trajectories.bib
+csl: apa6.csl
+self_contained: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Methods
+
+## Participants
+
+## Vocabulary checklist
+
+## Data analysis
+
+$$
+
+$$
+
