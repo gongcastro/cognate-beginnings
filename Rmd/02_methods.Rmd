@@ -1,0 +1,105 @@
+---
+title: "Methods"
+output:
+  word_document:
+    reference_docx: trajectories_template.docx
+  pdf_document:
+      latex_engine: xelatex
+bibliography: trajectories.bib
+csl: apa6.csl
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Participants
+
+```{r participants, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+n_participants <- length(unique(participants$id))
+dates <- as_date(range(participants$time_stamp, na.rm = TRUE))
+sex <- participants %>% drop_na(sex) %>% count(sex) %>% pull(n) %>% set_names(c("female", "male"))
+
+```
+
+We collected data from `r printnum(n_participants)` bilinguals (`r sex[1]` female), from the Metropolitan Area of Barcelona, between `r format(dates[1], "%dth %B, %Y")` and `r format(dates[2], "%dth %B, %Y")`. All families gave informed consent before participating. This study was approved by the Comitè d'Ètica de la Investigació amb Medicaments (CEIm) from Hospital del Mar (Barcelona, Spain), code XXXXXXXXX. We assessed toddlers' language profile asking parents for an estimated proportion of exposure to each language. We excluded participants with >10% exposure to a third language. Fig. \@ref(tab:lps) illustrates the distribution of participants across language profiles and ages.
+
+
+## Questionnaire
+
+```{r items, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+pool <- multilex::pool %>% 
+  drop_na(cognate)
+n_categories <- distinct(pool, category) %>% nrow()
+n_items <- length(unique(pool$item))
+n_item_language <- count(pool, language) %>% pull(n) %>% set_names(c("catalan", "spanish"))
+n_item_cognate <- count(pool, language, cognate) %>% 
+  pull(n) %>% 
+  set_names(c("catalan-cognate", "catalan-noncognate", "spanish-cognate", "spanish-noncognate"))
+```
+
+We implemented an on-line questionnaire using `formr` [@arslan_formr_2020], divided in three forms: a (1) language questionnaire, a (2) demographic survey, and a (3) Catalan and a Spanish vocabulary checklists. Vocabulary checklists followed a similar structure as the Oxford Communicative Developmental Inventory [@hamilton_infant_2000] and consisted in two lists of words, one in Catalan and one in Spanish). Items in one language were translation equivalents of the items in the other (e.g., whenever *gos* [dog] was included in the Catalan inventory, the word *perro* was included in the Spanish inventory), roughly following a one-to-one mapping. When there were two acceptable translation equivalents for a given word, we included both (e.g., Catalan *acabar* [*to finish*] and Spanish *acabar* and *terminar*), or merged them into the same one (e.g., Spanish *mono* [*monkey*] and Catalan *mono/mico*). We included items from a diverse sample of `r n_categories` semantic/functional categories (see Appendix 1). We discarded the following categories: adverbs, auxiliary words, connectives, interjections and games and routines. The Catalan inventory contained `r n_item_language["catalan"]` items (`r n_item_cognate["catalan-cognate"]` cognates, `r n_item_cognate["catalan-noncognate"]` non-cognates) and the Spanish inventory contained `r n_item_language["spanish"]` (`r n_item_cognate["spanish-cognate"]` cognates, `r n_item_cognate["spanish-noncognate"]` non-cognates).
+
+
+For each word in the vocabulary checklists, we asked parents to report whether their child was able to understand it, understand and say it, or did not understand or say it (marked by default). Participants filled a long or a short version of the questionnaire. Participants presented with the long version filled a list of 800 translation equivalents (800 items in Catalan and 800 items in Spanish), while participants presented with a short were randomly allocated into one of four list of items. Each list contained a different set of ~400 translation equivalents (~400 in Catalan, ~400 in Spanish). Semantic/functional categories with less than 16 items--thus resulting in less than four items after dividing it in four lists--were not divided in the short version of the questionnaire: all of their items were included in the four lists. Another subset of items that were part of the trial lists of some experiments in the lab were also included in all versions. Table 2 in Appendix 1 shows the distribution of items across questionnaire versions. We excluded from the analysis multi-word items (e.g., *barrita de cereales* [cereal bar]) and items that included more than one word-form (e.g., *mono / mico*). Table \@ref(tab:itemsinfo) shows the classification of items in cognates and non-cognates and their frequency scores across the four lists of the inventories.
+
+
+## Data analysis
+
+```{r n_responses, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+n_obs <- nrow(responses)
+sum_obs <- responses %>%
+  group_by(te) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  summarise(
+    mean = mean(n),
+    sd = sd(n),
+    min = min(n),
+    max = max(n)
+  )
+
+```
+
+We gathered `r printnum(n_obs, big.mark = ",")` responses. Translation equivalents received an average of `r printnum(sum_obs$mean, digits = 2)` (*SD* = `r printnum(sum_obs$sd, digits = 2)`, *Min* = `r printnum(sum_obs$min, digits = 2)`, Max = `r printnum(sum_obs$max, digits = 2)`), both languages summed together. We modelled the probability of children understanding or producing TEs separately using logistic regression model with a binomial distribution and a logit link function. [@agresti_analysis_2010]. We included several predictors of interest to adjust this probability to participants' and items' properties of interest. These predictors are:
+
+* Age of participant in months (`age`, $Age$) calculated as the difference in days between participants' birth date and questionnaire completion divided by 30, chunked into bins of two months width.
+* Degree of bilingualism of participant (`bilingualism`, $Bilingualism$) computed as the percentage of exposure to a second language (Spanish for participants exposed to >50% to Catalan an *vice versa*), chunked into six groups of participants, with degree of bilingualism 0%, 10%, 20%, 30%, 40% and 50%)
+* Lexical frequency of item (`frequency`, $Frequency$) retrieved from SUBTLEX-CAT [@boada_subtlex-cat_2019] for Catalan words and from SUBTLEX-ESP [@cuetos_subtlex-esp_2011] for Spanish words, expressed as Zipf scores [@zipf_human_1949; @heuven_subtlex-uk_2014], and centred around the mean
+* Language the item belongs to (`dominance`, $Dominance$) labelled as `L1` if the item belongs to the dominant language (e.g., a Catalan item is labelled as `L1` for Catalan-dominant participants and as `L2` for Spanish-dominant participants)
+* Cognateness of the item (`cognate`, $Cognate$), as rated by a trained Spanish-Catalan bilingual linguist.
+
+We aggregated the data across participants. We summed the number of participants that *understood*, or *understood and produced* each TE for each combination of the `age`, `bilingualism` levels. Numerical variables (`age`, `bilingualism`, and `frequency`) were standardized, and categorical predictors were sum-coded. `dominance` was coded as `L2` = -0.5 and `L1` = +0.5, and `cognate` was coded as `Non-cognate` = -0.5 and `Cognate` = +0.5. In summary, each TE provided four data points per age bin: L1-Cognate, L1-Non-cognate, L2-Cognate, and L2-Non-cognate.
+
+We adopted a Bayesian approach toward statistical inference. This approach allows to (1) incorporate previous domain knowledge into the inference process implementing the Bayes theorem, and (2) to quantify the uncertainty associated to the estimated parameters in our model [@mcelreath_statistical_2016]. We first fit a base model that only adjusted for the age of participants and the lexical frequency of the items [@braginsky_consistency_2016: @jones_children_2018]. We then introduced our predictors of interest in the following order: (1) `dominance`, (2) `bilingualism`, (3) `dominance` per `bilingualism` interaction, (4) `cognate`, (5) `dominance` per `cognate` interaction, (6) `bilingualism` per `cognate` interaction, and (7) `dominance` per `bilingualism` per `cognate` interaction. Our extended model can be formalised as follows:
+
+
+$$
+\begin{aligned}
+y_i \sim Binomial(n_i, p_i), \\
+logit(p_i) &=& \alpha - \dots \\
+& \beta_1 \times Age_i + \dots \\
+& \beta_2 \times Frequency_i + \dots \\
+& \beta_3 \times Dominance_i + \dots \\
+& \beta_4 \times Bilingualism_i + \dots \\
+& \beta_5 \times Cognate_i + \dots \\
+& \beta_6 \times (Dominance_i \times Bilingualism_i) + \dots \\
+& \beta_7 \times (Dominance_i \times Cognate_i) + \dots \\
+& \beta_8 \times (Bilingualism_i \times Cognate_i) + \dots \\
+& \beta_9 \times (Dominance_i \times Bilingualism_i \times Cognate_i), \\
+logit(p_i) = log\frac{y_i}{n_i-y_i} \\
+\alpha \sim Normal(0, 1.5) \\
+\beta_{0-9} \sim Normal(0, 0.5)
+\end{aligned}
+$$
+
+Where:
+
+* $y_i$ is the sum of positive responses to *Understands* or *Understands and Says* for translation equivalent $i$
+* $n_i$ is the total number of responses for translation equivalent $i$
+* $\alpha$ is the intercept, which corresponds to the probability of a positive response when all predictors equal 0
+* $\beta_{1, \dots, 9}$ are the coefficients of the predictors
+
+We implemented this model using the R package `brms` [@R-brms_b; carpenter_stan_2017] as `response ~  age + frequency + dominance*bilingualism*cognate`, running four MCMC sampling chains with 1,000 iterations each, including 500 warm-up iterations per chain. Appendix 2 shows different diagnostics of chain convergence. We compared all models using leave-one-out cross-validation (LOO-CV) [@vehtari_practical_2017]^[Due to the high computational cost associated with a large dataset, we used a sub-sampling approach for performing Bayesian LOO with 1,000 samples [@magnusson_leave_2019]]. This method computes, for a given model, the sum of the log scores of the posterior predictive distributions that result from removing one data-point at a time, providing an estimate of the model fit. The LOO estimates are adjusted for the number of parameters estimated in the model, therefore accounting for overfitting. We compared the expected log posterior density of each each model to test which one fitted the data the best.
+
+We then explored the posterior distribution of each parameter in the model that fitted the data the best computing the 95% credible intervals and testing whether this interval excluded 0. Credible intervals (CrI) indicate the range of values we are 95% certain contain the true value of the parameter, given our prior and observed data. We performed follow-up tests on interactions whose 95% credible interval excluded 0 by comparing the 95% credible interval of their estimated marginal means using the `emmeans` package [@R-emmeans]. Data processing and visualisation was done in R [@R-base] using the `tidyverse` family of packages [@R-tidyverse], and posterior samples were extracted using the `tidybayes` R package [@R-tidybayes]./

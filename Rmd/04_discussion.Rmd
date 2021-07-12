@@ -1,0 +1,14 @@
+---
+title: "Discussion"
+output:
+  word_document:
+    reference_docx: trajectories_template.docx
+  pdf_document:
+      latex_engine: xelatex
+bibliography: trajectories.bib
+csl: apa6.csl
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
