@@ -1,3 +1,4 @@
+<<<<<<< HEAD:Rmd/01_introduction.Rmd
 ---
 title: "Introduction"
 author: "Gonzalo García-Castro"
@@ -41,11 +42,3 @@ Another worth-mentioning finding in Floccia et al. is that the increase in vocab
 
 
 The aim of this study is to investigate the role of cognateness in bilingual word acquisition. We hypothesised that cognate words would be acquired earlier than non-cognate word, and that this difference would be larger in participants with lower exposure to the language such word belongs to. Using an *ad hoc* online vocabulary checklist, we collected data from a sample of bilinguals aged 10 to 36 months learning Catalan and/or Spanish, with varying degrees of exposure to each language. We then modelled the probability of participants being reported by their parents to understand and/or say each word in the checklist, conditional to its cognate status in Catalan and Spanish and participants' degree of exposure to the corresponding language, while adjusting for participants' age and the item's lexical frequency.
-
-
-
-## References
-
-
-
-
