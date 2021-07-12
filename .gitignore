@@ -3,10 +3,13 @@
 .RData
 .Rproj
 .Ruserdata
+.secrets
+*.docx
+*.pptx
+*.png
+*.pdf
+*.log
 Data/*
 Results/*
 Figures/*
 Communications/*
-*.docx
-.secrets
-*.png
