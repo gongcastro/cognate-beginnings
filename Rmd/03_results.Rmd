@@ -1,0 +1,180 @@
+---
+title: "Results"
+output:
+  word_document:
+    reference_docx: trajectories_template.docx
+  pdf_document:
+      latex_engine: xelatex
+bibliography: trajectories.bib
+csl: apa6.csl
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r results, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+load(here("Results", "comp_fits.RData"))
+load(here("Results", "prod_fits.RData"))
+load(here("Results", "loos.RData"))
+
+coef_comp <- as.data.frame(fixef(comp_7))
+```
+
+
+## Comprehension
+
+The extended model, including the three-way interaction `dominance1:bilingualism;cognate1` fitted comprehension data the best: it showed the smallest absolute expected log predictive density. This estimate is several times larger than its standard error indicating high predictive accuracy. Table 2 summarises the LOO scores of the fitted models.
+
+```{r loos, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+loos_diff <- bind_rows(
+  "Comprehension" = select(
+    as.data.frame(loos_comp$diffs),
+    one_of("elpd_loo", "se_elpd_loo", "p_loo", "elpd_diff", "se_diff")
+  ),
+  "Production" = select(
+    as.data.frame(loos_prod$diffs),
+    one_of("elpd_loo", "se_elpd_loo", "p_loo", "elpd_diff", "se_diff")
+  ),
+  .id = "type"
+) %>% 
+  mutate(
+    model = rep(rev(c(
+      "~ 1 + age + frequency",
+      "... + dominance",
+      "... + bilingualism",
+      "... + dominance:bilingualism",
+      "... + cognate",
+      "... + dominance:cognate",
+      "... + bilingualism:cognate",
+      "... + dominance:bilingualism:cognate"
+    )), 2)) %>% 
+  relocate(model) %>% 
+  group_by(type) %>% 
+  arrange(elpd_loo)
+
+gt(loos_diff) %>% 
+  tab_spanner(
+    label = md("**Comparison**"),
+    columns = c("elpd_diff", "se_diff")
+  ) %>% 
+  cols_label(
+    model = md("**Model**"),
+    elpd_loo = md("**ELPD**"),
+    se_elpd_loo = md("**SE**"),
+    p_loo = md("**p**"),
+    elpd_diff = md("*LOO<sub>diff</sup>*"),
+    se_diff = md("*SE<sub>diff</sup>*")
+  ) %>% 
+  fmt_number(2:5) %>% 
+  tab_footnote(
+    footnote = md("*ELPD*: theoretical expected log pointwise predictive density for a new dataset, as estimated using Bayesian LOO-CV"),
+    locations = cells_column_labels(columns = vars("elpd_loo"))
+  ) %>% 
+  tab_footnote(
+    footnote = md("*SE*: standard error of the ELPD"),
+    locations = cells_column_labels(columns = vars("se_elpd_loo"))
+  ) %>% 
+  tab_footnote(
+    footnote = md("*p*: effective number of parameters"),
+    locations = cells_column_labels(columns = vars("p_loo"))
+  ) %>% 
+  tab_options(footnotes.marks = "letters")
+
+```
+
+
+We report the mean of each coefficient's posterior distribution along with standard errors and 95% CrI in Table 3. For interpretability, we report de derivative of the logistic function^[The derivative is calculated as $\hat{\beta_j}/4$, where $\hat{\beta_j}$ is the estimated mean of the posterior distribution of coefficient $j$. This value corresponds to the slope of the logistic curve at the midpoint, where it is steepest.] for each coefficient, which indicates the maximum difference in probability corresponding to one unit different in the input variable [@gelman_regression_2020].
+
+```{r coefs, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+estimates <- bind_cols(
+  "Comprehension" =  rename_all(as.data.frame(inv_logit_scaled(fixef(comp_7))), ~paste0(., "_comp")),
+  "Production" =  rename_all(as.data.frame(inv_logit_scaled(fixef(prod_7))), ~paste0(., "_prod"))
+) %>% 
+  mutate(
+    coefficient = c(
+      "Intercept",
+      "Age",
+      "Frequency",
+      "Dominance",
+      "Bilingualism",
+      "Cognate",
+      "Dominance * Bilingualism",
+      "Dominance * Cognate",
+      "Bilingualism * Cognate",
+      "Dominance * Bilingualism * Cognate"
+    )
+  ) %>% 
+  clean_names() %>% 
+  relocate(coefficient)
+
+rownames(estimates) <- NULL
+
+gt(estimates) %>% 
+  tab_spanner(label = md("**Comprehension**"), columns = matches("_comp")) %>% 
+  tab_spanner(label = md("**Production**"), columns = matches("_prod")) %>% 
+  fmt_number(2:9) %>% 
+  cols_merge_range(col_begin = "q2_5_comp", col_end = "q97_5_comp") %>% 
+  cols_merge_range(col_begin = "q2_5_prod", col_end = "q97_5_prod") %>% 
+  cols_label(
+    coefficient = md("**Coefficient**"),
+    estimate_comp = md("*Mean*"),
+    est_error_comp = md("*SE*"),
+    q2_5_comp = md("*95% CrI*"),
+    estimate_prod = md("*Mean*"),
+    est_error_prod = md("*SE*"),
+    q2_5_prod = md("*95% CrI*"),
+  ) %>% 
+  tab_footnote(
+    footnote = "SE: Standard Error of the mean",
+    locations = cells_column_labels(columns = matches("est_error"))
+  ) %>% 
+  tab_footnote(
+    footnote = "95% CrI: 95% credible interval",
+    locations = cells_column_labels(columns = matches("q2_5"))
+  )
+
+```
+
+
+The intercept (`r printnum(inv_logit_scaled(coef_comp["Intercept", "Estimate"])*100)`%) indicates probability of participants understanding TEs at mean age (`r printnum(mean(responses$age_scaled))` months), mean frequency (`r printnum(mean(responses$frequency_scaled))` Zipf score), and mean L2 exposure (`r printnum(mean(responses$bilingualism_scaled))`%), across the levels of the `dominance` and `cognate` factors. An increase in one standard deviation increment in age (1 *SD* = `r printnum(sd(responses$age_scaled))` months) is associated with a `r printnum(coef_comp["age", "Estimate"]*100/4)`% increment in comprehension probability. A one standard deviation increase in lexical frequency (1 *SD* = `r printnum(sd(responses$frequency_scaled))` Zipf scores) is associated with a `r printnum(coef_comp["frequency", "Estimate"]*100/4)`% increment in comprehension probability. Items in the dominant language were `r printnum(coef_comp["dominance1", "Estimate"]*100/4)`% more likely to be understood than items in the non-dominant language. A one standard deviation increase in exposure to the non-dominant language (1 *SD* = `printnum(sd(responses$bilingualism_scaled))`%) is associated with a `r printnum(coef_comp["bilingualism", "Estimate"]*100/4)` increment in comprehension probability. Cognates were `r printnum(coef_comp["cognate1", "Estimate"]*100/4)`% more like to be understood than non-cognates. The 95% credible interval of the three-way interaction (`dominance:bilingualism:cognate`) excluded 0, indicating that that the cognate status of the items changed the effect of dominance differently depending on the amount of exposure to the second language. Figure 1 shows the estimated marginal mean posterior probability of comprehension and production across ages, and the different levels of `dominance`, `bilingualism`, and `cognate`.
+
+
+Children exposed to their second language more than -1 SD away from the mean (`r printnum(mean(responses$bilingualism_scaled)-sd(responses$bilingualism_scaled))`%) were more likely to understand cognates than non-cognates in their non-dominance language ($M_{Cognate}-M_{Non-cognate}$ = `r printnum(deltas$delta[6]*100)`%, 95% CrI = [`r printnum(deltas$.lower[6]*100)`-`r printnum(deltas$.upper[6]*100)`]), but not in their dominant language ($M_{Cognate}-M_{Non-cognate}$ = `r printnum(deltas$delta[2]*100)`%, 95% CrI = [`r printnum(deltas$.lower[2]*100)`-`r printnum(deltas$.upper[2]*100)`]). This difference was smaller for participants with mean exposure to the non-dominant language (`r printnum(mean(responses$bilingualism_scaled))`%): in the non-dominant language cognates were slight more likely to be understood than non-cognates ($M_{Cognate}-M_{Non-cognate}$ = `r printnum(deltas$delta[12]*100)`%, 95% CrI = [`r printnum(deltas$.lower[12]*100)`-`r printnum(deltas$.upper[12]*100)`]), but not in the dominant language ($M_{Cognate}-M_{Non-cognate}$ = `r printnum(deltas$delta[8]*100)`%, 95% CrI = [`r printnum(deltas$.lower[8]*100)`-`r printnum(deltas$.upper[8]*100)`]). Finally this effect was negligible for participants exposed to their second language more than -1 SD away from the mean (`r printnum(mean(responses$bilingualism_scaled)+sd(responses$bilingualism_scaled))`%). Cognates and non-cognates were equally likely to be understood in both the non-dominant ($M_{Cognate}-M_{Non-cognate}$ = `r printnum(deltas$delta[18]*100)`%, 95% CrI = [`r printnum(deltas$.lower[18]*100)`-`r printnum(deltas$.upper[18]*100)`]), and the dominant language ($M_{Cognate}-M_{Non-cognate}$ = `r printnum(deltas$delta[14]*100)`%, 95% CrI = [`r printnum(deltas$.lower[14]*100)`-`r printnum(deltas$.upper[14]*100)`]).
+
+
+The difference in probability of comprehension between the dominant and the non-dominant languages differed between cognates and non-cognates and different levels of exposure to the non-dominant language. For children exposed. For children exposed to their non-dominant language less than 1 SD from the mean, difference in probability between the dominant and the non-dominant language was smaller for cognates ($M_{Dominant}-M_{Non-dominant}$ = `r printnum(deltas$delta[4]*100)`%, 95% CrI = [`r printnum(deltas$.lower[4]*100)`-`r printnum(deltas$.upper[4]*100)`]) than for non-cognates ($M_{Dominant}-M_{Non-dominant}$ = `r printnum(deltas$delta[1]*100)`%, 95% CrI = [`r printnum(deltas$.lower[1]*100)`-`r printnum(deltas$.upper[1]*100)`]). For children with mean exposure to the non-dominant language, this effect was smaller: the difference between the comprehension probability of items in L1 and L2 was slightly smaller for cognates ($M_{Dominant}-M_{Non-dominant}$ = `r printnum(deltas$delta[10]*100)`%, 95% CrI = [`r printnum(deltas$.lower[10]*100)`-`r printnum(deltas$.upper[10]*100)`]) than for non-cognates ($M_{Dominant}-M_{Non-dominant}$ = `r printnum(deltas$delta[7]*100)`%, 95% CrI = [`r printnum(deltas$.lower[7]*100)`-`r printnum(deltas$.upper[7]*100)`]). Finally this effect was negligible for children exposed more than 1 SD than the mean to their non-dominant language: the difference in comprehension probability between items in the dominant and the non-dominant language was roughly similar for cognates ($M_{Dominant}-M_{Non-dominant}$ = `r printnum(deltas$delta[16]*100)`%, 95% CrI = [`r printnum(deltas$.lower[16]*100)`-`r printnum(deltas$.upper[16]*100)`]) and non-cognates ($M_{Dominant}-M_{Non-dominant}$ = `r printnum(deltas$delta[13]*100)`%, 95% CrI = [`r printnum(deltas$.lower[13]*100)`-`r printnum(deltas$.upper[13]*100)`]).
+
+
+
+
+
+```{r marginalmeans, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.width=6.5, fig.height=6.5, out.width="20cm", fig.cap="Mean posterior probability and 95\\% CrI of responses, conditional to Dominance, Bilingualism, and Cognate."}
+
+post_preds %>% 
+  ggplot(aes(
+    age, .value,
+    colour = interaction(dominance, cognate, sep = " - "),
+    fill = interaction(dominance, cognate, sep = " - ")
+  )) +
+  facet_wrap(type~bilingualism) +
+  #geom_line(aes(group = interaction(item_dominance, cognate, doe, .draw)), size = 0.4) +
+  stat_lineribbon(.width = 0.95, colour = NA, alpha = 0.5) +
+  stat_summary(fun = "mean", geom = "line", size = 0.75) +
+  #geom_point(data = filter(proportion, type=="Understands"), alpha = 0.5) +
+  labs(x = "Age (months)", y = "P(Y|X)") +
+  guides(colour = guide_legend(ncol = 2)) +
+  scale_color_brewer(palette = "Dark2") +
+  scale_fill_brewer(palette = "Dark2") +
+  scale_y_continuous(limits = c(0, 1)) +
+  theme_custom() +
+  theme(
+    legend.position = "top",
+    legend.title = element_blank(),
+    legend.direction = "horizontal"
+  )
+
+```
