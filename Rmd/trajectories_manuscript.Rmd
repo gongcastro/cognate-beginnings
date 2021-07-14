@@ -69,18 +69,8 @@ knitr::opts_chunk$set(
 # load packages
 library(papaja)
 library(knitr)
-library(magrittr)
-library(tidyverse)
-library(readxl)
-library(lubridate)
-library(brms)
-library(tidybayes)
-library(janitor)
-library(gt)
-library(data.table)
 library(here)
 
-source(here("R", "analyses.R"))
 ```
 
 # Introduction
