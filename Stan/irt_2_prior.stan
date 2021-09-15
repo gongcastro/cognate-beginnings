@@ -26,6 +26,7 @@ data {
   vector[N] Z_1_1;
   vector[N] Z_1_2;
   vector[N] Z_1_3;
+  vector[N] Z_1_4;
   int<lower=1> NC_1;  // number of group-level correlations
   // data for group-level effects of ID 2
   int<lower=1> N_2;  // number of grouping levels
@@ -63,6 +64,7 @@ transformed parameters {
   vector[N_1] r_1_1;
   vector[N_1] r_1_2;
   vector[N_1] r_1_3;
+  vector[N_1] r_1_4;
   matrix[N_2, M_2] r_2;  // actual group-level effects
   // using vectors speeds up indexing in loops
   vector[N_2] r_2_1;
@@ -74,6 +76,7 @@ transformed parameters {
   r_1_1 = r_1[, 1];
   r_1_2 = r_1[, 2];
   r_1_3 = r_1[, 3];
+  r_1_4 = r_1[, 4];
   // compute actual group-level effects
   r_2 = scale_r_cor(z_2, sd_2, L_2);
   r_2_1 = r_2[, 1];
@@ -87,7 +90,7 @@ model {
     vector[N] mu = Intercept + rep_vector(0.0, N);
     for (n in 1:N) {
       // add more terms to the linear predictor
-      mu[n] += r_1_1[J_1[n]] * Z_1_1[n] + r_1_2[J_1[n]] * Z_1_2[n] + r_1_3[J_1[n]] * Z_1_3[n] + r_2_1[J_2[n]] * Z_2_1[n] + r_2_2[J_2[n]] * Z_2_2[n] + r_2_3[J_2[n]] * Z_2_3[n];
+      mu[n] += r_1_1[J_1[n]] * Z_1_1[n] + r_1_2[J_1[n]] * Z_1_2[n] + r_1_3[J_1[n]] * Z_1_3[n] + r_1_4[J_1[n]] * Z_1_4[n] + r_2_1[J_2[n]] * Z_2_1[n] + r_2_2[J_2[n]] * Z_2_2[n] + r_2_3[J_2[n]] * Z_2_3[n];
     }
     target += bernoulli_logit_glm_lpmf(Y | Xc, mu, b);
   }
@@ -97,6 +100,8 @@ model {
   target += normal_lpdf(b[3] | 0, 0.1);
   target += normal_lpdf(b[4] | 0, 0.1);
   target += normal_lpdf(b[5] | 0, 0.1);
+  target += normal_lpdf(b[6] | 0, 0.1);
+  target += normal_lpdf(b[7] | 0, 0.1);
   target += normal_lpdf(Intercept | 0, 0.1);
   target += std_normal_lpdf(to_vector(z_1));
   target += lkj_corr_cholesky_lpdf(L_1 | 10);
