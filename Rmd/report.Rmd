@@ -1,6 +1,7 @@
 ---
 title: "Trajectories"
 output:
+  html_document: default
   github_document:
     pandoc_args: --webtex
 bibliography: "trajectories.bib"
@@ -9,7 +10,7 @@ bibliography: "trajectories.bib"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   message = TRUE,
-  echo = TRUE,
+  echo = FALSE,
   warning = TRUE,
   dev.args = list(png = list(type = "cairo")),
   include = TRUE,
@@ -50,7 +51,7 @@ library(here)
 
 # set params
 tar_load_globals()
-theme_set(theme_custom())
+theme_set(theme_github())
 
 # import data
 tar_load(items)
