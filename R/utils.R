@@ -14,13 +14,12 @@ theme_custom <- function(){
 
 # get multilex data ----
 get_credentials <- function(
-    google_email = "gonzalo.garciadecastro@upf.edu",
-    formr_email = "gonzalo.garciadecastro@upf.edu"
 ){
+    email <- "gonzalo.garciadecastro@upf.edu"
     ml_connect(
-        google_email,
-        formr_email,
-        formr_password = key_get("formr", "gonzalo.garciadecastro@upf.edu")
+        google_email = email,
+        formr_email = email,
+        formr_password = key_get("formr", email)
     )
 }
 
@@ -46,7 +45,7 @@ get_multilex <- function(
         select(id, time, time_stamp, age_group, age, lp, dominance, version,
                completed, doe_catalan, doe_spanish, doe_others)
     
-    v <- ml_vocabulary(p, r, scale = "prop", by = "id_exp") %>% 
+    v <- ml_vocabulary(p, r, scale = c("prop", "count"), by = "id_exp") %>% 
         filter(type==type)
     
     m <- list(
@@ -74,4 +73,7 @@ prop_ci_adj <- function(y, n, conf = 0.95){
 }
 
 # transform logit scale to probability
-logit_to_prob <- function(x) exp(x) / (1 + exp(x))
+logit_to_prob <- function(x) {
+    exp(x) / (1 + exp(x))
+}
+
