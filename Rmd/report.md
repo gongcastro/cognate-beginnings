@@ -5,34 +5,6 @@ Trajectories
 
 # Items
 
-``` r
-items %>% 
-  pivot_wider(
-    id_cols = c("te", "class", "cognate"),
-    names_from = "language",
-    values_from = c("label", "frequency", "ipa")
-  ) %>% 
-  clean_names() %>% 
-  arrange(te) %>% 
-  gt() %>% 
-  tab_spanner(label = md("**Catalan**"), columns = contains("_catalan")) %>% 
-  tab_spanner(label = md("**Spanish**"), columns = contains("_spanish")) %>% 
-  cols_label(
-    te = "TE ID",
-    class = "Class",
-    cognate = "Cognateness",
-    label_catalan = "Label",
-    label_spanish = "Label",
-    ipa_catalan = "Phonology",
-    ipa_spanish = "Phonology",
-    frequency_catalan = "Frequency",
-    frequency_spanish = "Frequency"
-  ) %>% 
-  fmt_number(columns = starts_with("frequency")) %>% 
-  as_raw_html() %>% 
-  div(style = "height:600px; overflow-x: scroll; overflow-y: scroll", .)
-```
-
 <div style="height:600px; overflow-x: scroll; overflow-y: scroll"><table style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif; display: table; border-collapse: collapse; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;">
   
   <thead style="border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
@@ -6974,81 +6946,9 @@ items %>%
 
 ## Lexical frequency
 
-``` r
-by_cognate <- items %>% 
-  drop_na(frequency) %>% 
-  ggplot(aes(frequency, cognate, fill = cognate, colour = cognate)) +
-  geom_jitter(height = 0.05, alpha = 0.1, shape = 1, stroke = 1) +
-  stat_slab(position = position_nudge(y = 0.1), alpha = 0.5) +
-  geom_boxplot(width = 0.05, colour = "black", fill = "white",
-               position = position_nudge(y = 0.1), outlier.colour = NA) +
-  labs(
-    y = "Cognateness", 
-    x = "Lexical frequency (Zipf score)\nExtracted from SUBTLEX", 
-    colour = "cognateness", 
-    fill = "Cognateness"
-  )
-
-
-by_language <- items %>% 
-  drop_na(frequency) %>% 
-  ggplot(aes(frequency, language, fill = cognate, colour = cognate)) +
-  geom_jitter(height = 0.05, alpha = 0.1, shape = 1, stroke = 1) +
-  stat_slab(position = position_nudge(y = 0.1), alpha = 0.5) +
-  geom_boxplot(width = 0.05, colour = "black", fill = "white",
-               position = position_nudge(y = 0.1), outlier.colour = NA) +
-  labs(y = "Cognateness", x = "Lexical frequency", colour = "cognateness", fill = "Cognateness")
-
-by_class <- items %>% 
-  drop_na(frequency, class) %>% 
-  ggplot(aes(frequency, class, fill = cognate, colour = cognate)) +
-  geom_jitter(height = 0.05, alpha = 0.1, shape = 1, stroke = 1) +
-  stat_slab(position = position_nudge(y = 0.1), alpha = 0.5) +
-  geom_boxplot(width = 0.05, colour = "black", fill = "white",
-               position = position_nudge(y = 0.1), outlier.colour = NA) +
-  labs(y = "Cognateness", x = "Lexical frequency", colour = "cognateness", fill = "Cognateness")
-
-
-(by_cognate / by_language) + by_class +
-  plot_layout(2) &
-  theme_custom() &
-  theme(
-    legend.position = "none",
-    axis.title.y = element_blank(),
-    panel.grid.major.y = element_blank()
-  ) 
-```
-
 <img src="report_files/figure-gfm/items_frequency-1.png" width="100%" />
 
 ## Cognateness
-
-``` r
-by_cognate <- items %>% 
-  distinct(te, class, cognate) %>% 
-  ggplot(aes(x = cognate, fill = class)) +
-  geom_bar() +
-  coord_flip() +
-  labs(x = "Cognateness", y = "Number of items", fill = "Class") 
-
-by_class <- items %>% 
-  distinct(te, class, cognate) %>% 
-  ggplot(aes(x = class, fill = cognate)) +
-  geom_bar(position = position_fill()) +
-  labs(x = "Cognateness", y = "Proportion of items (%)", fill = "Cognateness") +
-  coord_flip() +
-  scale_y_continuous(labels = scales::percent)
-
-by_cognate / by_class +
-  plot_layout() &
-  theme_custom() +
-  theme(
-    panel.grid.major.y = element_blank(),
-    axis.title.y = element_blank(),
-    legend.position = "right",
-    legend.title = element_blank()
-  )
-```
 
 <img src="report_files/figure-gfm/items_cognate-1.png" width="100%" />
 
@@ -7056,99 +6956,13 @@ by_cognate / by_class +
 
 # Participants
 
-``` r
-participants %>% 
-  group_by(time_stamp, lp, dominant_language) %>% 
-  summarise(n = n(), .groups = "drop") %>% 
-  group_by(lp, dominant_language) %>% 
-  mutate(n = cumsum(n)) %>% 
-  ggplot(aes(time_stamp, n, colour = interaction(lp, dominant_language, sep = " - "), fill = interaction(lp, dominant_language, sep = " - "))) +
-  geom_line(size = 1) +
-  labs(x = "Date", y = "Number of responses", colour = "LP - Dominant language") +
-  scale_y_continuous(breaks = seq(0, 250, 50)) +
-  guides(colour = guide_legend(ncol = 2)) +
-  theme_custom() +
-  theme(
-    legend.position = "top",
-    legend.title = element_blank(),
-    axis.title.x = element_blank(),
-  )
-```
-
 <img src="report_files/figure-gfm/participants_time-1.png" width="100%" />
 
 ## Age
 
-``` r
-participants %>% 
-  mutate(age = round(age)) %>% 
-  count(lp, dominant_language, age) %>% 
-  ggplot(aes(as.factor(age), n, fill = interaction(lp, dominant_language, sep = " - "))) +
-  geom_col(position = position_fill(), colour = "white") +
-  guides(colour = guide_legend(ncol = 2)) +
-  coord_flip() +
-  labs(y = "Proportion of the sample", x = "Age (months)", colour = "LP - Dominant language") +
-  scale_y_continuous(labels = scales::percent) +
-  theme_custom() +
-  theme(
-    legend.position = "top",
-    legend.title = element_blank(),
-  ) +
-  
-  participants %>% 
-  mutate(age = round(age)) %>% 
-  count(lp, dominant_language, age) %>% 
-  ggplot(aes(as.factor(age), n, fill = interaction(lp, dominant_language, sep = " - "))) +
-  geom_col(colour = "white") +
-  labs(y = "Number of participants", x = "Age (months)") +
-  guides(colour = guide_legend(ncol = 2)) +
-  theme_custom() +
-  coord_flip() +
-  theme(
-    legend.position = "top",
-    legend.title = element_blank(),
-    axis.title.y = element_blank(),
-    axis.text.y = element_blank()
-  ) +
-  
-  plot_layout(nrow = 1, guides = "collect") &
-  theme(
-    legend.position = "top", 
-    axis.text.y = element_text(size = 9),
-    panel.grid.major = element_blank()
-  )
-```
-
 <img src="report_files/figure-gfm/participants_age-1.png" width="100%" />
 
 ## Language profile
-
-``` r
-labs <- c("0-10%", "10-20%", "20-30%", "30-40%", "40-50%")
-a <- participants %>% 
-  mutate(
-    age = round(age),
-    doe_2 = ifelse(dominant_language=="Catalan", doe_spanish, doe_catalan),
-    doe_2 = cut(doe_2, breaks = seq(0, 0.5, 0.1), include.lowest = TRUE, labels = labs)
-  ) %>% 
-  count(age, doe_2) %>% 
-  arrange(doe_2) %>% 
-  mutate(doe_2 = fct_inorder(doe_2)) %>% 
-  pivot_wider(names_from = doe_2, values_from = n, values_fill = 0) %>% 
-  gt() %>% 
-  tab_spanner(label = "Number of participants by DOE", columns = 2:6) %>% 
-  data_color(
-    columns = 2:6,
-    colors = scales::col_numeric(
-      palette = c("white", "orange"),
-      domain = c(0, 11)
-    )
-  ) %>% 
-  cols_label(
-    age = md("**Age<br>(months)**")
-  ) %>% 
-  as_raw_html()
-```
 
 ## 
 
@@ -7206,134 +7020,6 @@ random slopes for `cognate` by `id`. The models were implemented in
 
 Stan code generated by `brms::stancode`:
 
-``` stan
-// generated with brms 2.15.0
-functions {
-/* compute correlated group-level effects
-* Args: 
-*   z: matrix of unscaled group-level effects
-*   SD: vector of standard deviation parameters
-*   L: cholesky factor correlation matrix
-* Returns: 
-*   matrix of scaled group-level effects
-*/ 
-matrix scale_r_cor(matrix z, vector SD, matrix L) {
-// r is stored in another dimension order than z
-return transpose(diag_pre_multiply(SD, L) * z);
-}
-}
-data {
-int<lower=1> N;  // total number of observations
-int Y[N];  // response variable
-int<lower=1> K;  // number of population-level effects
-matrix[N, K] X;  // population-level design matrix
-// data for group-level effects of ID 1
-int<lower=1> N_1;  // number of grouping levels
-int<lower=1> M_1;  // number of coefficients per level
-int<lower=1> J_1[N];  // grouping indicator per observation
-// group-level predictor values
-vector[N] Z_1_1;
-vector[N] Z_1_2;
-vector[N] Z_1_3;
-int<lower=1> NC_1;  // number of group-level correlations
-// data for group-level effects of ID 2
-int<lower=1> N_2;  // number of grouping levels
-int<lower=1> M_2;  // number of coefficients per level
-int<lower=1> J_2[N];  // grouping indicator per observation
-// group-level predictor values
-vector[N] Z_2_1;
-vector[N] Z_2_2;
-vector[N] Z_2_3;
-int<lower=1> NC_2;  // number of group-level correlations
-int prior_only;  // should the likelihood be ignored?
-}
-transformed data {
-int Kc = K - 1;
-matrix[N, Kc] Xc;  // centered version of X without an intercept
-vector[Kc] means_X;  // column means of X before centering
-for (i in 2:K) {
-means_X[i - 1] = mean(X[, i]);
-Xc[, i - 1] = X[, i] - means_X[i - 1];
-}
-}
-parameters {
-vector[Kc] b;  // population-level effects
-real Intercept;  // temporary intercept for centered predictors
-matrix[M_1, N_1] z_1;  // standardized group-level effects
-cholesky_factor_corr[M_1] L_1;  // cholesky factor of correlation matrix
-vector<lower=0>[M_2] sd_2;  // group-level standard deviations
-matrix[M_2, N_2] z_2;  // standardized group-level effects
-cholesky_factor_corr[M_2] L_2;  // cholesky factor of correlation matrix
-}
-transformed parameters {
-vector<lower=0>[M_1] sd_1;  // group-level standard deviations
-matrix[N_1, M_1] r_1;  // actual group-level effects
-// using vectors speeds up indexing in loops
-vector[N_1] r_1_1;
-vector[N_1] r_1_2;
-vector[N_1] r_1_3;
-matrix[N_2, M_2] r_2;  // actual group-level effects
-// using vectors speeds up indexing in loops
-vector[N_2] r_2_1;
-vector[N_2] r_2_2;
-vector[N_2] r_2_3;
-sd_1 = rep_vector(1, rows(sd_1));
-// compute actual group-level effects
-r_1 = scale_r_cor(z_1, sd_1, L_1);
-r_1_1 = r_1[, 1];
-r_1_2 = r_1[, 2];
-r_1_3 = r_1[, 3];
-// compute actual group-level effects
-r_2 = scale_r_cor(z_2, sd_2, L_2);
-r_2_1 = r_2[, 1];
-r_2_2 = r_2[, 2];
-r_2_3 = r_2[, 3];
-}
-model {
-// likelihood including constants
-if (!prior_only) {
-// initialize linear predictor term
-vector[N] mu = Intercept + rep_vector(0.0, N);
-for (n in 1:N) {
-// add more terms to the linear predictor
-mu[n] += r_1_1[J_1[n]] * Z_1_1[n] + r_1_2[J_1[n]] * Z_1_2[n] + r_1_3[J_1[n]] * Z_1_3[n] + r_2_1[J_2[n]] * Z_2_1[n] + r_2_2[J_2[n]] * Z_2_2[n] + r_2_3[J_2[n]] * Z_2_3[n];
-}
-target += bernoulli_logit_glm_lpmf(Y | Xc, mu, b);
-}
-// priors including constants
-target += normal_lpdf(b | 0, 3);
-target += normal_lpdf(Intercept | 0, 3);
-target += std_normal_lpdf(to_vector(z_1));
-target += lkj_corr_cholesky_lpdf(L_1 | 5);
-target += normal_lpdf(sd_2 | 0, 0.5)
-- 3 * normal_lccdf(0 | 0, 0.5);
-target += std_normal_lpdf(to_vector(z_2));
-target += lkj_corr_cholesky_lpdf(L_2 | 5);
-}
-generated quantities {
-// actual population-level intercept
-real b_Intercept = Intercept - dot_product(means_X, b);
-// compute group-level correlations
-corr_matrix[M_1] Cor_1 = multiply_lower_tri_self_transpose(L_1);
-vector<lower=-1,upper=1>[NC_1] cor_1;
-// compute group-level correlations
-corr_matrix[M_2] Cor_2 = multiply_lower_tri_self_transpose(L_2);
-vector<lower=-1,upper=1>[NC_2] cor_2;
-// extract upper diagonal of correlation matrix
-for (k in 1:M_1) {
-for (j in 1:(k - 1)) {
-cor_1[choose(k - 1, 2) + j] = Cor_1[j, k];
-}
-}
-// extract upper diagonal of correlation matrix
-for (k in 1:M_2) {
-for (j in 1:(k - 1)) {
-cor_2[choose(k - 1, 2) + j] = Cor_2[j, k];
-}
-}
-}
-```
-
 ## 
 
 # Results
@@ -7344,59 +7030,9 @@ cor_2[choose(k - 1, 2) + j] = Cor_2[j, k];
 
 #### Comprehension
 
-``` r
-d <- vocabulary$wide %>% 
-  filter(type=="Understands", modality != "Te")
-
-ggplot(d, aes(age, prop, colour = lp, fill = lp)) +
-  facet_wrap(~modality) +
-  geom_point(size = 0.5, alpha = 0.21) +
-  geom_smooth(method = "glm", method.args = list(family = "binomial"), se = FALSE) +
-  labs(x = "Age (months)", y = "Vocabulary size (%)", colour = "LP", fill = "LP") +
-  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
-  
-  
-  ggplot(d, aes(age, count, colour = lp, fill = lp)) +
-  facet_wrap(~modality) +
-  geom_point(size = 0.5, alpha = 0.21) +
-  geom_smooth(method = "glm", method.args = list(family = "poisson"), se = FALSE) +
-  labs(x = "Age (months)", y = "Vocabulary size (words)", colour = "LP", fill = "LP") +
-  
-  plot_layout(guides = "collect") &
-  theme(
-    legend.position = "top",
-    legend.title = element_blank()
-  )
-```
-
 <img src="report_files/figure-gfm/vocabulary_comprehension-1.png" width="100%" />
 
 #### Production
-
-``` r
-vocabulary$wide %>% 
-  filter(type=="Produces", modality != "Te") %>% 
-  ggplot(aes(age, prop, colour = lp, fill = lp)) +
-  facet_wrap(~modality) +
-  geom_point(size = 0.5, alpha = 0.21) +
-  geom_smooth(method = "glm", method.args = list(family = "binomial"), se = FALSE) +
-  labs(x = "Age (months)", y = "Vocabulary size (%)", colour = "LP", fill = "LP") +
-  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
-  
-  vocabulary$wide %>% 
-  filter(type=="Produces", modality != "Te") %>% 
-  ggplot(aes(age, count, colour = lp, fill = lp)) +
-  facet_wrap(~modality) +
-  geom_point(size = 0.5, alpha = 0.21) +
-  geom_smooth(method = "glm", method.args = list(family = "poisson"), se = FALSE) +
-  labs(x = "Age (months)", y = "Vocabulary size (words)", colour = "LP", fill = "LP") +
-  
-  plot_layout(guides = "collect") &
-  theme(
-    legend.position = "top",
-    legend.title = element_blank()
-  )
-```
 
 <img src="report_files/figure-gfm/vocabulary_production-1.png" width="100%" />
 
@@ -7406,43 +7042,9 @@ vocabulary$wide %>%
 
 #### Comprehension
 
-``` r
-vocabulary$long %>% 
-  filter(type=="understands") %>% 
-  ggplot(aes(value, reorder(id, age), colour = version, fill = version, shape = version)) +
-  facet_grid(~scale) +
-  geom_point() +
-  labs(x= "Vocabulary size", y = "Participant (ordered by age, min-to-max)",
-       colour = "Version", fill = "Version", shape = "Version") +
-  scale_x_continuous(labels = scales::percent) +
-  theme_bw() +
-  theme(
-    legend.position = "top",
-    axis.text.y = element_blank(),
-    axis.ticks.y = element_blank()
-  )
-```
-
 <img src="report_files/figure-gfm/vocabulary_long_comprehension-1.png" width="100%" />
 
 #### Production
-
-``` r
-vocabulary$long %>% 
-  filter(type=="produces") %>% 
-  ggplot(aes(value, reorder(id, age), colour = version, fill = version, shape = version)) +
-  facet_grid(~scale) +
-  geom_point() +
-  labs(x= "Vocabulary size", y = "Participant (ordered by age, min-to-max)",
-       colour = "Version", fill = "Version", shape = "Version") +
-  scale_x_continuous(labels = scales::percent) +
-  theme_bw() +
-  theme(
-    legend.position = "top",
-    axis.text.y = element_blank(),
-    axis.ticks.y = element_blank()
-  )
-```
 
 <img src="report_files/figure-gfm/vocabulary_long_production-1.png" width="100%" />
 
@@ -7452,99 +7054,11 @@ vocabulary$long %>%
 
 ## Raw data
 
-``` r
-responses %>%
-  group_by(te, cognate) %>%
-  summarise(
-    understands = mean(understands, na.rm = TRUE),
-    produces = mean(produces, na.rm = TRUE)
-  ) %>%
-  pivot_longer(
-    c(understands, produces),
-    names_to = "type",
-    values_to = "prop"
-  ) %>%
-  mutate(type = str_to_sentence(type)) %>% 
-  ggplot(aes(prop, reorder(te, -prop), colour = cognate)) +
-  facet_wrap(vars(type)) +
-  geom_vline(xintercept = 0.5, linetype = "dotted", size = 1) +
-  geom_point(alpha = 0.5, size = 2) +
-  labs(x = "Mean % of acquisition", y = "Translation equivalent ID", colour = "Type") +
-  scale_x_continuous(limits = c(0, 1), labels = scales::percent) +
-  theme_custom() +
-  theme(
-    legend.position = "top",
-    axis.text.y = element_blank(),
-    axis.ticks.y = element_blank(),
-    panel.grid.major.y = element_blank(),
-    panel.grid.minor.y = element_blank()
-  )
-```
-
 <img src="report_files/figure-gfm/raw-1.png" width="100%" />
-
-``` r
-responses %>%
-  mutate(age = as.factor(round(age))) %>% 
-  group_by(te, age, cognate) %>%
-  summarise(
-    understands = mean(understands, na.rm = TRUE),
-    produces = mean(produces, na.rm = TRUE)
-  ) %>%
-  pivot_longer(
-    c(understands, produces),
-    names_to = "type",
-    values_to = "prop"
-  ) %>%
-  mutate(type = str_to_sentence(type)) %>% 
-  ggplot(aes(age, prop, colour = cognate, fill = cognate, shape = cognate)) +
-  facet_wrap(vars(type)) +
-  geom_hline(yintercept = 0.5, linetype = "dotted", size = 1) +
-  geom_point(aes(group = interaction(age, cognate)), alpha = 0.5, size = 0.5) +
-  stat_summary(fun.data = mean_se, geom = "pointrange") +
-  labs(x = "Mean % of acquisition", y = "Translation equivalent ID",
-       colour = "Cognate", shape = "Cognate", fill = "Cognate") +
-  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
-  theme_custom() +
-  theme(
-    legend.position = "top",
-    axis.text.y = element_blank(),
-    axis.ticks.y = element_blank(),
-    panel.grid = element_blank(),
-    legend.title = element_blank()
-  )
-```
 
 <img src="report_files/figure-gfm/raw_age-1.png" width="100%" />
 
 ## Prior-predictive checks
-
-``` r
-# emmeans
-nd <- expand.grid(
-  age = seq(min(responses$age), max(responses$age), length.out = 50),
-  lp = unique(participants$lp),
-  cognate = unique(items$cognate),
-  frequency_center = c(-1, 0, 1)
-)
-
-m <- add_fitted_draws(nd, fits$fit_2, n = 20, re_formula = NA) %>% 
-  mutate(frequency_center = as.factor(paste0("Frequency = ", frequency_center, " SD")))
-
-ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
-  facet_grid(lp~frequency_center) +
-  geom_line(aes(group = interaction(.draw,  frequency_center, cognate)), alpha = 0.5) +
-  # stat_lineribbon(size = 0, alpha = 0.5, .width = 0.05) +
-  # stat_summary(fun.data = "mean_se", geom = "pointrange") +
-  # stat_summary(fun = "mean", geom = "line", size = 1) +
-  geom_hline(yintercept = 0.5, size = 1, colour = "grey") +
-  labs(x = "Age (months)", y = "P(Comprehension)", colour = "Cognateness", fill = "Cognateness") +
-  scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
-  theme(
-    legend.position = "top",
-    legend.title = element_blank()
-  )
-```
 
 <img src="report_files/figure-gfm/ppc-1.png" width="100%" />
 
@@ -7562,49 +7076,6 @@ the same criterion using a sampling approach via de `loo_subsample`
 function.
 
 ## Fixed effects
-
-``` r
-summary(fits$fit_2)$fixed %>% 
-  as.data.frame() %>%
-  rownames_to_column("term") %>% 
-  mutate(
-    Estimate = ifelse(term=="Intercept", inv_logit_scaled(Estimate), Estimate/4),
-    `l-95% CI` = ifelse(term=="Intercept", inv_logit_scaled(`l-95% CI`), `l-95% CI`/4),
-    `u-95% CI` = ifelse(term=="Intercept", inv_logit_scaled(`u-95% CI`), `u-95% CI`/4),
-    Est.Error = ifelse(term=="Intercept", inv_logit_scaled(Est.Error), Est.Error/4)
-  ) %>% 
-  gt() %>% 
-  fmt_percent(2:5) %>% 
-  fmt_number(6:6, decimals = 2) %>% 
-  fmt_number(7:8, decimals = 0) %>% 
-  cols_merge(vars("l-95% CI", "u-95% CI"), pattern = "[{1}, {2}]") %>% 
-  cols_label(
-    term = md("**Predictor**"),
-    Estimate = md("**Mean**"),
-    Est.Error = md("**SEM**"),
-    "l-95% CI" = md("**95\\% CrI**"),
-    Rhat = md("**Rhat**"),
-    Bulk_ESS = md("**Bulk ESS**"),
-    Tail_ESS = md("**Tail ESS**")
-  ) %>% 
-  tab_footnote(
-    footnote = "Transformed using the inverse logit to get the average probability of correct response",
-    locations = cells_body(columns = "term", rows = term=="Intercept")
-  ) %>% 
-  tab_footnote(
-    footnote = "Transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable.",
-    locations = cells_body(columns = "term", rows = term %in% c("age", "frequency", "doe", "cognate1", "doe:cognate1"))
-  ) %>% 
-  tab_footnote(
-    footnote = "ESS: Effective sample size",
-    locations = cells_column_labels(columns = c("Bulk_ESS", "Tail_ESS"))
-  ) %>% 
-  cols_align(
-    align = c("center"),
-    columns = 2:4
-  ) %>% 
-  as_raw_html()
-```
 
 <table style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif; display: table; border-collapse: collapse; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;">
   
@@ -7728,85 +7199,15 @@ summary(fits$fit_2)$fixed %>%
 
 <br>
 
-``` r
-post <- gather_draws(fits$fit_2, `b_.*`, regex = TRUE) %>% 
-  mutate(.value = ifelse(.variable=="b_Intercept", inv_logit_scaled(.value), .value/4))
-
-ggplot(post, aes(.value)) +
-  facet_wrap(~.variable, scales = "free_x") +
-  geom_vline(xintercept = 0, size = 1, colour = "grey") +
-  stat_histinterval(fill = "lightblue") +
-  labs(x = "Value", y = "Posterior probability density", fill = "Variable") +
-  theme_custom() +
-  theme(
-    legend.position = "none",
-    plot.caption.position = "plot",
-    plot.caption = element_text(hjust = 0),
-    # axis.text = element_text(size = 7),
-    panel.grid.major.x = element_line(colour = "grey", linetype = "dotted"),
-    panel.grid.major.y = element_line(colour = "grey", linetype = "dotted")
-  )
-```
-
 <img src="report_files/figure-gfm/fix_effets_plot-1.png" title="Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The resto of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable." alt="Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The resto of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable." width="100%" />
 
 ## Random effects
 
 ### Participant
 
-``` r
-re_id <- ranef(fits$fit_2)$id[,,1] %>% 
-  as.data.frame() %>% 
-  rownames_to_column("id") %>% 
-  as_tibble() %>% 
-  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fits$fit_2)[1])) %>% 
-  left_join(distinct(fits$fit_2$data, id, lp))
-
-ggplot(re_id, aes(Estimate, reorder(id, Estimate))) +
-  geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), size = 0.25,
-                 colour = wes_palettes$Darjeeling1[1]) +
-  geom_point(size = 1, shape = "|") +
-  geom_vline(xintercept = 0.5, linetype = "dashed") +
-  labs(x = "Participant average probability of comprehension",
-       y = "Participant") +
-  scale_x_continuous(limits = c(0, 1)) +
-  theme_custom() +
-  theme(
-    axis.text.y = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_blank()
-  )
-```
-
 <img src="report_files/figure-gfm/random_participant-1.png" width="100%" />
 
 ### Item
-
-``` r
-re_te <- ranef(fits$fit_2)$te[,,1] %>% 
-  as.data.frame() %>% 
-  rownames_to_column("te") %>% 
-  as_tibble() %>% 
-  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fits$fit_2)[1])) %>% 
-  mutate(te = as.numeric(te)) %>% 
-  left_join(distinct(fits$fit_2$data, te, lp))
-
-ggplot(re_te, aes(Estimate, reorder(te, Estimate))) +
-  geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), size = 0.25,
-                 colour = wes_palettes$Darjeeling1[2]) +
-  geom_point(size = 1, shape = "|") +
-  geom_vline(xintercept = 0.5, linetype = "dashed") +
-  labs(x = "Item average probability of comprehension",
-       y = "Item") +
-  scale_color_brewer(palette = "Set1") +
-  scale_x_continuous(limits = c(0, 1)) +
-  theme_custom() +
-  theme(
-    axis.text.y = element_blank(),
-    panel.grid = element_blank(),
-    axis.ticks = element_blank()
-  )
-```
 
 <img src="report_files/figure-gfm/re_item-1.png" width="100%" />
 
@@ -7814,54 +7215,11 @@ ggplot(re_te, aes(Estimate, reorder(te, Estimate))) +
 
 ## Marginal means
 
-``` r
-nd <- expand.grid(
-  age = seq(min(responses$age), max(responses$age), length.out = 50),
-  lp = unique(participants$lp),
-  cognate =unique(items$cognate),
-  frequency_center = c(-1,  0, 1)
-)
-
-m <- add_fitted_draws(nd, fits$fit_2, re_formula = NA, n = 25) %>% 
-  mutate(frequency_center = as.factor(paste0(frequency_center, " SD")))
-
-ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
-  facet_wrap(lp~frequency_center) +
-  geom_line(aes(group = interaction(.draw, frequency_center, cognate)), alpha = 0.5) +
-  
-  # stat_lineribbon(size = 0, alpha = 0.5, .width = 0.95) +
-  # stat_summary(fun = "mean", geom = "line", size = 1) +
-  geom_hline(yintercept = 0.5, size = 1, colour = "grey") +
-  labs(x = "Age (months)", y = "P(Comprehension)", colour = "Cognateness", fill = "Cognateness") +
-  scale_y_continuous(labels = scales::percent) +
-  theme_custom() +
-  theme(
-    legend.position = "right",
-    legend.title = element_blank()
-  )
-```
-
 <img src="report_files/figure-gfm/emmeans-1.png" width="100%" />
 
 ### Area under the curve (AUC)
 
 ### Traceplots
-
-``` r
-gather_draws(fits$fit_2, `b_.*`, `sd_te__.*`, `cor_te__.*`, regex = TRUE) %>% 
-  mutate(.chain = paste("Chain ", .chain)) %>% 
-  ggplot(aes(.iteration, .value, colour = .chain)) +
-  facet_wrap(~.variable, scales = "free_y") +
-  annotate(geom = "rect", colour = NA, xmin = 0, xmax = 500, ymin = -Inf, ymax = Inf, alpha = 0.25, colour = "grey") +
-  geom_line(alpha = 0.5) +
-  labs(x = "Iteration", y = "Sample value", colour = "Chain") +
-  theme_custom() +
-  theme(
-    legend.position = "top",
-    legend.title = element_blank(),
-    panel.grid = element_blank()
-  )
-```
 
 <img src="report_files/figure-gfm/diagnostics_traceplots-1.png" width="100%" />
 
