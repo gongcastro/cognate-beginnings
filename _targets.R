@@ -82,8 +82,23 @@ list(
     
     # fit models
     tar_target(
-        fits,
-        fit_models(
+        fits_comp,
+        fit_models_comp(
+            data = responses,
+            iter = 500,
+            cores = 4,
+            chains = 4,
+            inits = 0,
+            save_pars = save_pars(all = TRUE),
+            backend = "cmdstanr",
+            sample_prior = "only"
+        )
+    ),
+    
+    # fit models
+    tar_target(
+        fits_prod,
+        fit_models_prod(
             data = responses,
             iter = 500,
             cores = 4,

@@ -55,7 +55,9 @@ tar_load(items)
 tar_load(participants)
 tar_load(vocabulary)
 tar_load(responses)
-tar_load(fits)
+tar_load(fits_comp)
+tar_load(fits_prod)
+
 
 ```
 
@@ -448,6 +450,7 @@ ggplot(d, aes(age, prop, colour = lp, fill = lp)) +
   labs(x = "Age (months)", y = "Vocabulary size (words)", colour = "LP", fill = "LP") +
   
   plot_layout(guides = "collect") &
+  theme_github() +
   theme(
     legend.position = "top",
     legend.title = element_blank()
@@ -477,6 +480,7 @@ vocabulary$wide %>%
   labs(x = "Age (months)", y = "Vocabulary size (words)", colour = "LP", fill = "LP") +
   
   plot_layout(guides = "collect") &
+  theme_github() +
   theme(
     legend.position = "top",
     legend.title = element_blank()
@@ -513,7 +517,7 @@ vocabulary$long %>%
   filter(type=="understands") %>% 
   ggplot(aes(value, reorder(id, age), colour = version, fill = version, shape = version)) +
   facet_grid(~scale) +
-  geom_point() +
+  geom_point(size = 3) +
   labs(x= "Vocabulary size", y = "Participant (ordered by age, min-to-max)",
        colour = "Version", fill = "Version", shape = "Version") +
   scale_x_continuous(labels = scales::percent) +
@@ -593,9 +597,11 @@ responses %>%
   )
 ```
 
-## Prior-predictive checks
+## Prior-predictive checks (PPC)
 
-```{r ppc, message=FALSE, warning=FALSE, paged.print=FALSE, fig.height=3, fig.width=6}
+### PPC: Comprehension
+
+```{r ppc_comp, message=FALSE, warning=FALSE, paged.print=FALSE, fig.height=3, fig.width=6}
 
 # emmeans
 nd <- expand.grid(
@@ -605,7 +611,7 @@ nd <- expand.grid(
   frequency_center = c(-1, 0, 1)
 )
 
-m <- add_fitted_draws(nd, fits$fit_2, n = 20, re_formula = NA) %>% 
+m <- add_fitted_draws(nd, fits_comp$fit_2, n = 20, re_formula = NA) %>% 
   mutate(frequency_center = as.factor(paste0("Frequency = ", frequency_center, " SD")))
 
 ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
@@ -617,11 +623,43 @@ ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
   geom_hline(yintercept = 0.5, size = 1, colour = "grey") +
   labs(x = "Age (months)", y = "P(Comprehension)", colour = "Cognateness", fill = "Cognateness") +
   scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
+  theme_github() +
   theme(
     legend.position = "top",
     legend.title = element_blank()
   )
 
+```
+
+### PPC: Production
+
+```{r ppc_prod, message=FALSE, warning=FALSE, paged.print=FALSE, fig.height=3, fig.width=6}
+
+# emmeans
+nd <- expand.grid(
+  age = seq(min(responses$age), max(responses$age), length.out = 50),
+  lp = unique(participants$lp),
+  cognate = unique(items$cognate),
+  frequency_center = c(-1, 0, 1)
+)
+
+m <- add_fitted_draws(nd, fits_prod$fit_2, n = 20, re_formula = NA) %>% 
+  mutate(frequency_center = as.factor(paste0("Frequency = ", frequency_center, " SD")))
+
+ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
+  facet_grid(lp~frequency_center) +
+  geom_line(aes(group = interaction(.draw,  frequency_center, cognate)), alpha = 0.5) +
+  # stat_lineribbon(size = 0, alpha = 0.5, .width = 0.05) +
+  # stat_summary(fun.data = "mean_se", geom = "pointrange") +
+  # stat_summary(fun = "mean", geom = "line", size = 1) +
+  geom_hline(yintercept = 0.5, size = 1, colour = "grey") +
+  labs(x = "Age (months)", y = "P(Production)", colour = "Cognateness", fill = "Cognateness") +
+  scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
+  theme_github() +
+  theme(
+    legend.position = "top",
+    legend.title = element_blank()
+  )
 
 ```
 
@@ -632,8 +670,10 @@ We compared the performance of these models using Bayesian leave-one-out cross-v
 
 ## Fixed effects
 
+### Fixed effects: Compehension
+
 ```{r fixed_effects_table, message=FALSE, warning=FALSE, paged.print=FALSE}
-summary(fits$fit_2)$fixed %>% 
+summary(fits_comp$fit_2)$fixed %>% 
   as.data.frame() %>%
   rownames_to_column("term") %>% 
   mutate(
@@ -678,15 +718,15 @@ summary(fits$fit_2)$fixed %>%
 
 <br>
 
-```{r fix_effets_plot, message=FALSE, warning=FALSE, paged.print=FALSE, fig.cap="Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The resto of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable."}
+```{r fix_effets_comp_plot, message=FALSE, warning=FALSE, paged.print=FALSE, fig.cap="Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The resto of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable."}
 
-post <- gather_draws(fits$fit_2, `b_.*`, regex = TRUE) %>% 
+post <- gather_draws(fits_comp$fit_2, `b_.*`, regex = TRUE) %>% 
   mutate(.value = ifelse(.variable=="b_Intercept", inv_logit_scaled(.value), .value/4))
 
 ggplot(post, aes(.value)) +
   facet_wrap(~.variable, scales = "free_x") +
   geom_vline(xintercept = 0, size = 1, colour = "grey") +
-  stat_histinterval(fill = "lightblue") +
+  stat_histinterval(fill = "white") +
   labs(x = "Value", y = "Posterior probability density", fill = "Variable") +
   theme_github() +
   theme(
@@ -699,18 +739,44 @@ ggplot(post, aes(.value)) +
   )
 ```
 
+### Fixed effects: Production
+
+```{r fix_effets_prod_plot, message=FALSE, warning=FALSE, paged.print=FALSE, fig.cap="Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The resto of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable."}
+
+post <- gather_draws(fits_prod$fit_2, `b_.*`, regex = TRUE) %>% 
+  mutate(.value = ifelse(.variable=="b_Intercept", inv_logit_scaled(.value), .value/4))
+
+ggplot(post, aes(.value)) +
+  facet_wrap(~.variable, scales = "free_x") +
+  geom_vline(xintercept = 0, size = 1, colour = "grey") +
+  stat_histinterval(fill = "white") +
+  labs(x = "Value", y = "Posterior probability density", fill = "Variable") +
+  theme_github() +
+  theme(
+    legend.position = "none",
+    plot.caption.position = "plot",
+    plot.caption = element_text(hjust = 0),
+    # axis.text = element_text(size = 7),
+    panel.grid.major.x = element_line(colour = "grey", linetype = "dotted"),
+    panel.grid.major.y = element_line(colour = "grey", linetype = "dotted")
+  )
+```
+
+
 ## Random effects {.tabset .tab-pils}
 
-### Participant
+### Random effects: Comprehension
 
-```{r random_participant, message=FALSE, warning=FALSE, paged.print=FALSE}
+#### Participant
 
-re_id <- ranef(fits$fit_2)$id[,,1] %>% 
+```{r random_participant_comp, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+re_id <- ranef(fits_comp$fit_2)$id[,,1] %>% 
   as.data.frame() %>% 
   rownames_to_column("id") %>% 
   as_tibble() %>% 
-  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fits$fit_2)[1])) %>% 
-  left_join(distinct(fits$fit_2$data, id, lp))
+  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fits_comp$fit_2)[1])) %>% 
+  left_join(distinct(fits_comp$fit_2$data, id, lp))
 
 ggplot(re_id, aes(Estimate, reorder(id, Estimate))) +
   geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), size = 0.25,
@@ -730,17 +796,78 @@ ggplot(re_id, aes(Estimate, reorder(id, Estimate))) +
 
 ```
 
-### Item
+#### Item
 
-```{r re_item, message=FALSE, warning=FALSE, paged.print=FALSE}
+```{r re_item_comp, message=FALSE, warning=FALSE, paged.print=FALSE}
 
-re_te <- ranef(fits$fit_2)$te[,,1] %>% 
+re_te <- ranef(fits_comp$fit_2)$te[,,1] %>% 
   as.data.frame() %>% 
   rownames_to_column("te") %>% 
   as_tibble() %>% 
-  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fits$fit_2)[1])) %>% 
+  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fits_comp$fit_2)[1])) %>% 
   mutate(te = as.numeric(te)) %>% 
-  left_join(distinct(fits$fit_2$data, te, lp))
+  left_join(distinct(fits_comp$fit_2$data, te, lp))
+
+ggplot(re_te, aes(Estimate, reorder(te, Estimate))) +
+  geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), size = 0.25,
+                 colour = wes_palettes$Darjeeling1[2]) +
+  geom_point(size = 1, shape = "|") +
+  geom_vline(xintercept = 0.5, linetype = "dashed") +
+  labs(x = "Item average probability of comprehension",
+       y = "Item") +
+  scale_color_brewer(palette = "Set1") +
+  scale_x_continuous(limits = c(0, 1)) +
+  theme_github() +
+  theme(
+    axis.text.y = element_blank(),
+    panel.grid = element_blank(),
+    axis.ticks = element_blank()
+  )
+```
+
+
+### Random effects: Production
+
+#### Participant
+
+```{r random_participant_prod, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+re_id <- ranef(fits_prod$fit_2)$id[,,1] %>% 
+  as.data.frame() %>% 
+  rownames_to_column("id") %>% 
+  as_tibble() %>% 
+  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fits_prod$fit_2)[1])) %>% 
+  left_join(distinct(fits_prod$fit_2$data, id, lp))
+
+ggplot(re_id, aes(Estimate, reorder(id, Estimate))) +
+  geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), size = 0.25,
+                 colour = wes_palettes$Darjeeling1[1]) +
+  geom_point(size = 1, shape = "|") +
+  geom_vline(xintercept = 0.5, linetype = "dashed") +
+  labs(x = "Participant average probability of comprehension",
+       y = "Participant") +
+  scale_x_continuous(limits = c(0, 1)) +
+  theme_github() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_blank()
+  )
+
+
+```
+
+#### Item
+
+```{r re_item_prod, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+re_te <- ranef(fits_prod$fit_2)$te[,,1] %>% 
+  as.data.frame() %>% 
+  rownames_to_column("te") %>% 
+  as_tibble() %>% 
+  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fits_prod$fit_2)[1])) %>% 
+  mutate(te = as.numeric(te)) %>% 
+  left_join(distinct(fits_prod$fit_2$data, te, lp))
 
 ggplot(re_te, aes(Estimate, reorder(te, Estimate))) +
   geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), size = 0.25,
@@ -764,7 +891,9 @@ ggplot(re_te, aes(Estimate, reorder(te, Estimate))) +
 
 ## Marginal means
 
-```{r emmeans, message=FALSE, warning=FALSE, paged.print=FALSE}
+### Marginal means: Comprehension
+
+```{r emmeans_comp, message=FALSE, warning=FALSE, paged.print=FALSE}
 
 nd <- expand.grid(
   age = seq(min(responses$age), max(responses$age), length.out = 50),
@@ -773,7 +902,7 @@ nd <- expand.grid(
   frequency_center = c(-1,  0, 1)
 )
 
-m <- add_fitted_draws(nd, fits$fit_2, re_formula = NA, n = 25) %>% 
+m <- add_fitted_draws(nd, fits_comp$fit_2, re_formula = NA, n = 25) %>% 
   mutate(frequency_center = as.factor(paste0(frequency_center, " SD")))
 
 ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
@@ -787,10 +916,40 @@ ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
   scale_y_continuous(labels = scales::percent) +
   theme_github() +
   theme(
-    legend.position = "right",
+    legend.position = "top",
     legend.title = element_blank()
   )
 
+```
+
+## Marginal means: Production
+
+```{r emmeans_prod, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+nd <- expand.grid(
+  age = seq(min(responses$age), max(responses$age), length.out = 50),
+  lp = unique(participants$lp),
+  cognate =unique(items$cognate),
+  frequency_center = c(-1,  0, 1)
+)
+
+m <- add_fitted_draws(nd, fits_prod$fit_2, re_formula = NA, n = 25) %>% 
+  mutate(frequency_center = as.factor(paste0(frequency_center, " SD")))
+
+ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
+  facet_wrap(lp~frequency_center) +
+  geom_line(aes(group = interaction(.draw, frequency_center, cognate)), alpha = 0.5) +
+  
+  # stat_lineribbon(size = 0, alpha = 0.5, .width = 0.95) +
+  # stat_summary(fun = "mean", geom = "line", size = 1) +
+  geom_hline(yintercept = 0.5, size = 1, colour = "grey") +
+  labs(x = "Age (months)", y = "P(Comprehension)", colour = "Cognateness", fill = "Cognateness") +
+  scale_y_continuous(labels = scales::percent) +
+  theme_github() +
+  theme(
+    legend.position = "top",
+    legend.title = element_blank()
+  )
 
 ```
 
@@ -798,16 +957,31 @@ ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
 
 ### Traceplots
 
-
-```{r diagnostics_traceplots, message=FALSE, warning=FALSE, paged.print=FALSE}
-
-gather_draws(fits$fit_2, `b_.*`, `sd_te__.*`, `cor_te__.*`, regex = TRUE) %>% 
+```{r diagnostics_traceplots_comp, message=FALSE, warning=FALSE, paged.print=FALSE}
+gather_draws(fits_comp$fit_2, `b_.*`, `sd_te__.*`, `cor_te__.*`, regex = TRUE) %>% 
   mutate(.chain = paste("Chain ", .chain)) %>% 
   ggplot(aes(.iteration, .value, colour = .chain)) +
   facet_wrap(~.variable, scales = "free_y") +
   annotate(geom = "rect", colour = NA, xmin = 0, xmax = 500, ymin = -Inf, ymax = Inf, alpha = 0.25, colour = "grey") +
   geom_line(alpha = 0.5) +
-  labs(x = "Iteration", y = "Sample value", colour = "Chain") +
+  labs(x = "Iteration", y = "Sample value", colour = "Chain", title = "Comprehension") +
+  theme_github() +
+  theme(
+    legend.position = "top",
+    legend.title = element_blank(),
+    panel.grid = element_blank()
+  )
+```
+
+```{r diagnostics_traceplots_prod, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+gather_draws(fits_prod$fit_2, `b_.*`, `sd_te__.*`, `cor_te__.*`, regex = TRUE) %>% 
+  mutate(.chain = paste("Chain ", .chain)) %>% 
+  ggplot(aes(.iteration, .value, colour = .chain)) +
+  facet_wrap(~.variable, scales = "free_y") +
+  annotate(geom = "rect", colour = NA, xmin = 0, xmax = 500, ymin = -Inf, ymax = Inf, alpha = 0.25, colour = "grey") +
+  geom_line(alpha = 0.5) +
+  labs(x = "Iteration", y = "Sample value", colour = "Chain", title = "Production") +
   theme_github() +
   theme(
     legend.position = "top",

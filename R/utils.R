@@ -20,9 +20,9 @@ theme_github <- function(){
             legend.title = element_text(colour = "white", size = 10),
             legend.text = element_text(colour = "white", size = 10),
             legend.background = element_rect(fill = "#0D1117"),
+            strip.text = element_text(size = 10),
             legend.key = element_rect(fill = "#0D1117", colour = "#0D1117"),
             strip.background = element_rect(fill = "#161B22"),
-            strip.text = element_text(colour = "white", size = 12),
             plot.background = element_rect(fill = "#0D1117"),
             panel.background = element_rect(fill = "#0D1117"),
             panel.border = element_rect(fill = "transparent", colour = "#0D1117")
