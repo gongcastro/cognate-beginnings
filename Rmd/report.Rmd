@@ -66,36 +66,6 @@ tar_load(fits)
 
 # Items {.tabset .tab-pills}
 
-```{r items_list, message=FALSE, warning=FALSE, paged.print=FALSE, fig.height=4, out.width="100%"}
-items %>% 
-  pivot_wider(
-    id_cols = c("te", "class", "cognate"),
-    names_from = "language",
-    values_from = c("label", "frequency", "ipa")
-  ) %>% 
-  clean_names() %>% 
-  arrange(te) %>% 
-  gt() %>% 
-  tab_spanner(label = md("**Catalan**"), columns = contains("_catalan")) %>% 
-  tab_spanner(label = md("**Spanish**"), columns = contains("_spanish")) %>% 
-  cols_label(
-    te = "TE ID",
-    class = "Class",
-    cognate = "Cognateness",
-    label_catalan = "Label",
-    label_spanish = "Label",
-    ipa_catalan = "Phonology",
-    ipa_spanish = "Phonology",
-    frequency_catalan = "Frequency",
-    frequency_spanish = "Frequency"
-  ) %>% 
-  fmt_number(columns = starts_with("frequency")) %>% 
-  as_raw_html() %>% 
-  div(style = "height:600px; overflow-x: scroll; overflow-y: scroll", .)
-```
-
-<br>
-
 ## Lexical frequency
 
 ```{r items_frequency, message=FALSE, warning=FALSE, paged.print=FALSE}
