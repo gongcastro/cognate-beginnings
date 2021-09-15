@@ -47,7 +47,7 @@ random slopes for `cognate` by `id`. The models were implemented in
 
 ![
 \\begin{aligned}
-\\color{white}\\log(\\frac{p}{n - q}) &= (\\beta\_{0} + \\beta\_{0p} + \\beta\_{0i}) + ... \\\\
+\\color{white}\\log(\\frac{p}{n - q}) &= \\color{white}(\\beta\_{0} + \\beta\_{0p} + \\beta\_{0i}) + ... \\\\
 & \\color{white}(\\beta\_{1} + \\beta\_{1p})\\times Cognate\_{pi} + ... \\\\
 & \\color{white}(\\beta\_{2} + \\beta\_{2i}) \\times Exposure\_{pi} + ... \\\\
 & \\color{white}(\\beta\_{3} + \\beta\_{3i} + \\beta\_{3p}) \\times (Cognate\_{pi} \\times Exposure\_{pi}) + ... \\\\
@@ -55,9 +55,9 @@ random slopes for `cognate` by `id`. The models were implemented in
 & \\color{white}(\\beta\_{4} + \\beta\_{4p}) \\times Frequency\_{pi} + ... \\\\
 & \\color{white}\\varepsilon\_{pi}
 \\end{aligned}
-](https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Baligned%7D%0A%5Ccolor%7Bwhite%7D%5Clog%28%5Cfrac%7Bp%7D%7Bn%20-%20q%7D%29%20%26%3D%20%28%5Cbeta_%7B0%7D%20%2B%20%5Cbeta_%7B0p%7D%20%2B%20%5Cbeta_%7B0i%7D%29%20%2B%20...%20%5C%5C%0A%26%20%5Ccolor%7Bwhite%7D%28%5Cbeta_%7B1%7D%20%2B%20%5Cbeta_%7B1p%7D%29%5Ctimes%20Cognate_%7Bpi%7D%20%2B%20...%20%5C%5C%0A%26%20%5Ccolor%7Bwhite%7D%28%5Cbeta_%7B2%7D%20%2B%20%5Cbeta_%7B2i%7D%29%20%5Ctimes%20Exposure_%7Bpi%7D%20%2B%20...%20%5C%5C%0A%26%20%5Ccolor%7Bwhite%7D%28%5Cbeta_%7B3%7D%20%2B%20%5Cbeta_%7B3i%7D%20%2B%20%5Cbeta_%7B3p%7D%29%20%5Ctimes%20%28Cognate_%7Bpi%7D%20%5Ctimes%20Exposure_%7Bpi%7D%29%20%2B%20...%20%5C%5C%0A%26%20%5Ccolor%7Bwhite%7D%28%5Cbeta_%7B4%7D%20%2B%20%5Cbeta_%7B4i%7D%29%20%5Ctimes%20Age_%7Bpi%7D%20%2B%20...%20%5C%5C%0A%26%20%5Ccolor%7Bwhite%7D%28%5Cbeta_%7B4%7D%20%2B%20%5Cbeta_%7B4p%7D%29%20%5Ctimes%20Frequency_%7Bpi%7D%20%2B%20...%20%5C%5C%0A%26%20%5Ccolor%7Bwhite%7D%5Cvarepsilon_%7Bpi%7D%0A%5Cend%7Baligned%7D%0A "
+](https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Baligned%7D%0A%5Ccolor%7Bwhite%7D%5Clog%28%5Cfrac%7Bp%7D%7Bn%20-%20q%7D%29%20%26%3D%20%5Ccolor%7Bwhite%7D%28%5Cbeta_%7B0%7D%20%2B%20%5Cbeta_%7B0p%7D%20%2B%20%5Cbeta_%7B0i%7D%29%20%2B%20...%20%5C%5C%0A%26%20%5Ccolor%7Bwhite%7D%28%5Cbeta_%7B1%7D%20%2B%20%5Cbeta_%7B1p%7D%29%5Ctimes%20Cognate_%7Bpi%7D%20%2B%20...%20%5C%5C%0A%26%20%5Ccolor%7Bwhite%7D%28%5Cbeta_%7B2%7D%20%2B%20%5Cbeta_%7B2i%7D%29%20%5Ctimes%20Exposure_%7Bpi%7D%20%2B%20...%20%5C%5C%0A%26%20%5Ccolor%7Bwhite%7D%28%5Cbeta_%7B3%7D%20%2B%20%5Cbeta_%7B3i%7D%20%2B%20%5Cbeta_%7B3p%7D%29%20%5Ctimes%20%28Cognate_%7Bpi%7D%20%5Ctimes%20Exposure_%7Bpi%7D%29%20%2B%20...%20%5C%5C%0A%26%20%5Ccolor%7Bwhite%7D%28%5Cbeta_%7B4%7D%20%2B%20%5Cbeta_%7B4i%7D%29%20%5Ctimes%20Age_%7Bpi%7D%20%2B%20...%20%5C%5C%0A%26%20%5Ccolor%7Bwhite%7D%28%5Cbeta_%7B4%7D%20%2B%20%5Cbeta_%7B4p%7D%29%20%5Ctimes%20Frequency_%7Bpi%7D%20%2B%20...%20%5C%5C%0A%26%20%5Ccolor%7Bwhite%7D%5Cvarepsilon_%7Bpi%7D%0A%5Cend%7Baligned%7D%0A "
 \begin{aligned}
-\color{white}\log(\frac{p}{n - q}) &= (\beta_{0} + \beta_{0p} + \beta_{0i}) + ... \\
+\color{white}\log(\frac{p}{n - q}) &= \color{white}(\beta_{0} + \beta_{0p} + \beta_{0i}) + ... \\
 & \color{white}(\beta_{1} + \beta_{1p})\times Cognate_{pi} + ... \\
 & \color{white}(\beta_{2} + \beta_{2i}) \times Exposure_{pi} + ... \\
 & \color{white}(\beta_{3} + \beta_{3i} + \beta_{3p}) \times (Cognate_{pi} \times Exposure_{pi}) + ... \\
