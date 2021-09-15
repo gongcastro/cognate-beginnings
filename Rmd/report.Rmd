@@ -13,9 +13,9 @@ knitr::opts_chunk$set(
   warning = TRUE,
   dev.args = list(png = list(type = "cairo")),
   include = TRUE,
-  out.width = "100%",
+  out.width = "80%",
   results = "asis",
-  dpi = 300
+  dpi = 250
 )
 options(
   knitr.kable.NA = "-",
@@ -267,14 +267,13 @@ We initially fitted a null model (`fit_0`) than only included the predictors `ag
 
 $$
 \begin{aligned}
-\color{white}
-\log(\frac{p}{n - q}) &= (\beta_{0} + \beta_{0p} + \beta_{0i}) + ... \\
-& (\beta_{1} + \beta_{1p})\times Cognate_{pi} + ... \\
-& (\beta_{2} + \beta_{2i}) \times Exposure_{pi} + ... \\
-& (\beta_{3} + \beta_{3i} + \beta_{3p}) \times (Cognate_{pi} \times Exposure_{pi}) + ... \\
-& (\beta_{4} + \beta_{4i}) \times Age_{pi} + ... \\
-& (\beta_{4} + \beta_{4p}) \times Frequency_{pi} + ... \\
-& \varepsilon_{pi}
+\color{white}\log(\frac{p}{n - q}) &= (\beta_{0} + \beta_{0p} + \beta_{0i}) + ... \\
+& \color{white}(\beta_{1} + \beta_{1p})\times Cognate_{pi} + ... \\
+& \color{white}(\beta_{2} + \beta_{2i}) \times Exposure_{pi} + ... \\
+& \color{white}(\beta_{3} + \beta_{3i} + \beta_{3p}) \times (Cognate_{pi} \times Exposure_{pi}) + ... \\
+& \color{white}(\beta_{4} + \beta_{4i}) \times Age_{pi} + ... \\
+& \color{white}(\beta_{4} + \beta_{4p}) \times Frequency_{pi} + ... \\
+& \color{white}\varepsilon_{pi}
 \end{aligned}
 $$
 
