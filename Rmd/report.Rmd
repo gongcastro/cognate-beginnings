@@ -90,8 +90,8 @@ items %>%
     frequency_spanish = "Frequency"
   ) %>% 
   fmt_number(columns = starts_with("frequency")) %>% 
-  div(style = "height:600px; overflow-x: scroll; overflow-y: scroll", .) %>% 
-  as_raw_html()
+  as_raw_html() %>% 
+  div(style = "height:600px; overflow-x: scroll; overflow-y: scroll", .)
 ```
 
 <br>
