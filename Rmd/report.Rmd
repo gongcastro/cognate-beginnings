@@ -32,6 +32,7 @@ options(knitr.kable.NA = '-',
 ```{r prepare, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
 
 # load packages
+library(targets)
 library(tidyverse)
 library(gt)
 library(lubridate)
@@ -45,28 +46,14 @@ library(janitor)
 library(here)
 
 # set params
-theme_custom <- function(){
-  theme_minimal() +
-    theme(
-      panel.grid = element_line(colour = "grey", linetype = "dotted"),
-      axis.line = element_line(colour = "black"),
-      text = element_text(size = 12, colour = "black"),
-      axis.text = element_text(colour = "black")
-    )
-}
-
 theme_set(theme_custom())
 
 # import data
-items <- readRDS(here("Data", "items.rds"))
-participants <- readRDS(here("Data", "participants.rds"))
-responses <- readRDS(here("Data", "responses.rds"))
-
-# import models
-vocabulary <- readRDS(here("Data", "vocabulary.rds"))
-vocabulary_long <- readRDS(here("Data", "vocabulary_long.rds"))
-fit_prior <- readRDS(here("Results", "irt_2_prior.rds"))
-fit <- readRDS(here("Results", "irt_2.rds"))
+tar_load(items)
+tar_load(participants)
+tar_load(vocabulary)
+tar_load(responses)
+tar_load(fits)
 
 ```
 
@@ -490,8 +477,7 @@ vocabulary %>%
   theme(
     legend.position = "top",
     legend.title = element_blank()
-  ) &
-  ggsave(here("Figures", "vocabulary_comprehension.png"))
+  )
 
 ```
 
@@ -520,8 +506,7 @@ vocabulary %>%
   theme(
     legend.position = "top",
     legend.title = element_blank()
-  ) &
-  ggsave(here("Figures", "vocabulary_production.png"))
+  )
 
 ```
 
@@ -545,8 +530,7 @@ vocabulary_long %>%
     legend.position = "top",
     axis.text.y = element_blank(),
     axis.ticks.y = element_blank()
-  ) +
-  ggsave(here("Figures", "vocabulary_long_comprehension.png"))
+  )
 ```
 
 #### Production 
@@ -565,13 +549,75 @@ vocabulary_long %>%
     legend.position = "top",
     axis.text.y = element_blank(),
     axis.ticks.y = element_blank()
-  ) +
-  ggsave(here("Figures", "vocabulary_long_production.png"))
+  )
 ```
 
 #### {-}
 
 ### {-}
+
+## Raw data
+
+```{r raw, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+responses %>%
+  group_by(te, cognate) %>%
+  summarise(
+    understands = mean(understands, na.rm = TRUE),
+    produces = mean(produces, na.rm = TRUE)
+  ) %>%
+  pivot_longer(
+    c(understands, produces),
+    names_to = "type",
+    values_to = "prop"
+  ) %>%
+  mutate(type = str_to_sentence(type)) %>% 
+  ggplot(aes(prop, reorder(te, -prop), colour = cognate)) +
+  facet_wrap(vars(type)) +
+  geom_vline(xintercept = 0.5, linetype = "dotted", size = 1) +
+  geom_point(alpha = 0.5, size = 2) +
+  labs(x = "Mean % of acquisition", y = "Translation equivalent ID", colour = "Type") +
+  scale_x_continuous(limits = c(0, 1), labels = scales::percent) +
+  theme_custom() +
+  theme(
+    legend.position = "top",
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank()
+  )
+```
+
+```{r raw_age, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+responses %>%
+  mutate(age = as.factor(round(age))) %>% 
+  group_by(te, age, cognate) %>%
+  summarise(
+    understands = mean(understands, na.rm = TRUE),
+    produces = mean(produces, na.rm = TRUE)
+  ) %>%
+  pivot_longer(
+    c(understands, produces),
+    names_to = "type",
+    values_to = "prop"
+  ) %>%
+  mutate(type = str_to_sentence(type)) %>% 
+  ggplot(aes(age, prop, colour = cognate, fill = cognate, shape = cognate)) +
+  facet_wrap(vars(type)) +
+  geom_hline(yintercept = 0.5, linetype = "dotted", size = 1) +
+  geom_point(aes(group = interaction(age, cognate)), alpha = 0.5, size = 0.5) +
+  stat_summary(fun.data = mean_se, geom = "pointrange") +
+  labs(x = "Mean % of acquisition", y = "Translation equivalent ID",
+       colour = "Cognate", shape = "Cognate", fill = "Cognate") +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
+  theme_custom() +
+  theme(
+    legend.position = "top",
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.grid = element_blank(),
+    legend.title = element_blank()
+  )
+```
 
 ## Prior-predictive checks
 
@@ -585,7 +631,7 @@ nd <- expand.grid(
   frequency_center = c(-1, 0, 1)
 )
 
-m <- add_fitted_draws(nd, fit_prior, n = 20, re_formula = NA) %>% 
+m <- add_fitted_draws(nd, fits$fit_2, n = 20, re_formula = NA) %>% 
   mutate(frequency_center = as.factor(paste0("Frequency = ", frequency_center, " SD")))
 
 ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
@@ -675,8 +721,7 @@ ggplot(post, aes(.value)) +
     # axis.text = element_text(size = 7),
     panel.grid.major.x = element_line(colour = "grey", linetype = "dotted"),
     panel.grid.major.y = element_line(colour = "grey", linetype = "dotted")
-  ) +
-  ggsave(here("Figures", "responses_fixed.png"))
+  )
 ```
 
 ## Random effects {.tabset .tab-pils}

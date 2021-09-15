@@ -12,41 +12,12 @@ functions {
     // r is stored in another dimension order than z
     return transpose(diag_pre_multiply(SD, L) * z);
   }
-  /* integer sequence of values
-   * Args: 
-   *   start: starting integer
-   *   end: ending integer
-   * Returns: 
-   *   an integer sequence from start to end
-   */ 
-  int[] sequence(int start, int end) { 
-    int seq[end - start + 1];
-    for (n in 1:num_elements(seq)) {
-      seq[n] = n + start - 1;
-    }
-    return seq; 
-  } 
-  // compute partial sums of the log-likelihood
-  real partial_log_lik_lpmf(int[] seq, int start, int end, int[] Y, matrix Xc, vector b, real Intercept, int[] J_1, vector Z_1_1, vector Z_1_2, vector r_1_1, vector r_1_2, int[] J_2, vector Z_2_1, vector Z_2_2, vector r_2_1, vector r_2_2) {
-    real ptarget = 0;
-    int N = end - start + 1;
-    // initialize linear predictor term
-    vector[N] mu = Intercept + rep_vector(0.0, N);
-    for (n in 1:N) {
-      // add more terms to the linear predictor
-      int nn = n + start - 1;
-      mu[n] += r_1_1[J_1[nn]] * Z_1_1[nn] + r_1_2[J_1[nn]] * Z_1_2[nn] + r_2_1[J_2[nn]] * Z_2_1[nn] + r_2_2[J_2[nn]] * Z_2_2[nn];
-    }
-    ptarget += bernoulli_logit_glm_lpmf(Y[start:end] | Xc[start:end], mu, b);
-    return ptarget;
-  }
 }
 data {
   int<lower=1> N;  // total number of observations
   int Y[N];  // response variable
   int<lower=1> K;  // number of population-level effects
   matrix[N, K] X;  // population-level design matrix
-  int grainsize;  // grainsize for threading
   // data for group-level effects of ID 1
   int<lower=1> N_1;  // number of grouping levels
   int<lower=1> M_1;  // number of coefficients per level
@@ -69,7 +40,6 @@ transformed data {
   int Kc = K - 1;
   matrix[N, Kc] Xc;  // centered version of X without an intercept
   vector[Kc] means_X;  // column means of X before centering
-  int seq[N] = sequence(1, N);
   for (i in 2:K) {
     means_X[i - 1] = mean(X[, i]);
     Xc[, i - 1] = X[, i] - means_X[i - 1];
@@ -107,18 +77,24 @@ transformed parameters {
 model {
   // likelihood including constants
   if (!prior_only) {
-    target += reduce_sum(partial_log_lik_lpmf, seq, grainsize, Y, Xc, b, Intercept, J_1, Z_1_1, Z_1_2, r_1_1, r_1_2, J_2, Z_2_1, Z_2_2, r_2_1, r_2_2);
+    // initialize linear predictor term
+    vector[N] mu = Intercept + rep_vector(0.0, N);
+    for (n in 1:N) {
+      // add more terms to the linear predictor
+      mu[n] += r_1_1[J_1[n]] * Z_1_1[n] + r_1_2[J_1[n]] * Z_1_2[n] + r_2_1[J_2[n]] * Z_2_1[n] + r_2_2[J_2[n]] * Z_2_2[n];
+    }
+    target += bernoulli_logit_glm_lpmf(Y | Xc, mu, b);
   }
   // priors including constants
   target += normal_lpdf(b[1] | 0.75, 0.1);
   target += normal_lpdf(b[2] | 0, 0.1);
   target += normal_lpdf(Intercept | 0, 0.1);
   target += std_normal_lpdf(to_vector(z_1));
-  target += lkj_corr_cholesky_lpdf(L_1 | 7);
+  target += lkj_corr_cholesky_lpdf(L_1 | 10);
   target += normal_lpdf(sd_2 | 0.2, 0.1)
     - 2 * normal_lccdf(0 | 0.2, 0.1);
   target += std_normal_lpdf(to_vector(z_2));
-  target += lkj_corr_cholesky_lpdf(L_2 | 7);
+  target += lkj_corr_cholesky_lpdf(L_2 | 10);
 }
 generated quantities {
   // actual population-level intercept

@@ -9,6 +9,7 @@
 *.png
 *.pdf
 *.log
+_targets/*
 Data/*
 Results/*
 Figures/*

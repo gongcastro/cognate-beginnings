@@ -94,11 +94,11 @@ model {
   target += normal_lpdf(b[3] | 0, 0.1);
   target += normal_lpdf(Intercept | 0, 0.1);
   target += std_normal_lpdf(to_vector(z_1));
-  target += lkj_corr_cholesky_lpdf(L_1 | 7);
+  target += lkj_corr_cholesky_lpdf(L_1 | 10);
   target += normal_lpdf(sd_2 | 0.2, 0.1)
     - 3 * normal_lccdf(0 | 0.2, 0.1);
   target += std_normal_lpdf(to_vector(z_2));
-  target += lkj_corr_cholesky_lpdf(L_2 | 7);
+  target += lkj_corr_cholesky_lpdf(L_2 | 10);
 }
 generated quantities {
   // actual population-level intercept
