@@ -1,7 +1,6 @@
 ---
 title: "Trajectories"
 output:
-  html_document: default
   github_document:
     pandoc_args: --webtex
 bibliography: "trajectories.bib"
@@ -137,7 +136,7 @@ by_class <- items %>%
 
 (by_cognate / by_language) + by_class +
   plot_layout(2) &
-  theme_custom() &
+  theme_github() &
   theme(
     legend.position = "none",
     axis.title.y = element_blank(),
@@ -168,7 +167,7 @@ by_class <- items %>%
 
 by_cognate / by_class +
   plot_layout() &
-  theme_custom() +
+  theme_github() +
   theme(
     panel.grid.major.y = element_blank(),
     axis.title.y = element_blank(),
@@ -195,7 +194,7 @@ participants %>%
   labs(x = "Date", y = "Number of responses", colour = "LP - Dominant language") +
   scale_y_continuous(breaks = seq(0, 250, 50)) +
   guides(colour = guide_legend(ncol = 2)) +
-  theme_custom() +
+  theme_github() +
   theme(
     legend.position = "top",
     legend.title = element_blank(),
@@ -213,12 +212,12 @@ participants %>%
   mutate(age = round(age)) %>% 
   count(lp, dominant_language, age) %>% 
   ggplot(aes(as.factor(age), n, fill = interaction(lp, dominant_language, sep = " - "))) +
-  geom_col(position = position_fill(), colour = "white") +
+  geom_col(position = position_fill(), colour = "#0D1117", size = 1) +
   guides(colour = guide_legend(ncol = 2)) +
   coord_flip() +
   labs(y = "Proportion of the sample", x = "Age (months)", colour = "LP - Dominant language") +
   scale_y_continuous(labels = scales::percent) +
-  theme_custom() +
+  theme_github() +
   theme(
     legend.position = "top",
     legend.title = element_blank(),
@@ -228,10 +227,10 @@ participants %>%
   mutate(age = round(age)) %>% 
   count(lp, dominant_language, age) %>% 
   ggplot(aes(as.factor(age), n, fill = interaction(lp, dominant_language, sep = " - "))) +
-  geom_col(colour = "white") +
+  geom_col(size = 1, colour = "#0D1117") +
   labs(y = "Number of participants", x = "Age (months)") +
   guides(colour = guide_legend(ncol = 2)) +
-  theme_custom() +
+  theme_github() +
   coord_flip() +
   theme(
     legend.position = "top",
@@ -533,7 +532,6 @@ vocabulary$long %>%
   labs(x= "Vocabulary size", y = "Participant (ordered by age, min-to-max)",
        colour = "Version", fill = "Version", shape = "Version") +
   scale_x_continuous(labels = scales::percent) +
-  theme_bw() +
   theme(
     legend.position = "top",
     axis.text.y = element_blank(),
@@ -545,15 +543,16 @@ vocabulary$long %>%
 
 ```{r vocabulary_long_production, message=FALSE, warning=FALSE, paged.print=FALSE}
 vocabulary$long %>% 
-  filter(type=="produces") %>% 
+  filter(type=="understands") %>% 
   ggplot(aes(value, reorder(id, age), colour = version, fill = version, shape = version)) +
   facet_grid(~scale) +
   geom_point() +
   labs(x= "Vocabulary size", y = "Participant (ordered by age, min-to-max)",
        colour = "Version", fill = "Version", shape = "Version") +
   scale_x_continuous(labels = scales::percent) +
-  theme_bw() +
+  theme_github() +
   theme(
+    panel.grid.major.y = element_blank(),
     legend.position = "top",
     axis.text.y = element_blank(),
     axis.ticks.y = element_blank()
@@ -585,7 +584,7 @@ responses %>%
   geom_point(alpha = 0.5, size = 2) +
   labs(x = "Mean % of acquisition", y = "Translation equivalent ID", colour = "Type") +
   scale_x_continuous(limits = c(0, 1), labels = scales::percent) +
-  theme_custom() +
+  theme_github() +
   theme(
     legend.position = "top",
     axis.text.y = element_blank(),
@@ -617,7 +616,7 @@ responses %>%
   labs(x = "Mean % of acquisition", y = "Translation equivalent ID",
        colour = "Cognate", shape = "Cognate", fill = "Cognate") +
   scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
-  theme_custom() +
+  theme_github() +
   theme(
     legend.position = "top",
     axis.text.y = element_blank(),
@@ -722,7 +721,7 @@ ggplot(post, aes(.value)) +
   geom_vline(xintercept = 0, size = 1, colour = "grey") +
   stat_histinterval(fill = "lightblue") +
   labs(x = "Value", y = "Posterior probability density", fill = "Variable") +
-  theme_custom() +
+  theme_github() +
   theme(
     legend.position = "none",
     plot.caption.position = "plot",
@@ -754,7 +753,7 @@ ggplot(re_id, aes(Estimate, reorder(id, Estimate))) +
   labs(x = "Participant average probability of comprehension",
        y = "Participant") +
   scale_x_continuous(limits = c(0, 1)) +
-  theme_custom() +
+  theme_github() +
   theme(
     axis.text.y = element_blank(),
     axis.ticks = element_blank(),
@@ -785,7 +784,7 @@ ggplot(re_te, aes(Estimate, reorder(te, Estimate))) +
        y = "Item") +
   scale_color_brewer(palette = "Set1") +
   scale_x_continuous(limits = c(0, 1)) +
-  theme_custom() +
+  theme_github() +
   theme(
     axis.text.y = element_blank(),
     panel.grid = element_blank(),
@@ -819,7 +818,7 @@ ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
   geom_hline(yintercept = 0.5, size = 1, colour = "grey") +
   labs(x = "Age (months)", y = "P(Comprehension)", colour = "Cognateness", fill = "Cognateness") +
   scale_y_continuous(labels = scales::percent) +
-  theme_custom() +
+  theme_github() +
   theme(
     legend.position = "right",
     legend.title = element_blank()
@@ -842,7 +841,7 @@ gather_draws(fits$fit_2, `b_.*`, `sd_te__.*`, `cor_te__.*`, regex = TRUE) %>%
   annotate(geom = "rect", colour = NA, xmin = 0, xmax = 500, ymin = -Inf, ymax = Inf, alpha = 0.25, colour = "grey") +
   geom_line(alpha = 0.5) +
   labs(x = "Iteration", y = "Sample value", colour = "Chain") +
-  theme_custom() +
+  theme_github() +
   theme(
     legend.position = "top",
     legend.title = element_blank(),
