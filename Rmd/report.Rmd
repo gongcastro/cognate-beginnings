@@ -66,7 +66,7 @@ tar_load(fits)
 
 # Items {.tabset .tab-pills}
 
-```{r items_list, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.height=4, out.width="100%"}
+```{r items_list, message=FALSE, warning=FALSE, paged.print=FALSE, fig.height=4, out.width="100%"}
 items %>% 
   pivot_wider(
     id_cols = c("te", "class", "cognate"),
@@ -90,7 +90,8 @@ items %>%
     frequency_spanish = "Frequency"
   ) %>% 
   fmt_number(columns = starts_with("frequency")) %>% 
-  div(style = "height:600px; overflow-x: scroll; overflow-y: scroll", .)
+  div(style = "height:600px; overflow-x: scroll; overflow-y: scroll", .) %>% 
+  as_raw_html()
 ```
 
 <br>
@@ -274,7 +275,8 @@ a <- participants %>%
   ) %>% 
   cols_label(
     age = md("**Age<br>(months)**")
-  )
+  ) %>% 
+  as_raw_html()
 
 
 ```
@@ -701,7 +703,8 @@ summary(fits$fit_2)$fixed %>%
   cols_align(
     align = c("center"),
     columns = 2:4
-  )
+  ) %>% 
+  as_raw_html()
 
 ```
 
