@@ -5,14 +5,13 @@
 \documentclass[
   english,
   man,man,floatsintext]{apa6}
+\usepackage{amsmath,amssymb}
 \usepackage{lmodern}
-\usepackage{amsmath}
-\usepackage{ifxetex,ifluatex}
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+\usepackage{iftex}
+\ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
-  \usepackage{amssymb}
 \else % if luatex or xetex
   \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
@@ -118,14 +117,17 @@
 
 \linenumbers
 \usepackage{csquotes}
-\ifxetex
+\ifXeTeX
   % Load polyglossia as late as possible: uses bidi with RTL langages (e.g. Hebrew, Arabic)
   \usepackage{polyglossia}
   \setmainlanguage[]{english}
 \else
-  \usepackage[shorthands=off,main=english]{babel}
+  \usepackage[main=english]{babel}
+% get rid of language-specific shorthands (see #6817):
+\let\LanguageShortHands\languageshorthands
+\def\languageshorthands#1{}
 \fi
-\ifluatex
+\ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
 \newlength{\cslhangindent}
@@ -187,7 +189,7 @@ For a given set of concepts, bilingual children may be exposed to two distinct s
 
 A recent study by Floccia et al. (2018) provided evidence in line with this claim. The authors collected vocabulary data on word comprehension and production from 372 24-month-old bilingual toddlers in the United Kingdom who were learning English and an additional language. The additional language was one a pool of 13 typologically diverse languages: Bengali, Cantonese Chinese, Dutch, French, German, Greek, Hindi/Urdu, Italian, Mandarin Chinese, Polish, Portuguese, Spanish and Welsh. The authors calculated the average phonological similarity between the words in each of these additional languages and their translation equivalents in English. Phonological similarity was measuring by computing the Levenshtein distance between each cross-language pair of phonological transcriptions. The Levenshtein distance is a metric that computes the edit distance between two strings by counting the smallest number of insertions, deletions and substitutions one of the strings has to go through to become identical to the other (Levenshtein \& others, 1966). Floccia et al.~divided the resulting score by the length of the longest string to bound the similarity scores between 0 and 1, and then entered this variable as a predictor as they modelled participants' vocabulary sizes. Among other findings, the authors reported an increase in productive vocabulary size in the additional language associated with an increase in the average phonological similarity between the translation equivalents of each language pair. For example, English-Dutch bilinguals (22.14\% phonological similarity), were able to produce more Dutch words than English-Mandarin bilinguals (1.97\% phonological similarity) were able to produce in Mandarin.
 
-Floccia et al.~pointed to \emph{parallel activation} as the main mechanism underpinning their results. The parallel activation hypothesis suggests that bilinguals activate both languages simultaneously during speech production or comprehension. This phenomenon is the result of the activation of lexical representations in both languages, even when only one is in use during production (Costa, Caramazza, \& Sebastian-Galles, 2000; Hoshino \& Kroll, 2008) or comprehension (Thierry \& Wu, 2007). One of the clearest examples of parallel activation was provided by Costa, Caramazza, and Sebastian-Galles (2000). In this study, Catalan-Spanish monolingual and bilingual adults were asked to name pictures of common objects in Spanish. In half of the trials, the object labels were cognates in Spanish and Catalan (\emph{árbol}-\emph{arbre}, translations of \emph{tree}), whereas in the other half of the trials labels were non-cognates (\emph{mesa}-\emph{taula}, translations of \emph{table}). Bilinguals named cognate pictures faster than non-cognate pictures, even after adjusting for the lexical frequency of the items. Importantly, Spanish monolinguals did not show this effect. These results suggest that, for the bilinguals, Catalan phonology was activated during the production of Spanish words, facilitating the naming of cognate pictures. Several recent studies have also provided similar evidence in comprehension in children (Poulin-Dubois, Bialystok, Blaye, Polonia, \& Yott, 2013; e.g., Von Holzen \& Mani, 2012). Parallel activation is therefore a plausible mechanism to account for Floccia et al.'s results: cognates increase the amount of activation in both languages, facilitating word acquisition. Therefore, children learning language pairs with a larger proportion of cognates are predicted to show larger vocabulary sizes. If cognates are the reason for this facilitation effect, it could be predicted that cognates are acquired earlier than non-cognates. Likely as it might seem, an earlier age of acquisition for cognates is not the only scenario where Floccia et al.'s results are account for.
+Floccia et al.~pointed to \emph{parallel activation} as the main mechanism underpinning their results. The parallel activation hypothesis suggests that bilinguals activate both languages simultaneously during speech production or comprehension. This phenomenon is the result of the activation of lexical representations in both languages, even when only one is in use during production (Costa, Caramazza, \& Sebastian-Galles, 2000; Hoshino \& Kroll, 2008) or comprehension (Thierry \& Wu, 2007). One of the clearest examples of parallel activation was provided by Costa et al. (2000). In this study, Catalan-Spanish monolingual and bilingual adults were asked to name pictures of common objects in Spanish. In half of the trials, the object labels were cognates in Spanish and Catalan (\emph{árbol}-\emph{arbre}, translations of \emph{tree}), whereas in the other half of the trials labels were non-cognates (\emph{mesa}-\emph{taula}, translations of \emph{table}). Bilinguals named cognate pictures faster than non-cognate pictures, even after adjusting for the lexical frequency of the items. Importantly, Spanish monolinguals did not show this effect. These results suggest that, for the bilinguals, Catalan phonology was activated during the production of Spanish words, facilitating the naming of cognate pictures. Several recent studies have also provided similar evidence in comprehension in children (Poulin-Dubois, Bialystok, Blaye, Polonia, \& Yott, 2013; e.g., Von Holzen \& Mani, 2012). Parallel activation is therefore a plausible mechanism to account for Floccia et al.'s results: cognates increase the amount of activation in both languages, facilitating word acquisition. Therefore, children learning language pairs with a larger proportion of cognates are predicted to show larger vocabulary sizes. If cognates are the reason for this facilitation effect, it could be predicted that cognates are acquired earlier than non-cognates. Likely as it might seem, an earlier age of acquisition for cognates is not the only scenario where Floccia et al.'s results are account for.
 For example, languages that share more cognates might also share a larger overlap in their phonemic inventories, which could facilitate the acquisition of all words, regardless of their cognate status.
 
 However, the evidence on an earlier age of acquisition for cognates compared to non-cognates is scarce. To the best of our knowledge only two studies have provided direct data on this issue. First, Bosch and Ramon-Casas (2014) used vocabulary parental reports (152 lexical items) from 48 Catalan-Spanish bilinguals aged 18 months, and found that cognates represented a larger proportion of participant's vocabulary than non-cognates. Second, Schelletter (2002) reported a longitudinal single case of one English-German bilingual who produced cognates earlier than non-cognates, on average. The low sample size in these studies make it challenging to draw strong conclusions about the effect of cognateness in vocabulary growth. Floccia et al.'s estimates are statically more reliable given their (much larger) sample size, but their study was not aimed at testing the effect of cognateness on age of acquisition directly. In their discussion the authors state the following (pp.~70):
@@ -202,9 +204,6 @@ Another worth-mentioning finding in Floccia et al.~is that the increase in vocab
 
 The aim of this study is to investigate the role of cognateness in bilingual word acquisition. We hypothesised that cognate words would be acquired earlier than non-cognate word, and that this difference would be larger in participants with lower exposure to the language such word belongs to. Using an designed online vocabulary checklist--carefully designed specifically for this study--we collected data from a sample of bilinguals aged 10 to 36 months learning Catalan and/or Spanish, with varying degrees of exposure to each language. We then modelled the probability of participants being reported by their parents to understand and/or say each word in the checklist, conditional to its cognate status in Catalan and Spanish and participants' degree of exposure to the corresponding language, while adjusting for participants' age and the item's lexical frequency.
 
-\hypertarget{references}{%
-\subsection{References}\label{references}}
-
 \hypertarget{method}{%
 \section{Method}\label{method}}
 
@@ -214,8 +213,8 @@ The aim of this study is to investigate the role of cognateness in bilingual wor
 \hypertarget{discussion}{%
 \section{Discussion}\label{discussion}}
 
-\hypertarget{references-1}{%
-\section{References}\label{references-1}}
+\hypertarget{references}{%
+\section{References}\label{references}}
 
 \begingroup
 \setlength{\parindent}{-0.5in}
@@ -223,103 +222,88 @@ The aim of this study is to investigate the role of cognateness in bilingual wor
 
 \hypertarget{refs}{}
 \begin{CSLReferences}{1}{0}
-\leavevmode\hypertarget{ref-bergelson2020comprehension}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-bergelson2020comprehension}{}}%
 Bergelson, E. (2020). The comprehension boost in early word learning: Older infants are better learners. \emph{Child Development Perspectives}, \emph{14}(3), 142--149.
 
-\leavevmode\hypertarget{ref-bergelson2012months}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-bergelson2012months}{}}%
 Bergelson, E., \& Swingley, D. (2012). At 6--9 months, human infants know the meanings of many common nouns. \emph{Proceedings of the National Academy of Sciences}, \emph{109}(9), 3253--3258.
 
-\leavevmode\hypertarget{ref-bloom2002children}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-bloom2002children}{}}%
 Bloom, P. (2002). \emph{How children learn the meanings of words}. MIT press.
 
-\leavevmode\hypertarget{ref-bosch2014first}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-bosch2014first}{}}%
 Bosch, L., \& Ramon-Casas, M. (2014). First translation equivalents in bilingual toddlers' expressive vocabulary: {Does} form similarity matter? \emph{International Journal of Behavioral Development}, \emph{38}(4), 317--322. \url{https://doi.org/10.1177/0165025414532559}
 
-\leavevmode\hypertarget{ref-bosch2014first}{}%
-Bosch, L., \& Ramon-Casas, M. (2014). First translation equivalents in bilingual toddlers' expressive vocabulary: {Does} form similarity matter? \emph{International Journal of Behavioral Development}, \emph{38}(4), 317--322. \url{https://doi.org/10.1177/0165025414532559}
-
-\leavevmode\hypertarget{ref-braginsky2019consistency}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-braginsky2019consistency}{}}%
 Braginsky, M., Yurovsky, D., Marchman, V. A., \& Frank, M. C. (2019). Consistency and variability in children's word learning across languages. \emph{Open Mind}, \emph{3}, 52--67.
 
-\leavevmode\hypertarget{ref-cattani2014much}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-cattani2014much}{}}%
 Cattani, A., Abbot-Smith, K., Farag, R., Krott, A., Arreckx, F., Dennis, I., \& Floccia, C. (2014). How much exposure to english is necessary for a bilingual toddler to perform like a monolingual peer in language tests? \emph{International Journal of Language \& Communication Disorders}, \emph{49}(6), 649--671.
 
-\leavevmode\hypertarget{ref-costa2000cognate}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-costa2000cognate}{}}%
 Costa, A., Caramazza, A., \& Sebastian-Galles, N. (2000). The {Cognate} {Facilitation} {Effect}: {Implications} for {Models} of {Lexical} {Access}. \emph{Journal of Experimental Psychology}, \emph{26}(5), 1283--1296. \url{https://doi.org/10.1037/0278-7393.26.5.1283}
 
-\leavevmode\hypertarget{ref-costa2000cognate}{}%
-Costa, A., Caramazza, A., \& Sebastian-Galles, N. (2000). The {Cognate} {Facilitation} {Effect}: {Implications} for {Models} of {Lexical} {Access}. \emph{Journal of Experimental Psychology}, \emph{26}(5), 1283--1296. \url{https://doi.org/10.1037/0278-7393.26.5.1283}
-
-\leavevmode\hypertarget{ref-fabian2016investigating}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-fabian2016investigating}{}}%
 Fabian, A. P. (2016). Investigating vocabulary abilities in bilingual portuguese-english-speaking children.
 
-\leavevmode\hypertarget{ref-fenson1994variability}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-fenson1994variability}{}}%
 Fenson, L., Dale, P. S., Reznick, J. S., Bates, E., Thal, D. J., Pethick, S. J., \ldots{} Stiles, J. (1994). Variability in early communicative development. \emph{Monographs of the Society for Research in Child Development}, i--185.
 
-\leavevmode\hypertarget{ref-fenson1994variability}{}%
-Fenson, L., Dale, P. S., Reznick, J. S., Bates, E., Thal, D. J., Pethick, S. J., \ldots{} Stiles, J. (1994). Variability in early communicative development. \emph{Monographs of the Society for Research in Child Development}, i--185.
-
-\leavevmode\hypertarget{ref-floccia2018introduction}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-floccia2018introduction}{}}%
 Floccia, C., Sambrook, T. D., Delle Luche, C., Kwok, R., Goslin, J., White, L., \ldots{} others. (2018). I: INTRODUCTION. \emph{Monographs of the Society for Research in Child Development}, \emph{83}(1), 7--29.
 
-\leavevmode\hypertarget{ref-gonzalez2020bilingual}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-gonzalez2020bilingual}{}}%
 Gonzalez-Barrero, A. M., Schott, E., \& Byers-Heinlein, K. (2020). Bilingual adjusted vocabulary: A developmentally-informed bilingual vocabulary measure.
 
-\leavevmode\hypertarget{ref-hoff2012dual}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-hoff2012dual}{}}%
 Hoff, E., Core, C., Place, S., Rumiche, R., Señor, M., \& Parra, M. (2012). Dual language exposure and early bilingual development. \emph{Journal of Child Language}, \emph{39}(1), 1.
 
-\leavevmode\hypertarget{ref-hoshino2008cognate}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-hoshino2008cognate}{}}%
 Hoshino, N., \& Kroll, J. F. (2008). Cognate effects in picture naming: Does cross-language activation survive a change of script? \emph{Cognition}, \emph{106}(1), 501--511.
 
-\leavevmode\hypertarget{ref-jusczyk1995infants}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-jusczyk1995infants}{}}%
 Jusczyk, P. W., \& Aslin, R. N. (1995). Infants′ detection of the sound patterns of words in fluent speech. \emph{Cognitive Psychology}, \emph{29}(1), 1--23.
 
-\leavevmode\hypertarget{ref-levenshtein1966binary}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-levenshtein1966binary}{}}%
 Levenshtein, V. I., \& others. (1966). Binary codes capable of correcting deletions, insertions, and reversals. In \emph{Soviet physics doklady} (Vol. 10, pp. 707--710). Soviet Union.
 
-\leavevmode\hypertarget{ref-oller2002language}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-oller2002language}{}}%
 Oller, D. K., \& Eilers, R. E. (2002). \emph{Language and literacy in bilingual children} (Vol. 2). Multilingual Matters.
 
-\leavevmode\hypertarget{ref-patterson2004comparing}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-patterson2004comparing}{}}%
 Patterson, J. L. (2004). Comparing bilingual and monolingual toddlers' expressive vocabulary size.
 
-\leavevmode\hypertarget{ref-patterson2004bilingual}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-patterson2004bilingual}{}}%
 Patterson, J., Pearson, B., \& Goldstein, B. (2004). Bilingual language development and disorders in spanish--english speakers.
 
-\leavevmode\hypertarget{ref-pearson1994patterns}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-pearson1994patterns}{}}%
 Pearson, B. Z., \& Fernández, S. C. (1994). Patterns of interaction in the lexical growth in two languages of bilingual infants and toddlers. \emph{Language Learning}, \emph{44}(4), 617--653.
 
-\leavevmode\hypertarget{ref-pearson1993lexical}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-pearson1993lexical}{}}%
 Pearson, B. Z., Fernández, S. C., \& Oller, D. K. (1993). Lexical development in bilingual infants and toddlers: Comparison to monolingual norms. \emph{Language Learning}, \emph{43}(1), 93--120.
 
-\leavevmode\hypertarget{ref-petitto2001bilingual}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-petitto2001bilingual}{}}%
 Petitto, L. A., Katerelos, M., Levy, B. G., Gauna, K., Tétreault, K., \& Ferraro, V. (2001). Bilingual signed and spoken language acquisition from birth: Implications for the mechanisms underlying early bilingual language acquisition. \emph{Journal of Child Language}, \emph{28}(2), 453.
 
-\leavevmode\hypertarget{ref-poulin2013lexical}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-poulin2013lexical}{}}%
 Poulin-Dubois, D., Bialystok, E., Blaye, A., Polonia, A., \& Yott, J. (2013). Lexical access and vocabulary development in very young bilinguals. \emph{International Journal of Bilingualism}, \emph{17}(1), 57--70.
 
-\leavevmode\hypertarget{ref-schelletter2002effect}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-schelletter2002effect}{}}%
 Schelletter, C. (2002). The effect of form similarity on bilingual children's lexical development. \emph{Bilingualism: Language and Cognition}, \emph{5}(2), 93--107. \url{https://doi.org/10.1017/S1366728902000214}
 
-\leavevmode\hypertarget{ref-smithson2014bilingualism}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-smithson2014bilingualism}{}}%
 Smithson, L., Paradis, J., \& Nicoladis, E. (2014). Bilingualism and receptive vocabulary achievement: Could sociocultural context make a difference. \emph{Bilingualism: Language and Cognition}, \emph{17}(4), 810--821.
 
-\leavevmode\hypertarget{ref-thierry2007brain}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-thierry2007brain}{}}%
 Thierry, G., \& Wu, Y. J. (2007). Brain potentials reveal unconscious translation during foreign-language comprehension. \emph{Proceedings of the National Academy of Sciences}, \emph{104}(30), 12530--12535.
 
-\leavevmode\hypertarget{ref-thordardottir2006bilingual}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-thordardottir2006bilingual}{}}%
 Thordardottir, E., Rothenberg, A., Rivard, M.-E., \& Naves, R. (2006). Bilingual assessment: Can overall proficiency be estimated from separate measurement of two languages? \emph{Journal of Multilingual Communication Disorders}, \emph{4}(1), 1--21.
 
-\leavevmode\hypertarget{ref-thordardottir2006bilingual}{}%
-Thordardottir, E., Rothenberg, A., Rivard, M.-E., \& Naves, R. (2006). Bilingual assessment: Can overall proficiency be estimated from separate measurement of two languages? \emph{Journal of Multilingual Communication Disorders}, \emph{4}(1), 1--21.
-
-\leavevmode\hypertarget{ref-tincoff1999some}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-tincoff1999some}{}}%
 Tincoff, R., \& Jusczyk, P. W. (1999). Some beginnings of word comprehension in 6-month-olds. \emph{Psychological Science}, \emph{10}(2), 172--175.
 
-\leavevmode\hypertarget{ref-von2012language}{}%
-Von Holzen, K., \& Mani, N. (2012). Language nonselective lexical access in bilingual toddlers. \emph{Journal of Experimental Child Psychology}, \emph{113}(4), 569--586.
-
-\leavevmode\hypertarget{ref-von2012language}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-von2012language}{}}%
 Von Holzen, K., \& Mani, N. (2012). Language nonselective lexical access in bilingual toddlers. \emph{Journal of Experimental Child Psychology}, \emph{113}(4), 569--586.
 
 \end{CSLReferences}

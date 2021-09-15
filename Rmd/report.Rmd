@@ -1,29 +1,29 @@
 ---
 title: "Trajectories"
 output:
-  html_document:
-    df_print: paged
-    toc: true
-    toc_depth: 4
-    toc_float: true
+  github_document:
+    pandoc_args: --webtex
 bibliography: "trajectories.bib"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  echo = FALSE,
   message = TRUE,
-  warning = TRUE, 
-  cache.extra = knitr::rand_seed,
+  echo = TRUE,
+  warning = TRUE,
+  dev.args = list(png = list(type = "cairo")),
+  include = FALSE,
   out.width = "100%",
   results = "asis",
-  dev.args = list(png = list(type = "cairo"))
+  dpi = 300
 )
-options(knitr.kable.NA = '-',
-        ggplot2.discrete.fill = wesanderson::wes_palettes$Darjeeling1,
-        ggplot2.discrete.colour = wesanderson::wes_palettes$Darjeeling1,
-        ggplot2.continuous.fill = ggplot2::scale_color_gradient,
-        ggplot2.continuous.colour = ggplot2::scale_color_gradient
+options(
+  knitr.kable.NA = "-",
+  knitr.duplicate.label = "allow",
+  ggplot2.discrete.fill = wesanderson::wes_palettes$Darjeeling1,
+  ggplot2.discrete.colour = wesanderson::wes_palettes$Darjeeling1,
+  ggplot2.continuous.fill = ggplot2::scale_color_gradient,
+  ggplot2.continuous.colour = ggplot2::scale_color_gradient
 )
 
 ```
@@ -33,7 +33,9 @@ options(knitr.kable.NA = '-',
 
 # load packages
 library(targets)
-library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(stringr)
 library(gt)
 library(lubridate)
 library(wesanderson)
@@ -42,10 +44,12 @@ library(htmltools)
 library(tidybayes)
 library(scales)
 library(patchwork)
+library(tibble)
 library(janitor)
 library(here)
 
 # set params
+tar_load_globals()
 theme_set(theme_custom())
 
 # import data
@@ -249,7 +253,7 @@ participants %>%
 
 ```{r participants_lp, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 labs <- c("0-10%", "10-20%", "20-30%", "30-40%", "40-50%")
-participants %>% 
+a <- participants %>% 
   mutate(
     age = round(age),
     doe_2 = ifelse(dominant_language=="Catalan", doe_spanish, doe_catalan),
@@ -456,18 +460,18 @@ cor_2[choose(k - 1, 2) + j] = Cor_2[j, k];
 
 ```{r vocabulary_comprehension, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 
-vocabulary %>% 
-  filter(type=="Understands", modality != "Te") %>% 
-  ggplot(aes(age, prop, colour = lp, fill = lp)) +
+d <- vocabulary$wide %>% 
+  filter(type=="Understands", modality != "Te")
+
+ggplot(d, aes(age, prop, colour = lp, fill = lp)) +
   facet_wrap(~modality) +
   geom_point(size = 0.5, alpha = 0.21) +
   geom_smooth(method = "glm", method.args = list(family = "binomial"), se = FALSE) +
   labs(x = "Age (months)", y = "Vocabulary size (%)", colour = "LP", fill = "LP") +
   scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
   
-  vocabulary %>% 
-  filter(type=="Understands", modality != "Te") %>% 
-  ggplot(aes(age, count, colour = lp, fill = lp)) +
+  
+  ggplot(d, aes(age, count, colour = lp, fill = lp)) +
   facet_wrap(~modality) +
   geom_point(size = 0.5, alpha = 0.21) +
   geom_smooth(method = "glm", method.args = list(family = "poisson"), se = FALSE) +
@@ -485,7 +489,7 @@ vocabulary %>%
 
 ```{r vocabulary_production, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 
-vocabulary %>% 
+vocabulary$wide %>% 
   filter(type=="Produces", modality != "Te") %>% 
   ggplot(aes(age, prop, colour = lp, fill = lp)) +
   facet_wrap(~modality) +
@@ -494,8 +498,8 @@ vocabulary %>%
   labs(x = "Age (months)", y = "Vocabulary size (%)", colour = "LP", fill = "LP") +
   scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
   
-  vocabulary %>% 
-  filter(type=="Understands", modality != "Te") %>% 
+  vocabulary$wide %>% 
+  filter(type=="Produces", modality != "Te") %>% 
   ggplot(aes(age, count, colour = lp, fill = lp)) +
   facet_wrap(~modality) +
   geom_point(size = 0.5, alpha = 0.21) +
@@ -517,7 +521,7 @@ vocabulary %>%
 #### Comprehension
 
 ```{r vocabulary_long_comprehension, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-vocabulary_long %>% 
+vocabulary$long %>% 
   filter(type=="understands") %>% 
   ggplot(aes(value, reorder(id, age), colour = version, fill = version, shape = version)) +
   facet_grid(~scale) +
@@ -536,7 +540,7 @@ vocabulary_long %>%
 #### Production 
 
 ```{r vocabulary_long_production, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-vocabulary_long %>% 
+vocabulary$long %>% 
   filter(type=="produces") %>% 
   ggplot(aes(value, reorder(id, age), colour = version, fill = version, shape = version)) +
   facet_grid(~scale) +
@@ -626,8 +630,8 @@ responses %>%
 # emmeans
 nd <- expand.grid(
   age = seq(min(responses$age), max(responses$age), length.out = 50),
-  lp = c("Monolingual", "Bilingual"),
-  cognate = c("Cognate", "Non-Cognate"),
+  lp = unique(participants$lp),
+  cognate = unique(items$cognate),
   frequency_center = c(-1, 0, 1)
 )
 
@@ -659,7 +663,7 @@ We compared the performance of these models using Bayesian leave-one-out cross-v
 ## Fixed effects
 
 ```{r fixed_effects_table, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-summary(fit)$fixed %>% 
+summary(fits$fit_2)$fixed %>% 
   as.data.frame() %>%
   rownames_to_column("term") %>% 
   mutate(
@@ -705,7 +709,7 @@ summary(fit)$fixed %>%
 
 ```{r fix_effets_plot, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.cap="Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The resto of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable."}
 
-post <- gather_draws(fit, `b_.*`, regex = TRUE) %>% 
+post <- gather_draws(fits$fit_2, `b_.*`, regex = TRUE) %>% 
   mutate(.value = ifelse(.variable=="b_Intercept", inv_logit_scaled(.value), .value/4))
 
 ggplot(post, aes(.value)) +
@@ -730,12 +734,12 @@ ggplot(post, aes(.value)) +
 
 ```{r random_participant, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 
-re_id <- ranef(fit)$id[,,1] %>% 
+re_id <- ranef(fits$fit_2)$id[,,1] %>% 
   as.data.frame() %>% 
   rownames_to_column("id") %>% 
   as_tibble() %>% 
-  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fit)[1])) %>% 
-  left_join(distinct(fit$data, id, lp))
+  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fits$fit_2)[1])) %>% 
+  left_join(distinct(fits$fit_2$data, id, lp))
 
 ggplot(re_id, aes(Estimate, reorder(id, Estimate))) +
   geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), size = 0.25,
@@ -759,13 +763,13 @@ ggplot(re_id, aes(Estimate, reorder(id, Estimate))) +
 
 ```{r re_item, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 
-re_te <- ranef(fit)$te[,,1] %>% 
+re_te <- ranef(fits$fit_2)$te[,,1] %>% 
   as.data.frame() %>% 
   rownames_to_column("te") %>% 
   as_tibble() %>% 
-  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fit)[1])) %>% 
+  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fits$fit_2)[1])) %>% 
   mutate(te = as.numeric(te)) %>% 
-  left_join(distinct(fit$data, te, lp))
+  left_join(distinct(fits$fit_2$data, te, lp))
 
 ggplot(re_te, aes(Estimate, reorder(te, Estimate))) +
   geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), size = 0.25,
@@ -793,17 +797,17 @@ ggplot(re_te, aes(Estimate, reorder(te, Estimate))) +
 
 nd <- expand.grid(
   age = seq(min(responses$age), max(responses$age), length.out = 50),
-  lp = c("Monolingual", "Bilingual"),
-  cognate = c("Cognate", "Non-Cognate"),
+  lp = unique(participants$lp),
+  cognate =unique(items$cognate),
   frequency_center = c(-1,  0, 1)
 )
 
-m <- add_fitted_draws(nd, fit, re_formula = NA, n = 25) %>% 
+m <- add_fitted_draws(nd, fits$fit_2, re_formula = NA, n = 25) %>% 
   mutate(frequency_center = as.factor(paste0(frequency_center, " SD")))
 
 ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
   facet_wrap(lp~frequency_center) +
-  geom_line(aes(group = interaction(.draw,  frequency_center, cognate)), alpha = 0.5) +
+  geom_line(aes(group = interaction(.draw, frequency_center, cognate)), alpha = 0.5) +
   
   # stat_lineribbon(size = 0, alpha = 0.5, .width = 0.95) +
   # stat_summary(fun = "mean", geom = "line", size = 1) +
@@ -826,7 +830,7 @@ ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
 
 ```{r diagnostics_traceplots, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 
-gather_draws(fit, `b_.*`, `sd_te__.*`, `cor_te__.*`, regex = TRUE) %>% 
+gather_draws(fits$fit_2, `b_.*`, `sd_te__.*`, `cor_te__.*`, regex = TRUE) %>% 
   mutate(.chain = paste("Chain ", .chain)) %>% 
   ggplot(aes(.iteration, .value, colour = .chain)) +
   facet_wrap(~.variable, scales = "free_y") +

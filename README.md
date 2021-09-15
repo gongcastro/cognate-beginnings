@@ -1,8 +1,12 @@
-# Trajectories
+
+# Trajectories [[report](https://github.com/gongcastro/trajectories/blob/master/Rmd/report.md)]
 
 Do bilingual children acquire cognates earlier than non-cognates? We collected vocabulary data from 10-to-40 month old children exposed to a second language, and modelled the probability of cognate vs. non-cognate translation equivalents being understood and/or produced across ages. This repository hosts the code used to process and analyse the data, as well as the Rmarkdown files used to generate the preprint. The code and surveys used to collect and retrieve the data are hosted as a package in the [Multilex](github.org/gongcastro/multilex) repository. All other materials can be found in the [OSF](https://osf.io/hy984/) repository.
 
-## Organisation
+_____
+
+
+## Repository structure
 
 This repository is organised as follows:
 

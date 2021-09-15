@@ -11,9 +11,9 @@ source("R/04_models.R")
 # set parameters ----
 tar_option_set(
     packages = c(
-        "dplyr", "tidyr", "stringr", "multilex", "keyring",
+        "dplyr", "tidyr", "stringr", "ggplot2", "tibble", "forcats", "multilex", "keyring",
         "readxl", "janitor", "mice", "here", "lubridate", "purrr",
-        "brms", "tidybayes"
+        "brms", "tidybayes", "gt", "patchwork", "wesanderson"
     )
 )
 options(tidyverse.quiet = TRUE)
@@ -93,7 +93,10 @@ list(
             backend = "cmdstanr",
             sample_prior = "only"
         )
-    )
+    ),
+    
+    # render report.Rmd
+    tar_render(report, "Rmd/report.Rmd")
     
 
 )

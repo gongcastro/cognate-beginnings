@@ -15,7 +15,6 @@ get_participants <- function(
             between(age, age_range[1], age_range[2]),
             sum(doe_catalan+doe_spanish)>other_threshold
         ) %>% 
-        mutate_at(vars(matches("doe")), function(x) x*0.01) %>% 
         filter(
             between(doe_spanish, 0, 1),
             between(doe_catalan, 0, 1),
