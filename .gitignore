@@ -6,7 +6,6 @@
 .secrets
 *.docx
 *.pptx
-*.png
 *.pdf
 *.log
 _targets/*
