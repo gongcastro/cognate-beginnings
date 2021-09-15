@@ -10,7 +10,7 @@
 *.pdf
 *.log
 _targets/*
-Data/*
-Results/*
+Data/*.rds
+Results/*.rds
 Figures/*
 Communications/*
