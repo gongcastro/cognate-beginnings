@@ -21,7 +21,7 @@ get_participants <- function(
             between(doe_others, 0, 1)
         ) %>% 
         mutate(doe = ifelse(dominant_language=="Catalan", doe_catalan, doe_spanish)) %>% 
-        select(id, time, time_stamp, version, age, lp, dominant_language, doe_catalan, doe_spanish, completed)
+        select(id, time, time_stamp, version, age, lp, dominant_language, doe_catalan, doe_spanish, edu_parent, completed)
     
     return(participants)
 }

@@ -80,40 +80,78 @@ list(
         )
     ),
     
-    # fit models
+    # fit models (prior, comprehension)
+    tar_target(
+        fits_comp_prior,
+        fit_models_comp(
+            data = responses,
+            iter = 500,
+            cores = 6,
+            chains = 6,
+            inits = 0,
+            save_pars = save_pars(all = TRUE),
+            backend = "cmdstanr",
+            sample_prior = "only"
+        )
+    ),
+    
+    # fit models (prior, production)
+    tar_target(
+        fits_prod_prior,
+        fit_models_prod(
+            data = responses,
+            iter = 500,
+            cores = 6,
+            chains = 6,
+            inits = 0,
+            save_pars = save_pars(all = TRUE),
+            backend = "cmdstanr",
+            sample_prior = "only"
+        )
+    ),
+    
+    # fit models (comprehension)
     tar_target(
         fits_comp,
         fit_models_comp(
             data = responses,
             iter = 500,
-            cores = 4,
-            chains = 4,
+            cores = 6,
+            chains = 6,
             inits = 0,
             save_pars = save_pars(all = TRUE),
-            backend = "cmdstanr",
-            sample_prior = "only"
+            backend = "cmdstanr"
         )
     ),
     
-    # fit models
+    # fit models (production)
     tar_target(
         fits_prod,
         fit_models_prod(
             data = responses,
             iter = 500,
-            cores = 4,
-            chains = 4,
+            cores = 6,
+            chains = 6,
             inits = 0,
             save_pars = save_pars(all = TRUE),
-            backend = "cmdstanr",
-            sample_prior = "only"
+            backend = "cmdstanr"
         )
+    ),
+    
+    tar_target(
+        loo_comp,
+        compare_models(fits_comp)
+    ),
+    
+    tar_target(
+        loo_prod,
+        compare_models(fits_prod)
     ),
     
     # render report.Rmd
     tar_render(report, "Rmd/report.Rmd")
     
-
+    
 )
 
 
