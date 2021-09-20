@@ -1,5 +1,6 @@
-# fit models
+# models
 
+# fit comprehension models
 fit_models_comp <- function(
     ... # arguments passed to brms::brm()
 ){
@@ -32,20 +33,17 @@ fit_models_comp <- function(
     # fit models
     fit_0 <- brm(
         formula = formulas$f_0, prior = priors[1:6,],
-        save_model = here("Stan", "irt_comp_0.stan"),
-        file = here("Results", "irt_comp_0.rds"),
+        save_model = here("Stan", "irt_comp_prior-0.stan"),
         ...
     ) 
     fit_1 <- brm(
         formula = formulas$f_1, prior = priors[1:7,],
-        save_model = here("Stan", "irt_comp_1.stan"),
-        file = here("Results", "irt_comp_1.rds"),
+        save_model = here("Stan", "irt_comp_prior-1.stan"),
         ...
     ) 
     fit_2 <- brm(
         formula = formulas$f_2, prior = priors,
-        save_model = here("Stan", "irt_comp_2.stan"),
-        file = here("Results", "irt_comp_2.rds"),
+        save_model = here("Stan", "irt_comp_prior-2.stan"),
         ...
     ) 
     
@@ -54,17 +52,7 @@ fit_models_comp <- function(
     return(fits)   
 }
 
-
-# compare models
-compare_models <- function(
-    fits
-){
-    loo <- loo_compare(map(fits, loo_subsample))
-    saveRDS(loo, here("Results", "loo.rds"))
-}
-
-
-# fit models
+# fit production models
 
 fit_models_prod <- function(
     ... # arguments passed to brms::brm()
@@ -80,8 +68,8 @@ fit_models_prod <- function(
     # priors (derived from prior samples)
     priors <- c(
         # model 0
-        prior(normal(0, 0.1), class = "Intercept"),
-        prior(normal(1.5, 0.1), class = "b", coef = "age"),
+        prior(normal(0.5, 0.1), class = "Intercept"),
+        prior(normal(0.75, 0.1), class = "b", coef = "age"),
         prior(normal(0, 0.1), class = "b", coef = "frequency_center"),
         prior(normal(0.2, 0.1), class = "sd", group = "te"),
         prior(constant(0.2), class = "sd", group = "id"),
@@ -98,20 +86,17 @@ fit_models_prod <- function(
     # fit models
     fit_0 <- brm(
         formula = formulas$f_0, prior = priors[1:6,],
-        save_model = here("Stan", "irt_prod_0.stan"),
-        file = here("Results", "irt_prod_0.rds"),
+        save_model = here("Stan", "irt_prod_prior-0.stan"),
         ...
     ) 
     fit_1 <- brm(
         formula = formulas$f_1, prior = priors[1:7,],
-        save_model = here("Stan", "irt_prod_1.stan"),
-        file = here("Results", "irt_prod_1.rds"),
+        save_model = here("Stan", "irt_prod_prior-1.stan"),
         ...
     ) 
     fit_2 <- brm(
         formula = formulas$f_2, prior = priors,
-        save_model = here("Stan", "irt_prod_2.stan"),
-        file = here("Results", "irt_prod_2.rds"),
+        save_model = here("Stan", "irt_prod_prior-2.stan"),
         ...
     ) 
     
@@ -121,3 +106,9 @@ fit_models_prod <- function(
 }
 
 
+# compare models
+compare_models <- function(
+    fits
+){
+    loo <- loo_compare(map(fits, loo_subsample))
+}

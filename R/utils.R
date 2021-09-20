@@ -59,9 +59,24 @@ get_multilex <- function(
                 )),
             age_group = paste0(age_group, " months")
         ) %>% 
+        mutate_at(
+            vars(starts_with("edu_")),
+            function(x){
+                x %>% 
+                    factor(
+                        levels = c("noeducation", "primary", "secondary", "complementary", "vocational", "university"),
+                        ordered = TRUE
+                    ) %>% 
+                    as.numeric()
+            }
+        ) %>% 
+        mutate(
+            edu_parent = apply(cbind(edu_parent1, edu_parent2), 1, max, na.rm = FALSE),
+            edu_parent = factor(edu_parent, levels = 1:6, labels = c("No education", "Primary", "Secondary", "Complementary", "Vocational", "University"))
+        ) %>% 
         filter(age_group != "NA months") %>% 
         select(id, time, time_stamp, age_group, age, lp, dominance, version,
-               completed, doe_catalan, doe_spanish, doe_others)
+               completed, doe_catalan, doe_spanish, doe_others, edu_parent)
     
     v <- ml_vocabulary(p, r, scale = c("prop", "count"), by = "id_exp") %>% 
         filter(type==type)
