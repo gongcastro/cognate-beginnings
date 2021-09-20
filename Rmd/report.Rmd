@@ -464,76 +464,6 @@ cor_2[choose(k - 1, 2) + j] = Cor_2[j, k];
 
 # Results {.tabset .tab-pills}
 
-## Vocabulary {.tabset .tab-pills}
-
-### Vocabulary size {.tabset .tab-pills}
-
-#### Comprehension
-
-```{r vocabulary_comprehension, message=FALSE, warning=FALSE, paged.print=FALSE}
-
-d <- vocabulary$wide %>% 
-  filter(type=="Understands", modality != "Te")
-
-ggplot(d, aes(age, prop, colour = lp, fill = lp)) +
-  facet_wrap(~modality) +
-  geom_point(size = 0.5, alpha = 0.21) +
-  geom_smooth(method = "glm", method.args = list(family = "binomial"), se = FALSE) +
-  labs(x = "Age (months)", y = "Vocabulary size (%)", colour = "LP", fill = "LP") +
-  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
-  
-  
-  ggplot(d, aes(age, count, colour = lp, fill = lp)) +
-  facet_wrap(~modality) +
-  geom_point(size = 0.5, alpha = 0.21) +
-  geom_smooth(method = "glm", method.args = list(family = "poisson"), se = FALSE) +
-  labs(x = "Age (months)", y = "Vocabulary size (words)", colour = "LP", fill = "LP") +
-  
-  plot_layout(guides = "collect") &
-  theme_github() +
-  theme(
-    legend.position = "top",
-    legend.title = element_blank()
-  )
-
-```
-
-#### Production
-
-```{r vocabulary_production, message=FALSE, warning=FALSE, paged.print=FALSE}
-
-vocabulary$wide %>% 
-  filter(type=="Produces", modality != "Te") %>% 
-  ggplot(aes(age, prop, colour = lp, fill = lp)) +
-  facet_wrap(~modality) +
-  geom_point(size = 0.5, alpha = 0.21) +
-  geom_smooth(method = "glm", method.args = list(family = "binomial"), se = FALSE) +
-  labs(x = "Age (months)", y = "Vocabulary size (%)", colour = "LP", fill = "LP") +
-  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
-  
-  vocabulary$wide %>% 
-  filter(type=="Produces", modality != "Te") %>% 
-  ggplot(aes(age, count, colour = lp, fill = lp)) +
-  facet_wrap(~modality) +
-  geom_point(size = 0.5, alpha = 0.21) +
-  geom_smooth(method = "glm", method.args = list(family = "poisson"), se = FALSE) +
-  labs(x = "Age (months)", y = "Vocabulary size (words)", colour = "LP", fill = "LP") +
-  
-  plot_layout(guides = "collect") &
-  theme_github() +
-  theme(
-    legend.position = "top",
-    legend.title = element_blank()
-  )
-
-```
-
-#### {-}
-
-#### {-}
-
-### {-}
-
 ## Raw data
 
 ```{r raw, message=FALSE, warning=FALSE, paged.print=FALSE}
@@ -708,7 +638,7 @@ loo_comp %>%
 ### Production
 
 ```{r loo_prod, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-loo_comp %>% 
+loo_prod %>% 
   as_tibble() %>% 
   rownames_to_column("model") %>% 
   relocate(model, matches("elpd_loo"), matches("p_loo"), matches("looic"), matches("diff")) %>%
@@ -793,22 +723,28 @@ summary(fits_comp$fit_2)$fixed %>%
 
 ```{r fix_effets_comp_plot, message=FALSE, warning=FALSE, paged.print=FALSE, fig.cap="Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The resto of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable."}
 
+var_levels <- c("b_Intercept", "b_age", "b_frequency_center", "b_lp1", "b_cognate1", "b_cognate2", "b_lp1:cognate1", "b_lp1:cognate2")
+var_labels <- c("Intercept", "Age (+1 month)", "Frequency (+1 SD)", "Lang. Profile (Bil. - Mon.)", "Cognateness 1 (IDC+NIC - NC)", "Cognateness 2 (IDC -NIC)", "Lang. Profile \u00d7 Cognateness 1", "Lang. Profile \u00d7 Cognateness 2")
 post <- gather_draws(fits_comp$fit_2, `b_.*`, regex = TRUE) %>% 
-  mutate(.value = ifelse(.variable=="b_Intercept", inv_logit_scaled(.value), .value/4))
+  mutate(
+    .value = ifelse(.variable=="b_Intercept", inv_logit_scaled(.value), .value/4),
+    .variable = factor(.variable, levels = var_levels, labels = var_labels, ordered = TRUE)
+  )
 
-ggplot(post, aes(.value)) +
-  facet_wrap(~.variable, scales = "free_x") +
-  geom_vline(xintercept = 0, size = 1, colour = "grey") +
-  stat_histinterval(fill = "white") +
-  labs(x = "Value", y = "Posterior probability density", fill = "Variable") +
+ggplot(post, aes(.value, fct_rev(.variable))) +
+  geom_vline(xintercept = 0, size = 0.75, colour = "grey") +
+  stat_pointinterval(colour = "white") +
+  labs(x = "Comprehension posterior probability", y = "Variable", fill = "Variable") +
+  scale_x_continuous(labels = percent) +
   theme_github() +
   theme(
     legend.position = "none",
     plot.caption.position = "plot",
     plot.caption = element_text(hjust = 0),
+    axis.title.y = element_blank(),
     # axis.text = element_text(size = 7),
     panel.grid.major.x = element_line(colour = "grey", linetype = "dotted"),
-    panel.grid.major.y = element_line(colour = "grey", linetype = "dotted")
+    panel.grid.major.y = element_blank()
   )
 ```
 
@@ -816,22 +752,28 @@ ggplot(post, aes(.value)) +
 
 ```{r fix_effets_prod_plot, message=FALSE, warning=FALSE, paged.print=FALSE, fig.cap="Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The resto of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable."}
 
+var_levels <- c("b_Intercept", "b_age", "b_frequency_center", "b_lp1", "b_cognate1", "b_cognate2", "b_lp1:cognate1", "b_lp1:cognate2")
+var_labels <- c("Intercept", "Age (+1 month)", "Frequency (+1 SD)", "Lang. Profile (Bil. - Mon.)", "Cognateness 1 (IDC+NIC - NC)", "Cognateness 2 (IDC -NIC)", "Lang. Profile \u00d7 Cognateness 1", "Lang. Profile \u00d7 Cognateness 2")
 post <- gather_draws(fits_prod$fit_2, `b_.*`, regex = TRUE) %>% 
-  mutate(.value = ifelse(.variable=="b_Intercept", inv_logit_scaled(.value), .value/4))
+  mutate(
+    .value = ifelse(.variable=="b_Intercept", inv_logit_scaled(.value), .value/4),
+    .variable = factor(.variable, levels = var_levels, labels = var_labels, ordered = TRUE)
+  )
 
-ggplot(post, aes(.value)) +
-  facet_wrap(~.variable, scales = "free_x") +
-  geom_vline(xintercept = 0, size = 1, colour = "grey") +
-  stat_histinterval(fill = "white") +
-  labs(x = "Value", y = "Posterior probability density", fill = "Variable") +
+ggplot(post, aes(.value, fct_rev(.variable))) +
+  geom_vline(xintercept = 0, size = 0.75, colour = "grey") +
+  stat_pointinterval(colour = "white") +
+  labs(x = "Production posterior probability", y = "Variable", fill = "Variable") +
+  scale_x_continuous(labels = percent) +
   theme_github() +
   theme(
     legend.position = "none",
     plot.caption.position = "plot",
     plot.caption = element_text(hjust = 0),
+    axis.title.y = element_blank(),
     # axis.text = element_text(size = 7),
     panel.grid.major.x = element_line(colour = "grey", linetype = "dotted"),
-    panel.grid.major.y = element_line(colour = "grey", linetype = "dotted")
+    panel.grid.major.y = element_blank()
   )
 ```
 
