@@ -285,7 +285,8 @@ participants %>%
   tab_style(
     style = list(cell_borders(weight = px(2), sides = "left")),
     locations = cells_body(columns = 10, rows = 1:4)
-  )
+  ) %>%
+  as_raw_html()
 ```
 
 ## {-}
