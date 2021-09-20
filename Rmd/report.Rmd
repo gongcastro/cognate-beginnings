@@ -57,7 +57,10 @@ tar_load(vocabulary)
 tar_load(responses)
 tar_load(fits_comp)
 tar_load(fits_prod)
-
+tar_load(fits_comp_prior)
+tar_load(fits_prod_prior)
+tar_load(loo_comp)
+tar_load(loo_prod)
 
 ```
 
@@ -224,7 +227,7 @@ participants %>%
 
 ```{r participants_lp, message=FALSE, warning=FALSE, paged.print=FALSE}
 labs <- c("0-10%", "10-20%", "20-30%", "30-40%", "40-50%")
-a <- participants %>% 
+participants %>% 
   mutate(
     age = round(age),
     doe_2 = ifelse(dominant_language=="Catalan", doe_spanish, doe_catalan),
@@ -240,7 +243,7 @@ a <- participants %>%
     columns = 2:6,
     colors = scales::col_numeric(
       palette = c("white", "orange"),
-      domain = c(0, 11)
+      domain = c(0, 30)
     )
   ) %>% 
   cols_label(
@@ -249,6 +252,40 @@ a <- participants %>%
   as_raw_html()
 
 
+```
+
+## SES/parental education
+
+```{r participants_edu, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+participants %>%
+  mutate(edu_parent = fct_explicit_na(as.factor(edu_parent))) %>% 
+  count(lp, dominant_language, edu_parent) %>% 
+  right_join(
+    expand_grid(
+      lp = c("Monolingual", "Bilingual"),
+      dominant_language = c("Catalan", "Spanish"),
+      edu_parent = unique(participants$edu_parent)
+    )
+  ) %>% 
+  replace_na(list(n = 0)) %>% 
+  pivot_wider(names_from = edu_parent, values_from = n, values_fill = 0) %>%
+  mutate(n = rowSums(cbind(.[,3:8]))) %>% 
+  select(-"NA") %>% 
+  gt() %>% 
+  cols_label(
+    lp = "Lang. Profile",
+    dominant_language = "L1"
+  ) %>% 
+  summary_rows(
+    columns = 3:8,
+    fns = list(n = ~sum(.)),
+    formatter = fmt_number,
+    decimals = 0
+  ) %>% 
+  tab_style(
+    style = list(cell_borders(weight = px(2), sides = "left")),
+    locations = cells_body(columns = 10, rows = 1:4)
+  )
 ```
 
 ## {-}
@@ -490,46 +527,6 @@ vocabulary$wide %>%
 
 #### {-}
 
-### Short vs. Long {.tabset .tab-pills}
-
-#### Comprehension
-
-```{r vocabulary_long_comprehension, message=FALSE, warning=FALSE, paged.print=FALSE}
-vocabulary$long %>% 
-  filter(type=="understands") %>% 
-  ggplot(aes(value, reorder(id, age), colour = version, fill = version, shape = version)) +
-  facet_grid(~scale) +
-  geom_point() +
-  labs(x= "Vocabulary size", y = "Participant (ordered by age, min-to-max)",
-       colour = "Version", fill = "Version", shape = "Version") +
-  scale_x_continuous(labels = scales::percent) +
-  theme(
-    legend.position = "top",
-    axis.text.y = element_blank(),
-    axis.ticks.y = element_blank()
-  )
-```
-
-#### Production 
-
-```{r vocabulary_long_production, message=FALSE, warning=FALSE, paged.print=FALSE}
-vocabulary$long %>% 
-  filter(type=="understands") %>% 
-  ggplot(aes(value, reorder(id, age), colour = version, fill = version, shape = version)) +
-  facet_grid(~scale) +
-  geom_point(size = 3) +
-  labs(x= "Vocabulary size", y = "Participant (ordered by age, min-to-max)",
-       colour = "Version", fill = "Version", shape = "Version") +
-  scale_x_continuous(labels = scales::percent) +
-  theme_github() +
-  theme(
-    panel.grid.major.y = element_blank(),
-    legend.position = "top",
-    axis.text.y = element_blank(),
-    axis.ticks.y = element_blank()
-  )
-```
-
 #### {-}
 
 ### {-}
@@ -541,7 +538,8 @@ responses %>%
   group_by(te, cognate) %>%
   summarise(
     understands = mean(understands, na.rm = TRUE),
-    produces = mean(produces, na.rm = TRUE)
+    produces = mean(produces, na.rm = TRUE),
+    .groups = "drop"
   ) %>%
   pivot_longer(
     c(understands, produces),
@@ -571,7 +569,8 @@ responses %>%
   group_by(te, age, cognate) %>%
   summarise(
     understands = mean(understands, na.rm = TRUE),
-    produces = mean(produces, na.rm = TRUE)
+    produces = mean(produces, na.rm = TRUE),
+    .groups = "drop"
   ) %>%
   pivot_longer(
     c(understands, produces),
@@ -606,12 +605,12 @@ responses %>%
 # emmeans
 nd <- expand.grid(
   age = seq(min(responses$age), max(responses$age), length.out = 50),
-  lp = unique(participants$lp),
+  lp = c("Monolingual", "Bilingual"),
   cognate = unique(items$cognate),
   frequency_center = c(-1, 0, 1)
 )
 
-m <- add_fitted_draws(nd, fits_comp$fit_2, n = 20, re_formula = NA) %>% 
+m <- add_fitted_draws(nd, fits_comp_prior$fit_2, n = 20, re_formula = NA) %>% 
   mutate(frequency_center = as.factor(paste0("Frequency = ", frequency_center, " SD")))
 
 ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
@@ -638,7 +637,7 @@ ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
 # emmeans
 nd <- expand.grid(
   age = seq(min(responses$age), max(responses$age), length.out = 50),
-  lp = unique(participants$lp),
+  lp = c("Monolingual", "Bilingual"),
   cognate = unique(items$cognate),
   frequency_center = c(-1, 0, 1)
 )
@@ -667,6 +666,77 @@ ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
 
 We compared the performance of these models using Bayesian leave-one-out cross-validation (LOO) using the `loo` and `loo_compare` functions of the `brms` R package (dependent of the `LOO` R package). LOO consists in computing the average likelihood of each observation after estimating the model's parameters leave that same observation out of the data set. Although the `loo` function uses a particular algorithm that speeds up the computation of this criterion (pareto-smooth importance sampling, PSIS), the size of our data set lead us to rely on the computation of the same criterion using a sampling approach via de `loo_subsample` function.
 
+### Comprehension
+
+```{r loo_comp, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+loo_comp %>% 
+  as_tibble() %>% 
+  rownames_to_column("model") %>% 
+  relocate(model, matches("elpd_loo"), matches("p_loo"), matches("looic"), matches("diff")) %>%
+  mutate_all(as.numeric) %>% 
+  gt() %>% 
+  tab_spanner(md("**LOO<sub>ELPD</sub>**"), matches("elpd_loo")) %>% 
+  tab_spanner(md("**LOO<sub>p</sub>**"), matches("p_loo")) %>% 
+  tab_spanner(md("**LOO<sub>IC</sub>**"), matches("looic")) %>% 
+  tab_spanner(md("**LOO<sub>diff</sub>**"), matches("diff")) %>% 
+  fmt_number(3:13) %>% 
+  cols_label(
+    model = "Model",
+    # elpd
+    elpd_loo = md("*ELPD*"),
+    se_elpd_loo = md("*SE*"),
+    subsampling_se_elpd_loo = md("*SE<sub>sub</sub>*"),
+    # p
+    p_loo = md("*p*"),
+    se_p_loo = md("SE"),
+    subsampling_se_p_loo = md("SE<sub>sub</sub>"),
+    # looic
+    looic = md("*LOO-IC*"),
+    se_looic = md("*SE*"),
+    subsampling_se_looic = md("SE<sub>sub</sub>"),
+    # diff
+    elpd_diff = md("*diff*"),
+    se_diff = md("*SE*"),
+    subsampling_se_diff = md("*SE<sub>sub</sub>*"),
+  ) %>% 
+  as_raw_html()
+```
+
+### Production
+
+```{r loo_prod, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+loo_comp %>% 
+  as_tibble() %>% 
+  rownames_to_column("model") %>% 
+  relocate(model, matches("elpd_loo"), matches("p_loo"), matches("looic"), matches("diff")) %>%
+  mutate_all(as.numeric) %>% 
+  gt() %>% 
+  tab_spanner(md("**LOO<sub>ELPD</sub>**"), matches("elpd_loo")) %>% 
+  tab_spanner(md("**LOO<sub>p</sub>**"), matches("p_loo")) %>% 
+  tab_spanner(md("**LOO<sub>IC</sub>**"), matches("looic")) %>% 
+  tab_spanner(md("**LOO<sub>diff</sub>**"), matches("diff")) %>% 
+  fmt_number(3:13) %>% 
+  cols_label(
+    model = "Model",
+    # elpd
+    elpd_loo = md("*ELPD*"),
+    se_elpd_loo = md("*SE*"),
+    subsampling_se_elpd_loo = md("*SE<sub>sub</sub>*"),
+    # p
+    p_loo = md("*p*"),
+    se_p_loo = md("SE"),
+    subsampling_se_p_loo = md("SE<sub>sub</sub>"),
+    # looic
+    looic = md("*LOO-IC*"),
+    se_looic = md("*SE*"),
+    subsampling_se_looic = md("SE<sub>sub</sub>"),
+    # diff
+    elpd_diff = md("*diff*"),
+    se_diff = md("*SE*"),
+    subsampling_se_diff = md("*SE<sub>sub</sub>*"),
+  ) %>% 
+  as_raw_html()
+```
 
 ## Fixed effects
 
@@ -779,10 +849,9 @@ re_id <- ranef(fits_comp$fit_2)$id[,,1] %>%
   left_join(distinct(fits_comp$fit_2$data, id, lp))
 
 ggplot(re_id, aes(Estimate, reorder(id, Estimate))) +
-  geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), size = 0.25,
-                 colour = wes_palettes$Darjeeling1[1]) +
-  geom_point(size = 1, shape = "|") +
-  geom_vline(xintercept = 0.5, linetype = "dashed") +
+  geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), size = 0.25, colour = "white", height = 0) +
+  geom_point(size = 0.5, colour = "white") +
+  geom_vline(xintercept = 0.5, colour = "white") +
   labs(x = "Participant average probability of comprehension",
        y = "Participant") +
   scale_x_continuous(limits = c(0, 1)) +
@@ -790,10 +859,12 @@ ggplot(re_id, aes(Estimate, reorder(id, Estimate))) +
   theme(
     axis.text.y = element_blank(),
     axis.ticks = element_blank(),
-    panel.grid = element_blank()
+    panel.grid = element_line(colour = "white", linetype = "dotted"),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.line = element_line(colour = "white")
   )
-
-
 ```
 
 #### Item
@@ -809,10 +880,9 @@ re_te <- ranef(fits_comp$fit_2)$te[,,1] %>%
   left_join(distinct(fits_comp$fit_2$data, te, lp))
 
 ggplot(re_te, aes(Estimate, reorder(te, Estimate))) +
-  geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), size = 0.25,
-                 colour = wes_palettes$Darjeeling1[2]) +
-  geom_point(size = 1, shape = "|") +
-  geom_vline(xintercept = 0.5, linetype = "dashed") +
+  geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), size = 0.25, colour = "white", heigth = 0) +
+  geom_point(size = 0.5, colour = "white") +
+  geom_vline(xintercept = 0.5, colour = "white") +
   labs(x = "Item average probability of comprehension",
        y = "Item") +
   scale_color_brewer(palette = "Set1") +
@@ -820,8 +890,12 @@ ggplot(re_te, aes(Estimate, reorder(te, Estimate))) +
   theme_github() +
   theme(
     axis.text.y = element_blank(),
-    panel.grid = element_blank(),
-    axis.ticks = element_blank()
+    axis.ticks = element_blank(),
+    panel.grid = element_line(colour = "white", linetype = "dotted"),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.line = element_line(colour = "white")
   )
 ```
 
@@ -840,18 +914,22 @@ re_id <- ranef(fits_prod$fit_2)$id[,,1] %>%
   left_join(distinct(fits_prod$fit_2$data, id, lp))
 
 ggplot(re_id, aes(Estimate, reorder(id, Estimate))) +
-  geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), size = 0.25,
-                 colour = wes_palettes$Darjeeling1[1]) +
-  geom_point(size = 1, shape = "|") +
-  geom_vline(xintercept = 0.5, linetype = "dashed") +
-  labs(x = "Participant average probability of comprehension",
-       y = "Participant") +
+  geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), size = 0.25, colour = "white", heigth = 0) +
+  geom_point(size = 0.5, colour = "white") +
+  geom_vline(xintercept = 0.5, colour = "white") +
+  labs(x = "Item average probability of production",
+       y = "Item") +
+  scale_color_brewer(palette = "Set1") +
   scale_x_continuous(limits = c(0, 1)) +
   theme_github() +
   theme(
     axis.text.y = element_blank(),
     axis.ticks = element_blank(),
-    panel.grid = element_blank()
+    panel.grid = element_line(colour = "white", linetype = "dotted"),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.line = element_line(colour = "white")
   )
 
 
@@ -870,19 +948,22 @@ re_te <- ranef(fits_prod$fit_2)$te[,,1] %>%
   left_join(distinct(fits_prod$fit_2$data, te, lp))
 
 ggplot(re_te, aes(Estimate, reorder(te, Estimate))) +
-  geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), size = 0.25,
-                 colour = wes_palettes$Darjeeling1[2]) +
-  geom_point(size = 1, shape = "|") +
-  geom_vline(xintercept = 0.5, linetype = "dashed") +
-  labs(x = "Item average probability of comprehension",
+  geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), size = 0.25, colour = "white", heigth = 0) +
+  geom_point(size = 0.5, colour = "white") +
+  geom_vline(xintercept = 0.5, colour = "white") +
+  labs(x = "Item average probability of production",
        y = "Item") +
   scale_color_brewer(palette = "Set1") +
   scale_x_continuous(limits = c(0, 1)) +
   theme_github() +
   theme(
     axis.text.y = element_blank(),
-    panel.grid = element_blank(),
-    axis.ticks = element_blank()
+    axis.ticks = element_blank(),
+    panel.grid = element_line(colour = "white", linetype = "dotted"),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.line = element_line(colour = "white")
   )
 ```
 
@@ -897,8 +978,8 @@ ggplot(re_te, aes(Estimate, reorder(te, Estimate))) +
 
 nd <- expand.grid(
   age = seq(min(responses$age), max(responses$age), length.out = 50),
-  lp = unique(participants$lp),
-  cognate =unique(items$cognate),
+  lp = c("Monolingual", "Bilingual"),
+  cognate = unique(items$cognate),
   frequency_center = c(-1,  0, 1)
 )
 
@@ -928,8 +1009,8 @@ ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
 
 nd <- expand.grid(
   age = seq(min(responses$age), max(responses$age), length.out = 50),
-  lp = unique(participants$lp),
-  cognate =unique(items$cognate),
+  lp = c("Monolingual", "Bilingual"),
+  cognate = unique(items$cognate),
   frequency_center = c(-1,  0, 1)
 )
 
