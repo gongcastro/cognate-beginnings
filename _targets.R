@@ -12,8 +12,8 @@ source("R/04_models.R")
 tar_option_set(
     packages = c(
         "dplyr", "tidyr", "stringr", "ggplot2", "tibble", "forcats", "multilex", "keyring",
-        "readxl", "janitor", "mice", "here", "lubridate", "purrr",
-        "brms", "tidybayes", "gt", "patchwork", "wesanderson"
+        "readxl", "janitor", "mice", "here", "lubridate", "purrr", "scales",
+        "brms", "tidybayes", "gt", "patchwork", "wesanderson", "papaja"
     )
 )
 options(tidyverse.quiet = TRUE)
@@ -86,8 +86,8 @@ list(
         fit_models_comp(
             data = responses,
             iter = 500,
-            cores = 6,
-            chains = 6,
+            cores = 4,
+            chains = 4,
             inits = 0,
             save_pars = save_pars(all = TRUE),
             backend = "cmdstanr",
@@ -101,8 +101,8 @@ list(
         fit_models_prod(
             data = responses,
             iter = 500,
-            cores = 6,
-            chains = 6,
+            cores = 4,
+            chains = 4,
             inits = 0,
             save_pars = save_pars(all = TRUE),
             backend = "cmdstanr",
@@ -116,8 +116,8 @@ list(
         fit_models_comp(
             data = responses,
             iter = 500,
-            cores = 6,
-            chains = 6,
+            cores = 4,
+            chains = 4,
             inits = 0,
             save_pars = save_pars(all = TRUE),
             backend = "cmdstanr"
@@ -130,27 +130,29 @@ list(
         fit_models_prod(
             data = responses,
             iter = 500,
-            cores = 6,
-            chains = 6,
+            cores = 4,
+            chains = 4,
             inits = 0,
             save_pars = save_pars(all = TRUE),
             backend = "cmdstanr"
         )
     ),
-    
+
     tar_target(
         loo_comp,
         compare_models(fits_comp)
     ),
-    
+
     tar_target(
         loo_prod,
         compare_models(fits_prod)
     ),
-    
+
     # render report.Rmd
-    tar_render(report, "Rmd/report.Rmd")
+    tar_render(report, "Rmd/report.Rmd"),
     
+    # render manuscript
+    tar_render(manuscript, "Rmd/manuscript.Rmd")
     
 )
 
