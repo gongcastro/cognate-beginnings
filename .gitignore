@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 .Rproj
+*.Rprofile
 .Ruserdata
 .secrets
 *.docx
