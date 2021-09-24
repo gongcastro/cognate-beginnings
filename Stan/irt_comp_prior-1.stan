@@ -1,4 +1,4 @@
-// generated with brms 2.16.1
+// generated with brms 2.16.2
 functions {
  /* compute correlated group-level effects
   * Args: 
@@ -92,7 +92,7 @@ model {
   target += normal_lpdf(b[1] | 0.75, 0.1);
   target += normal_lpdf(b[2] | 0, 0.1);
   target += normal_lpdf(b[3] | 0, 0.1);
-  target += normal_lpdf(Intercept | 0, 0.1);
+  target += normal_lpdf(Intercept | 0.5, 0.1);
   target += std_normal_lpdf(to_vector(z_1));
   target += lkj_corr_cholesky_lpdf(L_1 | 10);
   target += normal_lpdf(sd_2 | 0.2, 0.1)
