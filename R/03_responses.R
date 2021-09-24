@@ -24,21 +24,24 @@ get_responses <- function(
         drop_na() %>%
         distinct(id, te, age, item, .keep_all = TRUE) %>% 
         mutate(
-            doe = scale(doe, scale = FALSE)[,1],
             age = scale(age, scale = FALSE)[,1],
             understands = response>1,
             produces = response>2,
             dominance = ifelse(dominant_language==language, "L1", "L2")
         ) %>% 
         mutate_at(vars(cognate, lp), as.factor) %>%
-        mutate(frequency_center = scale(frequency)[,1]) %>% 
-        select(id, age, lp, te, language, item, frequency, frequency_center, doe, cognate, understands, produces) %>% 
+        mutate(
+            frequency_center = scale(frequency)[,1],
+            doe = doe*10,
+            doe_center = scale(doe)[,1]
+            
+        ) %>% 
+        select(id, age, lp, te, language, item, frequency, frequency_center, doe, doe_center, cognate, understands, produces) %>% 
         arrange(id, te)
     
     # contrasts
     contrasts(responses$cognate) <- cbind(c(0.25, -0.5, 0.25), c(0.5, 0, -0.5))
-    contrasts(responses$lp) <- c(0.5, -0.5)
-    
+
     return(responses)
     
 }
