@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.0.5",
+    "Version": "4.0.4",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -219,10 +219,15 @@
     },
     "broom": {
       "Package": "broom",
-      "Version": "0.7.8",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "c6dddf90a1e38665c211932696ddbfde"
+      "Version": "0.7.9.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "tidymodels",
+      "RemoteRepo": "broom",
+      "RemoteRef": "master",
+      "RemoteSha": "80a725c82fdf06f43e6037e5b4109a945dfb9344",
+      "Hash": "cce3a613c89df00334135911202df084"
     },
     "bslib": {
       "Package": "bslib",
@@ -384,6 +389,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "36f1ae62f026c8ba9f9b5c9a08c03297"
+    },
+    "dtplyr": {
+      "Package": "dtplyr",
+      "Version": "1.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1e14e4c5b2814de5225312394bc316da"
     },
     "dygraphs": {
       "Package": "dygraphs",
@@ -656,6 +668,13 @@
       "Repository": "CRAN",
       "Hash": "6de84a8c67fb247e721166049c84695f"
     },
+    "job": {
+      "Package": "job",
+      "Version": "0.3.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3c762f5650c9f3f79336937e4cfb5e43"
+    },
     "jquerylib": {
       "Package": "jquerylib",
       "Version": "0.1.4",
@@ -803,6 +822,13 @@
       "Repository": "CRAN",
       "Hash": "eaee7d2a6f3ed4491df868611cb064cc"
     },
+    "modelr": {
+      "Package": "modelr",
+      "Version": "0.1.8",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "9fd59716311ee82cba83dc2826fc5577"
+    },
     "multilex": {
       "Package": "multilex",
       "Version": "1.0.0",
@@ -882,14 +908,14 @@
       "Package": "papaja",
       "Version": "0.1.0.9997",
       "Source": "GitHub",
-      "Remotes": "tidymodels/broom",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "papaja",
       "RemoteUsername": "crsh",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "f3b1e8fc90b0963b2550ca5f252a7740b95c96b2",
-      "Hash": "380ec6610c35775228994287bd150b5e"
+      "RemoteRepo": "papaja",
+      "RemoteRef": "master",
+      "RemoteSha": "a231c3628ccf24359cc17f11a5bbc743e3fed920",
+      "Remotes": "tidymodels/broom",
+      "Hash": "3df0637229690f807616c46d3ff77113"
     },
     "parallelly": {
       "Package": "parallelly",
@@ -911,6 +937,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "8672ae02bd20f6479bce2d06c7ff1401"
+    },
+    "pingr": {
+      "Package": "pingr",
+      "Version": "2.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "e293e79be42ffd336d938937fd3017fb"
     },
     "pkgbuild": {
       "Package": "pkgbuild",
@@ -936,9 +969,14 @@
     "posterior": {
       "Package": "posterior",
       "Version": "1.1.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "c0a0ec06cbabb84f7012963cbd21a153"
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "posterior",
+      "RemoteUsername": "stan-dev",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "f06abf953c3f75183f614487f4951c3fc900177a",
+      "Hash": "fe1521126ebc02fe89b86990d98f4ade"
     },
     "prettyunits": {
       "Package": "prettyunits",
@@ -1038,6 +1076,13 @@
       "Repository": "CRAN",
       "Hash": "079cb1f03ff972b30401ed05623cbe92"
     },
+    "reprex": {
+      "Package": "reprex",
+      "Version": "2.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "911d101becedc0fde495bd910984bdc8"
+    },
     "reshape2": {
       "Package": "reshape2",
       "Version": "1.4.4",
@@ -1113,6 +1158,13 @@
       "Repository": "CRAN",
       "Hash": "06c85365a03fdaf699966cc1d3cf53ea"
     },
+    "rvest": {
+      "Package": "rvest",
+      "Version": "1.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1db38d6f40e3e09527797ca4226a1b5b"
+    },
     "sass": {
       "Package": "sass",
       "Version": "0.4.0",
@@ -1127,6 +1179,13 @@
       "Repository": "CRAN",
       "Hash": "6f76f71042411426ec8df6c54f34e6dd"
     },
+    "selectr": {
+      "Package": "selectr",
+      "Version": "0.4-2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3838071b66e0c566d55cc26bd6e27bf4"
+    },
     "shiny": {
       "Package": "shiny",
       "Version": "1.6.0",
@@ -1134,12 +1193,26 @@
       "Repository": "CRAN",
       "Hash": "6e3b6ae7fe02b5859e4bb277f218b8ae"
     },
+    "shinyWidgets": {
+      "Package": "shinyWidgets",
+      "Version": "0.6.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "7dd5f3ee96c64a47fdbc6e437ff1c7e1"
+    },
     "shinyalert": {
       "Package": "shinyalert",
       "Version": "2.0.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "a130b62f6d5533fcc1cab6c8161358d9"
+    },
+    "shinybusy": {
+      "Package": "shinybusy",
+      "Version": "0.2.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "c38fc071d4def5e642c8dc34c3a082e4"
     },
     "shinyjs": {
       "Package": "shinyjs",
@@ -1279,12 +1352,19 @@
       "Repository": "CRAN",
       "Hash": "7243004a708d06d4716717fa1ff5b2fe"
     },
-    "tinytex": {
-      "Package": "tinytex",
-      "Version": "0.32",
+    "tidyverse": {
+      "Package": "tidyverse",
+      "Version": "1.3.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "db9a6f2cf147751322d22c9f6647c7bd"
+      "Hash": "fc4c72b6ae9bb283416bd59a3303bbab"
+    },
+    "tinytex": {
+      "Package": "tinytex",
+      "Version": "0.33",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "6e0ad90ac5669e35d5456cb61b295acb"
     },
     "utf8": {
       "Package": "utf8",
@@ -1313,6 +1393,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "55e157e2aa88161bdb0754218470d204"
+    },
+    "visNetwork": {
+      "Package": "visNetwork",
+      "Version": "2.0.9",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "12545f2acf49d1d346d075580122d89c"
     },
     "wesanderson": {
       "Package": "wesanderson",
@@ -1348,6 +1435,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "4c4b3bc29a916f33f1298dd951133351"
+    },
+    "xml2": {
+      "Package": "xml2",
+      "Version": "1.3.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "d4d71a75dd3ea9eb5fa28cc21f9585e2"
     },
     "xtable": {
       "Package": "xtable",

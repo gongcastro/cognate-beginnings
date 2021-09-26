@@ -149,7 +149,7 @@ list(
     ),
 
     # render report.Rmd
-    tar_render(report, "Rmd/report.Rmd"),
+    # tar_render(report, "Rmd/report.Rmd"),
     
     # render manuscript
     tar_render(manuscript, "Rmd/manuscript.Rmd")
