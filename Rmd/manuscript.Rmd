@@ -44,8 +44,8 @@ class             : "man"
 documentclass     : "apa6"
 classoption       : "man"
 output            :
-  papaja::apa6_pdf:
-    latex_engine  : "pdflatex"
+  word_document:
+    reference_docx: "manuscript_template.docx"
 
   
 
@@ -59,7 +59,8 @@ knitr::opts_chunk$set(
   message = FALSE,
   warning = FALSE,
   cache.extra = knitr::rand_seed,
-  out.width = "80%",
+  out.width = "100%",
+  dpi = 300,
   results = "asis"
 )
 ```
@@ -153,11 +154,11 @@ dates <- as_date(range(participants$time_stamp, na.rm = TRUE))
 
 ```
 
-We collected data from `r printnum(n_participants)` children from the Metropolitan Area of Barcelona between `r format(dates[1], "%dth %B, %Y")` and `r format(dates[2], "%dth %B, %Y")`. All families gave informed consent before participating and this study was approved by the Comitè d'Ètica de la Investigació amb Medicaments (CEIm) from Hospital del Mar (Barcelona, Spain), code XXXXXXXXX. Families were contacted by e-mail or phone if their child were aged between 10 and 34 months, and had not previously reported to be exposed more than 10% of the time to a language other than Spanish or Catalan. Upon consent, families were sent a link to the questionnaire via e-mail, which they filled from a computer, laptop, or mobile device in a browser within the two week following the invitation to participate. Table 1 summarises the distribution of participants across ages and degrees of exposure (DoE) to the non-dominant languag (i.e., their degree of bilingualism).
+We collected data from `r printnum(n_participants)` children from the Metropolitan Area of Barcelona between `r format(dates[1], "%dth %B, %Y")` and `r format(dates[2], "%dth %B, %Y")`. All families gave informed consent before participating and this study was approved by the Comitè d'Ètica de la Investigació amb Medicaments (CEIm) from Hospital del Mar (Barcelona, Spain), code XXXXXXXXX. Families were contacted by e-mail or phone if their child were aged between 10 and 34 months, and had not previously reported to be exposed more than 10% of the time to a language other than Spanish or Catalan. Upon consent, families were sent a link to the questionnaire via e-mail, which they filled from a computer, laptop, or mobile device in a browser within the two week following the invitation to participate. Table 1 summarises the distribution of participants across ages and degrees of exposure (DoE) to the non-dominant language (i.e., their degree of bilingualism).
 
-```{r participants_lp, message=FALSE, warning=FALSE, paged.print=FALSE, fig.cap="Participant sample size by age and degree of exposure to a second language. Information about DoE was provided by families when filling the questionnaire. For illustration purposes this table, DoEs were binned into 10\\% wide bins, and ages (in months) were round to the nearest integer. Hyphens indicate that no participants from that specific combination of age filled the questionnaire."}
+```{r participants_lp, message=FALSE, warning=FALSE, paged.print=FALSE, fig.width=7, fig.cap="Participant sample size by age and degree of exposure to a second language. Information about DoE was provided by families when filling the questionnaire. For illustration purposes this table, DoEs were binned into 10\\% wide bins, and ages (in months) were round to the nearest integer. Hyphens indicate that no participants from that specific combination of age filled the questionnaire."}
 labs <- c("0-10%", "10-20%", "20-30%", "30-40%", "40-50%")
-participants %>% 
+t <- participants %>% 
   mutate(
     age = round(age),
     doe_2 = ifelse(dominant_language=="Catalan", doe_spanish, doe_catalan),
@@ -182,15 +183,18 @@ participants %>%
     cells_column_spanners(everything())
   )
 
+gtsave(t, here("Figures/participants_lp.png"))
+
+
 ```
 
 
 We use the highest educational attainment of parents or caretakers as a proxy of participants' socio-economic status (SES), which families self-reported in the questionnaire by filling two items asking for the educational attainment of each parent or caretaker, with the following available options: *No education*, *Primary*, *Secondary*, *Complementary*, *Vocational*, and *University*, in line with the current educational system in Spain. Most families reported university studies (`r table(participants$edu_parent)["University"]`, `r table(participants$edu_parent)["University"]/length(unique(participants$id))`), followed by families were the highest educational attainment were vocational studies (`r table(participants$edu_parent)["Vocational"]`, `r percent(table(participants$edu_parent)["Vocational"]/length(unique(participants$id)))`), complementary studies (`r table(participants$edu_parent)["Complementary"]`,  `r percent(table(participants$edu_parent)["Complementary"]/length(unique(participants$id)))`), secondary education (`r table(participants$edu_parent)["Secondary"]`, `r percent(table(participants$edu_parent)["Secondary"]/length(unique(participants$id)))`, `r percent(table(participants$edu_parent)["Primary"]/length(unique(participants$id)))`), no formal education (`r table(participants$edu_parent)["No education"]`, `r percent(table(participants$edu_parent)["No education"]/length(unique(participants$id)))` and primary education (`r table(participants$edu_parent)["Primary"]`, <1%). Highest educational attainment was similar across participants with different DoE to a second language, and therefore, differences in comprehension or production between participants with different language profiles are unlikely to stem from a difference in SES [@fernald2013ses] (see Table 2). 
 
-```{r participants_edu, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.cap="Educational attainment. Proportion of highest parental educational attainment by DoE to the second language. For illustration purposes, DoEs were binned into 10\\% wide bins."}
+```{r participants_edu, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.width=7, fig.cap="Educational attainment. Proportion of highest parental educational attainment by DoE to the second language. For illustration purposes, DoEs were binned into 10\\% wide bins."}
 labs <- c("0-10%", "10-20%", "20-30%", "30-40%", "40-50%")
 
-participants %>%
+t <- participants %>%
   mutate(
     age = round(age),
     doe_2 = ifelse(dominant_language=="Catalan", doe_spanish, doe_catalan),
@@ -227,6 +231,11 @@ participants %>%
     cell_text(weight = "bold"),
     cells_column_spanners(everything())
   )
+
+gtsave(t, here("Figures/participants_edu.png"))
+
+
+
 ```
 
 ## Questionnaire
@@ -249,8 +258,9 @@ The questionnaire was implemented on-line using the formR platform [@arslan2020f
 For each word in the vocabulary checklists, we asked parents to report whether their child was able to understand it, understand *and* say it, or did not understand or say it (checked out by default). Some families filled a long version of the vocabulary checklists (800 translation equivalents; 800 items in Catalan, 800 items in Spanish), while others filled a shorter version (~400 translation equivalents, ~400 items in Catalan, ~400 items in Spanish). These last families were randomly allocated into one of four different subsets of the complete list of items. These lists were carefully designed so that each contained a representative subsample of the items from the complete list. Semantic/functional categories with less than 16 items--thus resulting in less than four items after dividing it in four lists--were not divided in the short version of the questionnaire: all of their items were included in the four lists. Another subset of items that were part of the trial lists of some experiments in the lab were also included in all versions. Table 2 in Appendix 1 shows the distribution of items across questionnaire versions. We excluded from the analysis multi-word items (e.g., *barrita de cereales* [cereal bar]) and items that included more than one word-form (e.g., *mono / mico*). Table 3 shows the classification of items in cognates and non-cognates and their lexical frequency scores across the four lists of the inventories.
 
 
-```{r items_frequency, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.cap="Lexical frequencies. Mean, standard error, and 95\\% confidence interval of lexical frequencies of items included in the Catalan and Spanish lists, reported separately for identical cognates, non-identical cognates, and non-cognates."}
-items %>%
+```{r items_frequency, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.width=7, fig.cap="Lexical frequencies. Mean, standard error, and 95\\% confidence interval of lexical frequencies of items included in the Catalan and Spanish lists, reported separately for identical cognates, non-identical cognates, and non-cognates."}
+
+d <- items %>%
   select(te, language, cognate, frequency) %>% 
   left_join(select(multilex_data$pool, te, language, version)) %>% 
   unnest(version) %>% 
@@ -289,7 +299,9 @@ items %>%
     matches("_non_cognate")
   ) %>% 
   mutate(language = ifelse(language=="Catalan", "CAT", "SPA")) %>% 
-  select(-matches("sd|upper|lower")) %>% 
+  select(-matches("sd|upper|lower"))
+
+t <- d %>% 
   gt(groupname_col = "language") %>% 
   fmt_number(matches("mean|se")) %>% 
   tab_spanner("Identical cognates", columns = ends_with("_identical_cognate")) %>% 
@@ -323,6 +335,9 @@ items %>%
     cells_column_spanners(everything())
   )
 
+gtsave(t, here("Figures/item_frequency.png"))
+
+
 
 ```
 
@@ -346,13 +361,13 @@ sum_obs <- responses %>%
 We gathered `r printnum(n_obs, big.mark = ",")` observations, with each observation corresponding to a single reponse of one participant to a single item. Translation equivalents (TEs) received an average of `r printnum(sum_obs$mean, digits = 2)` responses (*SD* = `r printnum(sum_obs$sd, digits = 2)`, *Min* = `r printnum(sum_obs$min, digits = 2)`, Max = `r printnum(sum_obs$max, digits = 2)`), both languages summed together. To investigate our hypotheses, we modelled the probability of children understanding or producing TEs using a logistic regression model with a Bernoulli distribution and a logit link function [@agresti2003categorical]. We included several predictors of interest as fixed effects to adjust this probability to participants' and items' characteristics, namely:
 
 
-* *Age* of participant in months (`age`), calculated as the difference in days between participants' birth date and questionnaire completion divided by 30, chunked into bins of two months width, and centred around the mean.
+* *Age* of participant in months (`age_center`), calculated as the difference in days between participants' birth date and questionnaire completion divided by 30, chunked into bins of two months width, and centred around the mean.
 * *Lexical frequency* of item (`frequency_center`), Relative lexical frequencies (frequency per million words, $fpmw$) were extracted from the CHILDES data base, using the `childesr` R package [@braginsky2018childesr], and were transformed to Zipf scores [@van2014subtlex; @zipf1949human] ($log10(fpmw)+3$). Missing frequencies were imputed by multiple imputation using the `mice` R package [van2011mice]. The resulting scores were then centred around the mean.
 * *Degree of exposure* to the language (`doe_center`), computed as the proportion of the time the child is exposed to the language the item belongs to. For instance, for a response to the item `perro` (Spanish), the degree of exposure would correspond to the participant's relative exposure to Spanish (ranging from 0 to 1). Before entering the analyses, this variable was centred it around the mean and divided by 10, so that the values of the regression coefficients of this predictor correspond to a 10% increase in exposure to the language of the item.
 * *Cognateness*, a categorical variable indicating whether the Catalan and Spanish forms of the TE are identical cognates (IC), non-identical cognates (NIC), or non-cognates (NC), as rated by a trained Spanish-Catalan bilingual linguist. We sum-coded two contrasts [@schad2020capitalize]: `cognate1`, comparing IC and NIC (both coded as +0.25) with NC (coded as -0.5) and `cognate2`, comparing IC (coded as +0.5) with NIC (coded as -0.5).
 
 
-We first fit a base model that only included the main effects of `age` and `frequency_center`  (Model 1) [see @braginsky2019consistency; @jones2019children; @kachergis2021toward for similar approaches]. We then entered our predictors of interest by adding `doe_center` (Model 2) and then `cognate` and its interaction with `doe_center` (Model 3). To account for the hierarchical structure of the data (some responses to different TEs corresponded to the same participant, and some responses from different participants corresponded to the same TE )every model included *Participants* (`id`) and *TEs* (`te`) as grouping variables (i.e. random effects), with all possible random intercepts and slopes where appropriate [@barr2013random] (see Appendix for more details of the model). 
+We first fit a base model that only included the main effects of `age_center` and `frequency_center`  (Model 1) [see @braginsky2019consistency; @jones2019children; @kachergis2021toward for similar approaches]. We then entered our predictors of interest by adding `doe_center` (Model 2) and then `cognate` and its interaction with `doe_center` (Model 3). To account for the hierarchical structure of the data (some responses to different TEs corresponded to the same participant, and some responses from different participants corresponded to the same TE )every model included *Participants* (`id`) and *TEs* (`te`) as grouping variables (i.e. random effects), with all possible random intercepts and slopes where appropriate [@barr2013random] (see Appendix for more details of the model). 
 
 
 We adopted a Bayesian approach toward statistical inference. This approach allows to (1) incorporate previous domain knowledge into the inference process implementing the Bayes theorem, and (2) to quantify the uncertainty associated to the estimated parameters in our model [@mcelreath2018statistical]. 
@@ -375,32 +390,37 @@ coef_prod <- as.data.frame(fixef(fits_prod$fit_2))
 ```
 
 
-For both comprehension and production, the extended model--which included all main effects and interactions--fitted data the best: it showed the smallest absolute expected log predictive density. This estimate is several times larger than its standard error indicating high predictive accuracy. Table 3 summarises the LOO scores of the fitted models. In the next sections we report the fixed effects of the comprehension and production models separately. We report the mean of each coefficient's posterior distribution along with standard errors and 95% CrIs in Tables 4 and 5. For interpretability, we report the derivative of the logistic function for each coefficient^[The derivative is calculated as $\hat{\beta_j}/4$, where $\hat{\beta_j}$ is the estimated mean of the posterior distribution of coefficient $j$. This value corresponds to the slope of the logistic curve at the midpoint, where it is steepest.] for each coefficient, which indicates the maximum difference in probability corresponding to one unit different in the input variable [@gelman2020regression]. 
+For both comprehension and production, the extended model--which included all main effects and interactions--fitted data the best: it showed the smallest absolute expected log predictive density. This estimate is several times larger than its standard error indicating high predictive accuracy. Table 3 summarises the LOO scores of the fitted models. In the next sections we report the fixed effects of the comprehension and production models separately. We report the mean of each coefficient's posterior distribution along with standard errors and 95% credible intervals (CrI) in Tables 4 and 5. For interpretability, we report the derivative of the logistic function for each coefficient^[The derivative is calculated as $\hat{\beta_j}/4$, where $\hat{\beta_j}$ is the estimated mean of the posterior distribution of coefficient $j$. This value corresponds to the slope of the logistic curve at the midpoint, where it is steepest.] for each coefficient, which indicates the maximum difference in probability corresponding to one unit different in the input variable [@gelman2020regression]. 
 
-```{r loo_prod, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+```{r loo_prod, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.width=7, fig.cap="Leave-one-out cross-validation. The expected log predictive density (*ELPD*) indicates the sum of the likelihood of each observation, given the model when fitted without such obervation. Values close to 0 indicate that the model fits data better. Standard errors (*SE*) indicate the uncertainty around the computed ELPD in each model. A small *SE* (in realtion to the magnitde of the *ELPD* indicates less uncertainty around the ELPD estimate."}
 
 l_comp <- loo_comp %>% 
   as_tibble() %>% 
-  rownames_to_column("model") %>% 
   select(-matches("p_loo|looic")) %>% 
-  relocate(model, matches("elpd_loo"), matches("diff")) %>%
   mutate_all(as.numeric) %>% 
-  mutate(type = "Comprehension", model = paste0("Model ", model))
+  mutate(
+    type = "Comprehension",
+    model = paste0("Model ", 2:0)
+  ) %>% 
+  relocate(model, type, matches("elpd_loo"), matches("diff")) 
+
 
 l_prod <- loo_prod %>% 
   as_tibble() %>% 
-  rownames_to_column("model") %>% 
   select(-matches("p_loo|looic")) %>% 
-  relocate(model, matches("elpd_loo"), matches("diff")) %>%
   mutate_all(as.numeric) %>% 
-  mutate(type = "Production", model = paste0("Model ", model))
+  mutate(
+    type = "Production",
+    model = paste0("Model ", 2:0)
+  ) %>% 
+  relocate(model, type, matches("elpd_loo"), matches("diff")) 
 
 
 l <- bind_rows(l_comp, l_prod) %>% 
   mutate_all(function(x) ifelse(x==0, NA, x))
 
-gt(l, groupname_col = "type") %>% 
-  tab_spanner(md("**ELPD</sub>**"), matches("elpd_loo")) %>% 
+t <- gt(l, groupname_col = "type") %>% 
+  tab_spanner(md("**ELPD**"), matches("elpd_loo")) %>% 
   tab_spanner(md("**Diff.**"), matches("diff")) %>%
   fmt_number(2:7) %>% 
   fmt_missing(columns = everything(), missing_text = "-") %>% 
@@ -415,14 +435,18 @@ gt(l, groupname_col = "type") %>%
     se_diff = md("*SE*"),
     subsampling_se_diff = md("*SE* (sub)"),
   )
+
+gtsave(t, here("Figures/loos.png"))
+
 ```
 
 
-# Comprehension
+## Comprehension
 
-The average probability of participants understanding a TE was `r printnum(inv_logit_scaled(coef_comp["Intercept", "Estimate"])*100)`% (intercept) when all predictors were equal to 0: mean participant age (`r printnum(mean(responses$age))` months), mean item lexical frequency (`r printnum(mean(responses$frequency))`, Zipf score), mean participant DoE (`r printnum(mean(responses$doe_center))`%), and regardless of its cognate status (average acros the three levels). An increase in one standard deviation in age (1 *SD* = `r printnum(sd(responses$age))` months) was associated with a `r printnum(coef_comp["age", "Estimate"]*100/4)`% increment in comprehension probability. A one standard deviation increase in lexical frequency (1 *SD* = `r printnum(sd(responses$frequency))` Zipf scores) was associated with a `r printnum(coef_comp["frequency", "Estimate"]*100/4)`% increment in comprehension probability. A 10% increase in relative language exposure made TEs `r printnum(coef_comp["doe_center", "Estimate"]*100/4)`% more likely to be understood. Cognates (identical and non-identical) were `r printnum(coef_comp["cognate1", "Estimate"]*100/4)`% more like to be understood than non-cognates. The 95% credible interval of the `doe_center:cognate1` interaction did not exclude 0. Identical cognates were `r printnum(abs(coef_comp["cognate2", "Estimate"]*100/4))`% less like to be understood than non-identical cognates. The 95% credible interval of the `doe_center:cognate2` interaction excluded 0 (although its lower bound was near zero). Figure 1 summarises the posterior distribution of the fixed effects of the model.
+The average probability of participants understanding a TE was `r printnum(inv_logit_scaled(coef_comp["Intercept", "Estimate"])*100)`% (intercept) when all predictors were equal to 0: mean participant age (`r printnum(mean(responses$age))` months), mean item lexical frequency (`r printnum(mean(responses$frequency))`, Zipf score), mean participant DoE (`r printnum(mean(responses$doe)*10)`%), and regardless of its cognate status (average across the three levels). An increase in one month of age was associated with a `r printnum(coef_comp["age", "Estimate"]*100/4)`% increment in comprehension probability. A one standard deviation increase in lexical frequency (1 *SD* = `r printnum(sd(responses$frequency))` Zipf scores) was associated with a `r printnum(coef_comp["frequency", "Estimate"]*100/4)`% increment in comprehension probability. A 10% increase in relative language exposure made TEs `r printnum(abs(coef_comp["doe_center", "Estimate"]*100/4))`% less likely to be understood. Cognates (identical and non-identical) were `r printnum(coef_comp["cognate1", "Estimate"]*100/4)`% more like to be understood than non-cognates. The 95% credible interval of the `doe_center:cognate1` interaction excluded 0 and covered negative values, indicating that for every 10% increment in DoE, the difference in comprehension probability between cognates and non-cognates decreased in `r printnum(abs(coef_comp["doe_center:cognate1", "Estimate"]*100/4))`%. Identical cognates were `r printnum(abs(coef_comp["cognate2", "Estimate"]*100/4))`% less like to be understood than non-identical cognates. The 95% credible interval of the `doe_center:cognate2` interaction excluded 0 (although its lower bound was near zero), and covered only negative values, indicating that for every 10% increase in DoE, the difference in comprehension probability between identical cognates and non-identical cognates decreased in `r printnum(abs(coef_comp["doe_center:cognate2", "Estimate"]*100/4))`%. Figure 1 summarises the posterior distribution of the fixed effects of the model.
 
-```{r fix_effets_comp, message=FALSE, warning=FALSE, paged.print=FALSE, fig.cap="Point estimate (mean) and credible interval (95\\%) of the posterior distribution of the coefficients of the fixed effects of the best fitting model for comprehension. Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The rest of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable."}
+
+```{r fix_effets, message=FALSE, warning=FALSE, paged.print=FALSE, fig.cap="Point estimate (mean) and credible interval (95\\%) of the posterior distribution of the coefficients of the fixed effects of the best fitting model for comprehension and production. Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The rest of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable."}
 
 c_comp <- fixef(fits_comp$fit_2) %>% 
   as.data.frame() %>%
@@ -435,7 +459,7 @@ c_comp <- fixef(fits_comp$fit_2) %>%
     est_error = ifelse(term=="Intercept", inv_logit_scaled(est_error), est_error/4)
   ) %>% 
   rename_at(vars(-matches("term")), ~paste0("comp_", .)) %>% 
-  select(-one_of(c("rhat", "bulk_ess", "tail_ess")))
+  select(-any_of(c("rhat", "bulk_ess", "tail_ess")))
 
 c_prod <- fixef(fits_prod$fit_2) %>% 
   as.data.frame() %>%
@@ -453,7 +477,7 @@ c_prod <- fixef(fits_prod$fit_2) %>%
 
 c <- bind_cols(c_comp, c_prod) 
 
-gt(c) %>% 
+t <- gt(c) %>% 
   fmt_percent(matches("estimate|error")) %>% 
   fmt_percent(matches("_q")) %>% 
   tab_spanner("Comprehension", matches("comp_")) %>% 
@@ -477,113 +501,96 @@ gt(c) %>%
   ) %>% 
   tab_footnote(
     footnote = "Transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable.",
-    locations = cells_body(columns = "term", rows = term %in% c("age", "frequency", "doe_center", "cognate1", "doe_center:cognate1"))
+    locations = cells_body(columns = "term", rows = term %in% c("age_center", "frequency_center", "doe_center", "cognate1", "cognate2", "doe_center:cognate1"))
   ) %>% 
   cols_align(
     align = c("left"),
     columns = 2:4
-  ) 
+  )
+gtsave(t, here("Figures/fix_effects.png"))
+
 ```
 
 
 
 ## Production
 
-The average probability of participants understanding a TE was `r printnum(inv_logit_scaled(coef_prod["Intercept", "Estimate"])*100)`% (intercept) when all predictors were equal to 0: mean participant age (`r printnum(mean(responses$age))` months), mean item lexical frequency (`r printnum(mean(responses$frequency))`, Zipf score), mean participant DoE (`r printnum(mean(responses$doe_center))`%), and regardless of its cognate status (average acros the three levels). An increase in one standard deviation in age (1 *SD* = `r printnum(sd(responses$age))` months) was associated with a `r printnum(coef_prod["age", "Estimate"]*100/4)`% increment in comprehension probability. A one standard deviation increase in lexical frequency (1 *SD* = `r printnum(sd(responses$frequency))` Zipf scores) was associated with a `r printnum(coef_prod["frequency", "Estimate"]*100/4)`% increment in comprehension probability. A 10% increase in relative language exposure made TEs `r printnum(coef_prod["doe_center", "Estimate"]*100/4)`% more likely to be understood. Cognates (identical and non-identical) were `r printnum(coef_prod["cognate1", "Estimate"]*100/4)`% more like to be understood than non-cognates. The 95% credible interval of the `doe_center:cognate1` interaction did not exclude 0. Identical cognates were `r printnum(abs(coef_comp["cognate2", "Estimate"]*100/4))`% less like to be understood than non-identical cognates. The 95% credible interval of the `doe_center:cognate2` interaction excluded 0 (although its lower bound was near zero). Figure 1 summarises the posterior distribution of the fixed effects of the model.
+The average probability of participants understanding a TE was `r printnum(inv_logit_scaled(coef_prod["Intercept", "Estimate"])*100)`% (intercept) when all predictors were equal to 0. An increase in one month of age was associated with a `r printnum(coef_prod["age_center", "Estimate"]*100/4)`% increment in production probability. A one standard deviation increase in lexical frequency (1 *SD* = `r printnum(sd(responses$frequency))` Zipf scores) was associated with a `r printnum(coef_prod["frequency", "Estimate"]*100/4)`% increment in production probability. A 10% increase in relative language degree of exposure  made TEs `r printnum(coef_prod["doe_center", "Estimate"]*100/4)`% less likely to be produced. Cognates (identical and non-identical) were `r printnum(coef_prod["cognate1", "Estimate"]*100/4)`% more like to be produced than non-cognates. The `doe_center:cognate1` interaction (whose posterior 95% CrI did not exclude 0) indicated that the size of this effect decreased in `r printnum(abs(coef_comp["cognate1", "Estimate"]*100/4))`% for every 10% increment in language degree of exposure. Identical cognates were `r printnum(abs(coef_prod["cognate2", "Estimate"]*100/4))`% less likely to be produced than non-identical cognates. The `doe_center:cognate1` interaction (whose posterior 95% CrI did not excdude 0 either) indicated that the size of this effect decreased in `r printnum(abs(coef_comp["doe_center:cognate2", "Estimate"]*100/4))`% for every 10% increment in language degree of exposure.
 
 
-```{r fix_effets_prod, message=FALSE, warning=FALSE, paged.print=FALSE, fig.cap="Point estimate (mean) and credible interval (95\\%) of the posterior distribution of the coefficients of the fixed effects of the best fitting model for production Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The rest of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable."}
-
-summary(fits_prod$fit_2)$fixed %>% 
-  as.data.frame() %>%
-  rownames_to_column("term") %>% 
-  mutate(
-    Estimate = ifelse(term=="Intercept", inv_logit_scaled(Estimate), Estimate/4),
-    `l-95% CI` = ifelse(term=="Intercept", inv_logit_scaled(`l-95% CI`), `l-95% CI`/4),
-    `u-95% CI` = ifelse(term=="Intercept", inv_logit_scaled(`u-95% CI`), `u-95% CI`/4),
-    Est.Error = ifelse(term=="Intercept", inv_logit_scaled(Est.Error), Est.Error/4)
-  ) %>% 
-  gt() %>% 
-  fmt_percent(2:5) %>% 
-  fmt_number(6:6, decimals = 2) %>% 
-  fmt_number(7:8, decimals = 0) %>% 
-  cols_merge(vars("l-95% CI", "u-95% CI"), pattern = "[{1}, {2}]") %>% 
-  cols_label(
-    term = md("**Predictor**"),
-    Estimate = md("**Mean**"),
-    Est.Error = md("**SEM**"),
-    "l-95% CI" = md("**95\\% CrI**"),
-    Rhat = md("**Rhat**"),
-    Bulk_ESS = md("**Bulk ESS**"),
-    Tail_ESS = md("**Tail ESS**")
-  ) %>% 
-  tab_footnote(
-    footnote = "Transformed using the inverse logit to get the average probability of correct response",
-    locations = cells_body(columns = "term", rows = term=="Intercept")
-  ) %>% 
-  tab_footnote(
-    footnote = "Transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable.",
-    locations = cells_body(columns = "term", rows = term %in% c("age", "frequency", "doe_center", "cognate1", "doe_center:cognate1"))
-  ) %>% 
-  tab_footnote(
-    footnote = "ESS: Effective sample size",
-    locations = cells_column_labels(columns = c("Bulk_ESS", "Tail_ESS"))
-  ) %>% 
-  cols_align(
-    align = c("center"),
-    columns = 2:4
-  ) 
-```
-
-
-```{r emmeans, message=FALSE, warning=FALSE, paged.print=FALSE, fig.cap="Expected marginal mean and 95% credible interval of the posterior probability of comprehension and production for identical cognates, non-identical cognates, and non cognates, plotted separately for three levels of degree of exposue to the language: 0% (no exposure, monolingual), 50% (exposed half of the time, balanced bilingual), and 100% (exposed all of the time, monolingual). Dots represent the mean, and error bars represent the range of values within the true values is contained with 50% (thick line) and 95% (thin line) cprobability, given the data."}
+```{r emmeans, message=FALSE, warning=FALSE, paged.print=FALSE, fig.height=6, fig.width=8, fig.cap="Expected marginal mean and 95% credible interval of the posterior probability of comprehension and production for identical cognates, non-identical cognates, and non cognates, plotted separately for three levels of degree of exposue to the language: 0% (no exposure, monolingual), 50% (exposed half of the time, balanced bilingual), and 100% (exposed all of the time, monolingual). Dots represent the mean, and error bars represent the range of values within the true values is contained with 50% (thick line) and 95% (thin line) cprobability, given the data."}
 
 nd <- expand.grid(
-  age = mean(responses$age),
+  age_center = floor(seq(min(responses$age_center), max(responses$age_center), 0.5)),
   doe_center = c(min(responses$doe_center), mean(responses$doe_center), max(responses$doe_center)),
   cognate = unique(items$cognate),
   frequency_center = 0
 )
 
-m_comp <- add_fitted_draws(nd, fits_comp$fit_2, n = 20, re_formula = NA) %>% 
+# comprehension
+m_comp <- epred_draws(fits_comp$fit_2, newdata = nd, ndraws = 50, re_formula = NA) %>% 
   mutate(
     frequency_center = as.factor(paste0("Frequency = ", frequency_center, " SD")),
-    doe_center = factor(doe_center, levels = unique(nd$doe_center), labels = c("DoE: 0%", "Doe: 50%", "DoE: 100%"))
+    doe_center = factor(doe_center, levels = unique(nd$doe_center), labels = c("DoE: 0%", "Doe: 50%", "DoE: 100%")),
+    cognate = factor(cognate, levels = c("Identical cognate", "Non-identical cognate", "Non-cognate"))
   )
+m_comp_ci <- mean_qi(m_comp)
 
-m_prod <- add_fitted_draws(nd, fits_prod$fit_2, n = 20, re_formula = NA) %>% 
+# production
+m_prod <- epred_draws(fits_prod$fit_2, newdata = nd, ndraws = 50, re_formula = NA) %>% 
   mutate(
     frequency_center = as.factor(paste0("Frequency = ", frequency_center, " SD")),
-    doe_center = factor(doe_center, levels = unique(nd$doe_center), labels = c("DoE: 0%", "Doe: 50%", "DoE: 100%"))
+    doe_center = factor(doe_center, levels = unique(nd$doe_center), labels = c("DoE: 0%", "Doe: 50%", "DoE: 100%")),
+    cognate = factor(cognate, levels = c("Identical cognate", "Non-identical cognate", "Non-cognate"))
   )
+m_prod_ci <- mean_qi(m_prod)
 
+# join datasets
 m <- bind_rows(m_comp, m_prod, .id = "type") %>% 
-  mutate(type = ifelse(type==1, "Comprehension", "Production"))
+  mutate(
+    type = ifelse(type==1, "Comprehension", "Production"),
+    age_center = age_center+mean(responses$age)
+  )
+
+m_ci <- bind_rows(m_comp_ci, m_prod_ci, .id = "type") %>% 
+  mutate(
+    type = ifelse(type==1, "Comprehension", "Production"),
+    age_center = age_center+mean(responses$age)
+  )
 
 
-ggplot(m, aes(cognate, .value, colour = cognate, fill = cognate, shape = doe_center)) +
-  facet_grid(~type, scales = "free_y") +
-  # geom_line(aes(group = interaction(.draw, cognate), colour = cognate), alpha = 0.25) +
+
+ggplot(m, aes(age_center, .epred, colour = cognate, fill = cognate, shape = cognate)) +
+  facet_grid(type~doe_center) +
+  # geom_line(aes(group = interaction(.draw, cognate), colour = cognate), alpha = 0.25, size = 0.2,
+  #           show.legend = FALSE) +
   # stat_lineribbon(size = 0, alpha = 0.5, .width = 0.95) +
-  # stat_summary(fun = "mean", geom = "line", size = 1) + 
-  geom_hline(yintercept = 0.5, linetype = "dotted") +
-  stat_pointinterval(.width = 0.95, position = position_dodge(width = 0.5), size = 0.75, point_size = 2) +
-  scale_y_continuous(labels = scales::percent, limits = c(0.1, 0.9), breaks = seq(0, 1, 0.10)) +
-  labs(x = "Cognateness", y = "Posterior probability",
-       colour = "Cognateness", fill = "Cognateness", shape = "DoE") +
+  geom_hline(yintercept = 0.5, colour = "grey") +
+  geom_vline(xintercept = mean(responses$age), colour = "grey") +
+  
+  geom_errorbar(data = m_ci, aes(ymin = .lower, ymax = .upper), width = 0.5, size = 0.25) +
+  stat_summary(fun = "mean", geom = "line", size = 0.75) +
+  # stat_pointinterval(.width = 0.95, position = position_dodge(width = 0.5), size = 0.75, point_size = 2) +
+  scale_y_continuous(labels = scales::percent, breaks = seq(0, 1, 0.25)) +
+  scale_x_continuous(labels = floor, breaks = floor(seq(min(responses$age), max(responses$age), by = 2))) +
+  labs(
+    x = "Age (months)", y = "Posterior probability",
+    colour = "Cognateness", fill = "Cognateness", shape = "DoE"
+  ) +
   theme(
-    legend.position = "right",
+    legend.position = "top",
+    axis.text.x = element_text(size = 8),
     panel.grid.major.y = element_line(colour = "grey", linetype = "dotted"),
-    axis.title.x = element_blank(),
     legend.title = element_blank(),
-    axis.text.x = element_blank(),
-    axis.ticks.x = element_blank()
-  ) 
+  )
 
 
 
 
 ```
+
+
+
 
 # Discussion
 
