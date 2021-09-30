@@ -9,7 +9,7 @@ get_responses <- function(
         id = participants$id,
         item = items$item
     ) %>% 
-        left_join(select(items, te, item, language, frequency)) %>% 
+        left_join(select(items, te, item, language, frequency, cognate)) %>% 
         left_join(
             participants %>% 
                 pivot_longer(c(doe_catalan, doe_spanish), names_to = "language", values_to = "doe") %>% 
@@ -25,11 +25,10 @@ get_responses <- function(
             doe = doe*10,
             doe_center = scale(doe)[,1],
             understands = response>1,
-            produces = response>2,
-            dominance = ifelse(dominant_language==language, "L1", "L2")
+            produces = response>2
         ) %>% 
-        mutate_at(vars(cognate, lp), as.factor) %>%
-        select(id, time, age, age_center, lp, te, language, item, frequency, frequency_center, doe, doe_center, cognate, understands, produces) %>% 
+        mutate_at(vars(cognate), as.factor) %>%
+        select(id, time, age, age_center, te, language, item, frequency, frequency_center, doe, doe_center, cognate, understands, produces) %>% 
         arrange(id, time, te)
     
     # contrasts

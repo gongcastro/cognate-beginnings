@@ -297,11 +297,11 @@ participants %>%
 # Data analysis {.tabset .tab-pills}
 
 
-We initially fitted a null model (`fit_0`) than only included the predictors `age` and `frequency` as nuisance parameters, along with random intercepts by `id` and `item`, and random slopes of `frequency` by `id`, and `age` by `item`, and their correlation parameter. We then expanded this model (`fit_1`) to include the main effect of `doe`, and the `doe` by `item` random slope. Finally, we added the main effect `cognate` (`fit_2`), its interaction with `doe` (`doe:cognate`), and  random slopes for `cognate` by `id`. The models were implemented in `brms` as:
+We initially fitted a null model (`fit_0`) than only included the predictors `age` and `frequency` as nuisance parameters, along with random intercepts by `id` and `item`, and random slopes of `frequency` by `id`, and `age_center` by `item`, and their correlation parameter. We then expanded this model (`fit_1`) to include the main effect of `doe`, and the `doe` by `item` random slope. Finally, we added the main effect `cognate` (`fit_2`), its interaction with `doe` (`doe:cognate`), and  random slopes for `cognate` by `id`. The models were implemented in `brms` as:
 
-* `understands/produces ~ 1 + age + frequency + (1 + age | item) + (1 + frequency | id)`
-* `understands/produces ~ 1 + age + frequency + doe + (1 + age + doe | item) + (1 + frequency | id)`
-* `understands/produces ~ 1 + age + frequency + doe*cognate + (1 + age + doe | item) + (1 + frequency + cognate| id)`
+* `understands/produces ~ 1 + age_center + frequency + (1 + age_center | item) + (1 + frequency | id)`
+* `understands/produces ~ 1 + age_center + frequency + doe + (1 + age_center + doe | item) + (1 + frequency | id)`
+* `understands/produces ~ 1 + age_center + frequency + doe*cognate + (1 + age_center + doe | item) + (1 + frequency + cognate| id)`
 
 ## Model equation
 
@@ -321,8 +321,8 @@ $$
 
 ```
 understands ~
-1 + age + frequency + lp*cognate +
-(1 + age + lp | te) +
+1 + age_center + frequency + lp*cognate +
+(1 + age_center + lp | te) +
 (1 + frequency + cognate | id),
 family =  bernoulli("logit")
 ```
@@ -529,77 +529,7 @@ responses %>%
   )
 ```
 
-## Prior-predictive checks (PPC)
 
-### PPC: Comprehension
-
-```{r ppc_comp, message=FALSE, warning=FALSE, paged.print=FALSE, fig.height=3, fig.width=6}
-
-# emmeans
-nd <- expand.grid(
-  age = seq(min(responses$age), max(responses$age), length.out = 30),
-  doe_center = range(responses$doe_center),
-  cognate = unique(items$cognate),
-  frequency_center = 0
-)
-
-m <- add_fitted_draws(nd, fits_comp_prior$fit_2, n = 20, re_formula = NA) %>% 
-  mutate(
-    frequency_center = as.factor(paste0("Frequency = ", frequency_center, " SD")),
-    doe_center = factor(doe_center, levels = unique(nd$doe_center), labels = c("DoE: 0%", "DoE: 100%"))
-  )
-
-ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
-  facet_grid(~doe_center) +
-  geom_line(aes(group = interaction(.draw,  frequency_center, cognate)), alpha = 0.5) +
-  # stat_lineribbon(size = 0, alpha = 0.5, .width = 0.05) +
-  # stat_summary(fun.data = "mean_se", geom = "pointrange") +
-  # stat_summary(fun = "mean", geom = "line", size = 1) +
-  geom_hline(yintercept = 0.5, size = 1, colour = "grey") +
-  labs(x = "Age (months)", y = "P(Comprehension)", colour = "Cognateness", fill = "Cognateness") +
-  scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
-  theme_github() +
-  theme(
-    legend.position = "top",
-    legend.title = element_blank()
-  )
-
-```
-
-### PPC: Production
-
-```{r ppc_prod, message=FALSE, warning=FALSE, paged.print=FALSE, fig.height=3, fig.width=6}
-
-nd <- expand.grid(
-  age = seq(min(responses$age), max(responses$age), length.out = 30),
-  doe_center = range(responses$doe_center),
-  cognate = unique(items$cognate),
-  frequency_center = 0
-)
-
-m <- add_fitted_draws(nd, fits_prod_prior$fit_2, n = 20, re_formula = NA) %>% 
-  mutate(
-    frequency_center = as.factor(paste0("Frequency = ", frequency_center, " SD")),
-    doe_center = factor(doe_center, levels = unique(nd$doe_center), labels = c("DoE: 0%", "DoE: 100%"))
-  )
-
-ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
-  facet_grid(~doe_center) +
-  geom_line(aes(group = interaction(.draw,  frequency_center, cognate)), alpha = 0.5) +
-  # stat_lineribbon(size = 0, alpha = 0.5, .width = 0.05) +
-  # stat_summary(fun.data = "mean_se", geom = "pointrange") +
-  # stat_summary(fun = "mean", geom = "line", size = 1) +
-  geom_hline(yintercept = 0.5, size = 1, colour = "grey") +
-  labs(x = "Age (months)", y = "P(Production)", colour = "Cognateness", fill = "Cognateness") +
-  scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
-  theme_github() +
-  theme(
-    legend.position = "top",
-    legend.title = element_blank()
-  )
-
-
-```
 
 ## Model selection
 
@@ -711,7 +641,7 @@ summary(fits_comp$fit_2)$fixed %>%
   ) %>% 
   tab_footnote(
     footnote = "Transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable.",
-    locations = cells_body(columns = "term", rows = term %in% c("age", "frequency", "doe_center", "cognate1", "doe_center:cognate1"))
+    locations = cells_body(columns = "term", rows = term %in% c("age_center", "frequency", "doe_center", "cognate1", "doe_center:cognate1"))
   ) %>% 
   tab_footnote(
     footnote = "ESS: Effective sample size",
@@ -945,7 +875,7 @@ ggplot(re_te, aes(estimate, reorder(te, estimate), xmin = q2_5, xmax = q97_5,
 ```{r emmeans_comp, message=FALSE, warning=FALSE, paged.print=FALSE}
 
 nd <- expand.grid(
-  age = seq(min(responses$age), max(responses$age), length.out = 30),
+  age_center = seq(min(responses$age_center), max(responses$age_center), length.out = 30),
   doe_center = range(responses$doe_center),
   cognate = unique(items$cognate),
   frequency_center = 0
@@ -957,7 +887,7 @@ m <- add_fitted_draws(nd, fits_comp$fit_2, n = 20, re_formula = NA) %>%
     doe_center = factor(doe_center, levels = unique(nd$doe_center), labels = c("DoE: 0%", "DoE: 100%"))
   )
 
-ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
+ggplot(m, aes(age_center, .value, colour = cognate, fill = cognate)) +
   facet_wrap(~doe_center) +
   geom_line(aes(group = interaction(.draw, cognate), colour = cognate), alpha = 0.25) +
   # stat_lineribbon(size = 0, alpha = 0.5, .width = 0.95) +
@@ -977,7 +907,7 @@ ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
 ```{r emmeans_prod, message=FALSE, warning=FALSE, paged.print=FALSE}
 
 nd <- expand.grid(
-  age = seq(min(responses$age), max(responses$age), length.out = 30),
+  age_center = seq(min(responses$age_center), max(responses$age_center), length.out = 30),
   doe_center = range(responses$doe_center),
   cognate = unique(items$cognate),
   frequency_center = 0
@@ -990,7 +920,7 @@ m <- add_fitted_draws(nd, fits_prod$fit_2, n = 20, re_formula = NA) %>%
     )
 
 
-ggplot(m, aes(age, .value, colour = cognate, fill = cognate)) +
+ggplot(m, aes(age_center, .value, colour = cognate, fill = cognate)) +
   facet_wrap(~doe_center) +
   geom_line(aes(group = interaction(.draw, cognate), colour = cognate), alpha = 0.1, size = 1) +
   # stat_lineribbon(size = 0, alpha = 0.5, .width = 0.95) +

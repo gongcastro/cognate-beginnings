@@ -13,7 +13,7 @@ tar_option_set(
     packages = c(
         "dplyr", "tidyr", "stringr", "ggplot2", "tibble", "forcats", "multilex", "keyring",
         "readxl", "janitor", "mice", "here", "lubridate", "purrr", "scales",
-        "brms", "tidybayes", "gt", "patchwork", "wesanderson", "papaja"
+        "brms", "tidybayes", "gt", "patchwork", "wesanderson", "papaja", "knitr"
     )
 )
 options(tidyverse.quiet = TRUE)
@@ -80,36 +80,6 @@ list(
         )
     ),
     
-    # fit models (prior, comprehension)
-    tar_target(
-        fits_comp_prior,
-        fit_models_comp(
-            data = responses,
-            iter = 500,
-            cores = 4,
-            chains = 4,
-            inits = 0,
-            save_pars = save_pars(all = TRUE),
-            backend = "cmdstanr",
-            sample_prior = "only"
-        )
-    ),
-    
-    # fit models (prior, production)
-    tar_target(
-        fits_prod_prior,
-        fit_models_prod(
-            data = responses,
-            iter = 500,
-            cores = 4,
-            chains = 4,
-            inits = 0,
-            save_pars = save_pars(all = TRUE),
-            backend = "cmdstanr",
-            sample_prior = "only"
-        )
-    ),
-    
     # fit models (comprehension)
     tar_target(
         fits_comp,
@@ -149,7 +119,7 @@ list(
     ),
 
     # render report.Rmd
-    # tar_render(report, "Rmd/report.Rmd"),
+    tar_render(report, "Rmd/report.Rmd"),
     
     # render manuscript
     tar_render(manuscript, "Rmd/manuscript.Rmd")
