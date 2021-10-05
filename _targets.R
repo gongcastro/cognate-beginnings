@@ -85,7 +85,7 @@ list(
         fits_comp,
         fit_models_comp(
             data = responses,
-            iter = 500,
+            iter = 6000,
             cores = 4,
             chains = 4,
             inits = 0,
@@ -99,7 +99,7 @@ list(
         fits_prod,
         fit_models_prod(
             data = responses,
-            iter = 500,
+            iter = 6000,
             cores = 4,
             chains = 4,
             inits = 0,

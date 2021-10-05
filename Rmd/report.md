@@ -761,35 +761,11 @@ function.
 
 <br>
 
-<div class="figure">
-
-<img src="report_files/figure-gfm/fix_effets_comp_plot-1.png" alt="Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The rest of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable." width="80%" />
-<p class="caption">
-Points and error bars in indicate the posterior means, and 50% and 95%
-CrI. The intercept has been transformed using the inverse logit to get
-the average probability of correct response. The rest of the
-coefficients has been transformed using the divide-by-four- rule to get
-the maximum change in probability of correct response, associated with a
-unit increase in this variable.
-</p>
-
-</div>
+<img src="report_files/figure-gfm/fix_effets_comp_plot-1.png" title="Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The rest of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable." alt="Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The rest of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable." width="80%" />
 
 ### Fixed effects: Production
 
-<div class="figure">
-
-<img src="report_files/figure-gfm/fix_effets_prod_plot-1.png" alt="Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The resto of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable." width="80%" />
-<p class="caption">
-Points and error bars in indicate the posterior means, and 50% and 95%
-CrI. The intercept has been transformed using the inverse logit to get
-the average probability of correct response. The resto of the
-coefficients has been transformed using the divide-by-four- rule to get
-the maximum change in probability of correct response, associated with a
-unit increase in this variable.
-</p>
-
-</div>
+<img src="report_files/figure-gfm/fix_effets_prod_plot-1.png" title="Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The resto of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable." alt="Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The resto of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable." width="80%" />
 
 ## Random effects
 
