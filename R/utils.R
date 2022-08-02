@@ -34,13 +34,9 @@ unmake <- function(keep_fits = FALSE) {
     tar_destroy(ask = FALSE)
     
     if (!keep_fits){
-        
         filenames <- list.files("results", pattern = "fit")
-        
         if (length(filenames > 0)) {
-            
             lapply(filenames, file.remove)
-            
         }
     }
     

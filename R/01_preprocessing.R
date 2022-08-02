@@ -1,12 +1,15 @@
 
-# item data ----
+#' Get item data
+#' @param multilex_data A named list resulting from calling \code{get_multilex}
+#' @param class A character vector indicating the word classes to be included in the resulting dataset. Takes "Adjective", "Noun" and/or "Verb" as values.
 get_items <- function(
         multilex_data, 
         class = c("Adjective", "Noun", "Verb")
 ){
     
-    # compute normalised Levenshtein distance
+    # compute normalised Levenshtein distance (see ?stringdist::`stringdist-package`)
     # number of edit operations needed to make two strings identical
+    # when applied to phonological transcriptions, it provides an approximation of phonological similarity between two words
     lv_similarities <- multilex_data$pool %>% 
         pivot_wider(
             id_cols = te, 
@@ -20,8 +23,10 @@ get_items <- function(
         ) %>% 
         select(te, lv, lv_dist)
     
+    # see ?multilex::pool
     single_te <- multilex_data$pool 
     
+    # merge datasets
     items <- multilex_data$pool %>% 
         rename(list = version) %>% 
         left_join(lv_similarities) %>% # add LVs
@@ -43,15 +48,19 @@ get_items <- function(
             freq = frequency_zipf,
             n_phon
         ) %>% 
-        # get only items with at least one item in each language
+        # get only translation equivalents with at least one item in each language
         filter(te %in% .$te[duplicated(.$te)])
     
+    # export as Parquet file
     write_ipc_stream(items, here("data", "items.parquet"))
     
     return(items)
 }
 
-# responses ----
+#' Get item responses
+#' @param multilex_data A named list resulting from calling \code{get_multilex}
+#' @param update A logical value. Should Multilex data be updated and new questionnaire responses be fetched?
+#' @param longitudinal Should longitudinal data be included? If "all" (default), all responses (including repeated measures) are included. If "no", participants with more than one responses to the questionnaire (regardless of the version) are excluded. If "first", only the first response of each participant is included. If "last", only the last response of each participant is included. If "only", only responses with repeated measures are included.
 get_responses <- function(
         multilex_data,
         update = FALSE,
@@ -79,7 +88,12 @@ get_responses <- function(
     
 }
 
-# participant data ----
+#' Get participant-level data
+#' @param multilex_data A named list resulting from calling \code{get_multilex}
+#' @param longitudinal Should longitudinal data be included? If "all" (default), all responses (including repeated measures) are included. If "no", participants with more than one responses to the questionnaire (regardless of the version) are excluded. If "first", only the first response of each participant is included. If "last", only the last response of each participant is included. If "only", only responses with repeated measures are included.
+#' @param age Numeric vector of length two indicating the minimum and maximum age of participants that will be included in the resulting dataset.
+#' @param lp Character vector indicating the language profile (LP) of the participants that will be included in the resulting dataset. In takes "Monolingual", "Bilingual", and/or "Other" as values.
+#' @param other_threshold Numeric value between 0 and 1 indicating the minimum exposure to a language other than Catalan or Spanish that a participant need to be exposed to to be excluded.
 get_participants <- function(
         multilex_data,
         longitudinal = "all",
@@ -90,13 +104,14 @@ get_participants <- function(
     
     participants <- multilex_data$logs %>%
         filter(
-            completed,
+            completed, # get only data from complete questionnaire responses
             # rlang::.env makes sure we use the objects provided in the arguments
             # of the function, and not variables in the piped data frame
             lp %in% .env$lp,
             between(age, .env$age[1], .env$age[2]),
             sum(doe_catalan + doe_spanish) > .env$other_threshold,
             id != "bilexicon_1699", # exclude participants (duplicated entry)
+            # make sure that degrees of exposure are between 0 and 1
             between(doe_spanish, 0, 1),
             between(doe_catalan, 0, 1),
             between(doe_others, 0, 1)
@@ -105,12 +120,16 @@ get_participants <- function(
         get_longitudinal(longitudinal = longitudinal) %>% 
         select(id, time, time_stamp, version, age, lp, doe_catalan, doe_spanish) 
     
+    # export data as Parquet file
     write_ipc_stream(participants, here("data", "participants.parquet"))
     
     return(participants)
 }
 
-# vocabulary data ----
+#' Get participant vocabulary data
+#' @param multilex_data A named list resulting from calling \code{get_multilex}
+#' @param age Numeric vector of length two indicating the minimum and maximum age of participants that will be included in the resulting dataset.
+#' @param type A character vector indicating for what type of measure should vocabulary and prevalence data be computed? It takes "understands" and/or "produces".
 get_vocabulary <- function(
         multilex_data,
         age = c(12, 32),
@@ -121,12 +140,14 @@ get_vocabulary <- function(
         
         suppressMessages({
             
+            # see ?multilex::pool
             pool <- select(multilex_data$pool, item, te, version_pool = version)
             
             # wide dataset
             wide <- left_join(multilex_data$logs, multilex_data$vocabulary) %>%
                 distinct(id, time, type, .keep_all = TRUE) %>% 
-                select(id, time, time_stamp, version, age, lp, type, starts_with("vocab_")) %>% 
+                select(id, time, time_stamp, version, age, lp, type, starts_with("vocab_")) %>%
+                # homogenize questionnaire version names
                 mutate(
                     version = str_remove(version, "BL-"),
                     version = ifelse(
@@ -137,7 +158,8 @@ get_vocabulary <- function(
                 ) %>% 
                 rename_at(
                     vars(starts_with("vocab_")),
-                    str_remove_all, "vocab_|dominance_"
+                    str_remove_all, 
+                    "vocab_|dominance_"
                 )  %>% 
                 pivot_longer(
                     starts_with("prop_") | starts_with("count_"),
@@ -194,6 +216,7 @@ get_vocabulary <- function(
             
             vocabulary <- list(wide = wide, long = long)
             
+            # export data as Parquet files
             write_ipc_stream(vocabulary$wide, here("data", "vocabulary_wide.parquet"))
             write_ipc_stream(vocabulary$long, here("data", "vocabulary_long.parquet"))
             
@@ -205,7 +228,10 @@ get_vocabulary <- function(
 }
 
 
-# main dataset ----
+#' Prepare data for analyses
+#' @param items A data frame resulting from calling \code{get_items}
+#' @param responses A data frame resulting from calling \code{get_responses}
+#' @param participants A data frame resulting from calling \code{get_participants}
 get_data <- function(
         items,
         responses,
