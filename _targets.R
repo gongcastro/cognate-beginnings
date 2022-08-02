@@ -1,12 +1,14 @@
 library(targets)
 library(tarchetypes)
 
+#### load R functions ----------------------------------------------------------
+
 source("R/utils.R")
 source("R/00_importing.R")
 source("R/01_preprocessing.R")
 source("R/02_models.R")
 
-# set parameters ----
+#### list package dependencies -------------------------------------------------
 
 tar_option_set(
     packages = c(
@@ -29,6 +31,7 @@ tar_option_set(
         "papaja", 
         "purrr", 
         "readxl", 
+        "rmarkdown",
         "rlang",
         "scales", 
         "stringdist",
@@ -42,19 +45,20 @@ tar_option_set(
     )
 )
 
+#### define global options -----------------------------------------------------
 options(
     mc.cores = 2,
     brms.backend = "cmdstanr",
-    tidyverse.quiet = TRUE
+    tidyverse.quiet = TRUE,
+    knitr.duplicate.label = "allow"
 )
 
-# End this file with a list of target objects.
 list(
     
+    # resolve namespace conflicts ----------------------------------------------
     tar_target(
         resolve_conficts,
         {
-            # resolve namespace conflicts ----
             conflict_prefer("last_warnings", "rlang")
             conflict_prefer("filter", "dplyr")
             conflict_prefer("between", "dplyr")
@@ -68,14 +72,15 @@ list(
         }
     ),
     
-    # multilex data
+    # import data --------------------------------------------------------------
     tar_target(
         credentials,
-        get_credentials()
+        get_credentials() # see R/utils.R
     ),
     
     tar_target(
         multilex_data,
+        # see R/00_importing.R
         get_multilex(
             update = TRUE, 
             type = c("understands", "produces")
@@ -85,6 +90,7 @@ list(
     # items
     tar_target(
         items,
+        # see R/01_preprocessing.R
         get_items(
             multilex_data = multilex_data,
         )
@@ -93,6 +99,7 @@ list(
     # participants
     tar_target(
         participants,
+        # see R/01_preprocessing.R
         get_participants(
             multilex_data,
             age = c(10, 36), 
@@ -104,6 +111,7 @@ list(
     # vocabulary
     tar_target(
         vocabulary,
+        # see R/01_preprocessing.R
         get_vocabulary(
             multilex_data = multilex_data,
             type = c("understands", "produces")
@@ -113,13 +121,16 @@ list(
     # responses
     tar_target(
         responses,
+        # see R/01_preprocessing.R
         get_responses(
             multilex_data = multilex_data
         )
     ),
     
+    # process data -------------------------------------------------------------
     tar_target(
         df,
+        # see R/01_preprocessing.R
         get_data(
             participants = participants,
             items = items,
@@ -127,9 +138,9 @@ list(
         )
     ),
     
-    # mode prior
+    # model priors -------------------------------------------------------------
     # these priors were set so that they generate data similar to what we expect
-    # they might not be perfectly sensible at the theoretical level
+    # based on Wordbank data (see manuscript and lab notes)
     tar_target(
         model_prior,
         c(
@@ -149,7 +160,7 @@ list(
         )
     ),
     
-    # model formula
+    # fit models ---------------------------------------------------------------
     # multilevel model with crossed random effects (participants an items)
     # responses are generated from a categorical distribution:
     #   - https://journals.sagepub.com/doi/full/10.1177/2515245918823199
@@ -281,7 +292,8 @@ list(
         )
     ),
     
-    # compare models ----
+    # compare models -----------------------------------------------------------
+    
     tar_target(
         model_loos,
         compare_models(
@@ -300,7 +312,9 @@ list(
         )
     ),
     
-    # diagnose models ----
+    # diagnose models ----------------------------------------------------------
+    
+    # R-hat (aka. Gelman-Rubin statistic)
     tar_target(
         model_rhats,
         map(
@@ -317,6 +331,7 @@ list(
             rhat
         )
     ),
+    # effective sample size
     tar_target(
         model_neffs,
         map(
