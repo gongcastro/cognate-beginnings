@@ -1,5 +1,52 @@
 # utils
 
+# run the targets workflow
+make <- function() {
+    job::job(
+        { 
+            targets::tar_make()
+            job::export("none")  # return nothing
+        }, 
+        import = NULL,
+        title = "Trajectories"
+        
+    )
+}
+
+# load all built targets (and packages)
+tar_load_all <- function(){
+    invisible({
+        suppressMessages({
+            tar_load_globals()
+        })
+        tars <- tar_objects()
+        message("Loading targets: ", paste0(tars, collapse = ", "))
+        lapply(tars, tar_load_raw, envir = .GlobalEnv)
+    })
+    
+    usethis::ui_done("Targets loaded")
+    
+}
+
+# remove targets products
+unmake <- function(keep_fits = FALSE) {
+    path <- "Results/fit.rds"
+    tar_destroy(ask = FALSE)
+    
+    if (!keep_fits){
+        
+        filenames <- list.files("results", pattern = "fit")
+        
+        if (length(filenames > 0)) {
+            
+            lapply(filenames, file.remove)
+            
+        }
+    }
+    
+    usethis::ui_done("Removed project outputs!")
+}
+
 # custom ggplot theme
 theme_custom <- function(){
     theme_minimal() +
@@ -30,79 +77,33 @@ theme_github <- function(){
 }
 
 
-# get multilex data ----
-get_credentials <- function(
-){
-    email <- "gonzalo.garciadecastro@upf.edu"
-    ml_connect(
-        google_email = email,
-        formr_email = email,
-        formr_password = key_get("formr", email)
-    )
+# not in function
+`%!in%` <- function(x, y){
+    !(x %in% y)
 }
 
-get_multilex <- function(
-    update = FALSE,
-    type = "understands"
-){
-    get_credentials()
-    
-    p <- ml_participants()
-    r <- ml_responses(p, update = update)
-    l <- ml_logs(p, r) %>% 
-        mutate(
-            age_group =  as.factor(
-                case_when(
-                    between(age, 19, 24) ~ 21,
-                    between(age, 24, 28) ~ 25,
-                    between(age, 28, 34) ~ 30
-                )),
-            age_group = paste0(age_group, " months")
-        ) %>% 
-        mutate_at(
-            vars(starts_with("edu_")),
-            function(x){
-                x %>% 
-                    factor(
-                        levels = c("noeducation", "primary", "secondary", "complementary", "vocational", "university"),
-                        ordered = TRUE
-                    ) %>% 
-                    as.numeric()
-            }
-        ) %>% 
-        mutate(
-            edu_parent = apply(cbind(edu_parent1, edu_parent2), 1, max, na.rm = FALSE),
-            edu_parent = factor(edu_parent, levels = 1:6, labels = c("No education", "Primary", "Secondary", "Complementary", "Vocational", "University"))
-        ) %>% 
-        filter(age_group != "NA months") %>% 
-        select(id, time, time_stamp, age_group, age, lp, dominance, version,
-               completed, doe_catalan, doe_spanish, doe_others, edu_parent)
-    
-    v <- ml_vocabulary(p, r, scale = c("prop", "count"), by = "id_exp") %>% 
-        filter(type==type)
-    
-    m <- list(
-        participants = p, responses = r, logs = l,
-        vocabulary = v, pool = multilex::pool
-    )
-    
-    return(m)
-}
-
-# adjusted proportion, SE, and CI ----
-# from Gelman, Hill & Vehtari (2020)
+# adjusted proportion, SE, and CI, from Gelman, Hill & Vehtari (2020)
 prop_adj <- function(y, n) (y+2)/(n+4)
-prop_se_adj <- function(y, n) {
+
+prop_se_adj <- function(y, n){
+    
     prop <- prop_adj(y, n)
     sqrt(prop*(1-prop)/(n+4))
+    
 }
+
 prop_ci_adj <- function(y, n, conf = 0.95){
+    
     prop <- prop_adj(y, n)
+    
     se <- sqrt(prop*(1-prop)/(n+4))
+    
     ci <- list(prop + qnorm((1-conf)/2)*se, prop + qnorm(1-(1-conf)/2)*se)
     ci[[1]] <- ifelse(ci[[1]]<0, 0, ci[[1]])
     ci[[2]] <- ifelse(ci[[2]]>1, 1, ci[[2]])
+    
     return(ci)
+    
 }
 
 # transform logit scale to probability
