@@ -4,10 +4,10 @@
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Downloading this repository](#downloading)
-3. [Reproducing this repository](#reproducing)
-        3.1. [Installing package dependencies with {renv}](#packages)
-        3.2. [Running the code with {targets}](#running)
-        3.3. [Repository structure](#structure)
+3. [Reproducing this repository](#reproducing)<br>
+        3.1. [Installing package dependencies with {renv}](#packages)<br>
+        3.2. [Running the code with {targets}](#running)<br>
+        3.3. [Repository structure](#structure)<br>
 
 
 ## What this repository is about<a name="introduction"></a>
