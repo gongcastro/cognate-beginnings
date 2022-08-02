@@ -66,7 +66,7 @@ transformed parameters {
   vector[N_2] r_2_1;
   vector[N_2] r_2_2;
   vector[N_2] r_2_3;
-  sd_1 = rep_vector(0.2, rows(sd_1));
+  sd_1 = rep_vector(0.02, rows(sd_1));
   // compute actual group-level effects
   r_1 = scale_r_cor(z_1, sd_1, L_1);
   r_1_1 = r_1[, 1];
@@ -89,14 +89,14 @@ model {
     target += bernoulli_logit_glm_lpmf(Y | Xc, mu, b);
   }
   // priors including constants
-  target += normal_lpdf(b[1] | 0.75, 0.1);
-  target += normal_lpdf(b[2] | 0, 0.1);
-  target += normal_lpdf(b[3] | 0, 0.1);
-  target += normal_lpdf(Intercept | 0.5, 0.1);
+  target += normal_lpdf(b[1] | 0.75, 0.01);
+  target += normal_lpdf(b[2] | 0, 0.01);
+  target += normal_lpdf(b[3] | 0, 0.01);
+  target += normal_lpdf(Intercept | 0.5, 0.01);
   target += std_normal_lpdf(to_vector(z_1));
   target += lkj_corr_cholesky_lpdf(L_1 | 10);
-  target += normal_lpdf(sd_2 | 0.2, 0.1)
-    - 3 * normal_lccdf(0 | 0.2, 0.1);
+  target += normal_lpdf(sd_2 | 0.2, 0.01)
+    - 3 * normal_lccdf(0 | 0.2, 0.01);
   target += std_normal_lpdf(to_vector(z_2));
   target += lkj_corr_cholesky_lpdf(L_2 | 10);
 }
