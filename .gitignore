@@ -9,7 +9,7 @@
 *.pdf
 *.log
 _targets/*
-Data/*.rds
-Results/*.rds
-Figures/*
-Communications/*
+data/*.rds
+data/*.parquet
+results/*.rds
+img/*
