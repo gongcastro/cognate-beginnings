@@ -1,18 +1,25 @@
 
-# log into multilex database ----
+#' Get Multilex credentials
+#' @examples ml_connect()
 get_credentials <- function(){
     ml_connect()
 }
 
-# get multilex data ----
+#' Get multilex data
+#' @param update A logical value. Should Multilex data be updated and new questionnaire responses be fetched?
+#' @param type A character vector indicating for what type of measure should vocabulary and prevalence data be computed? It takes "understands" and/or "produces"
+#' @returns A named list of data frames containing questionnaire responses, participant data, item data, prevalence data and vocabualary data
 get_multilex <- function(
         update = FALSE,
         type = c("understands", "produces")
 ){
-    get_credentials()
+    get_credentials() # see ?get_credentials
     
-    p <- ml_participants()
+    # get multilex participant data
+    p <- ml_participants() 
+    # get multilex questionnaire responses
     r <- ml_responses(p, update = update)
+    # merge participant data with questionnaire responses
     l <- ml_logs(p, r) %>% 
         mutate_at(
             vars(starts_with("edu_")),
@@ -57,6 +64,7 @@ get_multilex <- function(
         select(id, time, time_stamp, age, lp, dominance, version,
                completed, doe_catalan, doe_spanish, doe_others, edu_parent)
     
+    # get multilex vocabulary data
     v <- ml_vocabulary(
         p, 
         r, 
@@ -65,6 +73,7 @@ get_multilex <- function(
     ) %>% 
         filter(type %in% type)
     
+    # get list of all relevant datasets
     m <- list(
         participants = p,
         responses = r, 
