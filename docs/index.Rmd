@@ -1,0 +1,1196 @@
+---
+title: "Trajectories"
+output:
+  github_document:
+    pandoc_args: --webtex
+bibliography: "references.bib"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = TRUE,
+  echo = FALSE,
+  warning = TRUE,
+  include = TRUE,
+  out.width = "80%",
+  dpi = 250
+)
+options(
+  knitr.kable.NA = "-",
+  knitr.duplicate.label = "allow",
+  ggplot2.discrete.fill = wesanderson::wes_palettes$Darjeeling1,
+  ggplot2.discrete.colour = wesanderson::wes_palettes$Darjeeling1,
+  ggplot2.continuous.fill = ggplot2::scale_color_gradient,
+  ggplot2.continuous.colour = ggplot2::scale_color_gradient
+)
+
+```
+
+
+```{r prepare, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+
+# set params
+tar_load_globals()
+tar_load_all()
+theme_set(theme_custom())
+
+
+```
+
+
+# Questionnaires
+
+# Items {.tabset .tab-pills}
+
+## Lexical frequency
+
+```{r items_frequency, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+by_language <- items %>% 
+  drop_na(frequency) %>% 
+  ggplot(aes(frequency, lv, colour = language)) +
+  geom_point(alpha = 0.5, shape = 1, stroke = 1) +
+  labs(
+    y = "Levenshtein similarity", 
+    x = "Lexical frequency (Zipf score)\nExtracted from SUBTLEX", 
+    colour = "Cognateness", 
+    fill = "Cognateness"
+  ) +
+  scale_y_continuous(labels = percent) 
+
+
+by_class <- items %>% 
+  drop_na(frequency, class) %>% 
+  ggplot(aes(frequency, lv, fill = class, colour = class)) +
+  facet_wrap(vars(class), ncol = 2) +
+  geom_point(alpha = 0.25, shape = 1, stroke = 1, show.legend = FALSE) +
+  labs(y = "Levenshtein similarity", x = "Lexical frequency", colour = "cognateness", fill = "Cognateness") +
+  scale_y_continuous(labels = percent) 
+
+
+(by_language + by_class) +
+  plot_layout(2) &
+  theme(
+    legend.position = "top",
+    panel.grid.major.y = element_blank()
+  ) 
+
+
+```
+
+## {-}
+
+
+# Participants {.tabset .tab-pills}
+
+```{r participants_time, message=FALSE, warning=FALSE, paged.print=FALSE}
+participants %>% 
+  group_by(time_stamp, dominant_language) %>% 
+  summarise(n = n(), .groups = "drop") %>% 
+  group_by(dominant_language) %>% 
+  mutate(n = cumsum(n)) %>% 
+  ggplot(aes(time_stamp, n, colour = dominant_language, fill = dominant_language)) +
+  geom_line(size = 1) +
+  labs(x = "Date", y = "Number of responses", colour = "Dominant language") +
+  scale_y_continuous(breaks = seq(0, 250, 50)) +
+  guides(colour = guide_legend(ncol = 2)) +
+  theme(
+    legend.position = "top",
+    legend.title = element_blank(),
+    axis.title.x = element_blank(),
+  )
+
+```
+
+
+## Age
+
+```{r participants_age, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+participants %>% 
+  mutate(age = round(age)) %>% 
+  count(lp, dominant_language, age) %>% 
+  ggplot(aes(as.factor(age), n, fill = interaction(lp, dominant_language, sep = " - "))) +
+  geom_col(position = position_fill(), size = 0.5, colour = "white") +
+  guides(colour = guide_legend(ncol = 2)) +
+  coord_flip() +
+  labs(y = "Proportion of the sample", x = "Age (months)", colour = "LP - Dominant language") +
+  scale_y_continuous(labels = scales::percent) +
+  theme(
+    axis.text.y = element_text(size = 9),
+    legend.position = "top",
+    legend.title = element_blank(),
+  ) +
+  
+  participants %>% 
+  mutate(age = round(age)) %>% 
+  count(lp, dominant_language, age) %>% 
+  ggplot(aes(as.factor(age), n, fill = interaction(lp, dominant_language, sep = " - "))) +
+  geom_col(size = 0.5, colour = "white") +
+  labs(y = "Number of participants", x = "Age (months)") +
+  guides(colour = guide_legend(ncol = 2)) +
+  coord_flip() +
+  theme(
+    legend.position = "top",
+    legend.title = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank() 
+    
+  ) +
+  
+  plot_layout(nrow = 1, guides = "collect") &
+  theme(
+    legend.position = "top", 
+    panel.grid.major = element_blank()
+  )
+
+
+
+```
+
+## Language profile
+
+```{r participants_lp, message=FALSE, warning=FALSE, paged.print=FALSE}
+labs <- c("0-10%", "10-20%", "20-30%", "30-40%", "40-50%")
+
+tbl <- participants %>% 
+  mutate(
+    age = round(age),
+    doe_2 = ifelse(dominant_language=="Catalan", doe_spanish, doe_catalan),
+    doe_2 = cut(doe_2, breaks = seq(0, 0.5, 0.1), include.lowest = TRUE, labels = labs)
+  ) %>% 
+  count(age, doe_2) %>% 
+  arrange(doe_2) %>% 
+  mutate(doe_2 = fct_inorder(doe_2)) %>% 
+  pivot_wider(names_from = doe_2, values_from = n, values_fill = 0)
+
+gt(tbl) %>% 
+  tab_spanner(label = "Number of participants by DOE", columns = 2:6) %>% 
+  data_color(
+    columns = 2:6,
+    colors = scales::col_numeric(
+      palette = c("white", "orange"),
+      domain = c(0, max(tbl[,2:ncol(tbl)]))
+    )
+  ) %>% 
+  cols_label(
+    age = md("**Age<br>(months)**")
+  ) %>% 
+  as_raw_html()
+
+
+```
+
+## SES/parental education
+
+```{r participants_edu, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+tbl <- participants %>%
+  mutate(edu_parent = fct_explicit_na(as.factor(edu_parent))) %>% 
+  count(lp, dominant_language, edu_parent) %>% 
+  right_join(
+    expand_grid(
+      lp = c("Monolingual", "Bilingual"),
+      dominant_language = c("Catalan", "Spanish"),
+      edu_parent = unique(participants$edu_parent)
+    )
+  ) %>% 
+  replace_na(list(n = 0)) %>% 
+  rename(total = n) %>% 
+  pivot_wider(names_from = edu_parent, values_from = total, values_fill = 0) %>%
+  mutate(total = rowSums(cbind(.[,3:8]))) %>% 
+  rename(Total = total) %>% 
+  select(-"NA") 
+
+gt(tbl, groupname_col = "lp") %>% 
+  cols_label(
+    lp = "Lang. Profile",
+    dominant_language = "L1"
+  ) %>% 
+  summary_rows(
+    columns = 3:8, 
+    fns = list(Total = ~sum(.)),
+    formatter = fmt_number,
+    decimals = 0
+  ) %>% 
+  tab_style(
+    style = list(cell_borders(weight = px(2), sides = "left")),
+    locations = cells_body(columns = 10, rows = 1:4)
+  ) %>% 
+  as_raw_html()
+```
+
+## {-}
+
+
+# Data analysis {.tabset .tab-pills}
+
+
+We initially fitted a null model (`fit_0`) than only included the predictors `age` and `frequency` as nuisance parameters, along with random intercepts by `id` and `item`, and random slopes of `frequency` by `id`, and `age_center` by `item`, and their correlation parameter. We then expanded this model (`fit_1`) to include the main effect of `doe`, and the `doe` by `item` random slope. Finally, we added the main effect `cognate` (`fit_2`), its interaction with `doe` (`doe:cognate`), and  random slopes for `cognate` by `id`. The models were implemented in `brms` as:
+
+* `understands/produces ~ 1 + age_center + frequency + (1 + age_center | item) + (1 + frequency | id)`
+* `understands/produces ~ 1 + age_center + frequency + doe + (1 + age_center + doe | item) + (1 + frequency | id)`
+* `understands/produces ~ 1 + age_center + frequency + doe*cognate + (1 + age_center + doe | item) + (1 + frequency + cognate| id)`
+
+## Model equation
+
+$$
+\begin{aligned}
+\color{white}\log(\frac{p}{n - q}) &= \color{white}(\beta_{0} + \beta_{0p} + \beta_{0i}) + ... \\
+& \color{white}(\beta_{1} + \beta_{1p})\times Cognate_{pi} + ... \\
+& \color{white}(\beta_{2} + \beta_{2i}) \times Exposure_{pi} + ... \\
+& \color{white}(\beta_{3} + \beta_{3i} + \beta_{3p}) \times (Cognate_{pi} \times Exposure_{pi}) + ... \\
+& \color{white}(\beta_{4} + \beta_{4i}) \times Age_{pi} + ... \\
+& \color{white}(\beta_{4} + \beta_{4p}) \times Frequency_{pi} + ... \\
+& \color{white}\varepsilon_{pi}
+\end{aligned}
+$$
+
+## R code (`brms`)
+
+```
+understands ~
+1 + age_center + frequency + lp*cognate +
+(1 + age_center + lp | te) +
+(1 + frequency + cognate | id),
+family =  bernoulli("logit")
+```
+
+## Stan code
+
+Stan code generated by `brms::stancode`:
+
+```
+// generated with brms 2.15.0
+functions {
+/* compute correlated group-level effects
+* Args: 
+*   z: matrix of unscaled group-level effects
+*   SD: vector of standard deviation parameters
+*   L: cholesky factor correlation matrix
+* Returns: 
+*   matrix of scaled group-level effects
+*/ 
+matrix scale_r_cor(matrix z, vector SD, matrix L) {
+// r is stored in another dimension order than z
+return transpose(diag_pre_multiply(SD, L) * z);
+}
+}
+data {
+int<lower=1> N;  // total number of observations
+int Y[N];  // response variable
+int<lower=1> K;  // number of population-level effects
+matrix[N, K] X;  // population-level design matrix
+// data for group-level effects of ID 1
+int<lower=1> N_1;  // number of grouping levels
+int<lower=1> M_1;  // number of coefficients per level
+int<lower=1> J_1[N];  // grouping indicator per observation
+// group-level predictor values
+vector[N] Z_1_1;
+vector[N] Z_1_2;
+vector[N] Z_1_3;
+int<lower=1> NC_1;  // number of group-level correlations
+// data for group-level effects of ID 2
+int<lower=1> N_2;  // number of grouping levels
+int<lower=1> M_2;  // number of coefficients per level
+int<lower=1> J_2[N];  // grouping indicator per observation
+// group-level predictor values
+vector[N] Z_2_1;
+vector[N] Z_2_2;
+vector[N] Z_2_3;
+int<lower=1> NC_2;  // number of group-level correlations
+int prior_only;  // should the likelihood be ignored?
+}
+transformed data {
+int Kc = K - 1;
+matrix[N, Kc] Xc;  // centered version of X without an intercept
+vector[Kc] means_X;  // column means of X before centering
+for (i in 2:K) {
+means_X[i - 1] = mean(X[, i]);
+Xc[, i - 1] = X[, i] - means_X[i - 1];
+}
+}
+parameters {
+vector[Kc] b;  // population-level effects
+real Intercept;  // temporary intercept for centered predictors
+matrix[M_1, N_1] z_1;  // standardized group-level effects
+cholesky_factor_corr[M_1] L_1;  // cholesky factor of correlation matrix
+vector<lower=0>[M_2] sd_2;  // group-level standard deviations
+matrix[M_2, N_2] z_2;  // standardized group-level effects
+cholesky_factor_corr[M_2] L_2;  // cholesky factor of correlation matrix
+}
+transformed parameters {
+vector<lower=0>[M_1] sd_1;  // group-level standard deviations
+matrix[N_1, M_1] r_1;  // actual group-level effects
+// using vectors speeds up indexing in loops
+vector[N_1] r_1_1;
+vector[N_1] r_1_2;
+vector[N_1] r_1_3;
+matrix[N_2, M_2] r_2;  // actual group-level effects
+// using vectors speeds up indexing in loops
+vector[N_2] r_2_1;
+vector[N_2] r_2_2;
+vector[N_2] r_2_3;
+sd_1 = rep_vector(1, rows(sd_1));
+// compute actual group-level effects
+r_1 = scale_r_cor(z_1, sd_1, L_1);
+r_1_1 = r_1[, 1];
+r_1_2 = r_1[, 2];
+r_1_3 = r_1[, 3];
+// compute actual group-level effects
+r_2 = scale_r_cor(z_2, sd_2, L_2);
+r_2_1 = r_2[, 1];
+r_2_2 = r_2[, 2];
+r_2_3 = r_2[, 3];
+}
+model {
+// likelihood including constants
+if (!prior_only) {
+// initialize linear predictor term
+vector[N] mu = Intercept + rep_vector(0.0, N);
+for (n in 1:N) {
+// add more terms to the linear predictor
+mu[n] += r_1_1[J_1[n]] * Z_1_1[n] + r_1_2[J_1[n]] * Z_1_2[n] + r_1_3[J_1[n]] * Z_1_3[n] + r_2_1[J_2[n]] * Z_2_1[n] + r_2_2[J_2[n]] * Z_2_2[n] + r_2_3[J_2[n]] * Z_2_3[n];
+}
+target += bernoulli_logit_glm_lpmf(Y | Xc, mu, b);
+}
+// priors including constants
+target += normal_lpdf(b | 0, 3);
+target += normal_lpdf(Intercept | 0, 3);
+target += std_normal_lpdf(to_vector(z_1));
+target += lkj_corr_cholesky_lpdf(L_1 | 5);
+target += normal_lpdf(sd_2 | 0, 0.5)
+- 3 * normal_lccdf(0 | 0, 0.5);
+target += std_normal_lpdf(to_vector(z_2));
+target += lkj_corr_cholesky_lpdf(L_2 | 5);
+}
+generated quantities {
+// actual population-level intercept
+real b_Intercept = Intercept - dot_product(means_X, b);
+// compute group-level correlations
+corr_matrix[M_1] Cor_1 = multiply_lower_tri_self_transpose(L_1);
+vector<lower=-1,upper=1>[NC_1] cor_1;
+// compute group-level correlations
+corr_matrix[M_2] Cor_2 = multiply_lower_tri_self_transpose(L_2);
+vector<lower=-1,upper=1>[NC_2] cor_2;
+// extract upper diagonal of correlation matrix
+for (k in 1:M_1) {
+for (j in 1:(k - 1)) {
+cor_1[choose(k - 1, 2) + j] = Cor_1[j, k];
+}
+}
+// extract upper diagonal of correlation matrix
+for (k in 1:M_2) {
+for (j in 1:(k - 1)) {
+cor_2[choose(k - 1, 2) + j] = Cor_2[j, k];
+}
+}
+}
+```
+
+## {-}
+
+
+# Results {.tabset .tab-pills}
+
+## Raw data
+
+```{r raw, message=FALSE, warning=FALSE, paged.print=FALSE}
+responses %>%
+  mutate(lv = cut_interval(lv, 5)) %>% 
+  group_by(te, lv) %>%
+  summarise(
+    understands = mean(understands, na.rm = TRUE),
+    produces = mean(produces, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  pivot_longer(
+    c(understands, produces),
+    names_to = "type",
+    values_to = "prop"
+  ) %>%
+  mutate(type = str_to_sentence(type)) %>% 
+  ggplot(aes(prop, reorder(te, -prop), colour = lv, fill = lv)) +
+  facet_wrap(type~lv, scales = "free_y", ncol = 5) +
+  geom_vline(xintercept = 0.5, linetype = "dashed", size = 1) +
+  geom_point(alpha = 0.5, size = 2, shape = 1, stroke = 1) +
+  geom_smooth(aes(group = lv)) +
+  labs(
+    x = "Mean % of acquisition", y = "Translation equivalent ID", 
+    colour = "Levenshtein similarity", fill = "Levenshtein similarity"
+  ) +
+  scale_x_continuous(limits = c(0, 1), labels = scales::percent) +
+  theme(
+    legend.position = "top",
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank()
+  )
+```
+
+```{r raw_age, message=FALSE, warning=FALSE, paged.print=FALSE}
+responses %>%
+  mutate(
+    lv = cut_interval(lv, 5),
+    age = as.factor(round(age))
+  ) %>% 
+  group_by(te, age, lv) %>%
+  summarise(
+    understands = mean(understands, na.rm = TRUE),
+    produces = mean(produces, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  pivot_longer(
+    c(understands, produces),
+    names_to = "type",
+    values_to = "prop"
+  ) %>%
+  mutate(type = str_to_sentence(type)) %>% 
+  ggplot(aes(age, prop, colour = lv, fill = lv)) +
+  facet_grid(type~lv) +
+  geom_hline(yintercept = 0.5, size = 0.75) +
+  stat_pointinterval(
+    .width = c(0.5), size = 1
+  ) +
+  labs(
+    x = "Age (months)", y = "Mean % of acquisition",
+    colour = "Cognate", shape = "Cognate", fill = "Cognate"
+  ) +
+  scale_x_discrete(breaks = seq(10, 36, 2)) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
+  theme(
+    legend.position = "none",
+    axis.text.x = element_text(size = 7),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.grid = element_blank(),
+    legend.title = element_blank()
+  )
+```
+
+
+
+## Model selection
+
+We compared the performance of these models using Bayesian leave-one-out cross-validation (LOO) using the `loo` and `loo_compare` functions of the `brms` R package (dependent of the `LOO` R package). LOO consists in computing the average likelihood of each observation after estimating the model's parameters leave that same observation out of the data set. Although the `loo` function uses a particular algorithm that speeds up the computation of this criterion (pareto-smooth importance sampling, PSIS), the size of our data set lead us to rely on the computation of the same criterion using a sampling approach via de `loo_subsample` function.
+
+### Comprehension
+
+```{r loo_comp, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+loo_comp %>% 
+  as_tibble() %>% 
+  rownames_to_column("model") %>% 
+  relocate(model, matches("elpd_loo"), matches("p_loo"), matches("looic"), matches("diff")) %>%
+  mutate_all(as.numeric) %>% 
+  gt() %>% 
+  tab_spanner(md("**LOO<sub>ELPD</sub>**"), matches("elpd_loo")) %>% 
+  tab_spanner(md("**LOO<sub>p</sub>**"), matches("p_loo")) %>% 
+  tab_spanner(md("**LOO<sub>IC</sub>**"), matches("looic")) %>% 
+  tab_spanner(md("**LOO<sub>diff</sub>**"), matches("diff")) %>% 
+  fmt_number(3:13) %>% 
+  cols_label(
+    model = "Model",
+    # elpd
+    elpd_loo = md("*ELPD*"),
+    se_elpd_loo = md("*SE*"),
+    subsampling_se_elpd_loo = md("*SE<sub>sub</sub>*"),
+    # p
+    p_loo = md("*p*"),
+    se_p_loo = md("SE"),
+    subsampling_se_p_loo = md("SE<sub>sub</sub>"),
+    # looic
+    looic = md("*LOO-IC*"),
+    se_looic = md("*SE*"),
+    subsampling_se_looic = md("SE<sub>sub</sub>"),
+    # diff
+    elpd_diff = md("*diff*"),
+    se_diff = md("*SE*"),
+    subsampling_se_diff = md("*SE<sub>sub</sub>*"),
+  ) %>% 
+  as_raw_html()
+```
+
+### Production
+
+```{r loo_prod, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+loo_prod %>% 
+  as_tibble() %>% 
+  rownames_to_column("model") %>% 
+  relocate(model, matches("elpd_loo"), matches("p_loo"), matches("looic"), matches("diff")) %>%
+  mutate_all(as.numeric) %>% 
+  gt() %>% 
+  tab_spanner(md("**LOO<sub>ELPD</sub>**"), matches("elpd_loo")) %>% 
+  tab_spanner(md("**LOO<sub>p</sub>**"), matches("p_loo")) %>% 
+  tab_spanner(md("**LOO<sub>IC</sub>**"), matches("looic")) %>% 
+  tab_spanner(md("**LOO<sub>diff</sub>**"), matches("diff")) %>% 
+  fmt_number(3:13) %>% 
+  cols_label(
+    model = "Model",
+    # elpd
+    elpd_loo = md("*ELPD*"),
+    se_elpd_loo = md("*SE*"),
+    subsampling_se_elpd_loo = md("*SE<sub>sub</sub>*"),
+    # p
+    p_loo = md("*p*"),
+    se_p_loo = md("SE"),
+    subsampling_se_p_loo = md("SE<sub>sub</sub>"),
+    # looic
+    looic = md("*LOO-IC*"),
+    se_looic = md("*SE*"),
+    subsampling_se_looic = md("SE<sub>sub</sub>"),
+    # diff
+    elpd_diff = md("*diff*"),
+    se_diff = md("*SE*"),
+    subsampling_se_diff = md("*SE<sub>sub</sub>*"),
+  ) %>% 
+  as_raw_html()
+```
+
+## Fixed effects
+
+### Fixed effects: Compehension
+
+```{r fixed_effects_table, message=FALSE, warning=FALSE, paged.print=FALSE}
+str_repl <- c(
+  "doe_center:lv_center" = "DoE \u00d7 Levenshtein",
+  "Intercept" = "Intercept",
+  "age_center" = "Age (+1 month)",
+  "frequency_center" = "Frequency (+1 SD)",
+  "doe_center" = "DoE (+10%)",
+  "lv_center" = "Levenshtein (+1 SD)"
+)
+
+draws_fix <- fixef(fits_comp$fit_2) %>% 
+  as.data.frame() %>%
+  rownames_to_column("term") %>% 
+  clean_names() %>% 
+  select(-est_error) %>% 
+  mutate(
+    estimate = ifelse(term=="Intercept", inv_logit_scaled(estimate), estimate/4),
+    q2_5 = ifelse(term=="Intercept", inv_logit_scaled(q2_5), q2_5/4),
+    q97_5 = ifelse(term=="Intercept", inv_logit_scaled(q97_5), q97_5/4),
+    term = str_replace_all(term, str_repl)
+  )
+
+gt(draws_fix) %>% 
+  fmt_percent(2) %>% 
+  fmt_number(3:4, decimals = 2) %>% 
+  cols_merge(vars("q2_5", "q97_5"), pattern = "[{1}, {2}]") %>% 
+  cols_label(
+    term = md("**Predictor**"),
+    estimate = md("**Mean**"),
+    q2_5 = md("**95\\% CrI**"),
+  ) %>% 
+  tab_footnote(
+    footnote = "Transformed using the inverse logit to get the average probability of correct response",
+    locations = cells_body(columns = "term", rows = term=="Intercept")
+  ) %>% 
+  tab_footnote(
+    footnote = "Transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable.",
+    locations = cells_body(columns = "term", rows = term %in% c("Age (+1 month)", "Frequency (+ 1 SD)",  "DoE (+10%)", "Levenshtein (+ 1 SD)", "doe_center:lv_center" = "DoE \u00d7 Levenshtein"))
+  ) %>% 
+  cols_align(
+    align = c("center"),
+    columns = 2:3
+  ) %>% 
+  as_raw_html()
+
+```
+
+<br>
+
+```{r fix_effets_comp_plot, message=FALSE, warning=FALSE, paged.print=FALSE, fig.cap="Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The rest of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable."}
+
+var_repl <- c(
+  "b_doe_center:lv_center" = "DoE \u00d7 Levenshtein", 
+  "b_Intercept" = "Intercept", 
+  "b_age_center" = "Age (+1 month)", 
+  "b_frequency_center" = "Frequency (+1 SD)",
+  "b_doe_center" = "DoE (+10%)", 
+  "b_lv_center" = "Levenshtein (+1 SD)", 
+  "sd_te__Intercept" = "Intercept", 
+  "sd_te__age_center" = "Age",
+  "sd_te__doe_center:lv_center" = "DoE \u00d7 Levenshtein",
+  "sd_te__doe_center" = "DoE",
+  "sd_te__lv_center" = "Levenshtein"
+)
+
+post <- gather_draws(fits_comp$fit_2, `b_.*`, `sd_te_.*`, regex = TRUE, ndraws = 1000) %>% 
+  mutate(
+    .value = ifelse(grepl("Intercept|sd", .variable), inv_logit_scaled(.value), .value/4),
+    .variable_name = str_replace_all(.variable, var_repl) 
+  )
+
+post_intercept <- post %>% 
+  filter(.variable=="b_Intercept") %>% 
+  ggplot(aes(.value, fct_rev(.variable_name))) +
+  geom_vline(xintercept = 0, size = 0.75, colour = "grey") +
+  stat_slab(
+    aes(alpha = stat(cut_cdf_qi(cdf, .width = c(.95, .8, .5), labels = percent_format()))),
+    size = 0.5,
+    color = "#FF0000",
+    fill = "#FF0000",
+    position = position_nudge(y = 0.2)
+  ) +
+  stat_pointinterval(point_size = 2) +
+  labs(
+    x = "Comprehension posterior probability", 
+    y = "Variable", 
+    fill = "Variable",
+    alpha = "CrI"
+  ) +
+  scale_alpha_discrete(range = c(1, 0.4), na.translate = FALSE) +
+  scale_x_continuous(labels = percent, limits = c(0, 1)) 
+
+post_fix <- post %>% 
+  filter(!grepl("Intercept|sd", .variable)) %>% 
+  ggplot(aes(.value, fct_rev(.variable_name))) +
+  geom_vline(xintercept = 0, size = 0.5, linetype = "dashed") +
+  stat_slab(
+    aes(alpha = stat(cut_cdf_qi(cdf, .width = c(.95, .8, .5), labels = percent_format()))),
+    size = 0.5,
+    color = "#00A08A",
+    fill = "#00A08A",
+    position = position_nudge(y = 0.1)
+  ) +
+  annotate(
+    geom = "label",
+    fill = "white",
+    label.size = 0,
+    # alpha = 0.5,
+    x = -0.05, 
+    y = 0.75,
+    label = "Increases\nP(comprehension)",
+    size = 3.5,
+    hjust = 0
+  ) +
+  annotate(
+    geom = "label",
+    fill = "white",
+    label.size = 0,
+    # alpha = 0.5,
+    x = 0.2, 
+    y = 0.75,
+    label = "Decreases\nP(comprehension)",
+    size = 3.5,
+    hjust = 1
+  ) +
+  annotate(
+    geom = "segment",
+    x = 0,
+    xend = -0.05,
+    y = 0.5,
+    yend =  0.5,
+    arrow = arrow(length = unit(0.2, "cm"))
+  ) +
+  annotate(
+    geom = "segment",
+    x = 0.15,
+    xend = 0.2,
+    y = 0.5,
+    yend = 0.5,
+    arrow = arrow(length = unit(0.2, "cm"))
+  ) +
+  stat_pointinterval(point_size = 2) +
+  labs(
+    x = "Comprehension posterior probability",
+    y = "Variable", 
+    fill = "Variable",
+    alpha = "CrI"
+  ) +
+  scale_alpha_discrete(range = c(1, 0.4), na.translate = FALSE) +
+  scale_x_continuous(labels = percent, breaks = seq(-0.15, 2, 0.05)) 
+
+post_sd <- post %>% 
+  filter(grepl("sd", .variable)) %>% 
+  mutate(group = ifelse(grepl("id", .variable), "Participant", "TE")) %>% 
+  ggplot(aes(.value, fct_rev(.variable_name))) +
+  stat_slab(
+    aes(alpha = stat(cut_cdf_qi(cdf, .width = c(.95, .8, .5), labels = percent_format()))),
+    size = 0.5,
+    color = "#F98400",
+    fill = "#F98400",
+    position = position_nudge(y = 0.1)
+  ) +
+  stat_pointinterval(point_size = 2) +
+  labs(
+    x = "Comprehension posterior probability",
+    y = "Variable", 
+    fill = "Variable",
+    alpha = "CrI"
+  ) +
+  scale_alpha_discrete(range = c(1, 0.4), na.translate = FALSE) +
+  scale_x_continuous(labels = percent, breaks = seq(0.5, 1, 0.05)) +
+  theme(
+    axis.text.y = element_blank()
+  )
+
+(post_intercept / (post_fix | post_sd)) +
+  plot_layout(heights = c(0.1, 0.9)) &
+  theme(
+    legend.position = c(0.9, 0.9),
+    legend.direction = "horizontal",
+    legend.justification = "right",
+    plot.caption.position = "plot",
+    plot.caption = element_text(hjust = 0),
+    axis.title.y = element_blank(),
+    # axis.text = element_text(size = 7),
+    panel.grid.major.x = element_line(colour = "grey", linetype = "dotted"),
+    panel.grid.major.y = element_blank()
+  )
+```
+
+### Fixed effects: Production
+
+```{r fix_effets_prod_plot, message=FALSE, warning=FALSE, paged.print=FALSE, fig.cap="Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The resto of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable."}
+
+var_repl <- c(
+  "b_doe_center:lv_center" = "DoE \u00d7 Levenshtein", 
+  "b_Intercept" = "Intercept", 
+  "b_age_center" = "Age (+1 month)", 
+  "b_frequency_center" = "Frequency (+1 SD)",
+  "b_doe_center" = "DoE (+10%)", 
+  "b_lv_center" = "Levenshtein (+1 SD)", 
+  "sd_te__Intercept" = "Intercept", 
+  "sd_te__age_center" = "Age",
+  "sd_te__doe_center:lv_center" = "DoE \u00d7 Levenshtein",
+  "sd_te__doe_center" = "DoE",
+  "sd_te__lv_center" = "Levenshtein"
+)
+
+post <- gather_draws(fits_prod$fit_2, `b_.*`, `sd_te_.*`, regex = TRUE, ndraws = 1000) %>% 
+  mutate(
+    .value = ifelse(grepl("Intercept|sd", .variable), inv_logit_scaled(.value), .value/4),
+    .variable_name = str_replace_all(.variable, var_repl) 
+  )
+
+post_intercept <- post %>% 
+  filter(.variable=="b_Intercept") %>% 
+  ggplot(aes(.value, fct_rev(.variable_name))) +
+  geom_vline(xintercept = 0, size = 0.75, colour = "grey") +
+  stat_slab(
+    aes(alpha = stat(cut_cdf_qi(cdf, .width = c(.95, .8, .5), labels = percent_format()))),
+    size = 0.5,
+    color = "#FF0000",
+    fill = "#FF0000",
+    position = position_nudge(y = 0.2)
+  ) +
+  stat_pointinterval(point_size = 2) +
+  labs(
+    x = "Comprehension posterior probability", 
+    y = "Variable", 
+    fill = "Variable",
+    alpha = "CrI"
+  ) +
+  scale_alpha_discrete(range = c(1, 0.4), na.translate = FALSE) +
+  scale_x_continuous(labels = percent, limits = c(0, 1)) 
+
+post_fix <- post %>% 
+  filter(!grepl("Intercept|sd", .variable)) %>% 
+  ggplot(aes(.value, fct_rev(.variable_name))) +
+  geom_vline(xintercept = 0, size = 0.5, linetype = "dashed") +
+  stat_slab(
+    aes(alpha = stat(cut_cdf_qi(cdf, .width = c(.95, .8, .5), labels = percent_format()))),
+    size = 0.5,
+    color = "#00A08A",
+    fill = "#00A08A",
+    position = position_nudge(y = 0.1)
+  ) +
+  annotate(
+    geom = "label",
+    fill = "white",
+    label.size = 0,
+    # alpha = 0.5,
+    x = -0.05, 
+    y = 0.75,
+    label = "Increases\nP(comprehension)",
+    size = 3.5,
+    hjust = 0
+  ) +
+  annotate(
+    geom = "label",
+    fill = "white",
+    label.size = 0,
+    # alpha = 0.5,
+    x = 0.2, 
+    y = 0.75,
+    label = "Decreases\nP(comprehension)",
+    size = 3.5,
+    hjust = 1
+  ) +
+  annotate(
+    geom = "segment",
+    x = 0,
+    xend = -0.05,
+    y = 0.5,
+    yend =  0.5,
+    arrow = arrow(length = unit(0.2, "cm"))
+  ) +
+  annotate(
+    geom = "segment",
+    x = 0.15,
+    xend = 0.2,
+    y = 0.5,
+    yend = 0.5,
+    arrow = arrow(length = unit(0.2, "cm"))
+  ) +
+  stat_pointinterval(point_size = 2) +
+  labs(
+    x = "Comprehension posterior probability",
+    y = "Variable", 
+    fill = "Variable",
+    alpha = "CrI"
+  ) +
+  scale_alpha_discrete(range = c(1, 0.4), na.translate = FALSE) +
+  scale_x_continuous(labels = percent, breaks = seq(-0.15, 2, 0.05)) 
+
+post_sd <- post %>% 
+  filter(grepl("sd", .variable)) %>% 
+  mutate(group = ifelse(grepl("id", .variable), "Participant", "TE")) %>% 
+  ggplot(aes(.value, fct_rev(.variable_name))) +
+  stat_slab(
+    aes(alpha = stat(cut_cdf_qi(cdf, .width = c(.95, .8, .5), labels = percent_format()))),
+    size = 0.5,
+    color = "#F98400",
+    fill = "#F98400",
+    position = position_nudge(y = 0.1)
+  ) +
+  stat_pointinterval(point_size = 2) +
+  labs(
+    x = "Comprehension posterior probability",
+    y = "Variable", 
+    fill = "Variable",
+    alpha = "CrI"
+  ) +
+  scale_alpha_discrete(range = c(1, 0.4), na.translate = FALSE) +
+  scale_x_continuous(labels = percent, breaks = seq(0.5, 1, 0.05)) +
+  theme(
+    axis.text.y = element_blank()
+  )
+
+(post_intercept / (post_fix | post_sd)) +
+  plot_layout(heights = c(0.1, 0.9)) &
+  theme(
+    legend.position = c(0.9, 0.9),
+    legend.direction = "horizontal",
+    legend.justification = "right",
+    plot.caption.position = "plot",
+    plot.caption = element_text(hjust = 0),
+    axis.title.y = element_blank(),
+    # axis.text = element_text(size = 7),
+    panel.grid.major.x = element_line(colour = "grey", linetype = "dotted"),
+    panel.grid.major.y = element_blank()
+  )
+```
+
+
+## Random effects {.tabset .tab-pils}
+
+### Random effects: Comprehension
+
+#### Participant
+
+```{r random_participant_comp, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+re_id <- ranef(fits_comp$fit_2)$id[,,1] %>% 
+  as.data.frame() %>% 
+  rownames_to_column("id") %>% 
+  as_tibble() %>% 
+  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fits_comp$fit_2)[1])) %>% 
+  left_join(distinct(fits_comp$fit_2$data, id)) %>% 
+  clean_names()
+
+ggplot(re_id, aes(estimate, reorder(id, estimate), xmin = q2_5, xmax = q97_5)) +
+  geom_ribbon(aes(group = 1), alpha = 0.5) +
+  geom_line(aes(group = 1), size = 1) +
+  labs(
+    x = "Participant posterior probability of comprehension",
+    y = "Participant", 
+    colour = "Lang. Prof."
+  ) +
+  scale_x_continuous(limits = c(0, 1), labels = percent) +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_line(colour = "white", linetype = "dotted"),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.line = element_line(colour = "white")
+  )
+```
+
+#### Item
+
+```{r re_item_comp, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+re_te <- ranef(fits_comp$fit_2)$te[,,1] %>% 
+  as.data.frame() %>% 
+  rownames_to_column("te") %>% 
+  as_tibble() %>% 
+  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fits_comp$fit_2)[1])) %>% 
+  mutate(te = as.numeric(te)) %>% 
+  clean_names()
+
+ggplot(re_te, aes(estimate, reorder(te, estimate), xmin = q2_5, xmax = q97_5)) +
+  geom_ribbon(aes(group = 1), alpha = 0.5) +
+  geom_line(aes(group = 1), size = 1) +
+  labs(
+    x = "Participant posterior probability of comprehension",
+    y = "TE", 
+    colour = "Lang. Prof."
+  ) +
+  scale_x_continuous(limits = c(0, 1), labels = percent) +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_line(colour = "white", linetype = "dotted"),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.line = element_line(colour = "white")
+  )
+```
+
+
+### Random effects: Production
+
+#### Participant
+
+```{r random_participant_prod, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+re_id <- ranef(fits_prod$fit_2)$id[,,1] %>% 
+  as.data.frame() %>% 
+  rownames_to_column("id") %>% 
+  as_tibble() %>% 
+  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fits_prod$fit_2)[1])) %>% 
+  left_join(distinct(fits_prod$fit_2$data, id)) %>% 
+  clean_names()
+
+ggplot(re_id, aes(estimate, reorder(id, estimate), xmin = q2_5, xmax = q97_5)) +
+  geom_ribbon(aes(group = 1), alpha = 0.5, colour = NA) +
+  geom_line(aes(group = 1), size = 1) +
+  # geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), size = 0.25, height = 0) +
+  # geom_point(size = 0.5) +
+  geom_vline(xintercept = 0.5, colour = "white") +
+  labs(x = "Participant posterior probability of production",
+       y = "Participant", colour = "Lang. Prof.") +
+  scale_x_continuous(limits = c(0, 1), labels = percent) +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_line(colour = "white", linetype = "dotted"),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.line = element_line(colour = "white")
+  )
+```
+
+#### Item
+
+```{r re_item_prod, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+
+re_te <- ranef(fits_prod$fit_2)$te[,,1] %>% 
+  as.data.frame() %>% 
+  rownames_to_column("te") %>% 
+  as_tibble() %>% 
+  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fits_prod$fit_2)[1])) %>% 
+  mutate(te = as.numeric(te)) %>% 
+  clean_names()
+
+ggplot(re_te, aes(estimate, reorder(te, estimate), xmin = q2_5, xmax = q97_5)) +
+  geom_ribbon(aes(group = 1), alpha = 0.5) +
+  geom_line(aes(group = 1), size = 1) +
+  labs(
+    x = "Participant posterior probability of comprehension",
+    y = "TE", 
+    colour = "Lang. Prof."
+  ) +
+  scale_x_continuous(limits = c(0, 1), labels = percent) +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_line(colour = "white", linetype = "dotted"),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.line = element_line(colour = "white")
+  )
+
+```
+
+
+### {-}
+
+## Marginal means
+
+### Marginal means: Comprehension
+
+```{r emmeans_comp, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+nd <- expand.grid(
+  age_center = seq(min(responses$age_center), max(responses$age_center), length.out = 30),
+  doe_center = range(responses$doe_center),
+  lv_center = c(range(responses$lv_center), 0),
+  frequency_center = 0
+)
+
+m <- add_epred_draws(nd, fits_comp$fit_2, ndraws = 50, re_formula = NA) %>% 
+  mutate(
+    frequency_center = as.factor(paste0("Frequency = ", frequency_center, " SD")),
+    doe_center = factor(doe_center, levels = unique(nd$doe_center), labels = c("DoE: 0%", "DoE: 100%")),
+    lv_center = factor(lv_center, levels = unique(nd$lv_center), labels = c("LV: 0%", "LV: 50%", "LV: 100%"))
+    
+  )
+
+ggplot(m, aes(age_center + mean(responses$age, na.rm = TRUE), .epred, colour = lv_center, fill = lv_center)) +
+  facet_wrap(~doe_center) +
+  geom_line(aes(group = interaction(.draw, lv_center), colour = lv_center), alpha = 0.25, size = 1) +
+  # stat_lineribbon(size = 0, alpha = 0.5, .width = 0.95) +
+  # stat_summary(fun = "mean", geom = "line", size = 1) + 
+  geom_hline(yintercept = 0.5, size = 1, linetype = "dashed") +
+  labs(
+    x = "Age (months)", 
+    y = "Posterior probability of comprehension\n(Linear prediction)",
+    colour = "Cognateness", 
+    fill = "Cognateness"
+  ) +
+  scale_y_continuous(labels = percent, limits = c(0, 1)) +
+  theme(
+    legend.position = "top",
+    legend.title = element_blank()
+  )
+
+```
+
+## Marginal means: Production
+
+```{r emmeans_prod, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+nd <- expand.grid(
+  age_center = seq(min(responses$age_center), max(responses$age_center), length.out = 30),
+  doe_center = range(responses$doe_center),
+  lv_center = c(range(responses$lv_center), 0),
+  frequency_center = 0
+)
+
+m <- add_epred_draws(nd, fits_prod$fit_2, ndraws = 50, re_formula = NA) %>% 
+  mutate(
+    frequency_center = as.factor(paste0("Frequency = ", frequency_center, " SD")),
+    doe_center = factor(doe_center, levels = unique(nd$doe_center), labels = c("DoE: 0%", "DoE: 100%")),
+    lv_center = factor(lv_center, levels = unique(nd$lv_center), labels = c("LV: 0%", "LV: 50%", "LV: 100%"))
+  )
+
+
+ggplot(m, aes(age_center + mean(responses$age, na.rm = TRUE), .epred, colour = lv_center, fill = lv_center)) +
+  facet_wrap(~doe_center) +
+  geom_line(aes(group = interaction(.draw, lv_center), colour = lv_center), alpha = 0.25, size = 1) +
+  # stat_lineribbon(size = 0, alpha = 0.5, .width = 0.95) +
+  stat_summary(fun = "mean", geom = "line", size = 1) +
+  geom_hline(yintercept = 0.5, size = 1, colour = "grey") +
+  labs(x = "Age (months)", y = "Posterior probability of production\n(Linear prediction)", colour = "Cognateness", fill = "Cognateness") +
+  scale_y_continuous(labels = percent, limits = c(0, 1)) +
+  theme(
+    legend.position = "top",
+    legend.title = element_blank()
+  )
+
+```
+
+### Area under the curve (AUC)
+
+
+```{r confusion_matrix, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+# comprehension
+preds <- predict(fits_comp$fit_2, ndraws = 50) 
+preds <- ifelse(preds[, 1] > 0.5, 1, 0)
+confusion_mat_comp <- table(preds, pull(responses, understands))
+#correct classification rate
+rate_comp <- sum(diag(confusion_mat_comp))/sum(confusion_mat_comp)
+confusion_mat_comp <- confusion_mat_comp %>% 
+  as.data.frame() 
+colnames(confusion_mat_comp) <- c("pred", "value", "freq")
+
+# production
+preds <- predict(fits_prod$fit_2, ndraws = 50) 
+preds <- ifelse(preds[, 1] > 0.5, 1, 0)
+confusion_mat_prod <- table(preds, pull(responses, produces))
+#correct classification rate
+rate_prod <- sum(diag(confusion_mat_prod))/sum(confusion_mat_prod)
+confusion_mat_prod <- confusion_mat_prod %>% 
+  as.data.frame() 
+colnames(confusion_mat_prod) <- c("pred", "value", "freq")
+```
+
+The comprehension model classified `r percent(round(rate_comp, 2))` of the responses correctly and the production model classified `r percent(round(rate_prod, 2))` of the responses correctly.
+
+```{r confusion, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+bind_rows(
+  comp = confusion_mat_comp, 
+  prod = confusion_mat_prod, 
+  .id = "type"
+) %>% 
+  mutate(pred = pred==1) %>% 
+  pivot_wider(names_from = c(type, value), values_from = freq) %>% 
+  clean_names() %>% 
+  gt() %>% 
+  tab_spanner("Observed comprehension", matches("comp")) %>% 
+  tab_spanner("Observed production", matches("prod")) %>% 
+  cols_label(
+    pred = "Predicted",
+    comp_false = "FALSE",
+    comp_true = "TRUE",
+    prod_false = "FALSE",
+    prod_true = "TRUE"
+  ) %>% 
+  fmt_number(2:5, decimals = 0)
+
+```
+
+
+### Traceplots
+
+
+```{r diagnostics_traceplots_comp, message=FALSE, warning=FALSE, paged.print=FALSE}
+gather_draws(fits_comp$fit_2, `b_.*`, `sd_te__.*`, `cor_te__.*`, regex = TRUE, ndraws = 1000) %>% 
+  mutate(.chain = paste("Chain ", .chain)) %>% 
+  ggplot(aes(.iteration, .value, colour = .chain)) +
+  facet_wrap(~.variable, scales = "free_y") +
+  annotate(geom = "rect", colour = NA, xmin = 0, xmax = 500, ymin = -Inf, ymax = Inf, alpha = 0.25, colour = "grey") +
+  geom_line(alpha = 0.5) +
+  labs(x = "Iteration", y = "Sample value", colour = "Chain", title = "Comprehension") +
+  theme_github() +
+  theme(
+    legend.position = "top",
+    legend.title = element_blank(),
+    panel.grid = element_blank()
+  )
+```
+
+```{r diagnostics_traceplots_prod, message=FALSE, warning=FALSE, paged.print=FALSE}
+gather_draws(fits_prod$fit_2, `b_.*`, `sd_te__.*`, `cor_te__.*`, regex = TRUE, ndraws = 1000) %>% 
+  mutate(.chain = paste("Chain ", .chain)) %>% 
+  ggplot(aes(.iteration, .value, colour = .chain)) +
+  facet_wrap(~.variable, scales = "free_y") +
+  annotate(geom = "rect", colour = NA, xmin = 0, xmax = 500, ymin = -Inf, ymax = Inf, alpha = 0.25, colour = "grey") +
+  geom_line(alpha = 0.5) +
+  labs(x = "Iteration", y = "Sample value", colour = "Chain", title = "Production") +
+  theme_github() +
+  theme(
+    legend.position = "top",
+    legend.title = element_blank(),
+    panel.grid = element_blank()
+  )
+
+```
+
+## {-}
