@@ -1,0 +1,536 @@
+---
+title: "Trajectories: Predictors"
+output:
+  github_document:
+    pandoc_args: --webtex
+bibliography: "references.bib"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = TRUE,
+  echo = FALSE,
+  warning = TRUE,
+  include = TRUE,
+  out.width = "80%",
+  dpi = 250
+)
+options(
+  knitr.kable.NA = "-",
+  knitr.duplicate.label = "allow",
+  ggplot2.discrete.fill = wesanderson::wes_palettes$Darjeeling1,
+  ggplot2.discrete.colour = wesanderson::wes_palettes$Darjeeling1,
+  ggplot2.continuous.fill = ggplot2::scale_color_gradient,
+  ggplot2.continuous.colour = ggplot2::scale_color_gradient
+)
+
+```
+
+
+```{r prepare, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+
+# set params
+tar_load_globals()
+tar_load_all()
+theme_set(theme_custom())
+
+
+```
+
+
+
+# Missing data
+
+
+# Lexical frequency
+
+
+
+```{r frequency-missing, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+items %>% 
+  mutate(
+    is_missing_frequency = ifelse(is.na(frequency), "Frequency missing", "Frequency not missing")
+  ) %>% 
+  count(language, is_missing_frequency) %>% 
+  ggplot() +
+  facet_wrap(~language) +
+  aes(
+    3,
+    n, 
+    fill = is_missing_frequency, 
+    colour = is_missing_frequency
+  ) +
+  geom_col(position = position_fill()) +
+  coord_polar(theta = "y") +
+  xlim(c(0.2, 4 + 0.5)) +
+  theme_void() +
+  theme(
+    legend.position = "top",
+    legend.title = element_blank(),
+    panel.grid = element_blank()
+    
+  ) 
+
+missing_items <- items %>% 
+  filter(is.na(frequency)) %>% 
+  select(label, language) %>% 
+  pivot_wider(
+    names_from = language,
+    values_from = label,
+    values_fn = list
+  )
+
+```
+
+
+* Missing in Catalan: `r paste0(unlist(missing_items$Catalan[1]), collapse = ", ")`
+* Missing in Spanish: `r paste0(unlist(missing_items$Spanish[1]), collapse = ", ")`
+
+```{r frequency-distribution}
+medians <- items %>% 
+  drop_na(frequency) %>% 
+  group_by(language) %>% 
+  summarise(
+    median = median(frequency, na.rm = TRUE),
+    sd = sd(frequency, na.rm = TRUE)
+  )
+
+
+items %>% 
+  drop_na(frequency) %>% 
+  ggplot() +
+  aes(frequency, fill = language) +
+  facet_wrap(~language, ncol = 1) +
+  geom_rect(
+    data = medians,
+    aes(
+      xmin = median-sd,
+      xmax = median+sd,
+      ymin = -Inf,
+      ymax = Inf
+    ),
+    alpha = 0.25,
+    inherit.aes = FALSE
+  ) +
+  geom_histogram(
+    colour = "white", 
+    position = position_identity(),
+    bins = 30
+  ) +
+  geom_vline(
+    data = medians,
+    aes(
+      xintercept = median,
+    ),
+    size = 1
+  ) +
+  annotate(
+    geom = "text",
+    x = 6, 
+    y = 50,
+    label = "Median ± SD"
+  ) +
+  annotate(
+    geom = "curve",
+    x = 6, 
+    xend = 5.1,
+    y = 45,
+    yend = 40,
+    curvature = -0.3,
+    size = 1,
+    arrow = arrow(length = unit(0.24, "cm"))
+  ) +
+  labs(
+    x = "Lexical frequency (Zipf score)\nExtracted from SUBTLEX", 
+    y = "Number of items", 
+    colour = "Language", 
+    fill = "Language"
+  ) +
+  
+  
+  items %>% 
+  drop_na(frequency_million) %>% 
+  ggplot() +
+  aes(frequency_million, fill = language) +
+  facet_wrap(~language, ncol = 1) +
+  geom_histogram(
+    colour = "white", 
+    position = position_identity(),
+    bins = 30
+  ) +
+  labs(
+    y = "Number of items", 
+    x = "Lexical frequency (per million)\nExtracted from SUBTLEX", 
+    colour = "Language", 
+    fill = "Language"
+  ) +
+  theme(
+    axis.title.y = element_blank()
+  ) +
+  
+  plot_layout(
+    widths = c(0.7, 0.3),
+    guides = "collect"
+  ) &
+  theme(
+    legend.position = "none"
+  )
+
+
+```
+
+# Levenstein distance (cognateness)
+
+```{r frequency-distribution, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+medians <- items %>% 
+  drop_na(frequency) %>% 
+  group_by(language) %>% 
+  summarise(
+    median = median(lv, na.rm = TRUE),
+    sd = sd(lv, na.rm = TRUE)
+  )
+
+
+items %>% 
+  drop_na(frequency) %>% 
+  ggplot() +
+  aes(lv) +
+  geom_histogram(
+    colour = "white", 
+    position = position_identity(),
+    bins = 10,
+    fill = wesanderson::wes_palettes$Darjeeling1[1]
+  ) +
+  geom_rect(
+    data = medians,
+    aes(
+      xmin = median-sd,
+      xmax = median+sd,
+      ymin = -Inf,
+      ymax = Inf
+    ),
+    alpha = 0.25,
+    inherit.aes = FALSE
+  ) +
+  geom_vline(
+    data = medians,
+    aes(
+      xintercept = median,
+    ),
+    size = 1
+  ) +
+  annotate(
+    geom = "text",
+    x = 0.78,
+    y = 200,
+    label = "Median ± SD"
+  ) +
+  annotate(
+    geom = "curve",
+    x = 0.78,
+    xend = 0.60,
+    y = 190,
+    yend = 160,
+    curvature = -0.3,
+    size = 1,
+    arrow = arrow(length = unit(0.25, "cm"))
+  ) +
+  labs(
+    x = "Levenshtein distance", 
+    y = "Number of items", 
+    colour = "Language", 
+    fill = "Language"
+  ) +
+  scale_x_continuous(labels = percent) +
+  theme(
+    legend.position = "top"
+  )
+
+
+```
+
+# Leveshtein distance across lexical frequencies
+
+```{r items-lv-frequency, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+items %>% 
+  drop_na(frequency) %>% 
+  ggplot(aes(frequency, lv, colour = language)) +
+  geom_point(alpha = 0.25, size = 3) +
+  labs(
+    y = "Levenshtein similarity", 
+    x = "Lexical frequency (Zipf score)\nExtracted from SUBTLEX", 
+    colour = "Cognateness", 
+    fill = "Cognateness"
+  ) +
+  scale_y_continuous(labels = percent) +
+  theme(
+    legend.position = "top",
+    panel.grid.major.y = element_blank()
+  ) 
+
+
+```
+
+
+# Language exposure
+
+```{r participants-lp-table, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+labs <- c("0-10%", "10-20%", "20-30%", "30-40%", "40-50%")
+
+tbl <- participants %>% 
+  mutate(
+    age = round(age),
+    doe_2 = ifelse(
+      dominant_language=="Catalan", 
+      doe_spanish, 
+      doe_catalan
+    ),
+    doe_2 = cut(
+      doe_2, 
+      breaks = seq(0, 0.5, 0.1), 
+      include.lowest = TRUE, 
+      labels = labs
+    )
+  ) %>% 
+  count(age, doe_2) %>% 
+  arrange(doe_2) %>% 
+  mutate(doe_2 = fct_inorder(doe_2)) %>% 
+  pivot_wider(names_from = age, values_from = n)
+
+gt(tbl) %>% 
+  tab_spanner(label = "Age (months)", columns = 2:28) %>% 
+  data_color(
+    columns = 2:28,
+    colors = col_numeric(
+      palette = c("white", "orange"),
+      domain = c(0, max(tbl[, 2:ncol(tbl)], na.rm = TRUE)),
+      na.color = "grey80"
+    )
+  ) %>% 
+  cols_label(
+    doe_2 = md("**L2**")
+  ) %>% 
+  fmt_missing(
+    columns = everything(), 
+    rows = everything(),
+    missing_text = "-"
+  ) %>% 
+  tab_header(
+    title = "Sample size per age and L2 exposure",
+    subtitle = "0% exposure to L2 means that a participant is completely monolingual. 50% means a participant is a balanced bilingual"
+  ) %>% 
+  tab_style(
+    cell_text(align = "left", weight = "bold"),
+    cells_title(groups = "title")
+  ) %>% 
+  tab_style(
+    cell_text(align = "left"),
+    cells_title(groups = "subtitle")
+  ) %>% 
+  tab_style(
+    cell_text(weight = "bold"),
+    cells_column_spanners(spanners = "Age (months)")
+  )
+
+
+```
+
+
+# Exposure rate composite measure (frequency and language exposure)
+
+```{r exprate-distribution, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+responses %>% 
+  drop_na(frequency) %>% 
+  mutate(
+    exprate = (frequency*doe)/10,
+  ) %>% 
+  select(id, te, age, doe, frequency, exprate) %>% 
+  ggplot() +
+  aes(exprate) +
+  geom_histogram(colour = "white")
+
+responses %>% 
+  mutate(
+    age = round(age),
+    doe = doe/10,
+    doe = cut(
+      doe, 
+      breaks = seq(0, 1, 0.1),
+      include.lowest = TRUE,
+      ordered = TRUE
+    ),
+    exprate = frequency*(as.numeric(doe)/10)
+  ) %>% 
+  drop_na(frequency) %>%
+  select(id, te, age, doe, frequency, exprate) %>% 
+  ggplot() +
+  aes(doe, exprate) +
+  facet_wrap(~age) +
+  geom_abline(
+    slope = 1, 
+    intercept = 0,
+    colour = "grey"
+  ) +
+  labs(
+    x = "Degree of exposure (DoE)",
+    y = "Exposure rate (DoE × Frequency)",
+    colour = "Quantile"
+  ) +
+  stat_interval() +
+  scale_color_brewer(palette = "Reds") +
+  theme(
+    legend.position = c(0.9, 0),
+    legend.justification = "right",
+    legend.direction = "horizontal",
+    panel.border = element_rect(fill = NA, colour = "black"),
+    panel.grid = element_blank(),
+    axis.text.x = element_text(size = 7, angle = 90, vjust = 0)
+  )
+
+```
+
+
+```{r responses-undersands, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+responses %>% 
+  mutate(
+    age = round(age),
+    doe = doe/10,
+    doe = cut(
+      doe, 
+      breaks = seq(0, 1, 0.1),
+      include.lowest = TRUE,
+      ordered = TRUE
+    ),
+    exprate = frequency*(as.numeric(doe)/10)
+  ) %>% 
+  drop_na(frequency) %>%
+  select(id, te, age, doe, frequency, exprate, understands, produces) %>% 
+  group_by(te, exprate, age) %>% 
+  summarise(
+    prop = mean(understands, na.rm = TRUE),
+    .groups = "drop"
+  ) %>% 
+  ggplot() +
+  aes(
+    exprate, 
+    prop
+  ) +
+  facet_wrap(~as.factor(age)) +
+  geom_point(size = 0.1, alpha = 0.1) +
+  geom_smooth(
+    se = TRUE, 
+    formula = y ~ splines::bs(x, 2),
+    colour = "dodgerblue",
+    fill = "dodgerblue"
+  ) +
+  # geom_smooth(
+  #     aes(group = 1), 
+  #     colour = "black", 
+  #     formula = y ~ splines::bs(x, 4),
+  #     fill = "black", 
+  #     show.legend = FALSE
+  # ) +
+  labs(
+    x = "Degree of exposure (DoE)",
+    y = "Exposure rate (DoE × Frequency)",
+    colour = "Age",
+    fill = "Age",
+    group = "Age"
+  ) +
+  scale_y_continuous(
+    limits = c(0, 1),
+    labels = percent
+  ) +
+  theme(
+    legend.position = "none",
+    legend.justification = "right",
+    legend.direction = "horizontal",
+    panel.border = element_rect(fill = NA, colour = "black"),
+    panel.grid = element_blank(),
+    axis.text.x = element_text(size = 7, vjust = 0)
+  )
+
+```
+
+
+
+# Results
+
+```{r}
+
+d <- responses %>% 
+  mutate(
+    age = round(age),
+    doe = doe/10,
+    doe = cut(
+      doe, 
+      breaks = seq(0, 1, 0.1),
+      include.lowest = TRUE,
+      ordered = TRUE
+    ),
+    lv = cut(
+      lv, 
+      breaks = seq(0, 1, 0.25),
+      include.lowest = TRUE,
+      ordered = TRUE
+    ),
+    exprate = frequency*(as.numeric(doe)/10)
+  ) 
+
+d %>% 
+  ggplot() +
+  aes(
+    exprate,
+    understands,
+    colour = lv,
+    fill = lv
+  ) +
+  # geom_point(
+  #   size = 1,
+  #   alpha = 0.5
+  # ) +
+  geom_smooth(se = 0, size = 1) +
+  scale_y_continuous(
+    labels = percent,
+    limits = c(0, 1)
+  ) +
+  
+d %>% 
+  ggplot() +
+  aes(
+    exprate,
+    produces,
+    colour = lv,
+    fill = lv
+  ) +
+  # geom_point(
+  #   size = 1,
+  #   alpha = 0.5
+  # ) +
+  geom_smooth(se = 0, size = 1) +
+  scale_y_continuous(
+    labels = percent,
+    limits = c(0, 1)
+  ) +
+  
+  plot_layout(
+    guides = "collect"
+  )
+
+
+d_fit <- brm(
+    formula = understands ~ age + exprate,
+  family = bernoulli(),
+  data = d %>% filter(te==1)
+  
+)
+
+```
+
+
+
+
