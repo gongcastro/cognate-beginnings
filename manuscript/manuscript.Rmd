@@ -10,12 +10,16 @@ author:
     email         : "gonzalo.garciadecastro@upf.edu"
   - name          : "Daniela Avila-Varela"
     affiliation   : "1"
+  - name          : "Ignacio Castillejo"
+    affiliation   : "2"
   - name          : "Nuria Sebastian-Galles"
     affiliation   : "1"
 
 affiliation:
   - id            : "1"
     institution   : "Center for Brain and Cognition, Universitat Pompeu Fabra, Barcelona, Spain"
+  - id            : "2"
+    institution   : "Universidad Autónoma de Madrid"
 
 authornote: |
   Campus de Ciutadella, Universitat Pompeu Fabra, 08005, Barcelona, Spain
