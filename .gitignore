@@ -13,3 +13,4 @@ data/*.rds
 data/*.parquet
 results/*.rds
 img/*
+*.zip
