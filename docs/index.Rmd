@@ -8,20 +8,20 @@ bibliography: "references.bib"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  message = TRUE,
-  echo = FALSE,
-  warning = TRUE,
-  include = TRUE,
-  out.width = "80%",
-  dpi = 250
+    message = TRUE,
+    echo = FALSE,
+    warning = TRUE,
+    include = TRUE,
+    out.width = "80%",
+    dpi = 250
 )
 options(
-  knitr.kable.NA = "-",
-  knitr.duplicate.label = "allow",
-  ggplot2.discrete.fill = wesanderson::wes_palettes$Darjeeling1,
-  ggplot2.discrete.colour = wesanderson::wes_palettes$Darjeeling1,
-  ggplot2.continuous.fill = ggplot2::scale_color_gradient,
-  ggplot2.continuous.colour = ggplot2::scale_color_gradient
+    knitr.kable.NA = "-",
+    knitr.duplicate.label = "allow",
+    ggplot2.discrete.fill = ggsci::pal_d3()(4),
+    ggplot2.discrete.colour = ggsci::pal_d3()(4),
+    ggplot2.continuous.fill = ggplot2::scale_color_gradient,
+    ggplot2.continuous.colour = ggplot2::scale_color_gradient
 )
 
 ```
@@ -41,42 +41,243 @@ theme_set(theme_custom())
 
 # Questionnaires
 
+The questionnaire was implemented on-line using the formR platform [@arslan2020formr], and was structured in three blocks: a (1) language questionnaire, a (2) demographic survey, and a (3) Catalan and a Spanish vocabulary checklists. Vocabulary checklists followed a similar structure as the Oxford Communicative Developmental Inventory [@hamilton2000infant] and consisted in two lists of words: one in Catalan and one in Spanish. The Catalan inventory contained `r n_item_language["catalan"]` items (`r n_item_cognate["catalan-cognate"]` cognates, `r n_item_cognate["catalan-noncognate"]` non-cognates) and the Spanish inventory contained `r n_item_language["spanish"]` (`r n_item_cognate["spanish-cognate"]` cognates, `r n_item_cognate["spanish-noncognate"]` non-cognates). Items in one language were translation equivalents of the items in the other language (e.g., whenever *gos* [dog] was included in the Catalan inventory, the word *perro* was included in the Spanish inventory), roughly following a one-to-one mapping. When there were two acceptable translation equivalents for a given word, we included both in separate items (e.g., Catalan *acabar* [*to finish*] and Spanish *acabar* and *terminar*), or merged them into a single items (e.g., Spanish *mono* [*monkey*] and Catalan *mono/mico*. We included items from a diverse sample of `r n_categories` semantic/functional categories (see Appendix 1). For the analyses included in this study, we excluded items from the adverbs, auxiliary words, connectives, interjections and games and routines categories, so that only data from content words (nouns, adjectives, and verbs) were used.
+
+
+For each word in the vocabulary checklists, we asked parents to report whether their child was able to understand it, understand *and* say it, or did not understand or say it (checked out by default). Some families filled a long version of the vocabulary checklists (800 translation equivalents; 800 items in Catalan, 800 items in Spanish), while others filled a shorter version (~400 translation equivalents, ~400 items in Catalan, ~400 items in Spanish). These last families were randomly allocated into one of four different subsets of the complete list of items. These lists were carefully designed so that each contained a representative subsample of the items from the complete list. Semantic/functional categories with less than 16 items--thus resulting in less than four items after dividing it in four lists--were not divided in the short version of the questionnaire: all of their items were included in the four lists. Another subset of items that were part of the trial lists of some experiments in the lab were also included in all versions. Table 2 in Appendix 1 shows the distribution of items across questionnaire versions. We excluded from the analysis multi-word items (e.g., *barrita de cereales* [cereal bar]) and items that included more than one word-form (e.g., *mono / mico*). Table 3 shows the classification of items in cognates and non-cognates and their lexical frequency scores across the four lists of the inventories.
+
 # Items {.tabset .tab-pills}
+
+
+```{r items_frequency, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.width=7, fig.cap="Lexical frequencies. Mean, standard error, and 95\\% confidence interval of lexical frequencies of items included in the Catalan and Spanish lists, reported separately for identical cognates, non-identical cognates, and non-cognates."}
+
+items %>%
+    left_join(select(multilex_data$pool, te, language)) %>% 
+    unnest(list) %>% 
+    group_by(language, list) %>% 
+    summarise_at(
+        vars(freq, n_phon, lv), 
+        lst(n = ~sum(!is.na(.)), mean, sd, min, max)
+    ) %>% 
+    select(-c(n_phon_n, lv_n)) %>% 
+    rename(n = freq_n) %>% 
+    gt(groupname_col = "language") %>% 
+    fmt_number(matches("freq_|n_phon_mean|n_phon_sd")) %>% 
+    fmt_percent(matches("lv_")) %>% 
+    tab_spanner("Frequency (Zipf)", columns = starts_with("freq_")) %>% 
+    tab_spanner("# Phonemes", columns = starts_with("n_phon_")) %>% 
+    tab_spanner("Levenshtein", columns = starts_with("lv_")) %>% 
+    cols_merge_range(col_begin = "freq_min", col_end = "freq_max") %>% 
+    cols_merge_range(col_begin = "n_phon_min", col_end = "n_phon_max") %>% 
+    cols_merge_range(col_begin = "lv_min", col_end = "lv_max") %>% 
+    cols_label(
+        list = "",
+        n = md("*N*"),
+        freq_mean = md("Mean"),
+        freq_sd = md("*SD*"),
+        freq_min = md("Range"),
+        n_phon_mean = md("Mean"),
+        n_phon_sd = md("*SD*"),
+        n_phon_min = md("Range"),
+        lv_mean = md("Mean"),
+        lv_sd = md("*SD*"),
+        lv_min = md("Range")
+    ) %>% 
+    tab_style(
+        cell_text(style = "italic"),
+        cells_column_labels(everything())
+    ) %>% 
+    tab_style(
+        cell_text(weight = "bold"),
+        cells_column_spanners(everything())
+    )
+
+```
+
 
 ## Lexical frequency
 
-```{r items_frequency, message=FALSE, warning=FALSE, paged.print=FALSE}
 
-by_language <- items %>% 
-  drop_na(frequency) %>% 
-  ggplot(aes(frequency, lv, colour = language)) +
-  geom_point(alpha = 0.5, shape = 1, stroke = 1) +
-  labs(
-    y = "Levenshtein similarity", 
-    x = "Lexical frequency (Zipf score)\nExtracted from SUBTLEX", 
-    colour = "Cognateness", 
-    fill = "Cognateness"
-  ) +
-  scale_y_continuous(labels = percent) 
+```{r items-frequency, echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
+
+items %>% 
+    mutate(language = ifelse(str_detect(item, "cat_"), "Catalan", "Spanish")) %>% 
+    ggplot() +
+    aes(
+        x = freq,
+        fill = language,
+        colour = language,
+        shape = language
+    ) +
+    stat_slab(
+        slab_colour = "white",
+        slab_size = 1,
+        alpha = 0.5,
+    ) +
+    stat_pointinterval(
+        aes(y = -0.1),
+        position = position_dodge(width = 0.1),
+        point_size = 3
+    ) +
+    geom_hline(yintercept = 0, colour = "black", size = 0.5) +
+    labs(
+        x = "Frequency (Zipf)",
+        y = "Probability density",
+        fill = "Language",
+        shape = "Language",
+        colour = "Language"
+    ) +
+    scale_y_continuous(labels = percent,  limits = c(-0.15, 1), breaks = seq(0, 1, 0.25)) +
+    theme(
+        legend.position = "top",
+        axis.title = element_blank()
+    )
 
 
-by_class <- items %>% 
-  drop_na(frequency, class) %>% 
-  ggplot(aes(frequency, lv, fill = class, colour = class)) +
-  facet_wrap(vars(class), ncol = 2) +
-  geom_point(alpha = 0.25, shape = 1, stroke = 1, show.legend = FALSE) +
-  labs(y = "Levenshtein similarity", x = "Lexical frequency", colour = "cognateness", fill = "Cognateness") +
-  scale_y_continuous(labels = percent) 
+
+```
+
+## # Phonemes
+
+```{r items-nphon, echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
+
+items %>%
+    mutate(language = ifelse(str_detect(item, "cat_"), "Catalan", "Spanish")) %>% 
+    count(language, n_phon) %>% 
+    mutate(prop = n/sum(.$n)) %>% 
+    ggplot() +
+    aes(
+        x = n_phon,
+        y = prop,
+        fill = language,
+        colour = language,
+        shape = language
+    ) +
+    geom_col(
+        position = position_dodge()
+    ) +
+    geom_hline(yintercept = 0, colour = "black", size = 0.5) +
+    labs(
+        x = "Frequency (Zipf)",
+        y = "Probability density",
+        fill = "Language",
+        shape = "Language",
+        colour = "Language"
+    ) +
+    scale_y_continuous(labels = percent, breaks = seq(0, 1, 0.05)) +
+    theme(
+        legend.position = "top",
+        axis.title = element_blank()
+    )
 
 
-(by_language + by_class) +
-  plot_layout(2) &
-  theme(
-    legend.position = "top",
-    panel.grid.major.y = element_blank()
-  ) 
+```
+
+## Levenshtein
+
+```{r items-lv, echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
+
+items %>% 
+    distinct(te, .keep_all = TRUE) %>% 
+    mutate(lv_cut = cut(lv, breaks = seq(0, 1, 0.1), include.lowest = TRUE)) %>% 
+    count(lv_cut) %>% 
+    mutate(prop = n/sum(.$n)) %>% 
+    ggplot() +
+    aes(x = lv_cut, y = prop) +
+    geom_col(fill = ggsci::pal_d3()(4)[1]) +
+    labs(
+        x = "Levenshtein",
+        y = "Probability density",
+    ) +
+    theme(
+        legend.position = "top",
+        axis.title = element_blank()
+    )
 
 
+
+```
+
+## Frequency by # Phonemes
+
+
+```{r items-frequency-phonemes, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+items %>% 
+    left_join(select(pool, item, language)) %>% 
+    drop_na(freq) %>% 
+    ggplot(aes(n_phon, freq, colour = language, fill = language)) +
+    facet_wrap(~language) +
+    geom_point(size = 1, alpha = 0.25) +
+    geom_smooth(method = "lm", formula = "y ~ x") +
+    labs(
+        x = "# Phonemes", 
+        y = "Lexical frequency (Zipf score)\nExtracted from SUBTLEX", 
+        colour = "Language", 
+        fill = "Language"
+    ) +
+    scale_x_continuous(breaks = seq(0, 16, 1)) +
+    theme(
+        legend.position = "none",
+        panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_blank()
+    ) 
+
+
+```
+
+
+## Frequency by Levenshtein
+
+```{r items-frequency-levenshtein, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+items %>% 
+    left_join(select(pool, item, language)) %>% 
+    drop_na(freq) %>% 
+    ggplot(aes(freq, lv, colour = language, fill = language)) +
+    facet_wrap(~language) +
+    geom_point(size = 1, alpha = 0.5) +
+    geom_smooth(method = "lm", formula = "y ~ x") +
+    labs(
+        y = "Levenshtein similarity", 
+        x = "Lexical frequency (Zipf score)\nExtracted from SUBTLEX", 
+        colour = "Language", 
+        fill = "Language"
+    ) +
+    scale_y_continuous(labels = percent) +
+    theme(
+        legend.position = "none",
+        panel.grid.major.y = element_blank()
+    ) 
+
+
+```
+
+
+## # Phonemes by Levenshtein
+
+
+```{r items-phonemes-lv, message=FALSE, warning=FALSE, paged.print=FALSE}
+items %>% 
+    left_join(select(pool, item, language)) %>% 
+    drop_na(freq) %>% 
+    ggplot(aes(n_phon, lv, colour = language, fill = language)) +
+    facet_wrap(~language) +
+    geom_point(size = 1, alpha = 0.25) +
+    geom_smooth(method = "lm", formula = "y ~ x") +
+    labs(
+        x = "# Phonemes", 
+        y = "Levenshtein similarity", 
+        colour = "Language", 
+        fill = "Language"
+    ) +
+    scale_y_continuous(labels = percent) +
+    scale_x_continuous(breaks = seq(0, 16, 1)) +
+    theme(
+        legend.position = "none",
+        panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_blank()
+    ) 
 ```
 
 ## {-}
@@ -86,139 +287,141 @@ by_class <- items %>%
 
 ```{r participants_time, message=FALSE, warning=FALSE, paged.print=FALSE}
 participants %>% 
-  group_by(time_stamp, dominant_language) %>% 
-  summarise(n = n(), .groups = "drop") %>% 
-  group_by(dominant_language) %>% 
-  mutate(n = cumsum(n)) %>% 
-  ggplot(aes(time_stamp, n, colour = dominant_language, fill = dominant_language)) +
-  geom_line(size = 1) +
-  labs(x = "Date", y = "Number of responses", colour = "Dominant language") +
-  scale_y_continuous(breaks = seq(0, 250, 50)) +
-  guides(colour = guide_legend(ncol = 2)) +
-  theme(
-    legend.position = "top",
-    legend.title = element_blank(),
-    axis.title.x = element_blank(),
-  )
+    mutate(dominant_language = ifelse(doe_catalan >= doe_spanish, "Catalan", "Spanish")) %>% 
+    group_by(time_stamp, dominant_language) %>% 
+    summarise(n = n(), .groups = "drop") %>% 
+    group_by(dominant_language) %>% 
+    mutate(n = cumsum(n)) %>% 
+    ggplot(aes(time_stamp, n, colour = dominant_language, fill = dominant_language)) +
+    geom_vline(xintercept = ymd("2020-03-15"), size = 0.5) +
+    annotate(geom = "text", y = 350, x = ymd("2020-03-15"), label = "COVID-19 lockdown",
+             angle = 90, vjust = 1.5, hjust = 1) +
+    geom_line(size = 1) +
+    labs(x = "Date", y = "Number of responses", colour = "Dominant language") +
+    scale_y_continuous(breaks = seq(0, 400, 50), limits = c(0, 400)) +
+    guides(colour = guide_legend(ncol = 2)) +
+    theme(
+        legend.position = "top",
+        legend.title = element_blank(),
+        axis.title.x = element_blank(),
+    )
 
 ```
 
 
 ## Age
 
-```{r participants_age, message=FALSE, warning=FALSE, paged.print=FALSE}
 
+```{r participants-age, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 participants %>% 
-  mutate(age = round(age)) %>% 
-  count(lp, dominant_language, age) %>% 
-  ggplot(aes(as.factor(age), n, fill = interaction(lp, dominant_language, sep = " - "))) +
-  geom_col(position = position_fill(), size = 0.5, colour = "white") +
-  guides(colour = guide_legend(ncol = 2)) +
-  coord_flip() +
-  labs(y = "Proportion of the sample", x = "Age (months)", colour = "LP - Dominant language") +
-  scale_y_continuous(labels = scales::percent) +
-  theme(
-    axis.text.y = element_text(size = 9),
-    legend.position = "top",
-    legend.title = element_blank(),
-  ) +
-  
-  participants %>% 
-  mutate(age = round(age)) %>% 
-  count(lp, dominant_language, age) %>% 
-  ggplot(aes(as.factor(age), n, fill = interaction(lp, dominant_language, sep = " - "))) +
-  geom_col(size = 0.5, colour = "white") +
-  labs(y = "Number of participants", x = "Age (months)") +
-  guides(colour = guide_legend(ncol = 2)) +
-  coord_flip() +
-  theme(
-    legend.position = "top",
-    legend.title = element_blank(),
-    axis.title.y = element_blank(),
-    axis.text.y = element_blank(),
-    axis.ticks.y = element_blank() 
-    
-  ) +
-  
-  plot_layout(nrow = 1, guides = "collect") &
-  theme(
-    legend.position = "top", 
-    panel.grid.major = element_blank()
-  )
-
-
-
+    mutate(age = floor(age)) %>% 
+    count(age) %>% 
+    ggplot() +
+    aes(x = age, y = n) +
+    geom_col() +
+    geom_text(aes(label = n), size = 3.5, vjust = -1) +
+    labs(
+        x = "Age (months)",
+        y = "# participants"
+    ) +
+    scale_x_continuous(breaks = seq(0, 40, 2)) +
+    scale_y_continuous(limits = c(0, 55), breaks = seq(0, 55, 10)) +
+    theme(
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank()
+        
+    )
 ```
+
 
 ## Language profile
 
-```{r participants_lp, message=FALSE, warning=FALSE, paged.print=FALSE}
-labs <- c("0-10%", "10-20%", "20-30%", "30-40%", "40-50%")
+```{r participants-lp, message=FALSE, warning=FALSE, paged.print=FALSE}
 
-tbl <- participants %>% 
-  mutate(
-    age = round(age),
-    doe_2 = ifelse(dominant_language=="Catalan", doe_spanish, doe_catalan),
-    doe_2 = cut(doe_2, breaks = seq(0, 0.5, 0.1), include.lowest = TRUE, labels = labs)
-  ) %>% 
-  count(age, doe_2) %>% 
-  arrange(doe_2) %>% 
-  mutate(doe_2 = fct_inorder(doe_2)) %>% 
-  pivot_wider(names_from = doe_2, values_from = n, values_fill = 0)
-
-gt(tbl) %>% 
-  tab_spanner(label = "Number of participants by DOE", columns = 2:6) %>% 
-  data_color(
-    columns = 2:6,
-    colors = scales::col_numeric(
-      palette = c("white", "orange"),
-      domain = c(0, max(tbl[,2:ncol(tbl)]))
+participants %>% 
+    mutate(
+        dominant_language = ifelse(doe_catalan >= doe_spanish, "Catalan", "Spanish"),
+        age = round(age),
+        id = paste(id, "(", time, ")"),
+        rank = rank(doe_catalan)
+    ) %>% 
+    pivot_longer(
+        starts_with("doe_"), 
+        names_to = "language",
+        values_to = "doe",
+        names_prefix = "doe_",
+        names_transform = list(language = str_to_sentence)
+    ) %>% 
+    ggplot() +
+    aes(x = doe, y = reorder(id, -rank), fill = language) +
+    geom_col(width = 0.75, position = position_fill(), colour = "white", size = 0.1) +
+    labs(
+        x = "Degree of exposure to Catalan",
+        y = "Participant",
+        colour = "Language",
+        fill = "Language"
+    ) +
+    scale_x_continuous(labels = percent) +
+    theme(
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid.major.y = element_blank()
     )
-  ) %>% 
-  cols_label(
-    age = md("**Age<br>(months)**")
-  ) %>% 
-  as_raw_html()
+
 
 
 ```
+
 
 ## SES/parental education
 
 ```{r participants_edu, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-tbl <- participants %>%
-  mutate(edu_parent = fct_explicit_na(as.factor(edu_parent))) %>% 
-  count(lp, dominant_language, edu_parent) %>% 
-  right_join(
-    expand_grid(
-      lp = c("Monolingual", "Bilingual"),
-      dominant_language = c("Catalan", "Spanish"),
-      edu_parent = unique(participants$edu_parent)
+participants %>%
+    left_join(select(multilex_data$logs, id, time, edu_parent)) %>% 
+    mutate(
+        edu_parent = fct_explicit_na(as.factor(edu_parent)),
+        doe_catalan = cut(doe_catalan, breaks = seq(0, 1, 0.1), include.lowest = TRUE)
+    ) %>% 
+    count(doe_catalan, edu_parent) %>% 
+    right_join(
+        expand_grid(
+            doe_catalan = levels(.$doe_catalan),
+            edu_parent = unique(multilex_data$logs$edu_parent)
+        )
+    ) %>% 
+    rename(total = n) %>% 
+    pivot_wider(names_from = edu_parent, values_from = total, values_fill = 0) %>%
+    mutate(total = rowSums(cbind(.[,3:8]))) %>% 
+    rename(Total = total) %>% 
+    select(-"NA") %>% 
+    gt() %>% 
+    cols_label(
+        doe_catalan = "DoE Catalan"
+    ) %>% 
+    summary_rows(
+        columns = 2:7, 
+        fns = list(Total = ~sum(., na.rm = TRUE)),
+        formatter = fmt_number,
+        decimals = 0
+    ) %>% 
+    fmt_missing(columns = 3:8, missing_text = "--") %>% 
+    tab_spanner("Educational attainment", 3:8) %>% 
+    tab_style(
+        style = list(cell_borders(weight = px(2), sides = "left", color = "grey50")),
+        locations = cells_body(columns = 9, rows = 1:10)
+    ) %>% 
+    tab_style(
+        cell_text(style = "italic"),
+        cells_column_labels(columns = 2:7)
+    ) %>% 
+    tab_style(
+        cell_text(weight = "bold"),
+        cells_column_labels(columns = c(1, 8))
+    ) %>% 
+    tab_style(
+        cell_text(weight = "bold"),
+        cells_column_spanners(spanners = "Educational attainment")
     )
-  ) %>% 
-  replace_na(list(n = 0)) %>% 
-  rename(total = n) %>% 
-  pivot_wider(names_from = edu_parent, values_from = total, values_fill = 0) %>%
-  mutate(total = rowSums(cbind(.[,3:8]))) %>% 
-  rename(Total = total) %>% 
-  select(-"NA") 
-
-gt(tbl, groupname_col = "lp") %>% 
-  cols_label(
-    lp = "Lang. Profile",
-    dominant_language = "L1"
-  ) %>% 
-  summary_rows(
-    columns = 3:8, 
-    fns = list(Total = ~sum(.)),
-    formatter = fmt_number,
-    decimals = 0
-  ) %>% 
-  tab_style(
-    style = list(cell_borders(weight = px(2), sides = "left")),
-    locations = cells_body(columns = 10, rows = 1:4)
-  ) %>% 
-  as_raw_html()
 ```
 
 ## {-}
@@ -226,12 +429,12 @@ gt(tbl, groupname_col = "lp") %>%
 
 # Data analysis {.tabset .tab-pills}
 
+We initially fitted a null model (`fit_0`) than only included the predictors `age` and `frequency` as nuisance parameters, along with random intercepts by `id` and `item`, and random slopes of `frequency` by `id`, and `age_std` by `item`, and their correlation parameter. We then expanded this model (`fit_1`) to include the main effect of `doe`, and the `doe` by `item` random slope. Finally, we added the main effect `cognate` (`fit_2`), its interaction with `doe` (`doe:cognate`), and  random slopes for `cognate` by `id`. The models were implemented in `brms` as:
 
-We initially fitted a null model (`fit_0`) than only included the predictors `age` and `frequency` as nuisance parameters, along with random intercepts by `id` and `item`, and random slopes of `frequency` by `id`, and `age_center` by `item`, and their correlation parameter. We then expanded this model (`fit_1`) to include the main effect of `doe`, and the `doe` by `item` random slope. Finally, we added the main effect `cognate` (`fit_2`), its interaction with `doe` (`doe:cognate`), and  random slopes for `cognate` by `id`. The models were implemented in `brms` as:
+* `understands/produces ~ 1 + age_std + frequency + (1 + age_std | item) + (1 + frequency | id)`
+* `understands/produces ~ 1 + age_std + frequency + doe + (1 + age_std + doe | item) + (1 + frequency | id)`
+* `understands/produces ~ 1 + age_std + frequency + doe*cognate + (1 + age_std + doe | item) + (1 + frequency + cognate| id)`
 
-* `understands/produces ~ 1 + age_center + frequency + (1 + age_center | item) + (1 + frequency | id)`
-* `understands/produces ~ 1 + age_center + frequency + doe + (1 + age_center + doe | item) + (1 + frequency | id)`
-* `understands/produces ~ 1 + age_center + frequency + doe*cognate + (1 + age_center + doe | item) + (1 + frequency + cognate| id)`
 
 ## Model equation
 
@@ -247,147 +450,1601 @@ $$
 \end{aligned}
 $$
 
-## R code (`brms`)
+## R code (`brms`) {.tabset}
 
-```
-understands ~
-1 + age_center + frequency + lp*cognate +
-(1 + age_center + lp | te) +
-(1 + frequency + cognate | id),
-family =  bernoulli("logit")
+### Model 0
+
+```{r}
+print(model_fit_0$formula)
 ```
 
-## Stan code
+### Model 1
+
+```{r}
+print(model_fit_1$formula)
+```
+
+### Model 2
+
+```{r}
+print(model_fit_2$formula)
+```
+
+### Model 3
+
+```{r}
+print(model_fit_3$formula)
+```
+
+### Model 4
+
+```{r}
+print(model_fit_4$formula)
+```
+
+### Model 5
+
+```{r}
+print(model_fit_5$formula)
+```
+
+### Model 6
+
+```{r}
+print(model_fit_6$formula)
+```
+
+### Model 7
+
+```{r}
+print(model_fit_7$formula)
+```
+
+### {-}
+
+
+
+## Stan code {.tabset}
 
 Stan code generated by `brms::stancode`:
 
-```
-// generated with brms 2.15.0
+### Model 0
+
+
+```{stan, eval = FALSE, tidy = FALSE}
+// generated with brms 2.16.1
 functions {
-/* compute correlated group-level effects
-* Args: 
-*   z: matrix of unscaled group-level effects
-*   SD: vector of standard deviation parameters
-*   L: cholesky factor correlation matrix
-* Returns: 
-*   matrix of scaled group-level effects
-*/ 
-matrix scale_r_cor(matrix z, vector SD, matrix L) {
-// r is stored in another dimension order than z
-return transpose(diag_pre_multiply(SD, L) * z);
-}
+  /* cratio-logit log-PDF for a single response
+   * Args:
+   *   y: response category
+   *   mu: latent mean parameter
+   *   disc: discrimination parameter
+   *   thres: ordinal thresholds
+   * Returns:
+   *   a scalar to be added to the log posterior
+   */
+   real cratio_logit_lpmf(int y, real mu, real disc, vector thres) {
+     int nthres = num_elements(thres);
+     vector[nthres + 1] p;
+     vector[nthres] q;
+     int k = 1;
+     while (k <= min(y, nthres)) {
+       q[k] = log_inv_logit(disc * (mu - thres[k]));
+       p[k] = log1m_exp(q[k]);
+       for (kk in 1:(k - 1)) p[k] = p[k] + q[kk];
+       k += 1;
+     }
+     if (y == nthres + 1) {
+       p[nthres + 1] = sum(q);
+     }
+     return p[y];
+   }
+  /* cratio-logit log-PDF for a single response and merged thresholds
+   * Args:
+   *   y: response category
+   *   mu: latent mean parameter
+   *   disc: discrimination parameter
+   *   thres: vector of merged ordinal thresholds
+   *   j: start and end index for the applid threshold within 'thres'
+   * Returns:
+   *   a scalar to be added to the log posterior
+   */
+   real cratio_logit_merged_lpmf(int y, real mu, real disc, vector thres, int[] j) {
+     return cratio_logit_lpmf(y | mu, disc, thres[j[1]:j[2]]);
+   }
 }
 data {
-int<lower=1> N;  // total number of observations
-int Y[N];  // response variable
-int<lower=1> K;  // number of population-level effects
-matrix[N, K] X;  // population-level design matrix
-// data for group-level effects of ID 1
-int<lower=1> N_1;  // number of grouping levels
-int<lower=1> M_1;  // number of coefficients per level
-int<lower=1> J_1[N];  // grouping indicator per observation
-// group-level predictor values
-vector[N] Z_1_1;
-vector[N] Z_1_2;
-vector[N] Z_1_3;
-int<lower=1> NC_1;  // number of group-level correlations
-// data for group-level effects of ID 2
-int<lower=1> N_2;  // number of grouping levels
-int<lower=1> M_2;  // number of coefficients per level
-int<lower=1> J_2[N];  // grouping indicator per observation
-// group-level predictor values
-vector[N] Z_2_1;
-vector[N] Z_2_2;
-vector[N] Z_2_3;
-int<lower=1> NC_2;  // number of group-level correlations
-int prior_only;  // should the likelihood be ignored?
+  int<lower=1> N;  // total number of observations
+  int Y[N];  // response variable
+  int<lower=2> nthres;  // number of thresholds
+  // data for group-level effects of ID 1
+  int<lower=1> N_1;  // number of grouping levels
+  int<lower=1> M_1;  // number of coefficients per level
+  int<lower=1> J_1[N];  // grouping indicator per observation
+  // group-level predictor values
+  vector[N] Z_1_1;
+  // data for group-level effects of ID 2
+  int<lower=1> N_2;  // number of grouping levels
+  int<lower=1> M_2;  // number of coefficients per level
+  int<lower=1> J_2[N];  // grouping indicator per observation
+  // group-level predictor values
+  vector[N] Z_2_1;
+  int prior_only;  // should the likelihood be ignored?
 }
 transformed data {
-int Kc = K - 1;
-matrix[N, Kc] Xc;  // centered version of X without an intercept
-vector[Kc] means_X;  // column means of X before centering
-for (i in 2:K) {
-means_X[i - 1] = mean(X[, i]);
-Xc[, i - 1] = X[, i] - means_X[i - 1];
-}
 }
 parameters {
-vector[Kc] b;  // population-level effects
-real Intercept;  // temporary intercept for centered predictors
-matrix[M_1, N_1] z_1;  // standardized group-level effects
-cholesky_factor_corr[M_1] L_1;  // cholesky factor of correlation matrix
-vector<lower=0>[M_2] sd_2;  // group-level standard deviations
-matrix[M_2, N_2] z_2;  // standardized group-level effects
-cholesky_factor_corr[M_2] L_2;  // cholesky factor of correlation matrix
+  vector[nthres] Intercept;  // temporary thresholds for centered predictors
+  vector<lower=0>[M_1] sd_1;  // group-level standard deviations
+  vector[N_1] z_1[M_1];  // standardized group-level effects
+  vector<lower=0>[M_2] sd_2;  // group-level standard deviations
+  vector[N_2] z_2[M_2];  // standardized group-level effects
 }
 transformed parameters {
-vector<lower=0>[M_1] sd_1;  // group-level standard deviations
-matrix[N_1, M_1] r_1;  // actual group-level effects
-// using vectors speeds up indexing in loops
-vector[N_1] r_1_1;
-vector[N_1] r_1_2;
-vector[N_1] r_1_3;
-matrix[N_2, M_2] r_2;  // actual group-level effects
-// using vectors speeds up indexing in loops
-vector[N_2] r_2_1;
-vector[N_2] r_2_2;
-vector[N_2] r_2_3;
-sd_1 = rep_vector(1, rows(sd_1));
-// compute actual group-level effects
-r_1 = scale_r_cor(z_1, sd_1, L_1);
-r_1_1 = r_1[, 1];
-r_1_2 = r_1[, 2];
-r_1_3 = r_1[, 3];
-// compute actual group-level effects
-r_2 = scale_r_cor(z_2, sd_2, L_2);
-r_2_1 = r_2[, 1];
-r_2_2 = r_2[, 2];
-r_2_3 = r_2[, 3];
+  real<lower=0> disc = 1;  // discrimination parameters
+  vector[N_1] r_1_1;  // actual group-level effects
+  vector[N_2] r_2_1;  // actual group-level effects
+  r_1_1 = (sd_1[1] * (z_1[1]));
+  r_2_1 = (sd_2[1] * (z_2[1]));
 }
 model {
-// likelihood including constants
-if (!prior_only) {
-// initialize linear predictor term
-vector[N] mu = Intercept + rep_vector(0.0, N);
-for (n in 1:N) {
-// add more terms to the linear predictor
-mu[n] += r_1_1[J_1[n]] * Z_1_1[n] + r_1_2[J_1[n]] * Z_1_2[n] + r_1_3[J_1[n]] * Z_1_3[n] + r_2_1[J_2[n]] * Z_2_1[n] + r_2_2[J_2[n]] * Z_2_2[n] + r_2_3[J_2[n]] * Z_2_3[n];
-}
-target += bernoulli_logit_glm_lpmf(Y | Xc, mu, b);
-}
-// priors including constants
-target += normal_lpdf(b | 0, 3);
-target += normal_lpdf(Intercept | 0, 3);
-target += std_normal_lpdf(to_vector(z_1));
-target += lkj_corr_cholesky_lpdf(L_1 | 5);
-target += normal_lpdf(sd_2 | 0, 0.5)
-- 3 * normal_lccdf(0 | 0, 0.5);
-target += std_normal_lpdf(to_vector(z_2));
-target += lkj_corr_cholesky_lpdf(L_2 | 5);
+  // likelihood including constants
+  if (!prior_only) {
+    // initialize linear predictor term
+    vector[N] mu = rep_vector(0.0, N);
+    for (n in 1:N) {
+      // add more terms to the linear predictor
+      mu[n] += r_1_1[J_1[n]] * Z_1_1[n] + r_2_1[J_2[n]] * Z_2_1[n];
+    }
+    for (n in 1:N) {
+      target += cratio_logit_lpmf(Y[n] | mu[n], disc, Intercept);
+    }
+  }
+  // priors including constants
+  target += normal_lpdf(Intercept | -0.25, 0.1);
+  target += normal_lpdf(sd_1 | 1, 0.1)
+    - 1 * normal_lccdf(0 | 1, 0.1);
+  target += std_normal_lpdf(z_1[1]);
+  target += normal_lpdf(sd_2 | 1, 0.1)
+    - 1 * normal_lccdf(0 | 1, 0.1);
+  target += std_normal_lpdf(z_2[1]);
 }
 generated quantities {
-// actual population-level intercept
-real b_Intercept = Intercept - dot_product(means_X, b);
-// compute group-level correlations
-corr_matrix[M_1] Cor_1 = multiply_lower_tri_self_transpose(L_1);
-vector<lower=-1,upper=1>[NC_1] cor_1;
-// compute group-level correlations
-corr_matrix[M_2] Cor_2 = multiply_lower_tri_self_transpose(L_2);
-vector<lower=-1,upper=1>[NC_2] cor_2;
-// extract upper diagonal of correlation matrix
-for (k in 1:M_1) {
-for (j in 1:(k - 1)) {
-cor_1[choose(k - 1, 2) + j] = Cor_1[j, k];
-}
-}
-// extract upper diagonal of correlation matrix
-for (k in 1:M_2) {
-for (j in 1:(k - 1)) {
-cor_2[choose(k - 1, 2) + j] = Cor_2[j, k];
-}
-}
+  // compute actual thresholds
+  vector[nthres] b_Intercept = Intercept;
+  // additionally sample draws from priors
+  real prior_Intercept = normal_rng(-0.25,0.1);
+  real prior_sd_1 = normal_rng(1,0.1);
+  real prior_sd_2 = normal_rng(1,0.1);
+  // use rejection sampling for truncated priors
+  while (prior_sd_1 < 0) {
+    prior_sd_1 = normal_rng(1,0.1);
+  }
+  while (prior_sd_2 < 0) {
+    prior_sd_2 = normal_rng(1,0.1);
+  }
 }
 ```
+
+### Model 1
+
+```{stan, eval = FALSE, tidy = FALSE}
+// generated with brms 2.16.1
+functions {
+ /* compute correlated group-level effects
+  * Args: 
+  *   z: matrix of unscaled group-level effects
+  *   SD: vector of standard deviation parameters
+  *   L: cholesky factor correlation matrix
+  * Returns: 
+  *   matrix of scaled group-level effects
+  */ 
+  matrix scale_r_cor(matrix z, vector SD, matrix L) {
+    // r is stored in another dimension order than z
+    return transpose(diag_pre_multiply(SD, L) * z);
+  }
+  /* cratio-logit log-PDF for a single response
+   * Args:
+   *   y: response category
+   *   mu: latent mean parameter
+   *   disc: discrimination parameter
+   *   thres: ordinal thresholds
+   * Returns:
+   *   a scalar to be added to the log posterior
+   */
+   real cratio_logit_lpmf(int y, real mu, real disc, vector thres) {
+     int nthres = num_elements(thres);
+     vector[nthres + 1] p;
+     vector[nthres] q;
+     int k = 1;
+     while (k <= min(y, nthres)) {
+       q[k] = log_inv_logit(disc * (mu - thres[k]));
+       p[k] = log1m_exp(q[k]);
+       for (kk in 1:(k - 1)) p[k] = p[k] + q[kk];
+       k += 1;
+     }
+     if (y == nthres + 1) {
+       p[nthres + 1] = sum(q);
+     }
+     return p[y];
+   }
+  /* cratio-logit log-PDF for a single response and merged thresholds
+   * Args:
+   *   y: response category
+   *   mu: latent mean parameter
+   *   disc: discrimination parameter
+   *   thres: vector of merged ordinal thresholds
+   *   j: start and end index for the applid threshold within 'thres'
+   * Returns:
+   *   a scalar to be added to the log posterior
+   */
+   real cratio_logit_merged_lpmf(int y, real mu, real disc, vector thres, int[] j) {
+     return cratio_logit_lpmf(y | mu, disc, thres[j[1]:j[2]]);
+   }
+}
+data {
+  int<lower=1> N;  // total number of observations
+  int Y[N];  // response variable
+  int<lower=2> nthres;  // number of thresholds
+  int<lower=1> K;  // number of population-level effects
+  matrix[N, K] X;  // population-level design matrix
+  // data for group-level effects of ID 1
+  int<lower=1> N_1;  // number of grouping levels
+  int<lower=1> M_1;  // number of coefficients per level
+  int<lower=1> J_1[N];  // grouping indicator per observation
+  // group-level predictor values
+  vector[N] Z_1_1;
+  vector[N] Z_1_2;
+  int<lower=1> NC_1;  // number of group-level correlations
+  // data for group-level effects of ID 2
+  int<lower=1> N_2;  // number of grouping levels
+  int<lower=1> M_2;  // number of coefficients per level
+  int<lower=1> J_2[N];  // grouping indicator per observation
+  // group-level predictor values
+  vector[N] Z_2_1;
+  vector[N] Z_2_2;
+  int<lower=1> NC_2;  // number of group-level correlations
+  int prior_only;  // should the likelihood be ignored?
+}
+transformed data {
+  int Kc = K;
+  matrix[N, Kc] Xc;  // centered version of X
+  vector[Kc] means_X;  // column means of X before centering
+  for (i in 1:K) {
+    means_X[i] = mean(X[, i]);
+    Xc[, i] = X[, i] - means_X[i];
+  }
+}
+parameters {
+  vector[Kc] b;  // population-level effects
+  vector[nthres] Intercept;  // temporary thresholds for centered predictors
+  vector<lower=0>[M_1] sd_1;  // group-level standard deviations
+  matrix[M_1, N_1] z_1;  // standardized group-level effects
+  cholesky_factor_corr[M_1] L_1;  // cholesky factor of correlation matrix
+  vector<lower=0>[M_2] sd_2;  // group-level standard deviations
+  matrix[M_2, N_2] z_2;  // standardized group-level effects
+  cholesky_factor_corr[M_2] L_2;  // cholesky factor of correlation matrix
+}
+transformed parameters {
+  real<lower=0> disc = 1;  // discrimination parameters
+  matrix[N_1, M_1] r_1;  // actual group-level effects
+  // using vectors speeds up indexing in loops
+  vector[N_1] r_1_1;
+  vector[N_1] r_1_2;
+  matrix[N_2, M_2] r_2;  // actual group-level effects
+  // using vectors speeds up indexing in loops
+  vector[N_2] r_2_1;
+  vector[N_2] r_2_2;
+  // compute actual group-level effects
+  r_1 = scale_r_cor(z_1, sd_1, L_1);
+  r_1_1 = r_1[, 1];
+  r_1_2 = r_1[, 2];
+  // compute actual group-level effects
+  r_2 = scale_r_cor(z_2, sd_2, L_2);
+  r_2_1 = r_2[, 1];
+  r_2_2 = r_2[, 2];
+}
+model {
+  // likelihood including constants
+  if (!prior_only) {
+    // initialize linear predictor term
+    vector[N] mu = Xc * b;
+    for (n in 1:N) {
+      // add more terms to the linear predictor
+      mu[n] += r_1_1[J_1[n]] * Z_1_1[n] + r_1_2[J_1[n]] * Z_1_2[n] + r_2_1[J_2[n]] * Z_2_1[n] + r_2_2[J_2[n]] * Z_2_2[n];
+    }
+    for (n in 1:N) {
+      target += cratio_logit_lpmf(Y[n] | mu[n], disc, Intercept);
+    }
+  }
+  // priors including constants
+  target += normal_lpdf(b[1] | 1, 0.1);
+  target += normal_lpdf(Intercept | -0.25, 0.1);
+  target += normal_lpdf(sd_1 | 1, 0.1)
+    - 2 * normal_lccdf(0 | 1, 0.1);
+  target += std_normal_lpdf(to_vector(z_1));
+  target += lkj_corr_cholesky_lpdf(L_1 | 2);
+  target += normal_lpdf(sd_2 | 1, 0.1)
+    - 2 * normal_lccdf(0 | 1, 0.1);
+  target += std_normal_lpdf(to_vector(z_2));
+  target += lkj_corr_cholesky_lpdf(L_2 | 2);
+}
+generated quantities {
+  // compute actual thresholds
+  vector[nthres] b_Intercept = Intercept + dot_product(means_X, b);
+  // compute group-level correlations
+  corr_matrix[M_1] Cor_1 = multiply_lower_tri_self_transpose(L_1);
+  vector<lower=-1,upper=1>[NC_1] cor_1;
+  // compute group-level correlations
+  corr_matrix[M_2] Cor_2 = multiply_lower_tri_self_transpose(L_2);
+  vector<lower=-1,upper=1>[NC_2] cor_2;
+  // additionally sample draws from priors
+  real prior_b_1 = normal_rng(1,0.1);
+  real prior_Intercept = normal_rng(-0.25,0.1);
+  real prior_sd_1 = normal_rng(1,0.1);
+  real prior_cor_1 = lkj_corr_rng(M_1,2)[1, 2];
+  real prior_sd_2 = normal_rng(1,0.1);
+  real prior_cor_2 = lkj_corr_rng(M_2,2)[1, 2];
+  // extract upper diagonal of correlation matrix
+  for (k in 1:M_1) {
+    for (j in 1:(k - 1)) {
+      cor_1[choose(k - 1, 2) + j] = Cor_1[j, k];
+    }
+  }
+  // extract upper diagonal of correlation matrix
+  for (k in 1:M_2) {
+    for (j in 1:(k - 1)) {
+      cor_2[choose(k - 1, 2) + j] = Cor_2[j, k];
+    }
+  }
+  // use rejection sampling for truncated priors
+  while (prior_sd_1 < 0) {
+    prior_sd_1 = normal_rng(1,0.1);
+  }
+  while (prior_sd_2 < 0) {
+    prior_sd_2 = normal_rng(1,0.1);
+  }
+}
+```
+
+### Model 2
+
+```{stan, eval = FALSE, tidy = FALSE}
+// generated with brms 2.16.1
+functions {
+ /* compute correlated group-level effects
+  * Args: 
+  *   z: matrix of unscaled group-level effects
+  *   SD: vector of standard deviation parameters
+  *   L: cholesky factor correlation matrix
+  * Returns: 
+  *   matrix of scaled group-level effects
+  */ 
+  matrix scale_r_cor(matrix z, vector SD, matrix L) {
+    // r is stored in another dimension order than z
+    return transpose(diag_pre_multiply(SD, L) * z);
+  }
+  /* cratio-logit log-PDF for a single response
+   * Args:
+   *   y: response category
+   *   mu: latent mean parameter
+   *   disc: discrimination parameter
+   *   thres: ordinal thresholds
+   * Returns:
+   *   a scalar to be added to the log posterior
+   */
+   real cratio_logit_lpmf(int y, real mu, real disc, vector thres) {
+     int nthres = num_elements(thres);
+     vector[nthres + 1] p;
+     vector[nthres] q;
+     int k = 1;
+     while (k <= min(y, nthres)) {
+       q[k] = log_inv_logit(disc * (mu - thres[k]));
+       p[k] = log1m_exp(q[k]);
+       for (kk in 1:(k - 1)) p[k] = p[k] + q[kk];
+       k += 1;
+     }
+     if (y == nthres + 1) {
+       p[nthres + 1] = sum(q);
+     }
+     return p[y];
+   }
+  /* cratio-logit log-PDF for a single response and merged thresholds
+   * Args:
+   *   y: response category
+   *   mu: latent mean parameter
+   *   disc: discrimination parameter
+   *   thres: vector of merged ordinal thresholds
+   *   j: start and end index for the applid threshold within 'thres'
+   * Returns:
+   *   a scalar to be added to the log posterior
+   */
+   real cratio_logit_merged_lpmf(int y, real mu, real disc, vector thres, int[] j) {
+     return cratio_logit_lpmf(y | mu, disc, thres[j[1]:j[2]]);
+   }
+}
+data {
+  int<lower=1> N;  // total number of observations
+  int Y[N];  // response variable
+  int<lower=2> nthres;  // number of thresholds
+  int<lower=1> K;  // number of population-level effects
+  matrix[N, K] X;  // population-level design matrix
+  // data for group-level effects of ID 1
+  int<lower=1> N_1;  // number of grouping levels
+  int<lower=1> M_1;  // number of coefficients per level
+  int<lower=1> J_1[N];  // grouping indicator per observation
+  // group-level predictor values
+  vector[N] Z_1_1;
+  vector[N] Z_1_2;
+  vector[N] Z_1_3;
+  int<lower=1> NC_1;  // number of group-level correlations
+  // data for group-level effects of ID 2
+  int<lower=1> N_2;  // number of grouping levels
+  int<lower=1> M_2;  // number of coefficients per level
+  int<lower=1> J_2[N];  // grouping indicator per observation
+  // group-level predictor values
+  vector[N] Z_2_1;
+  vector[N] Z_2_2;
+  int<lower=1> NC_2;  // number of group-level correlations
+  int prior_only;  // should the likelihood be ignored?
+}
+transformed data {
+  int Kc = K;
+  matrix[N, Kc] Xc;  // centered version of X
+  vector[Kc] means_X;  // column means of X before centering
+  for (i in 1:K) {
+    means_X[i] = mean(X[, i]);
+    Xc[, i] = X[, i] - means_X[i];
+  }
+}
+parameters {
+  vector[Kc] b;  // population-level effects
+  vector[nthres] Intercept;  // temporary thresholds for centered predictors
+  vector<lower=0>[M_1] sd_1;  // group-level standard deviations
+  matrix[M_1, N_1] z_1;  // standardized group-level effects
+  cholesky_factor_corr[M_1] L_1;  // cholesky factor of correlation matrix
+  vector<lower=0>[M_2] sd_2;  // group-level standard deviations
+  matrix[M_2, N_2] z_2;  // standardized group-level effects
+  cholesky_factor_corr[M_2] L_2;  // cholesky factor of correlation matrix
+}
+transformed parameters {
+  real<lower=0> disc = 1;  // discrimination parameters
+  matrix[N_1, M_1] r_1;  // actual group-level effects
+  // using vectors speeds up indexing in loops
+  vector[N_1] r_1_1;
+  vector[N_1] r_1_2;
+  vector[N_1] r_1_3;
+  matrix[N_2, M_2] r_2;  // actual group-level effects
+  // using vectors speeds up indexing in loops
+  vector[N_2] r_2_1;
+  vector[N_2] r_2_2;
+  // compute actual group-level effects
+  r_1 = scale_r_cor(z_1, sd_1, L_1);
+  r_1_1 = r_1[, 1];
+  r_1_2 = r_1[, 2];
+  r_1_3 = r_1[, 3];
+  // compute actual group-level effects
+  r_2 = scale_r_cor(z_2, sd_2, L_2);
+  r_2_1 = r_2[, 1];
+  r_2_2 = r_2[, 2];
+}
+model {
+  // likelihood including constants
+  if (!prior_only) {
+    // initialize linear predictor term
+    vector[N] mu = Xc * b;
+    for (n in 1:N) {
+      // add more terms to the linear predictor
+      mu[n] += r_1_1[J_1[n]] * Z_1_1[n] + r_1_2[J_1[n]] * Z_1_2[n] + r_1_3[J_1[n]] * Z_1_3[n] + r_2_1[J_2[n]] * Z_2_1[n] + r_2_2[J_2[n]] * Z_2_2[n];
+    }
+    for (n in 1:N) {
+      target += cratio_logit_lpmf(Y[n] | mu[n], disc, Intercept);
+    }
+  }
+  // priors including constants
+  target += normal_lpdf(b[1] | 1, 0.1);
+  target += normal_lpdf(b[2] | 0, 0.1);
+  target += normal_lpdf(Intercept | -0.25, 0.1);
+  target += normal_lpdf(sd_1 | 1, 0.1)
+    - 3 * normal_lccdf(0 | 1, 0.1);
+  target += std_normal_lpdf(to_vector(z_1));
+  target += lkj_corr_cholesky_lpdf(L_1 | 2);
+  target += normal_lpdf(sd_2 | 1, 0.1)
+    - 2 * normal_lccdf(0 | 1, 0.1);
+  target += std_normal_lpdf(to_vector(z_2));
+  target += lkj_corr_cholesky_lpdf(L_2 | 2);
+}
+generated quantities {
+  // compute actual thresholds
+  vector[nthres] b_Intercept = Intercept + dot_product(means_X, b);
+  // compute group-level correlations
+  corr_matrix[M_1] Cor_1 = multiply_lower_tri_self_transpose(L_1);
+  vector<lower=-1,upper=1>[NC_1] cor_1;
+  // compute group-level correlations
+  corr_matrix[M_2] Cor_2 = multiply_lower_tri_self_transpose(L_2);
+  vector<lower=-1,upper=1>[NC_2] cor_2;
+  // additionally sample draws from priors
+  real prior_b_1 = normal_rng(1,0.1);
+  real prior_b_2 = normal_rng(0,0.1);
+  real prior_Intercept = normal_rng(-0.25,0.1);
+  real prior_sd_1 = normal_rng(1,0.1);
+  real prior_cor_1 = lkj_corr_rng(M_1,2)[1, 2];
+  real prior_sd_2 = normal_rng(1,0.1);
+  real prior_cor_2 = lkj_corr_rng(M_2,2)[1, 2];
+  // extract upper diagonal of correlation matrix
+  for (k in 1:M_1) {
+    for (j in 1:(k - 1)) {
+      cor_1[choose(k - 1, 2) + j] = Cor_1[j, k];
+    }
+  }
+  // extract upper diagonal of correlation matrix
+  for (k in 1:M_2) {
+    for (j in 1:(k - 1)) {
+      cor_2[choose(k - 1, 2) + j] = Cor_2[j, k];
+    }
+  }
+  // use rejection sampling for truncated priors
+  while (prior_sd_1 < 0) {
+    prior_sd_1 = normal_rng(1,0.1);
+  }
+  while (prior_sd_2 < 0) {
+    prior_sd_2 = normal_rng(1,0.1);
+  }
+}
+```
+
+### Model 3
+
+```{stan, eval = FALSE, tidy = FALSE}
+// generated with brms 2.16.1
+functions {
+ /* compute correlated group-level effects
+  * Args: 
+  *   z: matrix of unscaled group-level effects
+  *   SD: vector of standard deviation parameters
+  *   L: cholesky factor correlation matrix
+  * Returns: 
+  *   matrix of scaled group-level effects
+  */ 
+  matrix scale_r_cor(matrix z, vector SD, matrix L) {
+    // r is stored in another dimension order than z
+    return transpose(diag_pre_multiply(SD, L) * z);
+  }
+  /* cratio-logit log-PDF for a single response
+   * Args:
+   *   y: response category
+   *   mu: latent mean parameter
+   *   disc: discrimination parameter
+   *   thres: ordinal thresholds
+   * Returns:
+   *   a scalar to be added to the log posterior
+   */
+   real cratio_logit_lpmf(int y, real mu, real disc, vector thres) {
+     int nthres = num_elements(thres);
+     vector[nthres + 1] p;
+     vector[nthres] q;
+     int k = 1;
+     while (k <= min(y, nthres)) {
+       q[k] = log_inv_logit(disc * (mu - thres[k]));
+       p[k] = log1m_exp(q[k]);
+       for (kk in 1:(k - 1)) p[k] = p[k] + q[kk];
+       k += 1;
+     }
+     if (y == nthres + 1) {
+       p[nthres + 1] = sum(q);
+     }
+     return p[y];
+   }
+  /* cratio-logit log-PDF for a single response and merged thresholds
+   * Args:
+   *   y: response category
+   *   mu: latent mean parameter
+   *   disc: discrimination parameter
+   *   thres: vector of merged ordinal thresholds
+   *   j: start and end index for the applid threshold within 'thres'
+   * Returns:
+   *   a scalar to be added to the log posterior
+   */
+   real cratio_logit_merged_lpmf(int y, real mu, real disc, vector thres, int[] j) {
+     return cratio_logit_lpmf(y | mu, disc, thres[j[1]:j[2]]);
+   }
+}
+data {
+  int<lower=1> N;  // total number of observations
+  int Y[N];  // response variable
+  int<lower=2> nthres;  // number of thresholds
+  int<lower=1> K;  // number of population-level effects
+  matrix[N, K] X;  // population-level design matrix
+  // data for group-level effects of ID 1
+  int<lower=1> N_1;  // number of grouping levels
+  int<lower=1> M_1;  // number of coefficients per level
+  int<lower=1> J_1[N];  // grouping indicator per observation
+  // group-level predictor values
+  vector[N] Z_1_1;
+  vector[N] Z_1_2;
+  vector[N] Z_1_3;
+  vector[N] Z_1_4;
+  int<lower=1> NC_1;  // number of group-level correlations
+  // data for group-level effects of ID 2
+  int<lower=1> N_2;  // number of grouping levels
+  int<lower=1> M_2;  // number of coefficients per level
+  int<lower=1> J_2[N];  // grouping indicator per observation
+  // group-level predictor values
+  vector[N] Z_2_1;
+  vector[N] Z_2_2;
+  vector[N] Z_2_3;
+  vector[N] Z_2_4;
+  int<lower=1> NC_2;  // number of group-level correlations
+  int prior_only;  // should the likelihood be ignored?
+}
+transformed data {
+  int Kc = K;
+  matrix[N, Kc] Xc;  // centered version of X
+  vector[Kc] means_X;  // column means of X before centering
+  for (i in 1:K) {
+    means_X[i] = mean(X[, i]);
+    Xc[, i] = X[, i] - means_X[i];
+  }
+}
+parameters {
+  vector[Kc] b;  // population-level effects
+  vector[nthres] Intercept;  // temporary thresholds for centered predictors
+  vector<lower=0>[M_1] sd_1;  // group-level standard deviations
+  matrix[M_1, N_1] z_1;  // standardized group-level effects
+  cholesky_factor_corr[M_1] L_1;  // cholesky factor of correlation matrix
+  vector<lower=0>[M_2] sd_2;  // group-level standard deviations
+  matrix[M_2, N_2] z_2;  // standardized group-level effects
+  cholesky_factor_corr[M_2] L_2;  // cholesky factor of correlation matrix
+}
+transformed parameters {
+  real<lower=0> disc = 1;  // discrimination parameters
+  matrix[N_1, M_1] r_1;  // actual group-level effects
+  // using vectors speeds up indexing in loops
+  vector[N_1] r_1_1;
+  vector[N_1] r_1_2;
+  vector[N_1] r_1_3;
+  vector[N_1] r_1_4;
+  matrix[N_2, M_2] r_2;  // actual group-level effects
+  // using vectors speeds up indexing in loops
+  vector[N_2] r_2_1;
+  vector[N_2] r_2_2;
+  vector[N_2] r_2_3;
+  vector[N_2] r_2_4;
+  // compute actual group-level effects
+  r_1 = scale_r_cor(z_1, sd_1, L_1);
+  r_1_1 = r_1[, 1];
+  r_1_2 = r_1[, 2];
+  r_1_3 = r_1[, 3];
+  r_1_4 = r_1[, 4];
+  // compute actual group-level effects
+  r_2 = scale_r_cor(z_2, sd_2, L_2);
+  r_2_1 = r_2[, 1];
+  r_2_2 = r_2[, 2];
+  r_2_3 = r_2[, 3];
+  r_2_4 = r_2[, 4];
+}
+model {
+  // likelihood including constants
+  if (!prior_only) {
+    // initialize linear predictor term
+    vector[N] mu = Xc * b;
+    for (n in 1:N) {
+      // add more terms to the linear predictor
+      mu[n] += r_1_1[J_1[n]] * Z_1_1[n] + r_1_2[J_1[n]] * Z_1_2[n] + r_1_3[J_1[n]] * Z_1_3[n] + r_1_4[J_1[n]] * Z_1_4[n] + r_2_1[J_2[n]] * Z_2_1[n] + r_2_2[J_2[n]] * Z_2_2[n] + r_2_3[J_2[n]] * Z_2_3[n] + r_2_4[J_2[n]] * Z_2_4[n];
+    }
+    for (n in 1:N) {
+      target += cratio_logit_lpmf(Y[n] | mu[n], disc, Intercept);
+    }
+  }
+  // priors including constants
+  target += normal_lpdf(b[1] | 1, 0.1);
+  target += normal_lpdf(b[2] | 0, 0.1);
+  target += normal_lpdf(b[3] | 0, 0.1);
+  target += normal_lpdf(Intercept | -0.25, 0.1);
+  target += normal_lpdf(sd_1 | 1, 0.1)
+    - 4 * normal_lccdf(0 | 1, 0.1);
+  target += std_normal_lpdf(to_vector(z_1));
+  target += lkj_corr_cholesky_lpdf(L_1 | 2);
+  target += normal_lpdf(sd_2 | 1, 0.1)
+    - 4 * normal_lccdf(0 | 1, 0.1);
+  target += std_normal_lpdf(to_vector(z_2));
+  target += lkj_corr_cholesky_lpdf(L_2 | 2);
+}
+generated quantities {
+  // compute actual thresholds
+  vector[nthres] b_Intercept = Intercept + dot_product(means_X, b);
+  // compute group-level correlations
+  corr_matrix[M_1] Cor_1 = multiply_lower_tri_self_transpose(L_1);
+  vector<lower=-1,upper=1>[NC_1] cor_1;
+  // compute group-level correlations
+  corr_matrix[M_2] Cor_2 = multiply_lower_tri_self_transpose(L_2);
+  vector<lower=-1,upper=1>[NC_2] cor_2;
+  // additionally sample draws from priors
+  real prior_b_1 = normal_rng(1,0.1);
+  real prior_b_2 = normal_rng(0,0.1);
+  real prior_b_3 = normal_rng(0,0.1);
+  real prior_Intercept = normal_rng(-0.25,0.1);
+  real prior_sd_1 = normal_rng(1,0.1);
+  real prior_cor_1 = lkj_corr_rng(M_1,2)[1, 2];
+  real prior_sd_2 = normal_rng(1,0.1);
+  real prior_cor_2 = lkj_corr_rng(M_2,2)[1, 2];
+  // extract upper diagonal of correlation matrix
+  for (k in 1:M_1) {
+    for (j in 1:(k - 1)) {
+      cor_1[choose(k - 1, 2) + j] = Cor_1[j, k];
+    }
+  }
+  // extract upper diagonal of correlation matrix
+  for (k in 1:M_2) {
+    for (j in 1:(k - 1)) {
+      cor_2[choose(k - 1, 2) + j] = Cor_2[j, k];
+    }
+  }
+  // use rejection sampling for truncated priors
+  while (prior_sd_1 < 0) {
+    prior_sd_1 = normal_rng(1,0.1);
+  }
+  while (prior_sd_2 < 0) {
+    prior_sd_2 = normal_rng(1,0.1);
+  }
+}
+
+```
+
+### Model 4
+
+```{stan, eval = FALSE, tidy = FALSE}
+// generated with brms 2.16.1
+functions {
+ /* compute correlated group-level effects
+  * Args: 
+  *   z: matrix of unscaled group-level effects
+  *   SD: vector of standard deviation parameters
+  *   L: cholesky factor correlation matrix
+  * Returns: 
+  *   matrix of scaled group-level effects
+  */ 
+  matrix scale_r_cor(matrix z, vector SD, matrix L) {
+    // r is stored in another dimension order than z
+    return transpose(diag_pre_multiply(SD, L) * z);
+  }
+  /* cratio-logit log-PDF for a single response
+   * Args:
+   *   y: response category
+   *   mu: latent mean parameter
+   *   disc: discrimination parameter
+   *   thres: ordinal thresholds
+   * Returns:
+   *   a scalar to be added to the log posterior
+   */
+   real cratio_logit_lpmf(int y, real mu, real disc, vector thres) {
+     int nthres = num_elements(thres);
+     vector[nthres + 1] p;
+     vector[nthres] q;
+     int k = 1;
+     while (k <= min(y, nthres)) {
+       q[k] = log_inv_logit(disc * (mu - thres[k]));
+       p[k] = log1m_exp(q[k]);
+       for (kk in 1:(k - 1)) p[k] = p[k] + q[kk];
+       k += 1;
+     }
+     if (y == nthres + 1) {
+       p[nthres + 1] = sum(q);
+     }
+     return p[y];
+   }
+  /* cratio-logit log-PDF for a single response and merged thresholds
+   * Args:
+   *   y: response category
+   *   mu: latent mean parameter
+   *   disc: discrimination parameter
+   *   thres: vector of merged ordinal thresholds
+   *   j: start and end index for the applid threshold within 'thres'
+   * Returns:
+   *   a scalar to be added to the log posterior
+   */
+   real cratio_logit_merged_lpmf(int y, real mu, real disc, vector thres, int[] j) {
+     return cratio_logit_lpmf(y | mu, disc, thres[j[1]:j[2]]);
+   }
+}
+data {
+  int<lower=1> N;  // total number of observations
+  int Y[N];  // response variable
+  int<lower=2> nthres;  // number of thresholds
+  int<lower=1> K;  // number of population-level effects
+  matrix[N, K] X;  // population-level design matrix
+  // data for group-level effects of ID 1
+  int<lower=1> N_1;  // number of grouping levels
+  int<lower=1> M_1;  // number of coefficients per level
+  int<lower=1> J_1[N];  // grouping indicator per observation
+  // group-level predictor values
+  vector[N] Z_1_1;
+  vector[N] Z_1_2;
+  vector[N] Z_1_3;
+  vector[N] Z_1_4;
+  vector[N] Z_1_5;
+  int<lower=1> NC_1;  // number of group-level correlations
+  // data for group-level effects of ID 2
+  int<lower=1> N_2;  // number of grouping levels
+  int<lower=1> M_2;  // number of coefficients per level
+  int<lower=1> J_2[N];  // grouping indicator per observation
+  // group-level predictor values
+  vector[N] Z_2_1;
+  vector[N] Z_2_2;
+  vector[N] Z_2_3;
+  vector[N] Z_2_4;
+  vector[N] Z_2_5;
+  int<lower=1> NC_2;  // number of group-level correlations
+  int prior_only;  // should the likelihood be ignored?
+}
+transformed data {
+  int Kc = K;
+  matrix[N, Kc] Xc;  // centered version of X
+  vector[Kc] means_X;  // column means of X before centering
+  for (i in 1:K) {
+    means_X[i] = mean(X[, i]);
+    Xc[, i] = X[, i] - means_X[i];
+  }
+}
+parameters {
+  vector[Kc] b;  // population-level effects
+  vector[nthres] Intercept;  // temporary thresholds for centered predictors
+  vector<lower=0>[M_1] sd_1;  // group-level standard deviations
+  matrix[M_1, N_1] z_1;  // standardized group-level effects
+  cholesky_factor_corr[M_1] L_1;  // cholesky factor of correlation matrix
+  vector<lower=0>[M_2] sd_2;  // group-level standard deviations
+  matrix[M_2, N_2] z_2;  // standardized group-level effects
+  cholesky_factor_corr[M_2] L_2;  // cholesky factor of correlation matrix
+}
+transformed parameters {
+  real<lower=0> disc = 1;  // discrimination parameters
+  matrix[N_1, M_1] r_1;  // actual group-level effects
+  // using vectors speeds up indexing in loops
+  vector[N_1] r_1_1;
+  vector[N_1] r_1_2;
+  vector[N_1] r_1_3;
+  vector[N_1] r_1_4;
+  vector[N_1] r_1_5;
+  matrix[N_2, M_2] r_2;  // actual group-level effects
+  // using vectors speeds up indexing in loops
+  vector[N_2] r_2_1;
+  vector[N_2] r_2_2;
+  vector[N_2] r_2_3;
+  vector[N_2] r_2_4;
+  vector[N_2] r_2_5;
+  // compute actual group-level effects
+  r_1 = scale_r_cor(z_1, sd_1, L_1);
+  r_1_1 = r_1[, 1];
+  r_1_2 = r_1[, 2];
+  r_1_3 = r_1[, 3];
+  r_1_4 = r_1[, 4];
+  r_1_5 = r_1[, 5];
+  // compute actual group-level effects
+  r_2 = scale_r_cor(z_2, sd_2, L_2);
+  r_2_1 = r_2[, 1];
+  r_2_2 = r_2[, 2];
+  r_2_3 = r_2[, 3];
+  r_2_4 = r_2[, 4];
+  r_2_5 = r_2[, 5];
+}
+model {
+  // likelihood including constants
+  if (!prior_only) {
+    // initialize linear predictor term
+    vector[N] mu = Xc * b;
+    for (n in 1:N) {
+      // add more terms to the linear predictor
+      mu[n] += r_1_1[J_1[n]] * Z_1_1[n] + r_1_2[J_1[n]] * Z_1_2[n] + r_1_3[J_1[n]] * Z_1_3[n] + r_1_4[J_1[n]] * Z_1_4[n] + r_1_5[J_1[n]] * Z_1_5[n] + r_2_1[J_2[n]] * Z_2_1[n] + r_2_2[J_2[n]] * Z_2_2[n] + r_2_3[J_2[n]] * Z_2_3[n] + r_2_4[J_2[n]] * Z_2_4[n] + r_2_5[J_2[n]] * Z_2_5[n];
+    }
+    for (n in 1:N) {
+      target += cratio_logit_lpmf(Y[n] | mu[n], disc, Intercept);
+    }
+  }
+  // priors including constants
+  target += normal_lpdf(b[1] | 1, 0.1);
+  target += normal_lpdf(b[2] | 0, 0.1);
+  target += normal_lpdf(b[3] | 0, 0.1);
+  target += normal_lpdf(b[4] | 0, 0.1);
+  target += normal_lpdf(Intercept | -0.25, 0.1);
+  target += normal_lpdf(sd_1 | 1, 0.1)
+    - 5 * normal_lccdf(0 | 1, 0.1);
+  target += std_normal_lpdf(to_vector(z_1));
+  target += lkj_corr_cholesky_lpdf(L_1 | 2);
+  target += normal_lpdf(sd_2 | 1, 0.1)
+    - 5 * normal_lccdf(0 | 1, 0.1);
+  target += std_normal_lpdf(to_vector(z_2));
+  target += lkj_corr_cholesky_lpdf(L_2 | 2);
+}
+generated quantities {
+  // compute actual thresholds
+  vector[nthres] b_Intercept = Intercept + dot_product(means_X, b);
+  // compute group-level correlations
+  corr_matrix[M_1] Cor_1 = multiply_lower_tri_self_transpose(L_1);
+  vector<lower=-1,upper=1>[NC_1] cor_1;
+  // compute group-level correlations
+  corr_matrix[M_2] Cor_2 = multiply_lower_tri_self_transpose(L_2);
+  vector<lower=-1,upper=1>[NC_2] cor_2;
+  // additionally sample draws from priors
+  real prior_b_1 = normal_rng(1,0.1);
+  real prior_b_2 = normal_rng(0,0.1);
+  real prior_b_3 = normal_rng(0,0.1);
+  real prior_b_4 = normal_rng(0,0.1);
+  real prior_Intercept = normal_rng(-0.25,0.1);
+  real prior_sd_1 = normal_rng(1,0.1);
+  real prior_cor_1 = lkj_corr_rng(M_1,2)[1, 2];
+  real prior_sd_2 = normal_rng(1,0.1);
+  real prior_cor_2 = lkj_corr_rng(M_2,2)[1, 2];
+  // extract upper diagonal of correlation matrix
+  for (k in 1:M_1) {
+    for (j in 1:(k - 1)) {
+      cor_1[choose(k - 1, 2) + j] = Cor_1[j, k];
+    }
+  }
+  // extract upper diagonal of correlation matrix
+  for (k in 1:M_2) {
+    for (j in 1:(k - 1)) {
+      cor_2[choose(k - 1, 2) + j] = Cor_2[j, k];
+    }
+  }
+  // use rejection sampling for truncated priors
+  while (prior_sd_1 < 0) {
+    prior_sd_1 = normal_rng(1,0.1);
+  }
+  while (prior_sd_2 < 0) {
+    prior_sd_2 = normal_rng(1,0.1);
+  }
+}
+
+```
+
+### Model 5
+
+```{stan, eval = FALSE, tidy = FALSE}
+// generated with brms 2.16.1
+functions {
+ /* compute correlated group-level effects
+  * Args: 
+  *   z: matrix of unscaled group-level effects
+  *   SD: vector of standard deviation parameters
+  *   L: cholesky factor correlation matrix
+  * Returns: 
+  *   matrix of scaled group-level effects
+  */ 
+  matrix scale_r_cor(matrix z, vector SD, matrix L) {
+    // r is stored in another dimension order than z
+    return transpose(diag_pre_multiply(SD, L) * z);
+  }
+  /* cratio-logit log-PDF for a single response
+   * Args:
+   *   y: response category
+   *   mu: latent mean parameter
+   *   disc: discrimination parameter
+   *   thres: ordinal thresholds
+   * Returns:
+   *   a scalar to be added to the log posterior
+   */
+   real cratio_logit_lpmf(int y, real mu, real disc, vector thres) {
+     int nthres = num_elements(thres);
+     vector[nthres + 1] p;
+     vector[nthres] q;
+     int k = 1;
+     while (k <= min(y, nthres)) {
+       q[k] = log_inv_logit(disc * (mu - thres[k]));
+       p[k] = log1m_exp(q[k]);
+       for (kk in 1:(k - 1)) p[k] = p[k] + q[kk];
+       k += 1;
+     }
+     if (y == nthres + 1) {
+       p[nthres + 1] = sum(q);
+     }
+     return p[y];
+   }
+  /* cratio-logit log-PDF for a single response and merged thresholds
+   * Args:
+   *   y: response category
+   *   mu: latent mean parameter
+   *   disc: discrimination parameter
+   *   thres: vector of merged ordinal thresholds
+   *   j: start and end index for the applid threshold within 'thres'
+   * Returns:
+   *   a scalar to be added to the log posterior
+   */
+   real cratio_logit_merged_lpmf(int y, real mu, real disc, vector thres, int[] j) {
+     return cratio_logit_lpmf(y | mu, disc, thres[j[1]:j[2]]);
+   }
+}
+data {
+  int<lower=1> N;  // total number of observations
+  int Y[N];  // response variable
+  int<lower=2> nthres;  // number of thresholds
+  int<lower=1> K;  // number of population-level effects
+  matrix[N, K] X;  // population-level design matrix
+  // data for group-level effects of ID 1
+  int<lower=1> N_1;  // number of grouping levels
+  int<lower=1> M_1;  // number of coefficients per level
+  int<lower=1> J_1[N];  // grouping indicator per observation
+  // group-level predictor values
+  vector[N] Z_1_1;
+  vector[N] Z_1_2;
+  vector[N] Z_1_3;
+  vector[N] Z_1_4;
+  vector[N] Z_1_5;
+  vector[N] Z_1_6;
+  int<lower=1> NC_1;  // number of group-level correlations
+  // data for group-level effects of ID 2
+  int<lower=1> N_2;  // number of grouping levels
+  int<lower=1> M_2;  // number of coefficients per level
+  int<lower=1> J_2[N];  // grouping indicator per observation
+  // group-level predictor values
+  vector[N] Z_2_1;
+  vector[N] Z_2_2;
+  vector[N] Z_2_3;
+  vector[N] Z_2_4;
+  vector[N] Z_2_5;
+  int<lower=1> NC_2;  // number of group-level correlations
+  int prior_only;  // should the likelihood be ignored?
+}
+transformed data {
+  int Kc = K;
+  matrix[N, Kc] Xc;  // centered version of X
+  vector[Kc] means_X;  // column means of X before centering
+  for (i in 1:K) {
+    means_X[i] = mean(X[, i]);
+    Xc[, i] = X[, i] - means_X[i];
+  }
+}
+parameters {
+  vector[Kc] b;  // population-level effects
+  vector[nthres] Intercept;  // temporary thresholds for centered predictors
+  vector<lower=0>[M_1] sd_1;  // group-level standard deviations
+  matrix[M_1, N_1] z_1;  // standardized group-level effects
+  cholesky_factor_corr[M_1] L_1;  // cholesky factor of correlation matrix
+  vector<lower=0>[M_2] sd_2;  // group-level standard deviations
+  matrix[M_2, N_2] z_2;  // standardized group-level effects
+  cholesky_factor_corr[M_2] L_2;  // cholesky factor of correlation matrix
+}
+transformed parameters {
+  real<lower=0> disc = 1;  // discrimination parameters
+  matrix[N_1, M_1] r_1;  // actual group-level effects
+  // using vectors speeds up indexing in loops
+  vector[N_1] r_1_1;
+  vector[N_1] r_1_2;
+  vector[N_1] r_1_3;
+  vector[N_1] r_1_4;
+  vector[N_1] r_1_5;
+  vector[N_1] r_1_6;
+  matrix[N_2, M_2] r_2;  // actual group-level effects
+  // using vectors speeds up indexing in loops
+  vector[N_2] r_2_1;
+  vector[N_2] r_2_2;
+  vector[N_2] r_2_3;
+  vector[N_2] r_2_4;
+  vector[N_2] r_2_5;
+  // compute actual group-level effects
+  r_1 = scale_r_cor(z_1, sd_1, L_1);
+  r_1_1 = r_1[, 1];
+  r_1_2 = r_1[, 2];
+  r_1_3 = r_1[, 3];
+  r_1_4 = r_1[, 4];
+  r_1_5 = r_1[, 5];
+  r_1_6 = r_1[, 6];
+  // compute actual group-level effects
+  r_2 = scale_r_cor(z_2, sd_2, L_2);
+  r_2_1 = r_2[, 1];
+  r_2_2 = r_2[, 2];
+  r_2_3 = r_2[, 3];
+  r_2_4 = r_2[, 4];
+  r_2_5 = r_2[, 5];
+}
+model {
+  // likelihood including constants
+  if (!prior_only) {
+    // initialize linear predictor term
+    vector[N] mu = Xc * b;
+    for (n in 1:N) {
+      // add more terms to the linear predictor
+      mu[n] += r_1_1[J_1[n]] * Z_1_1[n] + r_1_2[J_1[n]] * Z_1_2[n] + r_1_3[J_1[n]] * Z_1_3[n] + r_1_4[J_1[n]] * Z_1_4[n] + r_1_5[J_1[n]] * Z_1_5[n] + r_1_6[J_1[n]] * Z_1_6[n] + r_2_1[J_2[n]] * Z_2_1[n] + r_2_2[J_2[n]] * Z_2_2[n] + r_2_3[J_2[n]] * Z_2_3[n] + r_2_4[J_2[n]] * Z_2_4[n] + r_2_5[J_2[n]] * Z_2_5[n];
+    }
+    for (n in 1:N) {
+      target += cratio_logit_lpmf(Y[n] | mu[n], disc, Intercept);
+    }
+  }
+  // priors including constants
+  target += normal_lpdf(b[1] | 1, 0.1);
+  target += normal_lpdf(b[2] | 0, 0.1);
+  target += normal_lpdf(b[3] | 0, 0.1);
+  target += normal_lpdf(b[4] | 0, 0.1);
+  target += normal_lpdf(b[5] | 0, 0.1);
+  target += normal_lpdf(Intercept | -0.25, 0.1);
+  target += normal_lpdf(sd_1 | 1, 0.1)
+    - 6 * normal_lccdf(0 | 1, 0.1);
+  target += std_normal_lpdf(to_vector(z_1));
+  target += lkj_corr_cholesky_lpdf(L_1 | 2);
+  target += normal_lpdf(sd_2 | 1, 0.1)
+    - 5 * normal_lccdf(0 | 1, 0.1);
+  target += std_normal_lpdf(to_vector(z_2));
+  target += lkj_corr_cholesky_lpdf(L_2 | 2);
+}
+generated quantities {
+  // compute actual thresholds
+  vector[nthres] b_Intercept = Intercept + dot_product(means_X, b);
+  // compute group-level correlations
+  corr_matrix[M_1] Cor_1 = multiply_lower_tri_self_transpose(L_1);
+  vector<lower=-1,upper=1>[NC_1] cor_1;
+  // compute group-level correlations
+  corr_matrix[M_2] Cor_2 = multiply_lower_tri_self_transpose(L_2);
+  vector<lower=-1,upper=1>[NC_2] cor_2;
+  // additionally sample draws from priors
+  real prior_b_1 = normal_rng(1,0.1);
+  real prior_b_2 = normal_rng(0,0.1);
+  real prior_b_3 = normal_rng(0,0.1);
+  real prior_b_4 = normal_rng(0,0.1);
+  real prior_b_5 = normal_rng(0,0.1);
+  real prior_Intercept = normal_rng(-0.25,0.1);
+  real prior_sd_1 = normal_rng(1,0.1);
+  real prior_cor_1 = lkj_corr_rng(M_1,2)[1, 2];
+  real prior_sd_2 = normal_rng(1,0.1);
+  real prior_cor_2 = lkj_corr_rng(M_2,2)[1, 2];
+  // extract upper diagonal of correlation matrix
+  for (k in 1:M_1) {
+    for (j in 1:(k - 1)) {
+      cor_1[choose(k - 1, 2) + j] = Cor_1[j, k];
+    }
+  }
+  // extract upper diagonal of correlation matrix
+  for (k in 1:M_2) {
+    for (j in 1:(k - 1)) {
+      cor_2[choose(k - 1, 2) + j] = Cor_2[j, k];
+    }
+  }
+  // use rejection sampling for truncated priors
+  while (prior_sd_1 < 0) {
+    prior_sd_1 = normal_rng(1,0.1);
+  }
+  while (prior_sd_2 < 0) {
+    prior_sd_2 = normal_rng(1,0.1);
+  }
+}
+```
+
+### Model 6
+
+```{stan, eval = FALSE, tidy = FALSE}
+// generated with brms 2.16.1
+functions {
+ /* compute correlated group-level effects
+  * Args: 
+  *   z: matrix of unscaled group-level effects
+  *   SD: vector of standard deviation parameters
+  *   L: cholesky factor correlation matrix
+  * Returns: 
+  *   matrix of scaled group-level effects
+  */ 
+  matrix scale_r_cor(matrix z, vector SD, matrix L) {
+    // r is stored in another dimension order than z
+    return transpose(diag_pre_multiply(SD, L) * z);
+  }
+  /* cratio-logit log-PDF for a single response
+   * Args:
+   *   y: response category
+   *   mu: latent mean parameter
+   *   disc: discrimination parameter
+   *   thres: ordinal thresholds
+   * Returns:
+   *   a scalar to be added to the log posterior
+   */
+   real cratio_logit_lpmf(int y, real mu, real disc, vector thres) {
+     int nthres = num_elements(thres);
+     vector[nthres + 1] p;
+     vector[nthres] q;
+     int k = 1;
+     while (k <= min(y, nthres)) {
+       q[k] = log_inv_logit(disc * (mu - thres[k]));
+       p[k] = log1m_exp(q[k]);
+       for (kk in 1:(k - 1)) p[k] = p[k] + q[kk];
+       k += 1;
+     }
+     if (y == nthres + 1) {
+       p[nthres + 1] = sum(q);
+     }
+     return p[y];
+   }
+  /* cratio-logit log-PDF for a single response and merged thresholds
+   * Args:
+   *   y: response category
+   *   mu: latent mean parameter
+   *   disc: discrimination parameter
+   *   thres: vector of merged ordinal thresholds
+   *   j: start and end index for the applid threshold within 'thres'
+   * Returns:
+   *   a scalar to be added to the log posterior
+   */
+   real cratio_logit_merged_lpmf(int y, real mu, real disc, vector thres, int[] j) {
+     return cratio_logit_lpmf(y | mu, disc, thres[j[1]:j[2]]);
+   }
+}
+data {
+  int<lower=1> N;  // total number of observations
+  int Y[N];  // response variable
+  int<lower=2> nthres;  // number of thresholds
+  int<lower=1> K;  // number of population-level effects
+  matrix[N, K] X;  // population-level design matrix
+  // data for group-level effects of ID 1
+  int<lower=1> N_1;  // number of grouping levels
+  int<lower=1> M_1;  // number of coefficients per level
+  int<lower=1> J_1[N];  // grouping indicator per observation
+  // group-level predictor values
+  vector[N] Z_1_1;
+  vector[N] Z_1_2;
+  vector[N] Z_1_3;
+  vector[N] Z_1_4;
+  vector[N] Z_1_5;
+  vector[N] Z_1_6;
+  vector[N] Z_1_7;
+  int<lower=1> NC_1;  // number of group-level correlations
+  // data for group-level effects of ID 2
+  int<lower=1> N_2;  // number of grouping levels
+  int<lower=1> M_2;  // number of coefficients per level
+  int<lower=1> J_2[N];  // grouping indicator per observation
+  // group-level predictor values
+  vector[N] Z_2_1;
+  vector[N] Z_2_2;
+  vector[N] Z_2_3;
+  vector[N] Z_2_4;
+  vector[N] Z_2_5;
+  int<lower=1> NC_2;  // number of group-level correlations
+  int prior_only;  // should the likelihood be ignored?
+}
+transformed data {
+  int Kc = K;
+  matrix[N, Kc] Xc;  // centered version of X
+  vector[Kc] means_X;  // column means of X before centering
+  for (i in 1:K) {
+    means_X[i] = mean(X[, i]);
+    Xc[, i] = X[, i] - means_X[i];
+  }
+}
+parameters {
+  vector[Kc] b;  // population-level effects
+  vector[nthres] Intercept;  // temporary thresholds for centered predictors
+  vector<lower=0>[M_1] sd_1;  // group-level standard deviations
+  matrix[M_1, N_1] z_1;  // standardized group-level effects
+  cholesky_factor_corr[M_1] L_1;  // cholesky factor of correlation matrix
+  vector<lower=0>[M_2] sd_2;  // group-level standard deviations
+  matrix[M_2, N_2] z_2;  // standardized group-level effects
+  cholesky_factor_corr[M_2] L_2;  // cholesky factor of correlation matrix
+}
+transformed parameters {
+  real<lower=0> disc = 1;  // discrimination parameters
+  matrix[N_1, M_1] r_1;  // actual group-level effects
+  // using vectors speeds up indexing in loops
+  vector[N_1] r_1_1;
+  vector[N_1] r_1_2;
+  vector[N_1] r_1_3;
+  vector[N_1] r_1_4;
+  vector[N_1] r_1_5;
+  vector[N_1] r_1_6;
+  vector[N_1] r_1_7;
+  matrix[N_2, M_2] r_2;  // actual group-level effects
+  // using vectors speeds up indexing in loops
+  vector[N_2] r_2_1;
+  vector[N_2] r_2_2;
+  vector[N_2] r_2_3;
+  vector[N_2] r_2_4;
+  vector[N_2] r_2_5;
+  // compute actual group-level effects
+  r_1 = scale_r_cor(z_1, sd_1, L_1);
+  r_1_1 = r_1[, 1];
+  r_1_2 = r_1[, 2];
+  r_1_3 = r_1[, 3];
+  r_1_4 = r_1[, 4];
+  r_1_5 = r_1[, 5];
+  r_1_6 = r_1[, 6];
+  r_1_7 = r_1[, 7];
+  // compute actual group-level effects
+  r_2 = scale_r_cor(z_2, sd_2, L_2);
+  r_2_1 = r_2[, 1];
+  r_2_2 = r_2[, 2];
+  r_2_3 = r_2[, 3];
+  r_2_4 = r_2[, 4];
+  r_2_5 = r_2[, 5];
+}
+model {
+  // likelihood including constants
+  if (!prior_only) {
+    // initialize linear predictor term
+    vector[N] mu = Xc * b;
+    for (n in 1:N) {
+      // add more terms to the linear predictor
+      mu[n] += r_1_1[J_1[n]] * Z_1_1[n] + r_1_2[J_1[n]] * Z_1_2[n] + r_1_3[J_1[n]] * Z_1_3[n] + r_1_4[J_1[n]] * Z_1_4[n] + r_1_5[J_1[n]] * Z_1_5[n] + r_1_6[J_1[n]] * Z_1_6[n] + r_1_7[J_1[n]] * Z_1_7[n] + r_2_1[J_2[n]] * Z_2_1[n] + r_2_2[J_2[n]] * Z_2_2[n] + r_2_3[J_2[n]] * Z_2_3[n] + r_2_4[J_2[n]] * Z_2_4[n] + r_2_5[J_2[n]] * Z_2_5[n];
+    }
+    for (n in 1:N) {
+      target += cratio_logit_lpmf(Y[n] | mu[n], disc, Intercept);
+    }
+  }
+  // priors including constants
+  target += normal_lpdf(b[1] | 1, 0.1);
+  target += normal_lpdf(b[2] | 0, 0.1);
+  target += normal_lpdf(b[3] | 0, 0.1);
+  target += normal_lpdf(b[4] | 0, 0.1);
+  target += normal_lpdf(b[5] | 0, 0.1);
+  target += normal_lpdf(b[6] | 0, 0.1);
+  target += normal_lpdf(Intercept | -0.25, 0.1);
+  target += normal_lpdf(sd_1 | 1, 0.1)
+    - 7 * normal_lccdf(0 | 1, 0.1);
+  target += std_normal_lpdf(to_vector(z_1));
+  target += lkj_corr_cholesky_lpdf(L_1 | 2);
+  target += normal_lpdf(sd_2 | 1, 0.1)
+    - 5 * normal_lccdf(0 | 1, 0.1);
+  target += std_normal_lpdf(to_vector(z_2));
+  target += lkj_corr_cholesky_lpdf(L_2 | 2);
+}
+generated quantities {
+  // compute actual thresholds
+  vector[nthres] b_Intercept = Intercept + dot_product(means_X, b);
+  // compute group-level correlations
+  corr_matrix[M_1] Cor_1 = multiply_lower_tri_self_transpose(L_1);
+  vector<lower=-1,upper=1>[NC_1] cor_1;
+  // compute group-level correlations
+  corr_matrix[M_2] Cor_2 = multiply_lower_tri_self_transpose(L_2);
+  vector<lower=-1,upper=1>[NC_2] cor_2;
+  // additionally sample draws from priors
+  real prior_b_1 = normal_rng(1,0.1);
+  real prior_b_2 = normal_rng(0,0.1);
+  real prior_b_3 = normal_rng(0,0.1);
+  real prior_b_4 = normal_rng(0,0.1);
+  real prior_b_5 = normal_rng(0,0.1);
+  real prior_b_6 = normal_rng(0,0.1);
+  real prior_Intercept = normal_rng(-0.25,0.1);
+  real prior_sd_1 = normal_rng(1,0.1);
+  real prior_cor_1 = lkj_corr_rng(M_1,2)[1, 2];
+  real prior_sd_2 = normal_rng(1,0.1);
+  real prior_cor_2 = lkj_corr_rng(M_2,2)[1, 2];
+  // extract upper diagonal of correlation matrix
+  for (k in 1:M_1) {
+    for (j in 1:(k - 1)) {
+      cor_1[choose(k - 1, 2) + j] = Cor_1[j, k];
+    }
+  }
+  // extract upper diagonal of correlation matrix
+  for (k in 1:M_2) {
+    for (j in 1:(k - 1)) {
+      cor_2[choose(k - 1, 2) + j] = Cor_2[j, k];
+    }
+  }
+  // use rejection sampling for truncated priors
+  while (prior_sd_1 < 0) {
+    prior_sd_1 = normal_rng(1,0.1);
+  }
+  while (prior_sd_2 < 0) {
+    prior_sd_2 = normal_rng(1,0.1);
+  }
+}
+```
+
+
+### Model 7
+
+```{stan, eval = FALSE, tidy = FALSE}
+// generated with brms 2.16.1
+functions {
+ /* compute correlated group-level effects
+  * Args: 
+  *   z: matrix of unscaled group-level effects
+  *   SD: vector of standard deviation parameters
+  *   L: cholesky factor correlation matrix
+  * Returns: 
+  *   matrix of scaled group-level effects
+  */ 
+  matrix scale_r_cor(matrix z, vector SD, matrix L) {
+    // r is stored in another dimension order than z
+    return transpose(diag_pre_multiply(SD, L) * z);
+  }
+  /* cratio-logit log-PDF for a single response
+   * Args:
+   *   y: response category
+   *   mu: latent mean parameter
+   *   disc: discrimination parameter
+   *   thres: ordinal thresholds
+   * Returns:
+   *   a scalar to be added to the log posterior
+   */
+   real cratio_logit_lpmf(int y, real mu, real disc, vector thres) {
+     int nthres = num_elements(thres);
+     vector[nthres + 1] p;
+     vector[nthres] q;
+     int k = 1;
+     while (k <= min(y, nthres)) {
+       q[k] = log_inv_logit(disc * (mu - thres[k]));
+       p[k] = log1m_exp(q[k]);
+       for (kk in 1:(k - 1)) p[k] = p[k] + q[kk];
+       k += 1;
+     }
+     if (y == nthres + 1) {
+       p[nthres + 1] = sum(q);
+     }
+     return p[y];
+   }
+  /* cratio-logit log-PDF for a single response and merged thresholds
+   * Args:
+   *   y: response category
+   *   mu: latent mean parameter
+   *   disc: discrimination parameter
+   *   thres: vector of merged ordinal thresholds
+   *   j: start and end index for the applid threshold within 'thres'
+   * Returns:
+   *   a scalar to be added to the log posterior
+   */
+   real cratio_logit_merged_lpmf(int y, real mu, real disc, vector thres, int[] j) {
+     return cratio_logit_lpmf(y | mu, disc, thres[j[1]:j[2]]);
+   }
+}
+data {
+  int<lower=1> N;  // total number of observations
+  int Y[N];  // response variable
+  int<lower=2> nthres;  // number of thresholds
+  int<lower=1> K;  // number of population-level effects
+  matrix[N, K] X;  // population-level design matrix
+  // data for group-level effects of ID 1
+  int<lower=1> N_1;  // number of grouping levels
+  int<lower=1> M_1;  // number of coefficients per level
+  int<lower=1> J_1[N];  // grouping indicator per observation
+  // group-level predictor values
+  vector[N] Z_1_1;
+  vector[N] Z_1_2;
+  vector[N] Z_1_3;
+  vector[N] Z_1_4;
+  vector[N] Z_1_5;
+  vector[N] Z_1_6;
+  vector[N] Z_1_7;
+  int<lower=1> NC_1;  // number of group-level correlations
+  // data for group-level effects of ID 2
+  int<lower=1> N_2;  // number of grouping levels
+  int<lower=1> M_2;  // number of coefficients per level
+  int<lower=1> J_2[N];  // grouping indicator per observation
+  // group-level predictor values
+  vector[N] Z_2_1;
+  vector[N] Z_2_2;
+  vector[N] Z_2_3;
+  vector[N] Z_2_4;
+  vector[N] Z_2_5;
+  int<lower=1> NC_2;  // number of group-level correlations
+  int prior_only;  // should the likelihood be ignored?
+}
+transformed data {
+  int Kc = K;
+  matrix[N, Kc] Xc;  // centered version of X
+  vector[Kc] means_X;  // column means of X before centering
+  for (i in 1:K) {
+    means_X[i] = mean(X[, i]);
+    Xc[, i] = X[, i] - means_X[i];
+  }
+}
+parameters {
+  vector[Kc] b;  // population-level effects
+  vector[nthres] Intercept;  // temporary thresholds for centered predictors
+  vector<lower=0>[M_1] sd_1;  // group-level standard deviations
+  matrix[M_1, N_1] z_1;  // standardized group-level effects
+  cholesky_factor_corr[M_1] L_1;  // cholesky factor of correlation matrix
+  vector<lower=0>[M_2] sd_2;  // group-level standard deviations
+  matrix[M_2, N_2] z_2;  // standardized group-level effects
+  cholesky_factor_corr[M_2] L_2;  // cholesky factor of correlation matrix
+}
+transformed parameters {
+  real<lower=0> disc = 1;  // discrimination parameters
+  matrix[N_1, M_1] r_1;  // actual group-level effects
+  // using vectors speeds up indexing in loops
+  vector[N_1] r_1_1;
+  vector[N_1] r_1_2;
+  vector[N_1] r_1_3;
+  vector[N_1] r_1_4;
+  vector[N_1] r_1_5;
+  vector[N_1] r_1_6;
+  vector[N_1] r_1_7;
+  matrix[N_2, M_2] r_2;  // actual group-level effects
+  // using vectors speeds up indexing in loops
+  vector[N_2] r_2_1;
+  vector[N_2] r_2_2;
+  vector[N_2] r_2_3;
+  vector[N_2] r_2_4;
+  vector[N_2] r_2_5;
+  // compute actual group-level effects
+  r_1 = scale_r_cor(z_1, sd_1, L_1);
+  r_1_1 = r_1[, 1];
+  r_1_2 = r_1[, 2];
+  r_1_3 = r_1[, 3];
+  r_1_4 = r_1[, 4];
+  r_1_5 = r_1[, 5];
+  r_1_6 = r_1[, 6];
+  r_1_7 = r_1[, 7];
+  // compute actual group-level effects
+  r_2 = scale_r_cor(z_2, sd_2, L_2);
+  r_2_1 = r_2[, 1];
+  r_2_2 = r_2[, 2];
+  r_2_3 = r_2[, 3];
+  r_2_4 = r_2[, 4];
+  r_2_5 = r_2[, 5];
+}
+model {
+  // likelihood including constants
+  if (!prior_only) {
+    // initialize linear predictor term
+    vector[N] mu = Xc * b;
+    for (n in 1:N) {
+      // add more terms to the linear predictor
+      mu[n] += r_1_1[J_1[n]] * Z_1_1[n] + r_1_2[J_1[n]] * Z_1_2[n] + r_1_3[J_1[n]] * Z_1_3[n] + r_1_4[J_1[n]] * Z_1_4[n] + r_1_5[J_1[n]] * Z_1_5[n] + r_1_6[J_1[n]] * Z_1_6[n] + r_1_7[J_1[n]] * Z_1_7[n] + r_2_1[J_2[n]] * Z_2_1[n] + r_2_2[J_2[n]] * Z_2_2[n] + r_2_3[J_2[n]] * Z_2_3[n] + r_2_4[J_2[n]] * Z_2_4[n] + r_2_5[J_2[n]] * Z_2_5[n];
+    }
+    for (n in 1:N) {
+      target += cratio_logit_lpmf(Y[n] | mu[n], disc, Intercept);
+    }
+  }
+  // priors including constants
+  target += normal_lpdf(b[1] | 1, 0.1);
+  target += normal_lpdf(b[2] | 0, 0.1);
+  target += normal_lpdf(b[3] | 0, 0.1);
+  target += normal_lpdf(b[4] | 0, 0.1);
+  target += normal_lpdf(b[5] | 0, 0.1);
+  target += normal_lpdf(b[6] | 0, 0.1);
+  target += normal_lpdf(b[7] | 0, 0.1);
+  target += normal_lpdf(b[8] | 0, 0.1);
+  target += normal_lpdf(b[9] | 0, 0.1);
+  target += normal_lpdf(Intercept | -0.25, 0.1);
+  target += normal_lpdf(sd_1 | 1, 0.1)
+    - 7 * normal_lccdf(0 | 1, 0.1);
+  target += std_normal_lpdf(to_vector(z_1));
+  target += lkj_corr_cholesky_lpdf(L_1 | 2);
+  target += normal_lpdf(sd_2 | 1, 0.1)
+    - 5 * normal_lccdf(0 | 1, 0.1);
+  target += std_normal_lpdf(to_vector(z_2));
+  target += lkj_corr_cholesky_lpdf(L_2 | 2);
+}
+generated quantities {
+  // compute actual thresholds
+  vector[nthres] b_Intercept = Intercept + dot_product(means_X, b);
+  // compute group-level correlations
+  corr_matrix[M_1] Cor_1 = multiply_lower_tri_self_transpose(L_1);
+  vector<lower=-1,upper=1>[NC_1] cor_1;
+  // compute group-level correlations
+  corr_matrix[M_2] Cor_2 = multiply_lower_tri_self_transpose(L_2);
+  vector<lower=-1,upper=1>[NC_2] cor_2;
+  // additionally sample draws from priors
+  real prior_b_1 = normal_rng(1,0.1);
+  real prior_b_2 = normal_rng(0,0.1);
+  real prior_b_3 = normal_rng(0,0.1);
+  real prior_b_4 = normal_rng(0,0.1);
+  real prior_b_5 = normal_rng(0,0.1);
+  real prior_b_6 = normal_rng(0,0.1);
+  real prior_b_7 = normal_rng(0,0.1);
+  real prior_b_8 = normal_rng(0,0.1);
+  real prior_b_9 = normal_rng(0,0.1);
+  real prior_Intercept = normal_rng(-0.25,0.1);
+  real prior_sd_1 = normal_rng(1,0.1);
+  real prior_cor_1 = lkj_corr_rng(M_1,2)[1, 2];
+  real prior_sd_2 = normal_rng(1,0.1);
+  real prior_cor_2 = lkj_corr_rng(M_2,2)[1, 2];
+  // extract upper diagonal of correlation matrix
+  for (k in 1:M_1) {
+    for (j in 1:(k - 1)) {
+      cor_1[choose(k - 1, 2) + j] = Cor_1[j, k];
+    }
+  }
+  // extract upper diagonal of correlation matrix
+  for (k in 1:M_2) {
+    for (j in 1:(k - 1)) {
+      cor_2[choose(k - 1, 2) + j] = Cor_2[j, k];
+    }
+  }
+  // use rejection sampling for truncated priors
+  while (prior_sd_1 < 0) {
+    prior_sd_1 = normal_rng(1,0.1);
+  }
+  while (prior_sd_2 < 0) {
+    prior_sd_2 = normal_rng(1,0.1);
+  }
+}
+```
+
+### {-}
 
 ## {-}
 
@@ -397,78 +2054,35 @@ cor_2[choose(k - 1, 2) + j] = Cor_2[j, k];
 ## Raw data
 
 ```{r raw, message=FALSE, warning=FALSE, paged.print=FALSE}
-responses %>%
-  mutate(lv = cut_interval(lv, 5)) %>% 
-  group_by(te, lv) %>%
-  summarise(
-    understands = mean(understands, na.rm = TRUE),
-    produces = mean(produces, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  pivot_longer(
-    c(understands, produces),
-    names_to = "type",
-    values_to = "prop"
-  ) %>%
-  mutate(type = str_to_sentence(type)) %>% 
-  ggplot(aes(prop, reorder(te, -prop), colour = lv, fill = lv)) +
-  facet_wrap(type~lv, scales = "free_y", ncol = 5) +
-  geom_vline(xintercept = 0.5, linetype = "dashed", size = 1) +
-  geom_point(alpha = 0.5, size = 2, shape = 1, stroke = 1) +
-  geom_smooth(aes(group = lv)) +
-  labs(
-    x = "Mean % of acquisition", y = "Translation equivalent ID", 
-    colour = "Levenshtein similarity", fill = "Levenshtein similarity"
-  ) +
-  scale_x_continuous(limits = c(0, 1), labels = scales::percent) +
-  theme(
-    legend.position = "top",
-    axis.text.y = element_blank(),
-    axis.ticks.y = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    panel.grid.major.y = element_blank(),
-    panel.grid.minor.y = element_blank()
-  )
-```
-
-```{r raw_age, message=FALSE, warning=FALSE, paged.print=FALSE}
-responses %>%
-  mutate(
-    lv = cut_interval(lv, 5),
-    age = as.factor(round(age))
-  ) %>% 
-  group_by(te, age, lv) %>%
-  summarise(
-    understands = mean(understands, na.rm = TRUE),
-    produces = mean(produces, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  pivot_longer(
-    c(understands, produces),
-    names_to = "type",
-    values_to = "prop"
-  ) %>%
-  mutate(type = str_to_sentence(type)) %>% 
-  ggplot(aes(age, prop, colour = lv, fill = lv)) +
-  facet_grid(type~lv) +
-  geom_hline(yintercept = 0.5, size = 0.75) +
-  stat_pointinterval(
-    .width = c(0.5), size = 1
-  ) +
-  labs(
-    x = "Age (months)", y = "Mean % of acquisition",
-    colour = "Cognate", shape = "Cognate", fill = "Cognate"
-  ) +
-  scale_x_discrete(breaks = seq(10, 36, 2)) +
-  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
-  theme(
-    legend.position = "none",
-    axis.text.x = element_text(size = 7),
-    axis.text.y = element_blank(),
-    axis.ticks.y = element_blank(),
-    panel.grid = element_blank(),
-    legend.title = element_blank()
-  )
+df %>%
+    mutate(
+        lv = cut_interval(lv, 5),
+        age = floor(age)
+    ) %>% 
+    count(lv, age, response) %>%
+    mutate(prop = n/sum(.$n)) %>% 
+    ggplot(aes(age, prop, colour = response, fill = response)) +
+    facet_wrap(~lv, nrow = 1) +
+    geom_col(position = position_fill()) +
+    geom_hline(yintercept = 0.5, colour = "black", size = 0.5) +
+    labs(
+        x = "Age (months)",
+        y = "% responses", 
+        colour = "Response",
+        fill = "Response"
+    ) +
+    scale_fill_d3() +
+    scale_colour_d3() +
+    scale_x_continuous(breaks = seq(0, 40, 2)) +
+    scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
+    theme(
+        legend.position = "top",
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank()
+    )
 ```
 
 
@@ -477,554 +2091,247 @@ responses %>%
 
 We compared the performance of these models using Bayesian leave-one-out cross-validation (LOO) using the `loo` and `loo_compare` functions of the `brms` R package (dependent of the `LOO` R package). LOO consists in computing the average likelihood of each observation after estimating the model's parameters leave that same observation out of the data set. Although the `loo` function uses a particular algorithm that speeds up the computation of this criterion (pareto-smooth importance sampling, PSIS), the size of our data set lead us to rely on the computation of the same criterion using a sampling approach via de `loo_subsample` function.
 
-### Comprehension
 
-```{r loo_comp, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+```{r loos, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE, eval = FALSE}
 loo_comp %>% 
-  as_tibble() %>% 
-  rownames_to_column("model") %>% 
-  relocate(model, matches("elpd_loo"), matches("p_loo"), matches("looic"), matches("diff")) %>%
-  mutate_all(as.numeric) %>% 
-  gt() %>% 
-  tab_spanner(md("**LOO<sub>ELPD</sub>**"), matches("elpd_loo")) %>% 
-  tab_spanner(md("**LOO<sub>p</sub>**"), matches("p_loo")) %>% 
-  tab_spanner(md("**LOO<sub>IC</sub>**"), matches("looic")) %>% 
-  tab_spanner(md("**LOO<sub>diff</sub>**"), matches("diff")) %>% 
-  fmt_number(3:13) %>% 
-  cols_label(
-    model = "Model",
-    # elpd
-    elpd_loo = md("*ELPD*"),
-    se_elpd_loo = md("*SE*"),
-    subsampling_se_elpd_loo = md("*SE<sub>sub</sub>*"),
-    # p
-    p_loo = md("*p*"),
-    se_p_loo = md("SE"),
-    subsampling_se_p_loo = md("SE<sub>sub</sub>"),
-    # looic
-    looic = md("*LOO-IC*"),
-    se_looic = md("*SE*"),
-    subsampling_se_looic = md("SE<sub>sub</sub>"),
-    # diff
-    elpd_diff = md("*diff*"),
-    se_diff = md("*SE*"),
-    subsampling_se_diff = md("*SE<sub>sub</sub>*"),
-  ) %>% 
-  as_raw_html()
+    as_tibble() %>% 
+    rownames_to_column("model") %>% 
+    relocate(model, matches("elpd_loo"), matches("p_loo"), matches("looic"), matches("diff")) %>%
+    mutate_all(as.numeric) %>% 
+    gt() %>% 
+    tab_spanner(md("**LOO<sub>ELPD</sub>**"), matches("elpd_loo")) %>% 
+    tab_spanner(md("**LOO<sub>p</sub>**"), matches("p_loo")) %>% 
+    tab_spanner(md("**LOO<sub>IC</sub>**"), matches("looic")) %>% 
+    tab_spanner(md("**LOO<sub>diff</sub>**"), matches("diff")) %>% 
+    fmt_number(3:13) %>% 
+    cols_label(
+        model = "Model",
+        # elpd
+        elpd_loo = md("*ELPD*"),
+        se_elpd_loo = md("*SE*"),
+        subsampling_se_elpd_loo = md("*SE<sub>sub</sub>*"),
+        # p
+        p_loo = md("*p*"),
+        se_p_loo = md("SE"),
+        subsampling_se_p_loo = md("SE<sub>sub</sub>"),
+        # looic
+        looic = md("*LOO-IC*"),
+        se_looic = md("*SE*"),
+        subsampling_se_looic = md("SE<sub>sub</sub>"),
+        # diff
+        elpd_diff = md("*diff*"),
+        se_diff = md("*SE*"),
+        subsampling_se_diff = md("*SE<sub>sub</sub>*"),
+    ) %>% 
+    as_raw_html()
 ```
 
-### Production
-
-```{r loo_prod, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-loo_prod %>% 
-  as_tibble() %>% 
-  rownames_to_column("model") %>% 
-  relocate(model, matches("elpd_loo"), matches("p_loo"), matches("looic"), matches("diff")) %>%
-  mutate_all(as.numeric) %>% 
-  gt() %>% 
-  tab_spanner(md("**LOO<sub>ELPD</sub>**"), matches("elpd_loo")) %>% 
-  tab_spanner(md("**LOO<sub>p</sub>**"), matches("p_loo")) %>% 
-  tab_spanner(md("**LOO<sub>IC</sub>**"), matches("looic")) %>% 
-  tab_spanner(md("**LOO<sub>diff</sub>**"), matches("diff")) %>% 
-  fmt_number(3:13) %>% 
-  cols_label(
-    model = "Model",
-    # elpd
-    elpd_loo = md("*ELPD*"),
-    se_elpd_loo = md("*SE*"),
-    subsampling_se_elpd_loo = md("*SE<sub>sub</sub>*"),
-    # p
-    p_loo = md("*p*"),
-    se_p_loo = md("SE"),
-    subsampling_se_p_loo = md("SE<sub>sub</sub>"),
-    # looic
-    looic = md("*LOO-IC*"),
-    se_looic = md("*SE*"),
-    subsampling_se_looic = md("SE<sub>sub</sub>"),
-    # diff
-    elpd_diff = md("*diff*"),
-    se_diff = md("*SE*"),
-    subsampling_se_diff = md("*SE<sub>sub</sub>*"),
-  ) %>% 
-  as_raw_html()
-```
 
 ## Fixed effects
 
-### Fixed effects: Compehension
 
 ```{r fixed_effects_table, message=FALSE, warning=FALSE, paged.print=FALSE}
 str_repl <- c(
-  "doe_center:lv_center" = "DoE \u00d7 Levenshtein",
-  "Intercept" = "Intercept",
-  "age_center" = "Age (+1 month)",
-  "frequency_center" = "Frequency (+1 SD)",
-  "doe_center" = "DoE (+10%)",
-  "lv_center" = "Levenshtein (+1 SD)"
+    "age_std:doe_std:lv_std" = "Age \u00d7 DoE \u00d7 Levenshtein",
+    "age_std:doe_std" = "Age \u00d7 DoE",
+    "age_std:lv_std" = "Age \u00d7 Levenshtein",
+    "doe_std:lv_std" = "DoE \u00d7 Levenshtein",
+    "Intercept" = "Intercept",
+    "age_std" = "Age (+1 month)",
+    "freq_std" = "Frequency (+1 SD)",
+    "n_phon_std" = "# Phonemes (+1 SD)",
+    "doe_std" = "DoE (+10%)",
+    "lv_std" = "Levenshtein (+1 SD)"
 )
 
-draws_fix <- fixef(fits_comp$fit_2) %>% 
-  as.data.frame() %>%
-  rownames_to_column("term") %>% 
-  clean_names() %>% 
-  select(-est_error) %>% 
-  mutate(
-    estimate = ifelse(term=="Intercept", inv_logit_scaled(estimate), estimate/4),
-    q2_5 = ifelse(term=="Intercept", inv_logit_scaled(q2_5), q2_5/4),
-    q97_5 = ifelse(term=="Intercept", inv_logit_scaled(q97_5), q97_5/4),
-    term = str_replace_all(term, str_repl)
-  )
+draws_fix <- fixef(model_fit_7) %>% 
+    as.data.frame() %>%
+    rownames_to_column("term") %>% 
+    clean_names() %>% 
+    select(-est_error) %>% 
+    mutate(
+        estimate = ifelse(term=="Intercept", inv_logit_scaled(estimate), estimate/4),
+        q2_5 = ifelse(term=="Intercept", inv_logit_scaled(q2_5), q2_5/4),
+        q97_5 = ifelse(term=="Intercept", inv_logit_scaled(q97_5), q97_5/4),
+        term = str_replace_all(term, str_repl)
+    )
 
 gt(draws_fix) %>% 
-  fmt_percent(2) %>% 
-  fmt_number(3:4, decimals = 2) %>% 
-  cols_merge(vars("q2_5", "q97_5"), pattern = "[{1}, {2}]") %>% 
-  cols_label(
-    term = md("**Predictor**"),
-    estimate = md("**Mean**"),
-    q2_5 = md("**95\\% CrI**"),
-  ) %>% 
-  tab_footnote(
-    footnote = "Transformed using the inverse logit to get the average probability of correct response",
-    locations = cells_body(columns = "term", rows = term=="Intercept")
-  ) %>% 
-  tab_footnote(
-    footnote = "Transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable.",
-    locations = cells_body(columns = "term", rows = term %in% c("Age (+1 month)", "Frequency (+ 1 SD)",  "DoE (+10%)", "Levenshtein (+ 1 SD)", "doe_center:lv_center" = "DoE \u00d7 Levenshtein"))
-  ) %>% 
-  cols_align(
-    align = c("center"),
-    columns = 2:3
-  ) %>% 
-  as_raw_html()
+    fmt_percent(2) %>% 
+    fmt_number(3:4, decimals = 2) %>% 
+    cols_merge(vars("q2_5", "q97_5"), pattern = "[{1}, {2}]") %>% 
+    cols_label(
+        term = md("**Predictor**"),
+        estimate = md("**Mean**"),
+        q2_5 = md("**95\\% CrI**"),
+    ) %>% 
+    tab_footnote(
+        footnote = "Transformed using the inverse logit to get the average probability of correct response",
+        locations = cells_body(columns = "term", rows = term=="Intercept")
+    ) %>% 
+    tab_footnote(
+        footnote = "Transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable.",
+        locations = cells_body(columns = "term", rows = term %in% c("Age (+1 month)", "Frequency (+ 1 SD)",  "DoE (+10%)", "Levenshtein (+ 1 SD)", "doe_std:lv_std" = "DoE \u00d7 Levenshtein"))
+    ) %>% 
+    cols_align(
+        align = c("center"),
+        columns = 2:3
+    )
 
 ```
 
 <br>
 
-```{r fix_effets_comp_plot, message=FALSE, warning=FALSE, paged.print=FALSE, fig.cap="Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The rest of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable."}
+
+
+```{r fix_effects-plot, message=FALSE, warning=FALSE, paged.print=FALSE, fig.cap="Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The resto of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable."}
 
 var_repl <- c(
-  "b_doe_center:lv_center" = "DoE \u00d7 Levenshtein", 
-  "b_Intercept" = "Intercept", 
-  "b_age_center" = "Age (+1 month)", 
-  "b_frequency_center" = "Frequency (+1 SD)",
-  "b_doe_center" = "DoE (+10%)", 
-  "b_lv_center" = "Levenshtein (+1 SD)", 
-  "sd_te__Intercept" = "Intercept", 
-  "sd_te__age_center" = "Age",
-  "sd_te__doe_center:lv_center" = "DoE \u00d7 Levenshtein",
-  "sd_te__doe_center" = "DoE",
-  "sd_te__lv_center" = "Levenshtein"
+    "b_Intercept[1]" = "Intercept (Comprehension)",
+    "b_Intercept[2]" = "Intercept (Production)",
+    "b_age_std:doe_std:lv_std" = "Age \u00d7 DoE \u00d7 Levenshtein", 
+    "b_age_std:lv_std" = "Age \u00d7 Levenshtein",
+    "b_age_std:doe_std" = "Age \u00d7 DoE",
+    "b_doe_std:lv_std" = "DoE \u00d7 Levenshtein", 
+    "b_Intercept" = "Intercept", 
+    "b_age_std" = "Age (+1 month)", 
+    "b_freq_std" = "Frequency (+1 SD)",
+    "b_n_phon_std" = "# Phonemes (+1 SD)",
+    "b_doe_std" = "DoE (+1 SD)", 
+    "b_lv_std" = "Levenshtein (+1 SD)"
 )
 
-post <- gather_draws(fits_comp$fit_2, `b_.*`, `sd_te_.*`, regex = TRUE, ndraws = 1000) %>% 
-  mutate(
-    .value = ifelse(grepl("Intercept|sd", .variable), inv_logit_scaled(.value), .value/4),
-    .variable_name = str_replace_all(.variable, var_repl) 
-  )
+post <- gather_draws(model_fit_7, `b_.*`, regex = TRUE) %>% 
+    mutate(
+        .value = ifelse(grepl("Intercept|sd", .variable), inv_logit_scaled(.value), .value/4),
+        .variable_name = factor(.variable, levels = names(var_repl), labels = var_repl)
+    )
 
 post_intercept <- post %>% 
-  filter(.variable=="b_Intercept") %>% 
-  ggplot(aes(.value, fct_rev(.variable_name))) +
-  geom_vline(xintercept = 0, size = 0.75, colour = "grey") +
-  stat_slab(
-    aes(alpha = stat(cut_cdf_qi(cdf, .width = c(.95, .8, .5), labels = percent_format()))),
-    size = 0.5,
-    color = "#FF0000",
-    fill = "#FF0000",
-    position = position_nudge(y = 0.2)
-  ) +
-  stat_pointinterval(point_size = 2) +
-  labs(
-    x = "Comprehension posterior probability", 
-    y = "Variable", 
-    fill = "Variable",
-    alpha = "CrI"
-  ) +
-  scale_alpha_discrete(range = c(1, 0.4), na.translate = FALSE) +
-  scale_x_continuous(labels = percent, limits = c(0, 1)) 
+    filter(.variable %in% c("b_Intercept[1]", "b_Intercept[2]")) %>% 
+    ggplot(aes(.value, .variable_name)) +
+    geom_vline(xintercept = 0, size = 0.75, colour = "grey") +
+    stat_slab(
+        aes(alpha = stat(cut_cdf_qi(cdf, .width = c(.95, .8, .5), labels = percent_format()))),
+        size = 0.5,
+        color = "#FF0000",
+        fill = "#FF0000",
+        position = position_nudge(y = 0.2)
+    ) +
+    stat_pointinterval(point_size = 2) +
+    labs(
+        x = "Posterior probability of acquisition", 
+        y = "Variable", 
+        fill = "Variable",
+        alpha = "CrI"
+    ) +
+    scale_alpha_discrete(range = c(1, 0.4), na.translate = FALSE) +
+    scale_x_continuous(labels = percent, limits = c(0, 1)) 
 
 post_fix <- post %>% 
-  filter(!grepl("Intercept|sd", .variable)) %>% 
-  ggplot(aes(.value, fct_rev(.variable_name))) +
-  geom_vline(xintercept = 0, size = 0.5, linetype = "dashed") +
-  stat_slab(
-    aes(alpha = stat(cut_cdf_qi(cdf, .width = c(.95, .8, .5), labels = percent_format()))),
-    size = 0.5,
-    color = "#00A08A",
-    fill = "#00A08A",
-    position = position_nudge(y = 0.1)
-  ) +
-  annotate(
-    geom = "label",
-    fill = "white",
-    label.size = 0,
-    # alpha = 0.5,
-    x = -0.05, 
-    y = 0.75,
-    label = "Increases\nP(comprehension)",
-    size = 3.5,
-    hjust = 0
-  ) +
-  annotate(
-    geom = "label",
-    fill = "white",
-    label.size = 0,
-    # alpha = 0.5,
-    x = 0.2, 
-    y = 0.75,
-    label = "Decreases\nP(comprehension)",
-    size = 3.5,
-    hjust = 1
-  ) +
-  annotate(
-    geom = "segment",
-    x = 0,
-    xend = -0.05,
-    y = 0.5,
-    yend =  0.5,
-    arrow = arrow(length = unit(0.2, "cm"))
-  ) +
-  annotate(
-    geom = "segment",
-    x = 0.15,
-    xend = 0.2,
-    y = 0.5,
-    yend = 0.5,
-    arrow = arrow(length = unit(0.2, "cm"))
-  ) +
-  stat_pointinterval(point_size = 2) +
-  labs(
-    x = "Comprehension posterior probability",
-    y = "Variable", 
-    fill = "Variable",
-    alpha = "CrI"
-  ) +
-  scale_alpha_discrete(range = c(1, 0.4), na.translate = FALSE) +
-  scale_x_continuous(labels = percent, breaks = seq(-0.15, 2, 0.05)) 
+    filter(!grepl("Intercept|sd", .variable)) %>% 
+    ggplot(aes(.value, .variable_name)) +
+    geom_vline(xintercept = 0, size = 0.5, linetype = "dashed") +
+    stat_slab(
+        aes(alpha = stat(cut_cdf_qi(cdf, .width = c(.95, .8, .5), labels = percent_format()))),
+        size = 0.5,
+        color = "#00A08A",
+        fill = "#00A08A",
+        position = position_nudge(y = 0.1)
+    ) +
+    stat_pointinterval(point_size = 2) +
+    labs(
+        x = "Posterior probability of acquisition",
+        y = "Variable", 
+        fill = "Variable",
+        alpha = "CrI"
+    ) +
+    scale_alpha_discrete(range = c(1, 0.4), na.translate = FALSE) +
+    scale_x_continuous(labels = percent, breaks = seq(-0.2, 2.5, 0.1)) 
 
-post_sd <- post %>% 
-  filter(grepl("sd", .variable)) %>% 
-  mutate(group = ifelse(grepl("id", .variable), "Participant", "TE")) %>% 
-  ggplot(aes(.value, fct_rev(.variable_name))) +
-  stat_slab(
-    aes(alpha = stat(cut_cdf_qi(cdf, .width = c(.95, .8, .5), labels = percent_format()))),
-    size = 0.5,
-    color = "#F98400",
-    fill = "#F98400",
-    position = position_nudge(y = 0.1)
-  ) +
-  stat_pointinterval(point_size = 2) +
-  labs(
-    x = "Comprehension posterior probability",
-    y = "Variable", 
-    fill = "Variable",
-    alpha = "CrI"
-  ) +
-  scale_alpha_discrete(range = c(1, 0.4), na.translate = FALSE) +
-  scale_x_continuous(labels = percent, breaks = seq(0.5, 1, 0.05)) +
-  theme(
-    axis.text.y = element_blank()
-  )
 
-(post_intercept / (post_fix | post_sd)) +
-  plot_layout(heights = c(0.1, 0.9)) &
-  theme(
-    legend.position = c(0.9, 0.9),
-    legend.direction = "horizontal",
-    legend.justification = "right",
-    plot.caption.position = "plot",
-    plot.caption = element_text(hjust = 0),
-    axis.title.y = element_blank(),
-    # axis.text = element_text(size = 7),
-    panel.grid.major.x = element_line(colour = "grey", linetype = "dotted"),
-    panel.grid.major.y = element_blank()
-  )
-```
-
-### Fixed effects: Production
-
-```{r fix_effets_prod_plot, message=FALSE, warning=FALSE, paged.print=FALSE, fig.cap="Points and error bars in indicate the posterior means, and 50% and 95% CrI. The intercept has been transformed using the inverse logit to get the average probability of correct response. The resto of the coefficients has been transformed using the divide-by-four- rule to get the maximum change in probability of correct response, associated with a unit increase in this variable."}
-
-var_repl <- c(
-  "b_doe_center:lv_center" = "DoE \u00d7 Levenshtein", 
-  "b_Intercept" = "Intercept", 
-  "b_age_center" = "Age (+1 month)", 
-  "b_frequency_center" = "Frequency (+1 SD)",
-  "b_doe_center" = "DoE (+10%)", 
-  "b_lv_center" = "Levenshtein (+1 SD)", 
-  "sd_te__Intercept" = "Intercept", 
-  "sd_te__age_center" = "Age",
-  "sd_te__doe_center:lv_center" = "DoE \u00d7 Levenshtein",
-  "sd_te__doe_center" = "DoE",
-  "sd_te__lv_center" = "Levenshtein"
-)
-
-post <- gather_draws(fits_prod$fit_2, `b_.*`, `sd_te_.*`, regex = TRUE, ndraws = 1000) %>% 
-  mutate(
-    .value = ifelse(grepl("Intercept|sd", .variable), inv_logit_scaled(.value), .value/4),
-    .variable_name = str_replace_all(.variable, var_repl) 
-  )
-
-post_intercept <- post %>% 
-  filter(.variable=="b_Intercept") %>% 
-  ggplot(aes(.value, fct_rev(.variable_name))) +
-  geom_vline(xintercept = 0, size = 0.75, colour = "grey") +
-  stat_slab(
-    aes(alpha = stat(cut_cdf_qi(cdf, .width = c(.95, .8, .5), labels = percent_format()))),
-    size = 0.5,
-    color = "#FF0000",
-    fill = "#FF0000",
-    position = position_nudge(y = 0.2)
-  ) +
-  stat_pointinterval(point_size = 2) +
-  labs(
-    x = "Comprehension posterior probability", 
-    y = "Variable", 
-    fill = "Variable",
-    alpha = "CrI"
-  ) +
-  scale_alpha_discrete(range = c(1, 0.4), na.translate = FALSE) +
-  scale_x_continuous(labels = percent, limits = c(0, 1)) 
-
-post_fix <- post %>% 
-  filter(!grepl("Intercept|sd", .variable)) %>% 
-  ggplot(aes(.value, fct_rev(.variable_name))) +
-  geom_vline(xintercept = 0, size = 0.5, linetype = "dashed") +
-  stat_slab(
-    aes(alpha = stat(cut_cdf_qi(cdf, .width = c(.95, .8, .5), labels = percent_format()))),
-    size = 0.5,
-    color = "#00A08A",
-    fill = "#00A08A",
-    position = position_nudge(y = 0.1)
-  ) +
-  annotate(
-    geom = "label",
-    fill = "white",
-    label.size = 0,
-    # alpha = 0.5,
-    x = -0.05, 
-    y = 0.75,
-    label = "Increases\nP(comprehension)",
-    size = 3.5,
-    hjust = 0
-  ) +
-  annotate(
-    geom = "label",
-    fill = "white",
-    label.size = 0,
-    # alpha = 0.5,
-    x = 0.2, 
-    y = 0.75,
-    label = "Decreases\nP(comprehension)",
-    size = 3.5,
-    hjust = 1
-  ) +
-  annotate(
-    geom = "segment",
-    x = 0,
-    xend = -0.05,
-    y = 0.5,
-    yend =  0.5,
-    arrow = arrow(length = unit(0.2, "cm"))
-  ) +
-  annotate(
-    geom = "segment",
-    x = 0.15,
-    xend = 0.2,
-    y = 0.5,
-    yend = 0.5,
-    arrow = arrow(length = unit(0.2, "cm"))
-  ) +
-  stat_pointinterval(point_size = 2) +
-  labs(
-    x = "Comprehension posterior probability",
-    y = "Variable", 
-    fill = "Variable",
-    alpha = "CrI"
-  ) +
-  scale_alpha_discrete(range = c(1, 0.4), na.translate = FALSE) +
-  scale_x_continuous(labels = percent, breaks = seq(-0.15, 2, 0.05)) 
-
-post_sd <- post %>% 
-  filter(grepl("sd", .variable)) %>% 
-  mutate(group = ifelse(grepl("id", .variable), "Participant", "TE")) %>% 
-  ggplot(aes(.value, fct_rev(.variable_name))) +
-  stat_slab(
-    aes(alpha = stat(cut_cdf_qi(cdf, .width = c(.95, .8, .5), labels = percent_format()))),
-    size = 0.5,
-    color = "#F98400",
-    fill = "#F98400",
-    position = position_nudge(y = 0.1)
-  ) +
-  stat_pointinterval(point_size = 2) +
-  labs(
-    x = "Comprehension posterior probability",
-    y = "Variable", 
-    fill = "Variable",
-    alpha = "CrI"
-  ) +
-  scale_alpha_discrete(range = c(1, 0.4), na.translate = FALSE) +
-  scale_x_continuous(labels = percent, breaks = seq(0.5, 1, 0.05)) +
-  theme(
-    axis.text.y = element_blank()
-  )
-
-(post_intercept / (post_fix | post_sd)) +
-  plot_layout(heights = c(0.1, 0.9)) &
-  theme(
-    legend.position = c(0.9, 0.9),
-    legend.direction = "horizontal",
-    legend.justification = "right",
-    plot.caption.position = "plot",
-    plot.caption = element_text(hjust = 0),
-    axis.title.y = element_blank(),
-    # axis.text = element_text(size = 7),
-    panel.grid.major.x = element_line(colour = "grey", linetype = "dotted"),
-    panel.grid.major.y = element_blank()
-  )
+(post_intercept / post_fix) +
+    plot_layout(heights = c(0.2, 0.8)) &
+    theme(
+        legend.position = "top",
+        legend.direction = "horizontal",
+        legend.justification = "right",
+        plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0),
+        axis.title.y = element_blank(),
+        # axis.text = element_text(size = 7),
+        panel.grid.major.x = element_line(colour = "grey", linetype = "dotted"),
+        panel.grid.major.y = element_blank()
+    )
 ```
 
 
 ## Random effects {.tabset .tab-pils}
 
-### Random effects: Comprehension
 
-#### Participant
+### Participant
 
-```{r random_participant_comp, message=FALSE, warning=FALSE, paged.print=FALSE}
+```{r random-participant, message=FALSE, warning=FALSE, paged.print=FALSE}
 
-re_id <- ranef(fits_comp$fit_2)$id[,,1] %>% 
-  as.data.frame() %>% 
-  rownames_to_column("id") %>% 
-  as_tibble() %>% 
-  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fits_comp$fit_2)[1])) %>% 
-  left_join(distinct(fits_comp$fit_2$data, id)) %>% 
-  clean_names()
-
-ggplot(re_id, aes(estimate, reorder(id, estimate), xmin = q2_5, xmax = q97_5)) +
-  geom_ribbon(aes(group = 1), alpha = 0.5) +
-  geom_line(aes(group = 1), size = 1) +
-  labs(
-    x = "Participant posterior probability of comprehension",
-    y = "Participant", 
-    colour = "Lang. Prof."
-  ) +
-  scale_x_continuous(limits = c(0, 1), labels = percent) +
-  theme(
-    legend.position = "none",
-    axis.text.y = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_line(colour = "white", linetype = "dotted"),
-    panel.grid.major.y = element_blank(),
-    panel.grid.minor.y = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    axis.line = element_line(colour = "white")
-  )
-```
-
-#### Item
-
-```{r re_item_comp, message=FALSE, warning=FALSE, paged.print=FALSE}
-
-re_te <- ranef(fits_comp$fit_2)$te[,,1] %>% 
-  as.data.frame() %>% 
-  rownames_to_column("te") %>% 
-  as_tibble() %>% 
-  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fits_comp$fit_2)[1])) %>% 
-  mutate(te = as.numeric(te)) %>% 
-  clean_names()
-
-ggplot(re_te, aes(estimate, reorder(te, estimate), xmin = q2_5, xmax = q97_5)) +
-  geom_ribbon(aes(group = 1), alpha = 0.5) +
-  geom_line(aes(group = 1), size = 1) +
-  labs(
-    x = "Participant posterior probability of comprehension",
-    y = "TE", 
-    colour = "Lang. Prof."
-  ) +
-  scale_x_continuous(limits = c(0, 1), labels = percent) +
-  theme(
-    legend.position = "none",
-    axis.text.y = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_line(colour = "white", linetype = "dotted"),
-    panel.grid.major.y = element_blank(),
-    panel.grid.minor.y = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    axis.line = element_line(colour = "white")
-  )
-```
-
-
-### Random effects: Production
-
-#### Participant
-
-```{r random_participant_prod, message=FALSE, warning=FALSE, paged.print=FALSE}
-
-re_id <- ranef(fits_prod$fit_2)$id[,,1] %>% 
-  as.data.frame() %>% 
-  rownames_to_column("id") %>% 
-  as_tibble() %>% 
-  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fits_prod$fit_2)[1])) %>% 
-  left_join(distinct(fits_prod$fit_2$data, id)) %>% 
-  clean_names()
+re_id <- ranef(model_fit_7)$id[,,1] %>% 
+    as.data.frame() %>% 
+    rownames_to_column("id") %>% 
+    as_tibble() %>% 
+    mutate_if(is.numeric, ~inv_logit_scaled(. + fixef(model_fit_7)[1])) %>% 
+    left_join(distinct(model_fit_7$data, id)) %>% 
+    clean_names()
 
 ggplot(re_id, aes(estimate, reorder(id, estimate), xmin = q2_5, xmax = q97_5)) +
-  geom_ribbon(aes(group = 1), alpha = 0.5, colour = NA) +
-  geom_line(aes(group = 1), size = 1) +
-  # geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), size = 0.25, height = 0) +
-  # geom_point(size = 0.5) +
-  geom_vline(xintercept = 0.5, colour = "white") +
-  labs(x = "Participant posterior probability of production",
-       y = "Participant", colour = "Lang. Prof.") +
-  scale_x_continuous(limits = c(0, 1), labels = percent) +
-  theme(
-    legend.position = "none",
-    axis.text.y = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_line(colour = "white", linetype = "dotted"),
-    panel.grid.major.y = element_blank(),
-    panel.grid.minor.y = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    axis.line = element_line(colour = "white")
-  )
+    geom_ribbon(aes(group = 1), alpha = 0.5, colour = NA) +
+    geom_line(aes(group = 1), size = 1) +
+    # geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), size = 0.25, height = 0) +
+    # geom_point(size = 0.5) +
+    geom_vline(xintercept = 0.5, colour = "white") +
+    labs(
+        x = "Posterior probability of acquisition",
+        y = "Participant", 
+        colour = "Lang. Prof."
+    ) +
+    scale_x_continuous(limits = c(0, 1), labels = percent) +
+    theme(
+        legend.position = "none",
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_line(linetype = "dotted"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank()
+    )
 ```
 
-#### Item
+### Item
 
-```{r re_item_prod, message=FALSE, warning=FALSE, paged.print=FALSE}
+```{r re-item, message=FALSE, warning=FALSE, paged.print=FALSE}
 
-
-re_te <- ranef(fits_prod$fit_2)$te[,,1] %>% 
-  as.data.frame() %>% 
-  rownames_to_column("te") %>% 
-  as_tibble() %>% 
-  mutate_if(is.numeric, function(x) inv_logit_scaled(x + fixef(fits_prod$fit_2)[1])) %>% 
-  mutate(te = as.numeric(te)) %>% 
-  clean_names()
+re_te <- ranef(model_fit_7)$te[,,1] %>% 
+    as.data.frame() %>% 
+    rownames_to_column("te") %>% 
+    as_tibble() %>% 
+    mutate_if(is.numeric, ~inv_logit_scaled(. + fixef(model_fit_7)[1])) %>% 
+    mutate(te = as.numeric(te)) %>% 
+    clean_names()
 
 ggplot(re_te, aes(estimate, reorder(te, estimate), xmin = q2_5, xmax = q97_5)) +
-  geom_ribbon(aes(group = 1), alpha = 0.5) +
-  geom_line(aes(group = 1), size = 1) +
-  labs(
-    x = "Participant posterior probability of comprehension",
-    y = "TE", 
-    colour = "Lang. Prof."
-  ) +
-  scale_x_continuous(limits = c(0, 1), labels = percent) +
-  theme(
-    legend.position = "none",
-    axis.text.y = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_line(colour = "white", linetype = "dotted"),
-    panel.grid.major.y = element_blank(),
-    panel.grid.minor.y = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    axis.line = element_line(colour = "white")
-  )
+    geom_ribbon(aes(group = 1), alpha = 0.5) +
+    geom_line(aes(group = 1), size = 1) +
+    labs(
+        x = "Posterior probability of acquisition",
+        y = "TE", 
+        colour = "Lang. Prof."
+    ) +
+    scale_x_continuous(limits = c(0, 1), labels = percent) +
+    theme(
+        legend.position = "none",
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_line(linetype = "dotted"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank()
+    )
 
 ```
 
@@ -1038,160 +2345,101 @@ ggplot(re_te, aes(estimate, reorder(te, estimate), xmin = q2_5, xmax = q97_5)) +
 ```{r emmeans_comp, message=FALSE, warning=FALSE, paged.print=FALSE}
 
 nd <- expand.grid(
-  age_center = seq(min(responses$age_center), max(responses$age_center), length.out = 30),
-  doe_center = range(responses$doe_center),
-  lv_center = c(range(responses$lv_center), 0),
-  frequency_center = 0
+    n_phon_std = 0,
+    freq_std = 0,
+    age_std = seq(-4, 4, length.out = 30),
+    doe_std = range(df$doe_std),
+    lv_std = c(range(df$lv_std), 0)
 )
 
-m <- add_epred_draws(nd, fits_comp$fit_2, ndraws = 50, re_formula = NA) %>% 
-  mutate(
-    frequency_center = as.factor(paste0("Frequency = ", frequency_center, " SD")),
-    doe_center = factor(doe_center, levels = unique(nd$doe_center), labels = c("DoE: 0%", "DoE: 100%")),
-    lv_center = factor(lv_center, levels = unique(nd$lv_center), labels = c("LV: 0%", "LV: 50%", "LV: 100%"))
-    
-  )
+m <- add_epred_draws(nd, model_fit_7, ndraws = 50, re_formula = NA) %>% 
+    mutate(
+        freq_std = as.factor(paste0("Frequency = ", freq_std, " SD")),
+        doe_std = factor(
+            doe_std, 
+            levels = unique(nd$doe_std), 
+            labels = c("DoE: 0%", "DoE: 100%")
+        ),
+        lv_std = factor(
+            lv_std, 
+            levels = unique(nd$lv_std)[c(1, 3, 2)],
+            labels = c("0%", "50%", "100%")
+        )
+    ) %>% 
+    filter(.category != "No") %>% 
+    pivot_wider(names_from = ".category", values_from = ".epred") %>% 
+    mutate(Understands = Understands + `Understands and Says`) %>% 
+    pivot_longer(
+        c(Understands, `Understands and Says`),
+        names_to = ".category",
+        values_to = ".epred"
+    )
 
-ggplot(m, aes(age_center + mean(responses$age, na.rm = TRUE), .epred, colour = lv_center, fill = lv_center)) +
-  facet_wrap(~doe_center) +
-  geom_line(aes(group = interaction(.draw, lv_center), colour = lv_center), alpha = 0.25, size = 1) +
-  # stat_lineribbon(size = 0, alpha = 0.5, .width = 0.95) +
-  # stat_summary(fun = "mean", geom = "line", size = 1) + 
-  geom_hline(yintercept = 0.5, size = 1, linetype = "dashed") +
-  labs(
-    x = "Age (months)", 
-    y = "Posterior probability of comprehension\n(Linear prediction)",
-    colour = "Cognateness", 
-    fill = "Cognateness"
-  ) +
-  scale_y_continuous(labels = percent, limits = c(0, 1)) +
-  theme(
-    legend.position = "top",
-    legend.title = element_blank()
-  )
-
-```
-
-## Marginal means: Production
-
-```{r emmeans_prod, message=FALSE, warning=FALSE, paged.print=FALSE}
-
-nd <- expand.grid(
-  age_center = seq(min(responses$age_center), max(responses$age_center), length.out = 30),
-  doe_center = range(responses$doe_center),
-  lv_center = c(range(responses$lv_center), 0),
-  frequency_center = 0
-)
-
-m <- add_epred_draws(nd, fits_prod$fit_2, ndraws = 50, re_formula = NA) %>% 
-  mutate(
-    frequency_center = as.factor(paste0("Frequency = ", frequency_center, " SD")),
-    doe_center = factor(doe_center, levels = unique(nd$doe_center), labels = c("DoE: 0%", "DoE: 100%")),
-    lv_center = factor(lv_center, levels = unique(nd$lv_center), labels = c("LV: 0%", "LV: 50%", "LV: 100%"))
-  )
-
-
-ggplot(m, aes(age_center + mean(responses$age, na.rm = TRUE), .epred, colour = lv_center, fill = lv_center)) +
-  facet_wrap(~doe_center) +
-  geom_line(aes(group = interaction(.draw, lv_center), colour = lv_center), alpha = 0.25, size = 1) +
-  # stat_lineribbon(size = 0, alpha = 0.5, .width = 0.95) +
-  stat_summary(fun = "mean", geom = "line", size = 1) +
-  geom_hline(yintercept = 0.5, size = 1, colour = "grey") +
-  labs(x = "Age (months)", y = "Posterior probability of production\n(Linear prediction)", colour = "Cognateness", fill = "Cognateness") +
-  scale_y_continuous(labels = percent, limits = c(0, 1)) +
-  theme(
-    legend.position = "top",
-    legend.title = element_blank()
-  )
+ggplot(m, aes(age_std, .epred, colour = lv_std, fill = lv_std)) +
+    facet_grid(.category~doe_std) +
+    geom_line(
+        aes(
+            group = interaction(.draw, lv_std, doe_std), 
+            colour = lv_std),
+        alpha = 0.1, 
+        size = 1
+    ) +
+    # stat_lineribbon(size = 0, alpha = 0.5, .width = 0.95) +
+    stat_summary(fun = "mean", geom = "line", size = 1) + 
+    geom_hline(yintercept = 0.5, size = 0.5, linetype = "dashed") +
+    scale_color_d3() +
+    labs(
+        x = "Age (months)", 
+        y = "Posterior probability of acquisition\n(Linear prediction)",
+        colour = "Phonological similarity (Levenshtein distance)", 
+        fill = "Phonological similarity (Levenshtein distance)"
+    ) +
+    scale_y_continuous(labels = percent, limits = c(0, 1)) +
+    theme(
+        legend.position = "top"
+    )
 
 ```
 
-### Area under the curve (AUC)
 
 
-```{r confusion_matrix, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-
-# comprehension
-preds <- predict(fits_comp$fit_2, ndraws = 50) 
-preds <- ifelse(preds[, 1] > 0.5, 1, 0)
-confusion_mat_comp <- table(preds, pull(responses, understands))
-#correct classification rate
-rate_comp <- sum(diag(confusion_mat_comp))/sum(confusion_mat_comp)
-confusion_mat_comp <- confusion_mat_comp %>% 
-  as.data.frame() 
-colnames(confusion_mat_comp) <- c("pred", "value", "freq")
-
-# production
-preds <- predict(fits_prod$fit_2, ndraws = 50) 
-preds <- ifelse(preds[, 1] > 0.5, 1, 0)
-confusion_mat_prod <- table(preds, pull(responses, produces))
-#correct classification rate
-rate_prod <- sum(diag(confusion_mat_prod))/sum(confusion_mat_prod)
-confusion_mat_prod <- confusion_mat_prod %>% 
-  as.data.frame() 
-colnames(confusion_mat_prod) <- c("pred", "value", "freq")
-```
-
-The comprehension model classified `r percent(round(rate_comp, 2))` of the responses correctly and the production model classified `r percent(round(rate_prod, 2))` of the responses correctly.
-
-```{r confusion, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-bind_rows(
-  comp = confusion_mat_comp, 
-  prod = confusion_mat_prod, 
-  .id = "type"
-) %>% 
-  mutate(pred = pred==1) %>% 
-  pivot_wider(names_from = c(type, value), values_from = freq) %>% 
-  clean_names() %>% 
-  gt() %>% 
-  tab_spanner("Observed comprehension", matches("comp")) %>% 
-  tab_spanner("Observed production", matches("prod")) %>% 
-  cols_label(
-    pred = "Predicted",
-    comp_false = "FALSE",
-    comp_true = "TRUE",
-    prod_false = "FALSE",
-    prod_true = "TRUE"
-  ) %>% 
-  fmt_number(2:5, decimals = 0)
-
-```
 
 
 ### Traceplots
 
 
 ```{r diagnostics_traceplots_comp, message=FALSE, warning=FALSE, paged.print=FALSE}
-gather_draws(fits_comp$fit_2, `b_.*`, `sd_te__.*`, `cor_te__.*`, regex = TRUE, ndraws = 1000) %>% 
-  mutate(.chain = paste("Chain ", .chain)) %>% 
-  ggplot(aes(.iteration, .value, colour = .chain)) +
-  facet_wrap(~.variable, scales = "free_y") +
-  annotate(geom = "rect", colour = NA, xmin = 0, xmax = 500, ymin = -Inf, ymax = Inf, alpha = 0.25, colour = "grey") +
-  geom_line(alpha = 0.5) +
-  labs(x = "Iteration", y = "Sample value", colour = "Chain", title = "Comprehension") +
-  theme_github() +
-  theme(
-    legend.position = "top",
-    legend.title = element_blank(),
-    panel.grid = element_blank()
-  )
+gather_draws(
+    model_fit_7, 
+    `b_.*`, `sd_te__.*`, `cor_te__.*`, 
+    regex = TRUE, 
+    ndraws = 1000
+) %>% 
+    mutate(.chain = paste("Chain ", .chain)) %>% 
+    ggplot(aes(.iteration, .value, colour = .chain)) +
+    facet_wrap(~.variable, scales = "free_y") +
+    annotate(
+        geom = "rect", 
+        colour = NA, 
+        xmin = 0,
+        xmax = 500, 
+        ymin = -Inf, 
+        ymax = Inf, 
+        alpha = 0.25, 
+    ) +
+    geom_line() +
+    labs(
+        x = "Iteration",
+        y = "Sample value",
+        colour = "Chain"
+    ) +
+    scale_color_d3() +
+    theme(
+        legend.position = "top",
+        legend.title = element_blank(),
+        panel.grid = element_blank()
+    )
 ```
 
-```{r diagnostics_traceplots_prod, message=FALSE, warning=FALSE, paged.print=FALSE}
-gather_draws(fits_prod$fit_2, `b_.*`, `sd_te__.*`, `cor_te__.*`, regex = TRUE, ndraws = 1000) %>% 
-  mutate(.chain = paste("Chain ", .chain)) %>% 
-  ggplot(aes(.iteration, .value, colour = .chain)) +
-  facet_wrap(~.variable, scales = "free_y") +
-  annotate(geom = "rect", colour = NA, xmin = 0, xmax = 500, ymin = -Inf, ymax = Inf, alpha = 0.25, colour = "grey") +
-  geom_line(alpha = 0.5) +
-  labs(x = "Iteration", y = "Sample value", colour = "Chain", title = "Production") +
-  theme_github() +
-  theme(
-    legend.position = "top",
-    legend.title = element_blank(),
-    panel.grid = element_blank()
-  )
-
-```
 
 ## {-}
