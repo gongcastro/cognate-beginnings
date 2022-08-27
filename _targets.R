@@ -254,7 +254,7 @@ list(
             name = "fit_5",
             formula = bf(
                 response ~ age_std + freq_std + n_phon_std + doe_std + lv_std + 
-                (1 + age_std + freq_std + n_phon_std + doe_std + lv_std | id) +
+                    (1 + age_std + freq_std + n_phon_std + doe_std + lv_std | id) +
                     (1 + age_std + freq_std + n_phon_std + doe_std | te),
                 family = cratio(link = "logit") # cumulative, continuation ratio
             ), 
@@ -296,8 +296,8 @@ list(
     
     tar_target(
         model_loos,
-        compare_models(
-            lst(
+        {
+            models <- lst(
                 model_fit_0,
                 model_fit_1,
                 model_fit_2,
@@ -306,10 +306,13 @@ list(
                 model_fit_5,
                 model_fit_6,
                 model_fit_7
-            ),
-            criterion = "loo",
-            cores = 4
-        )
+            )
+            loos <- lapply(models, loo_subsample)
+            saveRDS(
+                loos,
+                here("results", "model_loos.rds")
+            )
+        }
     ),
     
     # diagnose models ----------------------------------------------------------
