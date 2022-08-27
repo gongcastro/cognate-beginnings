@@ -47,7 +47,8 @@ tar_option_set(
 
 #### define global options -----------------------------------------------------
 options(
-    mc.cores = 2,
+    mc.cores = 4,
+    brms.threads = threading(2),
     brms.backend = "cmdstanr",
     tidyverse.quiet = TRUE,
     knitr.duplicate.label = "allow"

@@ -27,7 +27,7 @@ This repository hosts the code used to process and analyse the data, as well as 
 * Using your Command Prompt/console, navigate to the folder you want to download the repository into, and run:
 
 ```console
-git clone https://github.com/bilingual-project/cognate-priming.git
+git clone https://github.com/gongcastro/trajectories.git
 ```
 
 If the repository is private at the time you try to clone it, you may have to enter your GitHub credentials)
