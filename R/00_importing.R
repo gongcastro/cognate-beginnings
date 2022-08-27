@@ -41,12 +41,7 @@ get_multilex <- function(
         ) %>% 
         mutate(
             # get maximum educational attainment of parents
-            edu_parent = apply(
-                cbind(edu_parent1, edu_parent2),
-                1,
-                max, 
-                na.rm = FALSE
-            ),
+            edu_parent = apply(cbind(edu_parent1, edu_parent2), 1, max, na.rm = FALSE),
             # recode it as factor
             edu_parent = factor(
                 edu_parent,
@@ -65,12 +60,7 @@ get_multilex <- function(
                completed, doe_catalan, doe_spanish, doe_others, edu_parent)
     
     # get multilex vocabulary data
-    v <- ml_vocabulary(
-        p, 
-        r, 
-        scale = c("prop", "count"),
-        by = "id_exp"
-    ) %>% 
+    v <- ml_vocabulary(p, r, scale = c("prop", "count"), by = "id_exp") %>% 
         filter(type %in% type)
     
     # get list of all relevant datasets

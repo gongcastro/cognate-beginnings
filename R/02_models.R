@@ -10,7 +10,7 @@ fit_model <- function(name, ...){
         sample_prior = "yes", # samples prior for faster computation of Bayes Factors and LOO
         iter = 4000,
         chains = 2,
-        init = 0, # where to initialise MCMCs
+        init = 0.5, # where to initialise MCMCs
         seed = 888, # for reproducibility
         backend = "cmdstanr", # for faster, less problematic compilation in C++
         file = here("results", paste0(name, ".rds")), # save model as file
