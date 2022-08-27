@@ -1,13 +1,13 @@
-// generated with brms 2.16.1
+// generated with brms 2.17.0
 functions {
  /* compute correlated group-level effects
-  * Args: 
+  * Args:
   *   z: matrix of unscaled group-level effects
   *   SD: vector of standard deviation parameters
   *   L: cholesky factor correlation matrix
-  * Returns: 
+  * Returns:
   *   matrix of scaled group-level effects
-  */ 
+  */
   matrix scale_r_cor(matrix z, vector SD, matrix L) {
     // r is stored in another dimension order than z
     return transpose(diag_pre_multiply(SD, L) * z);
@@ -95,7 +95,7 @@ parameters {
   cholesky_factor_corr[M_2] L_2;  // cholesky factor of correlation matrix
 }
 transformed parameters {
-  real<lower=0> disc = 1;  // discrimination parameters
+  real disc = 1;  // discrimination parameters
   matrix[N_1, M_1] r_1;  // actual group-level effects
   // using vectors speeds up indexing in loops
   vector[N_1] r_1_1;
@@ -104,6 +104,7 @@ transformed parameters {
   // using vectors speeds up indexing in loops
   vector[N_2] r_2_1;
   vector[N_2] r_2_2;
+  real lprior = 0;  // prior contributions to the log posterior
   // compute actual group-level effects
   r_1 = scale_r_cor(z_1, sd_1, L_1);
   r_1_1 = r_1[, 1];
@@ -112,6 +113,14 @@ transformed parameters {
   r_2 = scale_r_cor(z_2, sd_2, L_2);
   r_2_1 = r_2[, 1];
   r_2_2 = r_2[, 2];
+  lprior += gamma_lpdf(b[1] | 6, 4);
+  lprior += normal_lpdf(Intercept | -0.25, 0.1);
+  lprior += normal_lpdf(sd_1 | 1, 0.1)
+    - 2 * normal_lccdf(0 | 1, 0.1);
+  lprior += lkj_corr_cholesky_lpdf(L_1 | 2);
+  lprior += normal_lpdf(sd_2 | 1, 0.1)
+    - 2 * normal_lccdf(0 | 1, 0.1);
+  lprior += lkj_corr_cholesky_lpdf(L_2 | 2);
 }
 model {
   // likelihood including constants
@@ -127,16 +136,9 @@ model {
     }
   }
   // priors including constants
-  target += normal_lpdf(b[1] | 1, 0.1);
-  target += normal_lpdf(Intercept | -0.25, 0.1);
-  target += normal_lpdf(sd_1 | 1, 0.1)
-    - 2 * normal_lccdf(0 | 1, 0.1);
+  target += lprior;
   target += std_normal_lpdf(to_vector(z_1));
-  target += lkj_corr_cholesky_lpdf(L_1 | 2);
-  target += normal_lpdf(sd_2 | 1, 0.1)
-    - 2 * normal_lccdf(0 | 1, 0.1);
   target += std_normal_lpdf(to_vector(z_2));
-  target += lkj_corr_cholesky_lpdf(L_2 | 2);
 }
 generated quantities {
   // compute actual thresholds
@@ -148,7 +150,7 @@ generated quantities {
   corr_matrix[M_2] Cor_2 = multiply_lower_tri_self_transpose(L_2);
   vector<lower=-1,upper=1>[NC_2] cor_2;
   // additionally sample draws from priors
-  real prior_b_1 = normal_rng(1,0.1);
+  real prior_b__1 = gamma_rng(6,4);
   real prior_Intercept = normal_rng(-0.25,0.1);
   real prior_sd_1 = normal_rng(1,0.1);
   real prior_cor_1 = lkj_corr_rng(M_1,2)[1, 2];
