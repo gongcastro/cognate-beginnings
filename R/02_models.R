@@ -34,10 +34,7 @@ compare_models <- function(x, criterion = "loo", ...) {
     if (criterion=="loo") {
         # models are too large, compute LOO from subsamples (500 by default)
         loos <- lapply(x, loo_subsample, ...)
-        saveRDS(
-            loos,
-            here("results", paste0("model_", criterion, ".rds"))
-        )
+        saveRDS(loos, here("results", paste0("model_", criterion, ".rds")))
         
     } else {
         # future versions of this function might allow other criteria like WAIC
@@ -48,5 +45,14 @@ compare_models <- function(x, criterion = "loo", ...) {
 }
 
 
+#' Extract log-likelihood manually
+#' @param data_i
+#' @param ndraws Positive integer indicating how many posterior draws should be used. If NULL (the default) all draws are used. Ignored if draw_ids is not NULL.
+#' @param log
+llfun_logistic <- function(data_i, ndraws, log = TRUE) {
+    x_i <- as.matrix(data_i[, which(grepl(colnames(data_i), pattern = "X")), drop=FALSE])
+    logit_pred <- draws %*% t(x_i)
+    dbinom(x = data_i$y, size = 1, prob = 1/(1 + exp(-logit_pred)), log = log)
+}
 
 
