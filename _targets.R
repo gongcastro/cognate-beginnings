@@ -13,6 +13,7 @@ source("R/02_models.R")
 tar_option_set(
     packages = c(
         "arrow",
+        "bayesplot",
         "brms", 
         "conflicted",
         "dplyr", 
@@ -48,7 +49,6 @@ tar_option_set(
 #### define global options -----------------------------------------------------
 options(
     mc.cores = 4,
-    brms.threads = threading(2),
     brms.backend = "cmdstanr",
     tidyverse.quiet = TRUE,
     knitr.duplicate.label = "allow"
@@ -295,26 +295,26 @@ list(
     
     # compare models -----------------------------------------------------------
     
-    tar_target(
-        model_loos,
-        {
-            models <- lst(
-                model_fit_0,
-                model_fit_1,
-                model_fit_2,
-                model_fit_3,
-                model_fit_4,
-                model_fit_5,
-                model_fit_6,
-                model_fit_7
-            )
-            loos <- lapply(models, loo_subsample)
-            saveRDS(
-                loos,
-                here("results", "model_loos.rds")
-            )
-        }
-    ),
+    # tar_target(
+    #     model_loos,
+    #     {
+    #         models <- lst(
+    #             model_fit_0,
+    #             model_fit_1,
+    #             model_fit_2,
+    #             model_fit_3,
+    #             model_fit_4,
+    #             model_fit_5,
+    #             model_fit_6,
+    #             model_fit_7
+    #         )
+    #         loos <- lapply(models, loo_subsample, draws = 10, observations = 10)
+    #         saveRDS(
+    #             loos,
+    #             here("results", "model_loos.rds")
+    #         )
+    #     }
+    # ),
     
     # diagnose models ----------------------------------------------------------
     
@@ -351,11 +351,11 @@ list(
             ),
             neff_ratio
         )
-    )
+    ),
+
     
-    
-    # # render report.Rmd
-    # tar_render(report, "docs/report.Rmd"),
+    # render report.Rmd
+    tar_render(report, "docs/index.Rmd")
     # 
     # # render manuscript
     # tar_render(manuscript, "manuscript/manuscript.Rmd")
