@@ -545,8 +545,7 @@ $s$ is the s-th response category, $a_1 < a_2 < a_3$ are ordered response catego
 
 ::: column-body-outset
 
-$$
-\begin{aligned}\nu_{ij} = & \beta_0 +\beta_1\mathrm{Age}_{i} + \beta_2 \mathrm{Freq}_{j} + \beta_3\mathrm{Phon}_{j} + \beta_4\mathrm{Exposure}_{ij} + \beta_5 \mathrm{Levenshtein}_{j} +
+$$\begin{aligned}\nu_{ij} = & \beta_0 +\beta_1\mathrm{Age}_{i} + \beta_2 \mathrm{Freq}_{j} + \beta_3\mathrm{Phon}_{j} + \beta_4\mathrm{Exposure}_{ij} + \beta_5 \mathrm{Levenshtein}_{j} +
 \beta_6\mathrm{(Age_{i} \cdot \mathrm{Exposure}_{ij}}) + \beta_7\mathrm{(\mathrm{Age}_{i} \cdot \mathrm{Levenshtein}_{j}}) +  \beta_8\mathrm{(Exposure_{ij} \cdot \mathrm{Levenshtein}_{j}}) + 
 \beta_9{(\mathrm{Age}_{i} \cdot \mathrm{Exposure}_{ij} \cdot \mathrm{Levenshtein}_{j}}) +\\
 
@@ -2199,8 +2198,8 @@ prior_sd_2 = normal_rng(1,0.1);
 #| echo: true
 #| message: false
 #| warning: false
-#| fig-width: 7
-#| fig-height: 4
+#| fig-width: 15
+#| fig-height: 10
 df %>%
     mutate(
         lv = cut_interval(lv, 5),
