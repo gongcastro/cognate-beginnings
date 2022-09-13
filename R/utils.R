@@ -13,28 +13,13 @@ make <- function() {
     )
 }
 
-# load all built targets (and packages)
-tar_load_all <- function(){
-    invisible({
-        suppressMessages({
-            tar_load_globals()
-        })
-        tars <- tar_objects()
-        message("Loading targets: ", paste0(tars, collapse = ", "))
-        lapply(tars, tar_load_raw, envir = .GlobalEnv)
-    })
-    
-    usethis::ui_done("Targets loaded")
-    
-}
-
 # remove targets products
-unmake <- function(keep_fits = FALSE) {
+unmake <- function(keep_fits = TRUE) {
     path <- "Results/fit.rds"
     tar_destroy(ask = FALSE)
     
     if (!keep_fits){
-        filenames <- list.files("results", pattern = "fit")
+        filenames <- list.files("results", pattern = "fit", full.names = TRUE)
         if (length(filenames > 0)) {
             lapply(filenames, file.remove)
         }

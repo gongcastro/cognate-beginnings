@@ -1,0 +1,2 @@
+targets:
+	Rscript -e "make()"
