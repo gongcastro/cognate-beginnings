@@ -30,7 +30,8 @@ tar_option_set(
         "multilex",
         "patchwork", 
         "papaja", 
-        "purrr", 
+        "purrr",
+        "quarto",
         "readxl", 
         "rmarkdown",
         "rlang",
@@ -51,7 +52,8 @@ options(
     mc.cores = 4,
     brms.backend = "cmdstanr",
     tidyverse.quiet = TRUE,
-    knitr.duplicate.label = "allow"
+    knitr.duplicate.label = "allow",
+    loo.cores = 1
 )
 
 list(
@@ -175,68 +177,6 @@ list(
         model_fit_0,
         fit_model(
             name = "fit_0",
-            formula =  bf(
-                response ~ 1 +
-                    (1 | id) +
-                    (1 | te),
-                family = cratio(link = "logit") # cumulative, continuation ratio
-            ), 
-            data = df,
-            prior = model_prior[1:3, ]
-        )
-    ),
-    
-    # add age main effect
-    tar_target(
-        model_fit_1,
-        fit_model(
-            name = "fit_1",
-            formula = bf(
-                response ~ age_std +
-                    (1 + age_std | id) +
-                    (1 + age_std | te),
-                family = cratio(link = "logit") # cumulative, continuation ratio
-            ), 
-            data = df,
-            prior = model_prior[1:5, ]
-        )
-    ),
-    
-    # add age main effect
-    tar_target(
-        model_fit_2,
-        fit_model(
-            name = "fit_2",
-            formula = bf(
-                response ~ age_std + freq_std + 
-                    (1 + age_std + freq_std | id) +
-                    (1 + age_std | te),
-                family = cratio(link = "logit") # cumulative, continuation ratio
-            ), 
-            data = df,
-            prior = model_prior[1:6, ]
-        )
-    ),
-    
-    # add dominance main effect
-    tar_target(
-        model_fit_3,
-        fit_model(
-            name = "fit_3",
-            formula = bf(
-                response ~ age_std + freq_std + n_phon_std +
-                    (1 + age_std + freq_std + n_phon_std | id) +
-                    (1 + age_std + freq_std + n_phon_std | te),
-                family = cratio(link = "logit") # cumulative, continuation ratio
-            ), 
-            data = df,
-            prior = model_prior[1:7, ]
-        )
-    ),
-    tar_target(
-        model_fit_4,
-        fit_model(
-            name = "fit_4",
             formula = bf(
                 response ~ age_std + freq_std + n_phon_std + doe_std +
                     (1 + age_std + freq_std + n_phon_std + doe_std | id) +
@@ -250,9 +190,9 @@ list(
     
     # add age:dominance interaction
     tar_target(
-        model_fit_5,
+        model_fit_1,
         fit_model(
-            name = "fit_5",
+            name = "fit_1",
             formula = bf(
                 response ~ age_std + freq_std + n_phon_std + doe_std + lv_std + 
                     (1 + age_std + freq_std + n_phon_std + doe_std + lv_std | id) +
@@ -260,14 +200,15 @@ list(
                 family = cratio(link = "logit") # cumulative, continuation ratio
             ), 
             data = df,
-            prior = model_prior[1:9,]
+            prior = model_prior[1:9,],
+            sample_prior = "yes"
         )
     ),
     # add age:dominance interaction
     tar_target(
-        model_fit_6,
+        model_fit_2,
         fit_model(
-            name = "fit_6",
+            name = "fit_2",
             formula = bf(
                 response ~ age_std + freq_std + n_phon_std + doe_std*lv_std + 
                     (1 + age_std + freq_std + n_phon_std + doe_std*lv_std | id) +
@@ -275,13 +216,14 @@ list(
                 family = cratio(link = "logit") # cumulative, continuation ratio
             ), 
             data = df,
-            prior = model_prior[1:10,]
+            prior = model_prior[1:10,],
+            sample_prior = "yes"
         )
     ),
     tar_target(
-        model_fit_7,
+        model_fit_3,
         fit_model(
-            name = "fit_7",
+            name = "fit_3",
             formula = bf(
                 response ~ age_std + freq_std + n_phon_std + doe_std*lv_std + age_std:(doe_std*lv_std) + 
                     (1 + age_std + freq_std + n_phon_std + age_std:(doe_std*lv_std) | id) +
@@ -289,32 +231,44 @@ list(
                 family = cratio(link = "logit") # cumulative, continuation ratio
             ), 
             data = df,
-            prior = model_prior
+            prior = model_prior,
+            sample_prior = "yes"
+            
+        )
+    ),
+    tar_target(
+        model_fit_3_prior,
+        fit_model(
+            name = "fit_3_prior",
+            formula = bf(
+                response ~ age_std + freq_std + n_phon_std + doe_std*lv_std + age_std:(doe_std*lv_std) + 
+                    (1 + age_std + freq_std + n_phon_std + age_std:(doe_std*lv_std) | id) +
+                    (1 + age_std + freq_std + n_phon_std + age_std:doe_std | te),
+                family = cratio(link = "logit") # cumulative, continuation ratio
+            ), 
+            data = df,
+            prior = model_prior,
+            sample_prior = "only"
         )
     ),
     
     # compare models -----------------------------------------------------------
-    
-    # tar_target(
-    #     model_loos,
-    #     {
-    #         models <- lst(
-    #             model_fit_0,
-    #             model_fit_1,
-    #             model_fit_2,
-    #             model_fit_3,
-    #             model_fit_4,
-    #             model_fit_5,
-    #             model_fit_6,
-    #             model_fit_7
-    #         )
-    #         loos <- lapply(models, loo_subsample, draws = 10, observations = 10)
-    #         saveRDS(
-    #             loos,
-    #             here("results", "model_loos.rds")
-    #         )
-    #     }
-    # ),
+    tar_target(
+        model_log_liks,
+        {
+            models <- lst(
+                model_fit_0,
+                model_fit_1,
+                model_fit_2,
+                model_fit_3
+            )
+            get_log_lik(models, re_formula = NA, ndraws = 700L)
+        }
+    ),
+    tar_target(
+        model_loos,
+        get_loo(model_log_liks)
+    ),
     
     # diagnose models ----------------------------------------------------------
     
@@ -326,11 +280,7 @@ list(
                 model_fit_0,
                 model_fit_1,
                 model_fit_2,
-                model_fit_3,
-                model_fit_4,
-                model_fit_5,
-                model_fit_6,
-                model_fit_7
+                model_fit_3
             ),
             rhat
         )
@@ -343,19 +293,15 @@ list(
                 model_fit_0,
                 model_fit_1,
                 model_fit_2,
-                model_fit_3,
-                model_fit_4,
-                model_fit_5,
-                model_fit_6,
-                model_fit_7
+                model_fit_3
             ),
             neff_ratio
         )
-    ),
-
+    )
+    
     
     # render report.Rmd
-    tar_render(report, "docs/index.Rmd")
+    # tar_quarto(report, "index.qmd")
     # 
     # # render manuscript
     # tar_render(manuscript, "manuscript/manuscript.Rmd")
