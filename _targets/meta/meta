@@ -1,6 +1,7 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
 %!in%|function|9c17137be680b5d3|||||||||||||||
 .Random.seed|object|2bc043e82c27042c|||||||||||||||
+bayes_factors|stem|2c497dfc66f436b0|b051a6028e0b9a2f|983fb7d7f0423a02|-1905265752||t19250.658764093s|91f3b972fb9badc9|764|rds|local|vector|||26.18||
 compare_models|function|497eb6bc1476b2f4|||||||||||||||
 credentials|stem|e082e149348ab808|a30b3b1477599b55|1a61d5b1ca062127|-1444300154||t19244.408929617s|97452b5a3d70b0b8|49|rds|local|vector|||0.22||
 cut_age|function|032f28577fcd0b5c|||||||||||||||
@@ -37,6 +38,7 @@ model_rhats|stem|ff290148d468b632|499b5f91a769fdca|63eca486a2b77570|192492602||t
 months_to_years|function|e54593a26b30f040|||||||||||||||
 multilex_data|stem|dffafbd2ea2d4d01|f7a34b03b6c96869|f82392350c3d8b37|1096876832||t19244.408918998s|a3fa77acfe498234|1564803|rds|local|vector|||55.29||
 participants|stem|080380f4ff14f96c|7fd65073c8e92a92|b3fbe93b0a40dc96|392525641||t19244.4107481347s|5a33cd68c3ab3be1|8810|rds|local|vector|||0.08||
+posterior_description|stem|6d57bc3c4195464a|cd560f3cf4233a6e|b65e7d36f0f89ea8|-295923834||t19250.7132420767s|631f8f398df988d1|45467|rds|local|vector|||108.41||
 prop_adj|function|8f984a7e77cc1c9c|||||||||||||||
 prop_adj_ci|function|e94b05f73a7c2a8d|||||||||||||||
 prop_adj_se|function|ea05d30982a97289|||||||||||||||
@@ -44,6 +46,9 @@ report|stem|494cfef25bc68128|83edaa3569174d11|d84d7cdd1c3c4b08|-237041703|index.
 rescale_variable|function|c7cc266d522398dd|||||||||||||||
 resolve_conficts|stem|0bf25546ff171d55|bf9c5cb464279940|22cd8feb20887f1e|-1176324365||t19244.4089268929s|3bd8f66805fd112b|45|rds|local|vector|||0.67||
 responses|stem|04743eb46f74e737|ed74aacf8fd49a68|1f092967c11f47dc|403517661||t19244.4107456645s|a9f9164461115d53|861793|rds|local|vector|||3.42||
+rope_coefs|stem|48cf8a5b638e0c66|6e2c82951cef4539|8e91de530950433c|-1439564184||t19250.6575089417s|30dadf2c0faad629|618|rds|local|vector|||3.36||
+rope_interval|stem|d4b28031ff56e30b|3acd53db40d922df|71e688e82008bc8e|-885783149||t19250.6575092817s|dc6150ff0244dbb7|99|rds|local|vector|||0||
+rope_test|stem|2c497dfc66f436b0|29965d2d11020f1d|ea2fe05b0a215d02|771829000||t19250.7119872057s|91f3b972fb9badc9|764|rds|local|vector|||26.11||
 theme_custom|function|890b394514acbcff|||||||||||||||
 theme_github|function|4fd11f3888ebdee7|||||||||||||||
 unmake|function|cfeb127c3d6bd55f|||||||||||||||

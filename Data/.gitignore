@@ -1,2 +1,3 @@
 *.csv
 *.rds
+index_files/*

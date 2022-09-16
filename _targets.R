@@ -14,6 +14,7 @@ tar_option_set(
     packages = c(
         "arrow",
         "bayesplot",
+        "bayestestR",
         "brms", 
         "conflicted",
         "dplyr", 
@@ -271,7 +272,40 @@ list(
     ),
     
     # diagnose models ----------------------------------------------------------
-    
+    tar_target(
+        rope_coefs,
+        {
+            read.csv("data/rope-calculation.csv", na.strings = "") %>% 
+                as_tibble() %>%
+                group_by(study, year, predictor, estimate) %>% 
+                summarise(n_participants = sum(n_participants), .groups = "drop") %>% 
+                filter(!str_detect(study, "Mitchell")) %>% 
+                mutate(
+                    predictor = str_replace_all(predictor, "\\*", "\u00d7"),
+                    study = paste0(study, " (", year, ")\nN = ", n_participants)
+                )
+        }
+    ),
+    tar_target(
+        rope_interval,
+        median(rope_coefs$estimate)*c(lower = -1, upper = +1)
+    ),
+    # describe posterior
+    tar_target(
+        posterior_description,
+        describe_posterior(
+            model_fit_3,
+            test = "rope",
+            rope_range = rope_interval, 
+            ci_method = "HDI"
+        ) %>% 
+            as_tibble() %>% 
+            clean_names()
+    ),
+    tar_target(
+        rope_test,
+        as_tibble(rope(model_fit_3, rope_range = rope_interval))
+    ),
     # R-hat (aka. Gelman-Rubin statistic)
     tar_target(
         model_rhats,
