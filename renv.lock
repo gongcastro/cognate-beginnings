@@ -184,6 +184,13 @@
       "Repository": "CRAN",
       "Hash": "0a8b771b1b255fc55f271ae49e671afc"
     },
+    "bayestestR": {
+      "Package": "bayestestR",
+      "Version": "0.12.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "20d1ba1ba2f76a65d54bc7e4002ddc44"
+    },
     "bit": {
       "Package": "bit",
       "Version": "4.0.4",
@@ -406,6 +413,13 @@
       "Repository": "CRAN",
       "Hash": "d1b8b1a821ee564a3515fa6c6d5c52dc"
     },
+    "datawizard": {
+      "Package": "datawizard",
+      "Version": "0.6.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "a74c2a453bf10ea1fe55e1dbcf05114d"
+    },
     "dbplyr": {
       "Package": "dbplyr",
       "Version": "2.1.1",
@@ -567,10 +581,10 @@
     },
     "ggplot2": {
       "Package": "ggplot2",
-      "Version": "3.3.5",
+      "Version": "3.3.6",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "d7566c471c7b17e095dd023b9ef155ad"
+      "Hash": "0fb26d0674c82705c6b701d1a61e02ea"
     },
     "ggridges": {
       "Package": "ggridges",
@@ -739,6 +753,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "1deaf1de3eac7e1d3377954b3a283652"
+    },
+    "insight": {
+      "Package": "insight",
+      "Version": "0.18.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "59398e328b1adc2e09d08aa7289211e2"
     },
     "isoband": {
       "Package": "isoband",
