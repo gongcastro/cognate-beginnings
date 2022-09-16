@@ -1,5 +1,5 @@
 
-# Trajectories [[report](https://github.com/gongcastro/trajectories/blob/master/Rmd/report.md)]
+# Trajectories [[report](https://gongcastro.github.io/trajectories)]
 
 ## Table of Contents
 1. [Introduction](#introduction)
