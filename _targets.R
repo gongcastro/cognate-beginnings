@@ -195,13 +195,13 @@ list(
         fit_model(
             name = "fit_1",
             formula = bf(
-                response ~ age_std + freq_std + n_phon_std + doe_std + lv_std + 
-                    (1 + age_std + freq_std + n_phon_std + doe_std + lv_std | id) +
-                    (1 + age_std + freq_std + n_phon_std + doe_std | te),
+                response ~ age_std*doe_std + freq_std + n_phon_std + 
+                    (1 + age_std*doe_std + freq_std + n_phon_std | id) +
+                    (1 + age_std*doe_std + freq_std + n_phon_std | te),
                 family = cratio(link = "logit") # cumulative, continuation ratio
             ), 
             data = df,
-            prior = model_prior[1:9,],
+            prior = model_prior[c(1:8, 11),],
             sample_prior = "yes"
         )
     ),
@@ -211,13 +211,13 @@ list(
         fit_model(
             name = "fit_2",
             formula = bf(
-                response ~ age_std + freq_std + n_phon_std + doe_std*lv_std + 
-                    (1 + age_std + freq_std + n_phon_std + doe_std*lv_std | id) +
-                    (1 + age_std + freq_std + n_phon_std + doe_std | te),
+                response ~ age_std*doe_std + freq_std + n_phon_std + lv_std +
+                    (1 + age_std*doe_std + freq_std + n_phon_std + lv_std | id) +
+                    (1 + age_std*doe_std + freq_std + n_phon_std | te),
                 family = cratio(link = "logit") # cumulative, continuation ratio
             ), 
             data = df,
-            prior = model_prior[1:10,],
+            prior = model_prior[c(1:9, 11), ],
             sample_prior = "yes"
         )
     ),
@@ -226,9 +226,25 @@ list(
         fit_model(
             name = "fit_3",
             formula = bf(
-                response ~ age_std + freq_std + n_phon_std + doe_std*lv_std + age_std:(doe_std*lv_std) + 
-                    (1 + age_std + freq_std + n_phon_std + age_std:(doe_std*lv_std) | id) +
-                    (1 + age_std + freq_std + n_phon_std + age_std:doe_std | te),
+                response ~ age_std*doe_std + freq_std + n_phon_std + lv_std + doe_std:lv_std +
+                    (1 + age_std*doe_std + freq_std + n_phon_std + lv_std + doe_std:lv_std | id) +
+                    (1 + age_std*doe_std + freq_std + n_phon_std | te),
+                family = cratio(link = "logit") # cumulative, continuation ratio
+            ), 
+            data = df,
+            prior = model_prior[1:11,],
+            sample_prior = "yes"
+            
+        )
+    ),
+    tar_target(
+        model_fit_4,
+        fit_model(
+            name = "fit_4",
+            formula = bf(
+                response ~ age_std*doe_std*lv_std + freq_std + n_phon_std +
+                (1 + age_std*doe_std*lv_std + freq_std + n_phon_std | id) +
+                    (1 + age_std*doe_std + freq_std + n_phon_std | te),
                 family = cratio(link = "logit") # cumulative, continuation ratio
             ), 
             data = df,
@@ -238,15 +254,10 @@ list(
         )
     ),
     tar_target(
-        model_fit_3_prior,
+        model_fit_4_prior,
         fit_model(
             name = "fit_3_prior",
-            formula = bf(
-                response ~ age_std + freq_std + n_phon_std + doe_std*lv_std + age_std:(doe_std*lv_std) + 
-                    (1 + age_std + freq_std + n_phon_std + age_std:(doe_std*lv_std) | id) +
-                    (1 + age_std + freq_std + n_phon_std + age_std:doe_std | te),
-                family = cratio(link = "logit") # cumulative, continuation ratio
-            ), 
+            formula = model_fit_4$formula,
             data = df,
             prior = model_prior,
             sample_prior = "only"
@@ -261,7 +272,8 @@ list(
                 model_fit_0,
                 model_fit_1,
                 model_fit_2,
-                model_fit_3
+                model_fit_3,
+                model_fit_4
             )
             get_log_lik(models, re_formula = NA, ndraws = 700L)
         }
@@ -294,7 +306,7 @@ list(
     tar_target(
         posterior_description,
         describe_posterior(
-            model_fit_3,
+            model_fit_4,
             test = "rope",
             rope_range = rope_interval, 
             ci_method = "HDI"
@@ -304,7 +316,18 @@ list(
     ),
     tar_target(
         rope_test,
-        as_tibble(rope(model_fit_3, rope_range = rope_interval))
+        as_tibble(rope(model_fit_4, rope_range = rope_interval))
+    ),
+    # describe posterior
+    tar_target(
+        posterior_description_re,
+        describe_posterior(
+            model_fit_4,
+            ci_method = "HDI",
+            effects = "random"
+        ) %>% 
+            as_tibble() %>% 
+            clean_names()
     ),
     # R-hat (aka. Gelman-Rubin statistic)
     tar_target(
@@ -314,7 +337,8 @@ list(
                 model_fit_0,
                 model_fit_1,
                 model_fit_2,
-                model_fit_3
+                model_fit_3,
+                model_fit_4
             ),
             rhat
         )
@@ -327,7 +351,8 @@ list(
                 model_fit_0,
                 model_fit_1,
                 model_fit_2,
-                model_fit_3
+                model_fit_3,
+                model_fit_4
             ),
             neff_ratio
         )
