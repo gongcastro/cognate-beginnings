@@ -1,0 +1,214 @@
+---
+title: "Cross/language CHILDES frequencies"
+format: html
+code-fold: true
+---
+
+```{r}
+#| label: setup
+#| echo: true
+library(childesr)
+library(dplyr)
+library(ggplot2)
+library(purrr)
+library(patchwork)
+library(tidyr)
+library(janitor)
+library(ggdist)
+library(gt)
+library(arrow)
+library(readr)
+```
+
+
+
+```{r}
+#| label: wordbank
+#| echo: true
+# function to retrieve frequencies
+wordbank <- map_df(
+    c(spa = "data/wordbank_spa.csv", eng = "data/wordbank_eng.csv"),
+    read_csv,
+    .id = "language"
+    ) %>% 
+    clean_names() %>% 
+    select(language, age, definition, uni_lemma, ipa, length, freq)
+
+wordbank %>%
+    drop_na() %>% 
+    distinct(uni_lemma, definition, language, freq) %>% 
+    arrange(uni_lemma) %>% 
+    pivot_wider(
+        id_cols = uni_lemma,
+        names_from = language,
+        values_from = c(freq, definition),
+        values_fn = first
+        ) %>% 
+    drop_na() %>% 
+    ggplot(aes(freq_eng, freq_spa)) +
+    geom_point()
+```
+
+
+```{r}
+#| label: retrieve-freqs
+#| echo: true
+# function to retrieve frequencies
+
+get_childes_data <- function(word, collection, ...){
+    
+    roles <- c("Mother", "Father", "Investigator", "Sibling", "Sister", "Grandmother", "Adult", "Friend", "Brother", "Visitor", "Relative", "Grandfather", "Teacher", "Student")
+    
+    counts <- get_types(type = word, collection = collection, role = roles, ...)
+    
+    speaker_ids <- distinct(counts, collection_id, corpus_id, transcript_id, speaker_id)
+    
+    speakers <- speaker_ids %>%
+        left_join(get_speaker_statistics(collection = collection)) %>%
+        select(collection_id, corpus_id, transcript_id, speaker_id, num_tokens)
+    
+    count_estimates <- counts %>%
+        left_join(speakers) %>%
+        mutate(
+            id = as.character(id),
+            age_months = target_child_age,
+            age_bin = as.integer(floor(age_months / 6) * 6),
+            token = tolower(gloss)
+        ) %>%
+        group_by(age_bin, token, target_child_id, transcript_id) %>%
+        summarise(
+            transcript_count = sum(count),
+            transcript_num_tokens = sum(num_tokens),
+            .groups = "drop"
+        ) %>%
+        group_by(age_bin, token) %>%
+        summarise(
+            freq_count = mean(transcript_count), 
+            total_count = mean(transcript_num_tokens),
+            n_children = length(unique(target_child_id)),
+            .groups = "drop"
+        ) %>%
+        mutate(
+            freq_million = freq_count / total_count * 1e6,
+            freq_zipf = log10(freq_million)+3
+        )
+    
+    return(count_estimates)
+    
+}
+
+
+# params
+tokens <- list(
+    spa = c("casa", "puerta", "mesa", "gato", "caja", "lampara"),
+    cat = c("casa", "porta", "taula", "gat", "caixa", "llum"),
+    eng = c("house", "door", "table", "cat", "box", "lamp")
+)
+
+freqs <- map2_df(
+    collections, 
+    corpora, 
+    ~get_frequencies(collection = .x, corpus = .y, age = c(10, 36)), 
+    .id = "language"
+)
+```
+
+
+# How many children, transcriptions, and tokens are available in each language?
+
+
+```{r}
+#| label: num-children
+#| echo: true
+collections <- list(
+    spa = "Spanish",
+    cat = "Romance",
+    eng = c("Eng-NA", "Eng-UK")
+)
+
+corpora <- list(
+    spa = NULL,
+    cat = c("EsteveGibert/Prieto", "GRERLI", "Jordina", "Julia", "Mireia/Eva/Pascual", "Serra/Solé"),
+    eng = NULL
+)
+
+counts <- map2_df(
+    collections, 
+    corpora, 
+    ~get_types(collection = .x, role = roles, corpus = .y),
+    .id = "language"
+)
+
+counts_to_transpose <- counts %>% 
+    drop_na(target_child_id) %>% 
+    group_by(language) %>% 
+    summarise(
+        n_children = length(unique(target_child_id)),
+        n_transcripts = length(unique(transcript_id)),
+        n_distinct_words = length(unique(gloss)),
+        n_word_instances = sum(count),
+        median_word_instances = median(count),
+        max_word_instances = max(count)
+    ) 
+
+as_tibble(cbind(nms = names(counts_to_transpose), t(counts_to_transpose))) %>% 
+    set_names(.[1,]) %>% 
+    rename(variable = language) %>% 
+    slice(-1) %>% 
+    mutate(across(cat:spa, ~as.numeric(str_trim(.)))) %>% 
+    gt() %>% 
+    fmt_integer(2:4)
+
+```
+
+
+
+ggplot(freqs, aes(age_bin, freq_zipf)) +
+    geom_smooth(method = lm, formula = y ~ splines::bs(x, 3), se = FALSE) +
+    scale_y_continuous(limits  = c(1, 7))
+
+tes <- tibble(
+    language = c("cat", "spa", "eng"),
+    house = c("casa", "casa", "house")
+)
+
+
+
+freqs %>% 
+    filter(
+        (language=="cat" & token=="casa") |
+            (language=="spa" & token=="casa") |
+            (language=="eng" & token=="house")
+    ) %>% 
+    ggplot(aes(age_bin, freq_zipf, colour = language)) +
+    geom_point(size = 4, shape = 1, stroke = 2) +
+    scale_y_continuous(limits = c(1, 7))
+
+group_by(age_bin, language) %>% 
+    summarise(total_count = sum(total_count)) %>% 
+    ggplot(aes(age_bin, total_count, fill = language)) +
+    geom_col(position = position_dodge(), width = 3) +
+    geom_text(
+        aes(label = round(total_count), y = total_count + 100),
+        position = position_dodge(width = 1),
+        angle = 90,
+        nudge_y = 100
+    )
+
+freqs %>% 
+    ggplot() +
+    aes(
+        x = age_bin,
+        y = freq_zipf,
+        colour = language
+    ) +
+    facet_wrap(~token) +
+    stat_summary(fun.data = "mean_se", geom = "pointrange") +
+    facet_wrap(~token, scales = "free_y") +
+    scale_x_continuous(
+        breaks = seq(10, 36, 4),
+        name = "Age (months)"
+    ) +
+    scale_y_continuous(name = "Frequency (per million words)") 
+
+```

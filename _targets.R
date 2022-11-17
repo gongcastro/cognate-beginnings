@@ -16,6 +16,8 @@ tar_option_set(
         "bayesplot",
         "bayestestR",
         "brms", 
+        "bvqdev",
+        "childesr",
         "conflicted",
         "dplyr", 
         "forcats",
@@ -28,7 +30,6 @@ tar_option_set(
         "knitr",
         "lubridate",
         "mice", 
-        "multilex",
         "patchwork", 
         "papaja", 
         "purrr",
@@ -59,7 +60,7 @@ options(
 
 list(
     
-    # resolve namespace conflicts ----------------------------------------------
+    # resolve namespace conflicts ##############################################
     tar_target(
         resolve_conficts,
         {
@@ -76,71 +77,32 @@ list(
         }
     ),
     
-    # import data --------------------------------------------------------------
-    tar_target(
-        credentials,
-        get_credentials() # see R/utils.R
-    ),
+    # import data ##############################################################
+    tar_target(bvq_data, get_bvq(update = TRUE)), # see R/00_importing.R
     
-    tar_target(
-        multilex_data,
-        # see R/00_importing.R
-        get_multilex(
-            update = TRUE, 
-            type = c("understands", "produces")
-        )
-    ),
+    # get CHILDES frequencies
+    tar_target(childes, get_childes_frequencies(age_range = c(12, 32))), # see R/utils.R
     
     # items
-    tar_target(
-        items,
-        # see R/01_preprocessing.R
-        get_items(
-            multilex_data = multilex_data,
-        )
-    ),
+    tar_target(items, get_items(bvq_data = bvq_data, childes = childes)), # see R/01_preprocessing.R
     
     # participants
     tar_target(
         participants,
         # see R/01_preprocessing.R
         get_participants(
-            multilex_data,
-            age = c(10, 36), 
+            bvq_data,
+            age = c(12, 32), 
             lp = c("Monolingual", "Bilingual"), 
             other_threshold = 0.1
         )
     ),
-    
-    # vocabulary
-    tar_target(
-        vocabulary,
-        # see R/01_preprocessing.R
-        get_vocabulary(
-            multilex_data = multilex_data,
-            type = c("understands", "produces")
-        )
-    ),
-    
+
     # responses
-    tar_target(
-        responses,
-        # see R/01_preprocessing.R
-        get_responses(
-            multilex_data = multilex_data
-        )
-    ),
+    tar_target(responses, get_responses(bvq_data = bvq_data)), # see R/01_preprocessing.R
     
     # process data -------------------------------------------------------------
-    tar_target(
-        df,
-        # see R/01_preprocessing.R
-        get_data(
-            participants = participants,
-            items = items,
-            responses = responses
-        )
-    ),
+    tar_target(df, get_data(participants = participants, items = items, responses = responses)),
     
     # model priors -------------------------------------------------------------
     # these priors were set so that they generate data similar to what we expect
@@ -152,15 +114,14 @@ list(
             prior(normal(1, 0.1), class = "sd", group = "te"),
             prior(normal(1, 0.1), class = "sd", group = "id"),
             prior(lkj(2), class = "cor"),
-            prior(normal(1, 0.1), class = "b", coef = "age_std"),
-            prior(normal(0, 0.1), class = "b", coef = "freq_std"),
-            prior(normal(0, 0.1), class = "b", coef = "n_phon_std"),
-            prior(normal(0, 0.1), class = "b", coef = "doe_std"),
-            prior(normal(0, 0.1), class = "b", coef = "lv_std"),
-            prior(normal(0, 0.1), class = "b", coef = "doe_std:lv_std"),
-            prior(normal(0, 0.1), class = "b", coef = "age_std:doe_std"),
-            prior(normal(0, 0.1), class = "b", coef = "age_std:lv_std"),
-            prior(normal(0, 0.1), class = "b", coef = "age_std:doe_std:lv_std")
+            prior(normal(1, 0.25), class = "b", coef = "age_std"),
+            prior(normal(0, 0.25), class = "b", coef = "n_phon_std"),
+            prior(normal(0, 0.25), class = "b", coef = "exposure_std"),
+            prior(normal(0, 0.25), class = "b", coef = "lv_std"),
+            prior(normal(0, 0.25), class = "b", coef = "exposure_std:lv_std"),
+            prior(normal(0, 0.25), class = "b", coef = "age_std:exposure_std"),
+            prior(normal(0, 0.25), class = "b", coef = "age_std:lv_std"),
+            prior(normal(0, 0.25), class = "b", coef = "age_std:exposure_std:lv_std")
         )
     ),
     
@@ -179,13 +140,13 @@ list(
         fit_model(
             name = "fit_0",
             formula = bf(
-                response ~ age_std + freq_std + n_phon_std + doe_std +
-                    (1 + age_std + freq_std + n_phon_std + doe_std | id) +
-                    (1 + age_std + freq_std + n_phon_std + doe_std | te),
-                family = cratio(link = "logit") # cumulative, continuation ratio
+                response ~ age_std + n_phon_std + exposure_std +
+                    (1 + age_std + n_phon_std + exposure_std | id) +
+                    (1 + age_std + n_phon_std + exposure_std | te),
+                family = cumulative(link = "logit") # cumulative, continuation ratio
             ), 
             data = df,
-            prior = model_prior[1:8,]
+            prior = model_prior[1:7,]
         )
     ),
     
@@ -195,13 +156,13 @@ list(
         fit_model(
             name = "fit_1",
             formula = bf(
-                response ~ age_std*doe_std + freq_std + n_phon_std + 
-                    (1 + age_std*doe_std + freq_std + n_phon_std | id) +
-                    (1 + age_std*doe_std + freq_std + n_phon_std | te),
-                family = cratio(link = "logit") # cumulative, continuation ratio
+                response ~ age_std*exposure_std + n_phon_std + 
+                    (1 + age_std*exposure_std + n_phon_std | id) +
+                    (1 + age_std*exposure_std + n_phon_std | te),
+                family = cumulative(link = "logit") # cumulative, continuation ratio
             ), 
             data = df,
-            prior = model_prior[c(1:8, 11),],
+            prior = model_prior[c(1:7, 10),],
             sample_prior = "yes"
         )
     ),
@@ -211,13 +172,13 @@ list(
         fit_model(
             name = "fit_2",
             formula = bf(
-                response ~ age_std*doe_std + freq_std + n_phon_std + lv_std +
-                    (1 + age_std*doe_std + freq_std + n_phon_std + lv_std | id) +
-                    (1 + age_std*doe_std + freq_std + n_phon_std | te),
-                family = cratio(link = "logit") # cumulative, continuation ratio
+                response ~ age_std*exposure_std + n_phon_std + lv_std +
+                    (1 + age_std*exposure_std + n_phon_std + lv_std | id) +
+                    (1 + age_std*exposure_std + n_phon_std | te),
+                family = cumulative(link = "logit") # cumulative, continuation ratio
             ), 
             data = df,
-            prior = model_prior[c(1:9, 11), ],
+            prior = model_prior[c(1:8, 10), ],
             sample_prior = "yes"
         )
     ),
@@ -226,13 +187,13 @@ list(
         fit_model(
             name = "fit_3",
             formula = bf(
-                response ~ age_std*doe_std + freq_std + n_phon_std + lv_std + doe_std:lv_std +
-                    (1 + age_std*doe_std + freq_std + n_phon_std + lv_std + doe_std:lv_std | id) +
-                    (1 + age_std*doe_std + freq_std + n_phon_std | te),
-                family = cratio(link = "logit") # cumulative, continuation ratio
+                response ~ age_std*exposure_std + n_phon_std + lv_std + exposure_std:lv_std +
+                    (1 + age_std*exposure_std + n_phon_std + lv_std + exposure_std:lv_std | id) +
+                    (1 + age_std*exposure_std + n_phon_std | te),
+                family = cumulative(link = "logit") # cumulative, continuation ratio
             ), 
             data = df,
-            prior = model_prior[1:11,],
+            prior = model_prior[1:10,],
             sample_prior = "yes"
             
         )
@@ -242,10 +203,10 @@ list(
         fit_model(
             name = "fit_4",
             formula = bf(
-                response ~ age_std*doe_std*lv_std + freq_std + n_phon_std +
-                (1 + age_std*doe_std*lv_std + freq_std + n_phon_std | id) +
-                    (1 + age_std*doe_std + freq_std + n_phon_std | te),
-                family = cratio(link = "logit") # cumulative, continuation ratio
+                response ~ age_std*exposure_std*lv_std + n_phon_std +
+                (1 + age_std*exposure_std*lv_std + n_phon_std | id) +
+                    (1 + age_std*exposure_std + n_phon_std | te),
+                family = cumulative(link = "logit") # cumulative, continuation ratio
             ), 
             data = df,
             prior = model_prior,
@@ -256,7 +217,7 @@ list(
     tar_target(
         model_fit_4_prior,
         fit_model(
-            name = "fit_3_prior",
+            name = "fit_4_prior",
             formula = model_fit_4$formula,
             data = df,
             prior = model_prior,
@@ -275,6 +236,8 @@ list(
                 model_fit_3,
                 model_fit_4
             )
+            # 700 samples, amount decided based on computational constraints
+            # basically, RStudio crashes with more samples in the current machine
             get_log_lik(models, re_formula = NA, ndraws = 700L)
         }
     ),
@@ -300,7 +263,7 @@ list(
     ),
     tar_target(
         rope_interval,
-        median(rope_coefs$estimate)*c(lower = -1, upper = +1)
+        c(lower = -0.1, upper = +0.1)
     ),
     # describe posterior
     tar_target(
