@@ -307,10 +307,11 @@ This study explored whether word acquisition was affected by cognateness in bili
 
 ## Summary of the results
 
-Adopting a Bayesian IRT modelling, we found conclusive evidence in favour of a facilitatory effect of cognateness, conditional to the degree of exposure to the language: phonological similarity across translation equivalents increased the probability of comprehension and production only when exposure to the language was low. We did not find evidence in favour of this interaction behaving differently across ages, although the uncertainty associated with this estimate (the regression coefficient of the $Age \times DoE \times Levenshtein$) was large, indicating that we cannot confidently state whether younger or elder children were any more sentitive to the effect of language exposure and congnateness.
-
+Adopting a Bayesian IRT modelling, we found conclusive evidence in favour of a facilitatory effect of cognateness, conditional to the degree of exposure to the language: phonological similarity across translation equivalents increased the probability of comprehension and production only when exposure to the language was low. We did not find evidence in favour of this interaction behaving differently across ages, although the uncertainty associated with this estimate (the regression coefficient of the $Age \times DoE \times Levenshtein$) was large, indicating that we cannot confidently state whether younger or elder children were any more sensitive to the effect of language exposure and cognateness.
 
 ## Results in contrast with the literature
+
+Our result
 
 ## Mechanistic explanations
 

@@ -7,18 +7,18 @@ fit_model <- function(name, ...){
     # see R/utils.R
     fit <- brm(
         ...,
-        iter = 4000,
-        chains = 2,
+        iter = 1000,
+        chains = 4,
         init = 0.5, # where to initialise MCMCs
         seed = 888, # for reproducibility
         backend = "cmdstanr", # for faster, less problematic compilation in C++
-        file = here("results", paste0(name, ".rds")), # save model as file
+        file = here("results", name), # save model as file
         # file_refit = "always", # should model be refitted or loaded from file?
         control = list(
             adapt_delta = 0.9, # for better convergence of MCMCs
             max_treedepth = 15
         ),
-        save_model = here("stan", paste0(name, ".stan")) # save Stan code
+        save_model = here("stan", name) # save Stan code
     )
     
     return(fit)
@@ -56,4 +56,6 @@ get_loo <- function(x, ...){
     if (!is.null(names(x))) names(loos) <- names(x) # keep names if any
     return(loos)
 }
+
+#' 
 

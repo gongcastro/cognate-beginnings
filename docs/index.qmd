@@ -595,25 +595,6 @@ print(model_fit_3$formula)
 ```{r}
 print(model_fit_4$formula)
 ```
-
-### Model 5
-
-```{r}
-print(model_fit_5$formula)
-```
-
-### Model 6
-
-```{r}
-print(model_fit_6$formula)
-```
-
-### Model 7
-
-```{r}
-print(model_fit_7$formula)
-```
-
 :::
 
 ## Stan code
