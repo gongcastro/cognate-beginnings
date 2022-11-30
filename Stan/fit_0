@@ -134,9 +134,9 @@ transformed parameters {
   r_2_2 = r_2[, 2];
   r_2_3 = r_2[, 3];
   r_2_4 = r_2[, 4];
-  lprior += normal_lpdf(b[1] | 1, 0.1);
-  lprior += normal_lpdf(b[2] | 0, 0.1);
-  lprior += normal_lpdf(b[3] | 0, 0.1);
+  lprior += normal_lpdf(b[1] | 1, 0.25);
+  lprior += normal_lpdf(b[2] | 0, 0.25);
+  lprior += normal_lpdf(b[3] | 0, 0.25);
   lprior += normal_lpdf(Intercept | -0.25, 0.1);
   lprior += normal_lpdf(sd_1 | 1, 0.1)
     - 4 * normal_lccdf(0 | 1, 0.1);

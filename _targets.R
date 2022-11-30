@@ -1,14 +1,13 @@
 library(targets)
 library(tarchetypes)
 
-#### load R functions ----------------------------------------------------------
-
+# load R functions -------------------------------------------------------------
 source("R/utils.R")
 source("R/00_importing.R")
 source("R/01_preprocessing.R")
 source("R/02_models.R")
 
-#### list package dependencies -------------------------------------------------
+# list package dependencies ----------------------------------------------------
 
 tar_option_set(
     packages = c(
@@ -29,6 +28,7 @@ tar_option_set(
         "keyring",
         "knitr",
         "lubridate",
+        "marginaleffects",
         "mice", 
         "patchwork", 
         "papaja", 
@@ -49,7 +49,19 @@ tar_option_set(
     )
 )
 
-#### define global options -----------------------------------------------------
+# resolve conflicts
+conflicted::conflict_prefer("last_warnings", "rlang")
+conflicted::conflict_prefer("filter", "dplyr")
+conflicted::conflict_prefer("between", "dplyr")
+conflicted::conflict_prefer("timestamp", "utils")
+conflicted::conflict_prefer("ar", "brms")
+conflicted::conflict_prefer("chisq.test", "stats")
+conflicted::conflict_prefer("discard", "scales")
+conflicted::conflict_prefer("duration", "lubridate")
+conflicted::conflict_prefer("fisher.test", "stats")
+conflicted::conflict_prefer("lag", "dplyr")
+
+# define global options --------------------------------------------------------
 options(
     mc.cores = 4,
     brms.backend = "cmdstanr",
@@ -60,7 +72,7 @@ options(
 
 list(
     
-    # resolve namespace conflicts ##############################################
+    ## resolve namespace conflicts ---------------------------------------------
     tar_target(
         resolve_conficts,
         {
@@ -77,7 +89,7 @@ list(
         }
     ),
     
-    # import data ##############################################################
+    ## import data -------------------------------------------------------------
     tar_target(bvq_data, get_bvq(update = TRUE)), # see R/00_importing.R
     
     # get CHILDES frequencies
@@ -104,9 +116,10 @@ list(
     # process data -------------------------------------------------------------
     tar_target(df, get_data(participants = participants, items = items, responses = responses)),
     
-    # model priors -------------------------------------------------------------
-    # these priors were set so that they generate data similar to what we expect
-    # based on Wordbank data (see manuscript and lab notes)
+    ## fit models ---------------------------------------------------------------
+    
+    # model priors: these priors were set so that they generate data similar to 
+    # what we expect based on Wordbank data (see manuscript and lab notes)
     tar_target(
         model_prior,
         c(
@@ -125,7 +138,6 @@ list(
         )
     ),
     
-    # fit models ---------------------------------------------------------------
     # multilevel model with crossed random effects (participants an items)
     # responses are generated from a categorical distribution:
     #   - https://journals.sagepub.com/doi/full/10.1177/2515245918823199
@@ -166,7 +178,7 @@ list(
             sample_prior = "yes"
         )
     ),
-    # add age:dominance interaction
+    # add age:exposure interaction
     tar_target(
         model_fit_2,
         fit_model(
@@ -214,6 +226,7 @@ list(
             
         )
     ),
+    # model with only prior samples
     tar_target(
         model_fit_4_prior,
         fit_model(
@@ -225,7 +238,7 @@ list(
         )
     ),
     
-    # compare models -----------------------------------------------------------
+    ## compare models ----------------------------------------------------------
     tar_target(
         model_log_liks,
         {
@@ -246,7 +259,7 @@ list(
         get_loo(model_log_liks)
     ),
     
-    # diagnose models ----------------------------------------------------------
+    ## diagnose models ---------------------------------------------------------
     tar_target(
         rope_coefs,
         {
