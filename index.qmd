@@ -29,7 +29,7 @@ authors:
     affiliations:
       - name: Universitat Pompeu Fabra
         department: Center for Brain and Cognition
-abstract: "Bilinguals face the challenging task of learning words from languages with overlapping phonologies. Floccia et al. (2018) reported larger vocabulary sizes for 24-month-old bilinguals that were learning languages that shared a greater amount of cognates (e.g., English-Dutch). The mechanisms underlying this effect remain unknown. We explore two compatible scenarios. First, we test whether cognates are learnt earlier than non-cognates. This would account for the difference in vocabulary size associated to the amount of shared cognates across languages. Second, we explore the possibility that the word-forms of one language interact with those form the other language, scaffolding the acquisition of their translation equivalents when their phonologies overlap. This mechanism, in line with the parallel activation account of bilingual speech perception, would provide a plausible explanation to why cognates are acquired ealier by bilinguals. We developed an online tool to collect parental reports of receptive and productive vocabularies from children learning Catalan and/or Spanish, and present data on receptive and productive vocabulary of bilingual toddlers aged 12 to 34 months."
+abstract: "Bilinguals face the challenging task of learning words from languages with overlapping phonologies. Floccia et al. (2018) reported larger vocabulary sizes for 24-month-old bilinguals that were learning languages that shared a greater amount of cognates (e.g., English-Dutch). The mechanisms underlying this effect remain unknown. We explore two compatible scenarios. First, we test whether cognates are learnt earlier than non-cognates. This would account for the difference in vocabulary size associated to the amount of shared cognates across languages. Second, we explore the possibility that the word-forms of one language interact with those in the other language, scaffolding the acquisition of their translation equivalents when their phonologies overlap. This mechanism, in line with the parallel activation account of bilingual speech perception, would provide a plausible explanation to why cognates are acquired ealier by bilinguals. We developed an online tool to collect parental reports of receptive and productive vocabularies from children learning Catalan and/or Spanish, and present data on receptive and productive vocabulary of bilingual toddlers aged 12 to 34 months."
 format:
     html:
         toc: true
@@ -57,15 +57,19 @@ csl: "manuscript/apa6.csl"
 #| include: false
 tar_load_globals() # load packages and options
 tar_load_everything() # load targets as R objects
-theme_set(theme_custom()) # set custom ggplot theme
-
 
 # resolve namespace conflicts
 conflict_prefer("filter", "dplyr")
 conflict_prefer("select", "dplyr")
+
+# set ggplot theme and colour palette
+theme_set(theme_custom()) # set custom ggplot theme
+
 options(
     knitr.kable.NA = "-",
     knitr.duplicate.label = "allow",
+    ggplot2.ordinal.fill = ggsci::pal_d3()(4),
+    ggplot2.ordinal.colour = ggsci::pal_d3()(4),
     ggplot2.discrete.fill = ggsci::pal_d3()(4),
     ggplot2.discrete.colour = ggsci::pal_d3()(4),
     ggplot2.continuous.fill = ggplot2::scale_color_gradient,
@@ -75,7 +79,7 @@ options(
 
 # Methods
 
-Data and materials are available at OSF (https://osf.io/hy984/), and code is available at GitHub (https://github.com/gongcastro/trajectories).
+Data and materials are available at [OSF](https://osf.io/hy984/), and code is available at [GitHub](https://github.com/gongcastro/trajectories).
 
 ## Questionnaires
 
@@ -84,17 +88,233 @@ Data and materials are available at OSF (https://osf.io/hy984/), and code is ava
 #| echo: true
 #| message: false
 #| warning: false
-pool <- mutate(bvqdev::pool, language = ifelse(str_detect(item, "cat_"), "Catalan", "Spanish"))
-n_categories <- distinct(pool, category) %>% nrow()
+data("pool", package = "bvqdev")
+n_categories <- distinct(pool, semantic_category) %>% nrow()
 n_items <- length(unique(pool$item))
 n_item_language <- count(pool, language) %>% 
     pull(n) %>%
     set_names(c("catalan", "spanish"))
 ```
 
-The questionnaire was implemented on-line using the formR platform [@arslan2020formr], and was structured in three blocks: a (1) language questionnaire, a (2) demographic survey, and a (3) Catalan and a Spanish vocabulary checklists. Vocabulary checklists followed a similar structure as the Oxford Communicative Developmental Inventory [@hamilton2000infant] and consisted in two lists of words: one in Catalan and one in Spanish. The Catalan inventory contained `r n_item_language["catalan"]` items and the Spanish inventory contained `r n_item_language["spanish"]` items. Items in one language were translation equivalents of the items in the other language (e.g., whenever *gos* \[dog\] was included in the Catalan inventory, the word *perro* was included in the Spanish inventory), roughly following a one-to-one mapping. When there were two acceptable translation equivalents for a given word, we included both in separate items (e.g., Catalan *acabar* \[*to finish*\] and Spanish *acabar* and *terminar*), or merged them into a single items (e.g., Spanish *mono* \[*monkey*\] and Catalan *mono/mico*. We included items from a diverse sample of `r n_categories` semantic/functional categories (see Appendix 1). For the analyses included in this study, we excluded items from the adverbs, auxiliary words, connectives, interjections and games and routines categories, so that only data from content words (nouns, adjectives, and verbs) were used.
+The questionnaire was implemented on-line using the formR platform [@arslan2020formr], and was structured in three blocks: a (1) language questionnaire, a (2) demographic survey, and a (3) Catalan and a Spanish vocabulary checklists. Vocabulary checklists followed a similar structure as the Oxford Communicative Developmental Inventory [@hamilton2000infant] and consisted of two lists of words: one in Catalan and one in Spanish. The Catalan inventory contained `r n_item_language["catalan"]` items and the Spanish inventory contained `r n_item_language["spanish"]` items. Items in one language were translation equivalents of the items in the other language (e.g., whenever *gos* \[dog\] was included in the Catalan inventory, the word *perro* was included in the Spanish inventory), roughly following a one-to-one mapping. When there were two acceptable translation equivalents for a given word, we included both in separate items (e.g., Catalan *acabar* \[*to finish*\] and Spanish *acabar* and *terminar*), or merged them into a single items (e.g., Spanish *mono* \[*monkey*\] and Catalan *mono/mico*. We included items from a diverse sample of `r n_categories` semantic/functional categories (see Appendix 1). For the analyses included in this study, we excluded items from the adverbs, auxiliary words, connectives, interjections and games and routines categories, so that only data from content words (nouns, adjectives, and verbs) were used.
 
-For each word in the vocabulary checklists, we asked parents to report whether their child was able to understand it, understand *and* say it, or did not understand or say it (checked out by default). Some families filled a long version of the vocabulary checklists (800 translation equivalents; 800 items in Catalan, 800 items in Spanish), while others filled a shorter version (\~400 translation equivalents, \~400 items in Catalan, \~400 items in Spanish). These last families were randomly allocated into one of four different subsets of the complete list of items. These lists were carefully designed so that each contained a representative subsample of the items from the complete list. Semantic/functional categories with less than 16 items--thus resulting in less than four items after dividing it in four lists--were not divided in the short version of the questionnaire: all of their items were included in the four lists. Another subset of items that were part of the trial lists of some experiments in the lab were also included in all versions. Table 2 in Appendix 1 shows the distribution of items across questionnaire versions. We excluded from the analysis multi-word items (e.g., *barrita de cereales* \[cereal bar\]) and items that included more than one word-form (e.g., *mono / mico*). Table 3 shows the classification of items in cognates and non-cognates and their lexical frequency scores across the four lists of the inventories.
+For each word in the vocabulary checklists, we asked parents to report whether their child was able to understand it, understand *and* say it, or did not understand or say it (checked out by default). Some families filled a long version of the vocabulary checklists (800 translation equivalents; 800 items in Catalan, 800 items in Spanish), while others filled a shorter version (\~400 translation equivalents, \~400 items in Catalan, \~400 items in Spanish). These last families were randomly assigned to one of four different subsets of the complete list of items. These lists were designed so that each contained a representative subsample of the items from the complete list. Semantic/functional categories with less than 16 items were not divided in the short version of the questionnaire to preserve a minimum of four items per list for each category: all of their items were included in the four lists. Another subset of items that were part of the trial lists of some experiments in the lab were also included in all versions. Table 2 in Appendix 1 shows the distribution of items across questionnaire versions. We excluded from the analysis multi-word items (e.g., *barrita de cereales* \[cereal bar\]) and items that included more than one word-form (e.g., *mono / mico*). Table 3 shows the classification of items in cognates and non-cognates and their lexical frequency scores across the four lists of the inventories.
+
+## Participants
+
+```{r}
+#| label: fig-participants-time
+#| echo: true
+#| message: false
+#| warning: false
+#| fig-width: 7
+#| fig-height: 10 
+#| fig-cap: "Date at which responses were collected"
+participants %>% 
+    group_by(time_stamp) %>% 
+    summarise(n = n(), .groups = "drop") %>% 
+    mutate(n = cumsum(n)) %>% 
+    ggplot(aes(time_stamp, n)) +
+    geom_vline(xintercept = ymd("2020-03-15"), size = 0.5) +
+    annotate(geom = "text", y = 350, x = ymd("2020-03-15"), label = "COVID-19 lockdown in Spain",
+             angle = 90, vjust = 1.5, hjust = 1) +
+    geom_line(size = 1, colour = pal_d3()(1)[1]) +
+    labs(x = "Date", y = "Number of responses", colour = "Dominant language") +
+    scale_y_continuous(breaks = seq(0, 500, 100), limits = c(0, 500)) +
+    theme(
+        legend.position = "top",
+        legend.title = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 20, hjust = 1),
+        axis.title.x = element_blank(),
+    ) +
+    
+    participants %>% 
+    mutate(age = cut(floor(age), breaks = seq(7, 35, 5))) %>% 
+    group_by(time_stamp, age) %>% 
+    summarise(n = n(), .groups = "drop") %>% 
+    group_by(age) %>% 
+    mutate(n = cumsum(n)) %>% 
+    ggplot(aes(time_stamp, n, colour = age)) +
+    geom_vline(xintercept = ymd("2020-03-15"), size = 0.5) +
+    annotate(geom = "text", y = 350, x = ymd("2020-03-15"), label = "COVID-19 lockdown in Spain",
+             angle = 90, vjust = 1.5, hjust = 1) +
+    geom_line(size = 1) +
+    labs(x = "Date", y = "Number of responses", colour = "Age (months(") +
+    scale_y_continuous(breaks = seq(0, 500, 100)) +
+    scale_color_d3() +
+    
+    plot_layout(ncol = 1) &
+    
+    scale_x_date(date_breaks = "3 month", date_labels = "%B %Y") &
+    theme(
+        legend.position = "top",
+        legend.title = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 20, hjust = 1),
+        axis.title.x = element_blank(),
+    )
+```
+
+### Age
+
+Number of months elapsed between participants' birth date and questionnaire completion.
+
+```{r}
+#| label: fig-participants-age
+#| echo: true
+#| message: false
+#| warning: false
+#| fig-width: 7
+#| fig-cap: "Distribution of participants' ages"
+participants %>% 
+    mutate(age = floor(age)) %>% 
+    count(age) %>% 
+    ggplot() +
+    aes(x = age, y = n) +
+    geom_col(fill = pal_d3()(3)[1]) +
+    geom_text(aes(label = n), size = 3.5, vjust = -1) +
+    labs(
+        x = "Age (months)",
+        y = "# participants"
+    ) +
+    scale_x_continuous(breaks = seq(0, 40, 2)) +
+    scale_y_continuous(limits = c(0, 55), breaks = seq(0, 55, 10)) +
+    theme(
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank()
+    )
+```
+
+### Language exposure (Degree of Exposure)
+
+Participant degree of exposure to the words' language ($DoE$): percentage of exposure to the language the word belonged to. For example, for a participant with 90% exposure to Catalan, and 10% to Spanish, the DoE of the Catalan word *taula* would be 90%, and the DoE for the Spanish word *mesa* would be 10%.
+
+```{r}
+#| label: fig-participants-lp
+#| echo: true
+#| message: false
+#| warning: false
+#| fig-width: 7
+#| fig-cap: "Participant degree of exposure (DoE) to Catalan and Spanish"
+participants %>% 
+    pivot_longer(c(doe_catalan, doe_spanish),
+                 names_to = "language", values_to = "doe", 
+                 names_transform = ~str_to_sentence(str_remove(., "doe_"))) %>% 
+    mutate(doe = cut(doe, breaks = seq(0, 1, 0.1), include.lowest = TRUE),
+           id = paste0(id, " (", time, ")")
+    ) %>% 
+    count(language, doe) %>% 
+    ggplot(aes(doe, y = n, label = n, fill = language)) +
+    geom_col(colour = "white", size = 1) +
+    geom_text(position = position_nudge(y = 5)) +
+    facet_wrap(~language, ncol = 1) + 
+    labs(
+        x = "Degree of exposure to Catalan",
+        y = "Number of participants",
+        colour = "Language",
+        fill = "Language"
+    ) +
+    theme(
+        legend.position = "top",
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()
+    )
+```
+
+```{r}
+#| label: fig-participants-lp
+#| echo: true
+#| message: false
+#| warning: false
+#| fig-width: 15
+#| fig-height: 8
+#| fig-cap: "Participant degree of exposure (DoE) to Catalan and Spanish"
+participants %>% 
+    mutate(
+        dominance = ifelse(doe_catalan >= doe_spanish,
+                           "Dominant in Catalan",
+                           "Dominant in Spanish"),
+        id = paste0(id, " (", time, ")"),
+        doe_other = 1 - (doe_spanish + doe_catalan)
+    ) %>% 
+    mutate(rank = rank(doe_catalan)) %>% 
+    pivot_longer(
+        starts_with("doe_"), 
+        names_to = "language",
+        values_to = "doe", 
+        names_transform = ~str_to_sentence(str_remove(., "doe_"))
+    ) %>% 
+    mutate(language = factor(language, levels = c("Catalan", "Spanish", "Other"))) %>%
+    ggplot(aes(reorder(id, desc(rank)), doe, colour = language, fill = language)) +
+    facet_wrap(~dominance, ncol = 1, scales = "free_x") +
+    geom_line(aes(group = id), colour = "grey") +
+    geom_point(size = 0.5) +
+    labs(x = "Participant", y = "Degree of exposure (DoE)", 
+         fill = "Language", colour = "Language") +
+    scale_y_continuous(labels = percent) +
+    theme(
+        legend.position = "top",
+        legend.title = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        panel.grid = element_blank()
+    )
+```
+### SES/parental education
+
+Maximum educational attainment of the participant parent(s).
+
+```{r}
+#| label: tbl-participants-edu
+#| tbl-cap: Participant exposure to the language (*DoE*) and socio-economic status (*SES*)
+#| echo: true
+#| message: false
+#| warning: false
+participants %>%
+    left_join(bvq_data$logs) %>% 
+    mutate(
+        edu_parent = fct_explicit_na(as.factor(edu_parent)),
+        doe_catalan = cut(doe_catalan, breaks = seq(0, 1, 0.2), include.lowest = TRUE)
+    ) %>% 
+    count(doe_catalan, edu_parent) %>% 
+    right_join(
+        expand_grid(
+            doe_catalan = levels(.$doe_catalan),
+            edu_parent = unique(bvq_data$logs$edu_parent)
+        )
+    ) %>% 
+    rename(total = n) %>% 
+    pivot_wider(names_from = edu_parent, values_from = total, values_fill = 0) %>%
+    mutate(total = rowSums(cbind(.[,3:8]), na.rm = TRUE)) %>% 
+    rename(Total = total) %>% 
+    select(-"NA") %>% 
+    gt() %>% 
+    summary_rows(
+        columns = Complementary:Primary, 
+        fns = list(Total = ~sum(., na.rm = TRUE)),
+        formatter = fmt_integer
+    ) %>% 
+    cols_label(doe_catalan = "DoE Catalan") %>%
+    sub_missing(columns = 2:8, missing_text = "--") %>% 
+    tab_spanner("Educational attainment", Secondary:Primary) %>% 
+    tab_style(
+        style = list(cell_borders(weight = px(2), sides = "left", color = "grey50")),
+        locations = cells_body(columns = 9, rows = 1:5)
+    ) %>% 
+    tab_style(
+        cell_text(style = "italic"),
+        cells_column_labels(columns = 2:7)
+    ) %>% 
+    tab_style(
+        cell_text(weight = "bold"),
+        cells_column_labels(columns = c(1, 8))
+    ) %>% 
+    tab_style(
+        cell_text(weight = "bold"),
+        cells_column_spanners(spanners = "Educational attainment")
+    )
+```
 
 ## Items
 
@@ -105,7 +325,7 @@ For each word in the vocabulary checklists, we asked parents to report whether t
 #| warning: false
 #| fig-width: 7
 #| fig-cap: "Lexical frequencies. Mean, standard error, and 95% confidence interval of lexical frequencies of items included in the Catalan and Spanish lists, reported separately for identical cognates, non-identical cognates, and non-cognates."
-items <- left_join(items, select(pool, te, item, language, class, category))
+items <- left_join(items, select(pool, te, item, language, class, semantic_category))
 
 items %>%
     unnest(list) %>% 
@@ -122,7 +342,7 @@ items %>%
     ) %>% 
     select(-c(n_phon_n, lv_n)) %>% 
     rename(n = freq_zipf_n) %>% 
-    gt(groupname_col = "language") %>% 
+    gt(groupname_col = "language", rowname_col = "list") %>% 
     fmt_number(matches("freq_|n_phon_mean|n_phon_sd")) %>% 
     fmt_percent(matches("lv_")) %>% 
     tab_spanner("Frequency (Zipf)", columns = starts_with("freq_")) %>% 
@@ -165,6 +385,8 @@ items %>%
 
 ### Lexical frequency
 
+Word lexical frequency ($Frequency$): lexical frequency of the word in its corresponding language, expressed as Zipf scores [@van2014subtlex; @zipf1949human]. This variable ranges from 0 to 7, and follows and approximates a normal distribution, with most values in a corpus ranging from 3 to 5 points. Lexical frequencies were extracted from the English corpora of the [CHILDES](https://childes.talkbank.org/) database using the [{childesr}](https://langcog.github.io/childes-db-website/) R package. Available words in the corpora were then mapped to their Catalan and Spanish translations. Responses to words with missing lexical frequency score were excluded from analyses of the total number of items). 
+
 ```{r}
 #| label: fig-items-freq
 #| echo: true
@@ -202,6 +424,9 @@ items %>%
 
 ### \# Phonemes
 
+Word length ($Phonemes$), computed as the number of phonemes in the phonological transcription of the word-form in [SAMPA](https://en.wikipedia.org/wiki/SAMPA) format.
+
+
 ```{r}
 #| label: fig-items-nphon
 #| echo: true
@@ -221,6 +446,7 @@ items %>%
     ) +
     facet_wrap(~language, ncol = 1) +
     geom_col() +
+    geom_text(aes(label = n), position = position_nudge(y = 5), colour = "black") +
     labs(
         x = "# Phonemes",
         y = "Number of words",
@@ -236,7 +462,9 @@ items %>%
     )
 ```
 
-### Levenshtein
+### Phonological similarity (Levenshtein)
+
+Phonological similarity between translation equivalents was computed as the normalised Levenshtein similarity between the word-form and its translation in the other language [@levenshtein1966binary]. This score is calculated by first calculating the Levenshtein distance between the two transcriptions (number of insertions, deletions or replacements needed for the shortest transcription to become identical to the longer transcription), then dividing the resulting value by the length of the longest transcription, and finally subtracting this value from 1. This results in a proportion that indicates how much the two phonological transcriptions of the translation equivalent are similar to each other, ranging from 0% (no similarity at all) to 100% (both transcriptions are identical) [see @floccia2018introduction; @fourtassi2020growth; @laing2022phonological for similar approaches]. 
 
 ```{r}
 #| label: fig-items-lv
@@ -247,11 +475,19 @@ items %>%
 #| fig-cap: "Distribution of Levenshtein similarities across items"
 items %>% 
     distinct(te, .keep_all = TRUE) %>% 
-    ggplot(aes(x = lv)) +
-    geom_dots(fill = ggsci::pal_d3()(4)[1], colour = ggsci::pal_d3()(4)[1]) +
+    mutate(lv = cut(lv, breaks = seq(0, 1, 0.1), include.lowest = TRUE)) %>% 
+    count(lv) %>% 
+    mutate(prop = n/sum(n)) %>% 
+    ggplot(aes(x = lv, n)) +
+    geom_col(
+        fill = ggsci::pal_d3()(4)[1],
+        colour = "white"
+    ) +
+    geom_text(aes(label = paste0(n, " (", percent(prop, accuracy = 0.1), ")")),
+              position = position_nudge(y = 5)) +
     labs(x = "Levenshtein distance", y = "Probability density") +
-    scale_x_continuous(labels = percent) +
     theme(
+        panel.grid.major.x = element_blank(),
         legend.position = "top"
     )
 ```
@@ -263,7 +499,8 @@ items %>%
 #| echo: true
 #| message: false
 #| warning: false
-#| fig-width: 7
+#| fig-width: 8
+#| fig-height: 4
 #| fig-cap: "Association betwen number of lexical frequency and number of phonemes"
 items %>% 
     drop_na(freq_zipf) %>% 
@@ -278,7 +515,6 @@ items %>%
         colour = "Language", 
         fill = "Language"
     ) +
-    coord_equal(ratio = 10) +
     scale_x_continuous(breaks = seq(0, 16, 1)) +
     theme(
         legend.position = "none",
@@ -349,168 +585,10 @@ items %>%
     ) 
 ```
 
-## Participants
 
-```{r}
-#| label: fig-participants-time
-#| echo: true
-#| message: false
-#| warning: false
-#| fig-width: 7
-#| fig-cap: "Data at which responses were collected"
-participants %>% 
-    group_by(time_stamp) %>% 
-    summarise(n = n(), .groups = "drop") %>% 
-    mutate(n = cumsum(n)) %>% 
-    ggplot(aes(time_stamp, n)) +
-    geom_vline(xintercept = ymd("2020-03-15"), size = 0.5) +
-    annotate(geom = "text", y = 350, x = ymd("2020-03-15"), label = "COVID-19 lockdown",
-             angle = 90, vjust = 1.5, hjust = 1) +
-    geom_line(size = 2, colour = pal_d3()(1)[1]) +
-    labs(x = "Date", y = "Number of responses", colour = "Dominant language") +
-    scale_y_continuous(breaks = seq(0, 400, 50), limits = c(0, 400)) +
-    scale_x_date(
-        date_breaks = "3 month", 
-        date_labels = "%B %Y"
-    ) +
-    guides(colour = guide_legend(ncol = 2)) +
-    theme(
-        legend.position = "top",
-        legend.title = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.text.x = element_text(angle = 20, hjust = 1),
-        axis.title.x = element_blank(),
-    )
-```
+### Language exposure-weighted lexical frequency
 
-### Age
-
-```{r}
-#| label: fig-participants-age
-#| echo: true
-#| message: false
-#| warning: false
-#| fig-width: 7
-#| fig-cap: "Distribution of participants' ages"
-participants %>% 
-    mutate(age = floor(age)) %>% 
-    count(age) %>% 
-    ggplot() +
-    aes(x = age, y = n) +
-    geom_col(fill = pal_d3()(3)[1]) +
-    geom_text(aes(label = n), size = 3.5, vjust = -1) +
-    labs(
-        x = "Age (months)",
-        y = "# participants"
-    ) +
-    scale_x_continuous(breaks = seq(0, 40, 2)) +
-    scale_y_continuous(limits = c(0, 55), breaks = seq(0, 55, 10)) +
-    theme(
-        panel.grid.major.x = element_blank(),
-        panel.grid.minor.x = element_blank()
-    )
-```
-
-### Language profile
-
-```{r}
-#| label: fig-participants-lp
-#| echo: true
-#| message: false
-#| warning: false
-#| fig-width: 7
-#| fig-cap: "Participant degree of exposure (DoE) to Catalan and Spanish"
-participants %>% 
-    mutate(
-        age = round(age),
-        id = paste(id, "(", time, ")"),
-        rank = rank(doe_catalan)
-    ) %>% 
-    pivot_longer(
-        starts_with("doe_"), 
-        names_to = "language",
-        values_to = "doe",
-        names_prefix = "doe_",
-        names_transform = list(language = str_to_sentence)
-    ) %>% 
-    ggplot() +
-    aes(x = doe, y = reorder(id, -rank), fill = language) +
-    geom_col(width = 1, position = position_fill(), colour = "white", size = 0.1) +
-    geom_vline(xintercept = seq(0, 1, 0.25), colour = "grey") +
-    labs(
-        x = "Degree of Exposure (DoE)",
-        y = "Participant",
-        colour = "Language",
-        fill = "Language"
-    ) +
-    scale_x_continuous(labels = percent) +
-    theme(
-        legend.position = "top",
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        panel.grid.major.y = element_blank()
-    )
-```
-
-
-### SES/parental education
-
-```{r}
-#| label: tbl-participants-edu
-#| tbl-cap: Participant exposure to the language (*DoE*) and socio-economic status (*SES*)
-#| echo: true
-#| message: false
-#| warning: false
-participants %>%
-    left_join(bvq_data$logs) %>% 
-    mutate(
-        edu_parent = fct_explicit_na(as.factor(edu_parent)),
-        doe_catalan = cut(doe_catalan, breaks = seq(0, 1, 0.2), include.lowest = TRUE)
-    ) %>% 
-    count(doe_catalan, edu_parent) %>% 
-    right_join(
-        expand_grid(
-            doe_catalan = levels(.$doe_catalan),
-            edu_parent = unique(bvq_data$logs$edu_parent)
-        )
-    ) %>% 
-    rename(total = n) %>% 
-    pivot_wider(names_from = edu_parent, values_from = total, values_fill = 0) %>%
-    mutate(total = rowSums(cbind(.[,3:8]), na.rm = TRUE)) %>% 
-    rename(Total = total) %>% 
-    select(-"NA") %>% 
-    gt() %>% 
-    summary_rows(
-        columns = Complementary:Primary, 
-        fns = list(Total = ~sum(., na.rm = TRUE)),
-        formatter = fmt_integer
-    ) %>% 
-    cols_label(doe_catalan = "DoE Catalan") %>%
-    sub_missing(columns = 2:8, missing_text = "--") %>% 
-    tab_spanner("Educational attainment", Complementary:Primary) %>% 
-    tab_style(
-        style = list(cell_borders(weight = px(2), sides = "left", color = "grey50")),
-        locations = cells_body(columns = 9, rows = 1:5)
-    ) %>% 
-    tab_style(
-        cell_text(style = "italic"),
-        cells_column_labels(columns = 2:7)
-    ) %>% 
-    tab_style(
-        cell_text(weight = "bold"),
-        cells_column_labels(columns = c(1, 8))
-    ) %>% 
-    tab_style(
-        cell_text(weight = "bold"),
-        cells_column_spanners(spanners = "Educational attainment")
-    )
-```
-
-
-
-## Exposure-weighted lexical frequency
-
-We created a predictor ($Exposure$) to account for the exposure rate of each child to each of the words their parents responded to, weighted by the child's exposure to the language the word belongs to. This measure is the product of the lexical frequency of the word (Zipf score) and the child's degree of exposure to the corresponding language (a proportion):
+We created a predictor ($Exposure$) to account for the exposure rate of each child to each of the words their parents responded to, weighted by the child's exposure to the language the word belongs to. the exposure of the $i$-th child to the $j$-th word measure is the product of the lexical frequency of the word (Zipf score) and the child’s degree of exposure to the corresponding language (a proportion)
 
 $$
 \textbf{Exposure}_{ij} = \textbf{Frequency}_i \times \textbf{DoE}_{j}
@@ -527,20 +605,48 @@ $$
 
 ```{r}
 #| label: fig-exposure-distribution
+#| fig-cap: "Relationship between lexical frequency and language exposure-weighted lexical frequency"
+#| warnings: false
+#| fig-height: 7
+#| fig-width: 13
 df %>% 
-    mutate(language = ifelse(grepl("cat_", item), "Catalan", "Spanish")) %>% 
-    ggplot(aes(exposure, fill = language)) +
+    mutate(
+        language = ifelse(grepl("cat_", item), "Catalan", "Spanish"),
+        exposure = cut(exposure, breaks = seq(0, 9, 1), include.lowest = TRUE)
+    ) %>% 
+    count(exposure, language) %>% 
+    ggplot(aes(exposure, n, fill = language)) +
     facet_wrap(~language) +
-    geom_histogram(bins = 10, colour = "white", size = 1, show.legend = FALSE) +
-    labs(x = "Exposure (Frequency \u00d7 DoE)", y = "Number of observations") +
+    geom_col(colour = "white") +
+    labs(
+        x = "Exposure-weighted frequency\n(Frequency \u00d7 DoE)",
+        y = "Number of observations",
+        fill ="Language"
+    ) +
     
     df %>% 
-    mutate(language = ifelse(grepl("cat_", item), "Catalan", "Spanish")) %>% 
-    ggplot(aes(x = freq, y = exposure, colour = language)) +
+    mutate(
+        language = ifelse(grepl("cat_", item), "Catalan", "Spanish"),
+        exposure = cut(exposure, breaks = seq(0, 9, 1), include.lowest = TRUE),
+        freq = cut(freq, breaks = seq(0, 9, 0.25), include.lowest = TRUE)
+    ) %>% 
+    count(exposure, freq, language) %>%    
+    ggplot(aes(x = freq, y = exposure, colour = language, size = n)) +
     facet_wrap(~language) + 
-    geom_point(size = 0.1, alpha = 0.5, show.legend = FALSE) +
-    labs(x = "Frequency (Zipf score)", y = "Exposure") +
-    plot_layout(ncol = 1)
+    geom_point() +
+    labs(
+        x = "Frequency (Zipf score)",
+        y = "Exposure-weighted frequency\n(Frequency \u00d7 DoE)",
+        colour = "Language",
+        fill = "Language",
+        size = "Number of observations"
+    ) +
+    theme(panel.grid = element_blank()) +
+    
+    plot_layout(ncol = 1) &
+    guides(fill = "none", colour = "none") &
+    theme(panel.grid.major.x = element_blank(),
+          panel.grid.minor.y = element_blank())
 ```
 
 
@@ -550,7 +656,12 @@ df %>%
 
 ### Model comparison
 
+
+We conducted a series of nested Bayesian ordinal multilevel models to sequentially test the effects of the independent variables (number of phonemes, exposure, age, and Levenshtein) over the three levels of word learning (no, production, comprehension). In all these models participants’ and items’ individual differences were controlled by estimating different parameters for each one (different intercepts and/or slopes). This is similar to the control conducted by ANCOVAs. Thus, independent variable effects account for collective differences in word learning (unexplained by participants’ or items’ individual differences). 
+
 We initially fitted a base model (`model_fit_0`) that only included the predictors $Age$ (`age_std`), $Phonemes$ (`n_phon_std`), along with random intercepts and slopes of all predictors by $Participant$ (`id`) and $Item$ (`te`), and all correlation parameters. We then expanded this model by adding the main effect of $Exposure$ (`exposure`) (`model_fit_1`), and then $Levenshtein$ (`lv_std`) (`model_fit_2`) and their corresponding random slopes by $Participant$. Then, we added the $Exposure \times Levenshtein$ (`exposure_std:lv_std`) two-way interaction (`model_fit_3`) and its random slope by $Participant$. Finally, we added the $Age \times Exposure \times Levenshtein$ (`age_std:exposure_std:lv_std`) three-way interaction with its random slope by $Participant$, along with a random slope for the $Age \times Exposure$ (`age_std:exposure_std`) two-way interaction.
+
+We compared the predictive performance of the models using Bayesian leave-one-out cross-validation (LOO), a relative fit index, via the `loo` R package. LOO consists in computing the average likelihood of each observation after estimating the model's parameters leaving that same observation out of the data set. Due to computational constraints, we performed LOO based on a random subsample of 750 samples (out of `r format(dim(model_fit_4$fit)[1], big.mark = ",")`) of the posterior distribution of the fixed effects of the model.
 
 ### Model equation
 
@@ -770,9 +881,88 @@ print(model_fit_4$formula)
 
 # Results
 
-## Model selection
+## Descriptive statistics
 
-We compared the predictive performance of the models using Bayesian leave-one-out cross-validation (LOO) via the `loo` R package. LOO consists in computing the average likelihood of each observation after estimating the model's parameters leaving that same observation out of the data set. Due to computational constraints, we performed LOO based on a random subsample of 750 samples (out of `r format(dim(model_fit_4$fit)[1], big.mark = ",")`) of the posterior distribution of the fixed effects of the model as:
+::: panel-tabset
+
+### By number of phonemes
+
+```{r}
+#| lab: fig-responses-age-phonemes
+#| fig-cap: "Proportion of responses to each category by age and number of phonemes"
+df %>% 
+    mutate(
+        age = floor(age),
+        n_phon = cut_interval(n_phon, n = 4)
+    ) %>%
+    count(age, n_phon, response) %>% 
+    ggplot(aes(age, n, fill = response)) +
+    facet_wrap(~n_phon) +
+    geom_col(position = position_fill()) +
+    labs(x = "Age (months)", y = "Proportion of responses", fill = "Response") +
+    scale_fill_d3() +
+    scale_y_continuous(labels = percent) +
+    theme_custom() +
+    theme(
+        legend.position = "top",
+        legend.title = element_blank(),
+        panel.grid = element_blank()
+    )
+```
+
+### By exposure
+
+```{r}
+#| lab: fig-responses-age-exposure
+#| fig-cap: "Proportion of responses to each category by age and exposure."
+df %>% 
+    mutate(
+        age = floor(age),
+        exposure = cut_interval(exposure, n = 4)
+    ) %>%
+    count(age, exposure, response) %>% 
+    ggplot(aes(age, n, fill = response)) +
+    facet_wrap(~exposure) +
+    geom_col(position = position_fill()) +
+    labs(x = "Age (months)", y = "Proportion of responses", fill = "Response") +
+    scale_fill_d3() +
+    scale_y_continuous(labels = percent) +
+    theme_custom() +
+    theme(
+        legend.position = "top",
+        legend.title = element_blank(),
+        panel.grid = element_blank()
+    )
+```
+
+### By Levenshtein
+
+```{r}
+#| lab: fig-responses-age-lv
+#| fig-cap: "Proportion of responses to each category by age and Levenhstein similarity"
+df %>% 
+    mutate(
+        age = floor(age),
+        lv = cut_interval(lv, n = 4)
+    ) %>%
+    count(age, lv, response) %>% 
+    ggplot(aes(age, n, fill = response)) +
+    facet_wrap(~lv) +
+    geom_col(position = position_fill()) +
+    labs(x = "Age (months)", y = "Proportion of responses", fill = "Response") +
+    scale_fill_d3() +
+    scale_y_continuous(labels = percent) +
+    theme_custom() +
+    theme(
+        legend.position = "top",
+        legend.title = element_blank(),
+        panel.grid = element_blank()
+    )
+```
+:::
+
+
+## Model selection
 
 @tbl-results-loos shows the outputs of the *LOO-CV*. The extended model (`model_fit_3`), which included the three-way interaction between $Age$, $DoE$, and $Levenshtein$ showed the best predictive performance, with a difference in *ELPD* compared to the other models several times larger than the standard error of such difference. This indicates that, given the data, the predictions of the extended model are confidently more accurate than those of the other models.
 
@@ -924,7 +1114,7 @@ get_loo_plot(model_loos$model_fit_4)
 #| echo: true
 #| message: false
 #| warning: false
-post_draws <- gather_draws(model_fit_4, `b_.*`, regex = TRUE)
+post_draws <- gather_draws(model_fit_4, `b_.*`, regex = TRUE) 
 
 # tidy predictor names
 str_repl <- c(
@@ -956,13 +1146,7 @@ intercept_footnote <- paste0(
 
 # summarise posterior draws
 posterior_description %>% 
-    mutate(
-        parameter = factor(
-            parameter, 
-            levels = names(str_repl), 
-            labels = str_repl
-        )
-    ) %>%  
+    mutate(parameter = factor(parameter, levels = names(str_repl), labels = str_repl)) %>%  
     select(parameter, median, ci_high, ci_low, rope_percentage, rhat, ess) %>% 
     gt(rowname_col = "parameter") %>% 
     fmt_number(c(1:4, 6:7)) %>% 
@@ -979,8 +1163,8 @@ posterior_description %>%
         cell_text(weight = "bold"),
         cells_column_labels(columns = 1:7)
     )
-post_draws_list <- split(posterior_description, posterior_description$parameter)
 
+post_draws_list <- split(posterior_description, posterior_description$parameter)
 ```
 
 We specified a region of practical equivalence (*ROPE*) around the values of each regression coefficient that we considered equivalent to zero [@kruschke2018bayesian]. We decided to draw this interval around zero so that it covered values smaller than those considered as negligible by similar previous studies: after consulting the regression tables of [ADD STUDIES], we selected the largest regression coefficient that was interpreted as conclusive evidence of the presence of an effect, as indicated by the authors, and transformed it to the probability scale: 3%. consequently, we defined our *ROPE* from -3% to +3%. We report the mean of each coefficient's marginal posterior distribution along with their 95% highest density intervals (*HDI*). This interval indicates the narrowest range of values that contain 95% of the samples of the posterior distribution, and therefore the true value of the coefficient with 95% confidence, given our data. Following [@kruschke2018bayesian], we considered as relevant those regression coefficients whose 95% *HDI* did not overlap with the -3%--3% *ROPE* interval we previously defined. For those coefficients that did not exclude completely the *ROPE* we also report a Bayes Factor indicating how many times is such coefficient more likely to be bigger than the upper limit of the *ROPE*, or smaller than the lower limit of the *ROPE*, given our data. 
@@ -999,7 +1183,7 @@ However, the 95% *HDI* of the regression coefficient of the $Exposure \times Lev
 
 [TO DO: emmeans tests]
 
-The 95% *HDI* of the regression coefficient of the $Age \times Exposure$ interaction did not exclude the *ROPE* ($\beta$ = `r percent(post_draws_list[["b_age_std:exposure_std"]]$median, accuracy = 0.01)`, 95% *HDI* = [`r percent(post_draws_list[["b_age_std:doe_std"]]$ci_low, accuracy = 0.01)`, `r percent(post_draws_list[["b_age_std:exposure_std"]]$ci_high, accuracy = 0.01)`]): `r percent(post_draws_list[["b_age_std:exposure_std"]]$rope_percentage, accuracy = 0.01)` of its posterior samples fell within the *ROPE*. This shows that the effect of exposure on the speed at which participants acquired word across ages was inconclusive. Give our data, it is difficult to tell whether this *Exposure* increased or decreased the slope of the words' acquisition trajectories.
+The 95% *HDI* of the regression coefficient of the $Age \times Exposure$ interaction did not exclude the *ROPE* ($\beta$ = `r percent(post_draws_list[["b_age_std:exposure_std"]]$median, accuracy = 0.01)`, 95% *HDI* = [`r percent(post_draws_list[["b_age_std:doe_std"]]$ci_low, accuracy = 0.01)`, `r percent(post_draws_list[["b_age_std:exposure_std"]]$ci_high, accuracy = 0.01)`]): `r percent(post_draws_list[["b_age_std:exposure_std"]]$rope_percentage, accuracy = 0.01)` of its posterior samples fell within the *ROPE*. This shows that the effect of exposure on the speed at which participants acquired words across ages was inconclusive. Given our data, it is difficult to tell whether this *Exposure* increased or decreased the slope of the words' acquisition trajectories.
 
 The 95% *HDI* of the regression coefficient of the $Age \times Levenshtein$ interaction overlapped completely with the *ROPE* ($\beta$ = `r percent(post_draws_list[["b_age_std:lv_std"]]$median, accuracy = 0.01)`, 95% *HDI* = [`r percent(post_draws_list[["b_age_std:lv_std"]]$ci_low, accuracy = 0.01)`, `r percent(post_draws_list[["b_age_std:lv_std"]]$ci_high, accuracy = 0.01)`]), indicating that phonological similarity did not speed-up the acquisition trajectories of the words across ages.
 
@@ -1024,107 +1208,53 @@ post <- post_draws %>%
         )
     )
 
+post_summary <- post %>% 
+    filter(!grepl("Intercept|sd", .variable)) %>%
+    median_hdi(.exclude = c(".chain", ".iteration", ".draw", ".row", ".variable_name")) %>% 
+    mutate(
+        .variable_name = factor(
+            .variable, 
+            levels = names(str_repl),
+            labels = str_repl,
+            ordered = TRUE
+        )
+    )
+
 post %>%
     filter(!grepl("Intercept|sd", .variable)) %>%
     ggplot(aes(.value, fct_rev(.variable_name))) +
-    annotate(
-        geom = "rect",
-        ymin = -Inf,
-        ymax = Inf,
-        xmin = rope_interval["lower"],
-        xmax = rope_interval["upper"],
-        colour = NA,
-        alpha = 0.2,
-        fill = pal_d3()(3)[2],
-    ) +
-    geom_vline(
-        xintercept = 0,
-        size = 1,
-        colour = pal_d3()(3)[2]
-    ) +
+    annotate(geom = "rect", ymin = -Inf, ymax = Inf,
+             xmin = rope_interval["lower"], xmax = rope_interval["upper"],
+             colour = NA, alpha = 0.2, fill = pal_d3()(3)[2],) +
+    geom_vline(xintercept = 0, size = 1, colour = pal_d3()(3)[2]) +
     stat_slab(
-        aes(
-            fill = stat(abs(x) < rope_interval["upper"]),
-            colour = stat(abs(x) < rope_interval["upper"]),
-        ),
-        size = 1,
-        # fill = pal_d3()(2)[2],
-        position = position_nudge(y = 0.15)
+        aes(fill = stat(abs(x) < rope_interval["upper"]),
+            colour = stat(abs(x) < rope_interval["upper"]),),
+        size = 1, position = position_nudge(y = 0.15)
     ) +
     geom_errorbar(
-        data = post %>% 
-            filter(!grepl("Intercept|sd", .variable)) %>%
-            median_hdi(
-                .exclude = c(
-                    ".chain", 
-                    ".iteration",
-                    ".draw",
-                    ".row", 
-                    ".variable_name"
-                )
-            ) %>% 
-            mutate(
-                .variable_name = factor(
-                    .variable, 
-                    levels = names(str_repl),
-                    labels = str_repl,
-                    ordered = TRUE
-                )
-            ),
+        data = post_summary,
         aes(xmin = .lower, xmax = .upper, x = .value),
         width = 0.15
     ) +
     geom_text(
-        data = post %>% 
-            filter(!grepl("Intercept|sd", .variable)) %>%
-            mean_hdi(
-                .exclude = c(".chain", ".iteration", ".draw", ".row", ".variable_name")
-            ) %>% 
-            mutate(
-                .variable_name = factor(
-                    .variable, 
-                    levels = names(str_repl),
-                    labels = str_repl,
-                    ordered = TRUE
-                )
-            ),
+        data = post_summary,
         aes(
+            x = .value, 
+            y = .variable_name,
             label = paste0(
-                printnum(.value, digits = 2),
-                " [", printnum(.lower, digits = 2), ", ",
-                printnum(.upper, digits = 2), "]"
-            )
+                round(.value, 1),
+                " [", round(.lower, 1), ", ", round(.upper, 1), "]")
         ),
-        position = position_nudge(y = -0.2),
-        size = 3
+        colour = "black", position = position_nudge(y = -0.3), size = 3
     ) +
-    # annotate(
-    #     geom = "text",
-    #     label = "ROPE",
-    #     x = 0.3,
-    #     y = 10,
-    #     vjust = 1,
-    #     size = 5,
-    #     colour = pal_d3()(2)[2]
-    # ) +
-    # annotate(
-    #     geom = "curve",
-#     arrow = arrow(length = unit(0.2, "cm")),
-#     x = 0.3,
-#     y = 9.5,
-#     xend = 0.1,
-#     yend = 9,
-#     size = 1,
-#     curvature = -0.25,
-#     colour = pal_d3()(2)[2]
-# ) +
-labs(
-    x = "Logistic regression coefficient estimate",
-    y = "Variable", 
-    fill = "Overlaps with ROPE",
-    colour = "Overlaps with ROPE"
-) +
-    scale_x_continuous(breaks = seq(-0.5, 2, 0.2)) +
+    labs(
+        x = "Logistic regression coefficient estimate (Logit scale)",
+        y = "Variable", 
+        fill = "Overlaps with ROPE",
+        colour = "Overlaps with ROPE"
+    ) +
+    scale_x_continuous(breaks = seq(-2, 2, 0.2)) +
     scale_fill_manual(
         values = c("dodgerblue", "grey"),
         labels = c("No", "Yes")
@@ -1147,7 +1277,7 @@ labs(
 ```
 
 
-## Marginal means
+## Marginal predictions
 
 ```{r}
 #| label: fig-results-marginal
@@ -1156,120 +1286,132 @@ labs(
 #| warning: false
 #| fig-width: 7
 #| fig-cap: "Expected posterior predictions. Posterior predictions for the extended model were generated by computing the probability acquisition that resulted from feeding the equation of the regression model with values of the posterior distribution of each coefficient. These values correspond to the 4,000 samples of the posterior distribution that were drawn during the MCMC estimation of the model. Therefore, we generated 4,000 predictions for a series of combination of levels of interest. Each line and interval and in the figure summarises the mean and 95% *HDI* of each combination of levels. The X-axis indicates the age (in months) for which the prediction is generated. The Y-axis indicates the predicted probability of acquisition (*Comprehension* or *Comprehension and Production*). Different colours indicate different levels of phonological similarity (as indicated by the Levenshtein similarity between pairs of translation equivalents). Finally, predictions are presented separately for different degrees of exposure (10%): little exposure to the language (10% DoE, traditionally classified as monolingual), balanced exposure to both languages (50%, traditionally classified as bilingual), and high exposure to the language (90%, traditionally classified as monolingual). Predictions for *Comprehension* are show on top and predictions for *Comprehension and Production* are shown on the bottom."
-nd <- expand.grid(
-    n_phon_std = 0,
-    freq_std = 0,
-    age_std = (10:36-mean(df$age))/(sd(df$age)),
-    exposure_std = c(min(df$exposure_std, na.rm = TRUE), 0, max(df$exposure_std, na.rm = TRUE)),
-    lv_std = (c(0, 1)-mean(df$lv))/(sd(df$lv))
+
+
+nd <- datagrid(
+    model = model_fit_4,
+    age_std = seq_range(model_fit_4$data$age_std, n = 100),
+    lv_std = (seq(0, 1, 0.5)-mean(df$lv))/(sd(df$lv)),
+    exposure_std = c(-1, 0, 1),
+    te = NA,
+    id = NA
 )
 
-m <- add_epred_draws(nd, model_fit_4, ndraws = 50, re_formula = NA) %>% 
+marg_epreds <- predictions(
+    model_fit_4,
+    newdata = nd,
+    ndraws = 25, 
+    re_formula = NA
+)
+
+marg_epreds %>% 
+    posteriordraws() %>% 
+    as_tibble() %>% 
+    select(drawid, group, draw, age_std, lv_std, exposure_std) %>%
+    filter(group != "No") %>% 
+    pivot_wider(
+        id_cols = c(drawid, age_std, lv_std, exposure_std), 
+        names_from = group, 
+        values_from = draw
+    ) %>% 
+    mutate(`Understands` = `Understands and Says` + `Understands`) %>% 
+    pivot_longer(c(`Understands`, `Understands and Says`), names_to = "group", values_to = "draw") %>% 
     mutate(
-        freq_std = as.factor(paste0("Frequency = ", freq_std, " SD")),
         exposure_std = factor(
             exposure_std, 
             levels = unique(nd$exposure_std), 
-            labels = c("Minimum exposure", "Mean exposure", "Maximum exposure")
+            labels = c("Exposure: -1 SD", "Exposure: mean", "Exposure: +1 SD")
         ),
-        lv_std = factor(lv_std, levels = unique(nd$lv_std), labels = paste0(c(0, 100), "% similarity")
+        lv_std = factor(
+            lv_std,
+            levels = unique(nd$lv_std), 
+            labels = paste0(c(0, 50, 100), "% similarity")
         )
     ) %>% 
-    filter(.category != "No") %>% 
-    pivot_wider(names_from = ".category", values_from = ".epred") %>% 
-    mutate(Understands = Understands + `Understands and Says`) %>% 
-    pivot_longer(c(Understands, `Understands and Says`), names_to = ".category", values_to = ".epred") %>% 
-    mutate(
-        .category = factor(
-            .category,
-            levels = c("Understands", "Understands and Says"),
-            labels = c("Comprehension\n(Understands)", "Production\n(Understands and Says")
-        )
-    )
-
-d <- df %>%
-    mutate(
-        lv_std = case_when(
-            between(lv, 0.00, 0.10) ~ "0% similarity",
-            between(lv, 0.90, 1.00) ~ "100% similarity"
-        ),
-        exposure_std = case_when(
-            between(exposure_std, min(df$exposure_std, na.rm = TRUE), min(df$exposure_std, na.rm = TRUE)+0.5) ~ "Minimum exposure",
-            between(exposure_std, mean(df$exposure_std, na.rm = TRUE)-0.25, mean(df$exposure_std, na.rm = TRUE)+0.25) ~ "Mean exposure",
-            between(exposure_std, max(df$exposure_std, na.rm = TRUE)-0.5, max(df$exposure_std, na.rm = TRUE)) ~ "Maximum exposure"
-        ),
-        age_std = ((floor(age)-mean(df$age))/(sd(df$age))) %>% 
-            cut(
-                .,
-                breaks = ((seq(10, 38, 2)-mean(df$age))/(sd(df$age))),
-                labels = ((seq(10, 36, 2)-mean(df$age))/(sd(df$age))),
-                include.lowest = TRUE
-            ) %>% 
-            as.character() %>% 
-            as.numeric(),
-        Understands = response %in% c("Understands", "Understands and Says"),
-        `Understands and Says` = response %in% "Understands and Says"
-    ) %>% 
-    drop_na(exposure_std, lv_std) %>% 
-    group_by(te, age_std, exposure_std, lv_std) %>% 
-    summarise(
-        Understands = mean(Understands),
-        `Understands and Says` = mean(`Understands and Says`),
-        .groups = "drop"
-    ) %>% 
-    pivot_longer(
-        c(Understands, `Understands and Says`),
-        names_to = ".category",
-        values_to = ".epred"
-    ) %>% 
-    mutate(
-        .category = factor(
-            .category,
-            levels = c("Understands", "Understands and Says"),
-            labels = c("Comprehension\n(Understands)", "Production\n(Understands and Says")
-        )
-    )
-
-m %>% 
-    ggplot() +
-    aes(
-        x = age_std, 
-        y = .epred, 
-        colour = lv_std, 
-        fill = lv_std,
-    ) +
-    facet_grid(.category~exposure_std) +
-    # stat_lineribbon(
-    #     size = 1,
-    #     alpha = 0.5,
-    #     .width = 0.95, 
-    #     colour = NA,
-    #     point_interval = mean_hdi
-    # ) +
-    geom_line(aes(group = interaction(.draw, lv_std)), alpha = 0.25) +
-    stat_summary(fun = "mean", geom = "line", size = 1) +
-    scale_x_continuous(
-        breaks = (seq(10, 36, 4)-mean(df$age))/(sd(df$age)),
-        labels = seq(10, 36, 4)
-    ) +
-    scale_color_d3() +
+    ggplot(aes(age_std, draw, colour = lv_std, fill = lv_std)) +
+    facet_grid(group~exposure_std) +
+    geom_line(aes(group = interaction(lv_std, drawid)), 
+              size = 0.75, alpha = 0.15) +
+    stat_summary(fun = mean, geom = "line", size = 1) +
     labs(
-        x = "Age (months)", 
-        y = "Posterior probability of acquisition\n(Linear prediction)",
-        colour = "Phonological similarity (Levenshtein distance)", 
-        fill = "Phonological similarity (Levenshtein distance)"
+        x = "Age (months)",
+        y = "Probability of acquisition",
+        colour = "Phonological similarity (Levenshtein)",
+        fill = "Phonological similarity (Levenshtein)"
     ) +
-    scale_y_continuous(labels = percent, limits = c(0, 1)) +
+    scale_y_continuous(
+        breaks = seq(0, 1, 0.25),
+        limits = c(0, 1),
+        labels = percent
+    ) +
+    scale_x_continuous(
+        breaks = (seq(10, 32, 4)-mean(df$age))/(sd(df$age)),
+        labels = seq(10, 32, 4)
+    ) +
     theme(
         legend.position = "top",
-        axis.ticks.x = element_line(colour = "black"),
-        panel.grid.minor = element_blank(),
-        panel.grid.major.x = element_blank(),
-        panel.border = element_rect(fill = NA, colour = "black", size = 0.75),
-        strip.background = element_rect(fill = "grey", colour = NA),
-        plot.background = element_rect(fill = "white", colour = NA)
+        panel.grid = element_blank(),
+        panel.border = element_rect(fill = NA, colour = "black", size = 0.75)
     )
+
+
 ```
+
+## Marginal effects
+
+In order to examine the impact of the word exposure index on the effect of phonological similarity we used the [`marginaleffects`](https://vincentarelbundock.github.io/marginaleffects/index.html) R package to compute the average marginal effect of the Levenshtein distance on the probability of acquisition (comprehension or production) for the range of observed values of the word exposure index in our dataset.
+
+
+```{r}
+#| label: fig-marginal-effect
+#| fig-cap: "Average marginal effect of phonological similarity (Levenshtein distance) on the probability of comprehension and production across the range of values of exposure. The observed range of values of the word exposure index is indicated in the X-axis, and the estimated average marginal effect of phonological similarity (Levenshtein distance) is indicated in the Y-axis. This quantity is generated by averaging the derivative of the regression coefficient of the predictor Levenshtein across the range of values of all predictors but Exposure. We represent the uncertainty associated with the resulting estimate by generating multiple values of this marginal effect by drawing multiple samples from the posterior distribution of the model coefficients, calculating the average marginal effect for each posterior draw, and plotting the result as a thin grey line. Closer lines indicate lower uncertainty over the true value of the average marginal effect of Levenshein, while more distant lines indicate higher uncertainty."
+nd <- datagrid(
+    model = model_fit_4,
+    n_phon_std = 0,
+    lv_std = 0,
+    exposure_std = seq_range(model_fit_4$data$exposure_std, 10),
+    age_std = 0,
+    id = NA,
+    te = NA
+)
+
+marg_effects <- marginaleffects(
+    model_fit_4,
+    newdata = nd, 
+    re_formula = NA,
+    ndraws = 25,
+    vcov = FALSE,
+    type = "link"
+)
+
+marg_effects %>% 
+    posteriordraws() %>%
+    as_tibble() %>% 
+    filter(term=="lv_std") %>% 
+    mutate(draw = draw/4) %>% 
+    ggplot(aes(exposure_std, draw)) +
+    geom_hline(yintercept = 0, size = 1, colour = "grey") +
+    geom_line(aes(group = drawid), alpha = 0.5, size = 0.75, colour = "grey") +
+    stat_summary(fun = median, geom = "line", size = 1) +
+    labs(
+        x = "Exposure index",
+        y = "Marginal effect of phonological similarity\n(Levenshtein distance)"
+    ) +
+    scale_x_continuous(
+        labels = label_number(style_positive = "plus", suffix = " SD"),
+    ) +
+    scale_y_continuous(
+        labels = label_percent(style_positive = "plus", ),
+        breaks = seq(-1, 1, 0.05)
+    ) +
+    theme(
+        legend.position = "top",
+        panel.grid = element_blank(),
+        panel.border = element_rect(fill = NA, colour = "black", size = 0.75)
+    )
+
+```
+
 
 ## Random effects
 

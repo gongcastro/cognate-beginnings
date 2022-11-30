@@ -146,12 +146,12 @@ transformed parameters {
   r_2_3 = r_2[, 3];
   r_2_4 = r_2[, 4];
   r_2_5 = r_2[, 5];
-  lprior += normal_lpdf(b[1] | 1, 0.1);
-  lprior += normal_lpdf(b[2] | 0, 0.1);
-  lprior += normal_lpdf(b[3] | 0, 0.1);
-  lprior += normal_lpdf(b[4] | 0, 0.1);
-  lprior += normal_lpdf(b[5] | 0, 0.1);
-  lprior += normal_lpdf(b[6] | 0, 0.1);
+  lprior += normal_lpdf(b[1] | 1, 0.25);
+  lprior += normal_lpdf(b[2] | 0, 0.25);
+  lprior += normal_lpdf(b[3] | 0, 0.25);
+  lprior += normal_lpdf(b[4] | 0, 0.25);
+  lprior += normal_lpdf(b[5] | 0, 0.25);
+  lprior += normal_lpdf(b[6] | 0, 0.25);
   lprior += normal_lpdf(Intercept | -0.25, 0.1);
   lprior += normal_lpdf(sd_1 | 1, 0.1)
     - 7 * normal_lccdf(0 | 1, 0.1);
@@ -188,12 +188,12 @@ generated quantities {
   corr_matrix[M_2] Cor_2 = multiply_lower_tri_self_transpose(L_2);
   vector<lower=-1,upper=1>[NC_2] cor_2;
   // additionally sample draws from priors
-  real prior_b__1 = normal_rng(1,0.1);
-  real prior_b__2 = normal_rng(0,0.1);
-  real prior_b__3 = normal_rng(0,0.1);
-  real prior_b__4 = normal_rng(0,0.1);
-  real prior_b__5 = normal_rng(0,0.1);
-  real prior_b__6 = normal_rng(0,0.1);
+  real prior_b__1 = normal_rng(1,0.25);
+  real prior_b__2 = normal_rng(0,0.25);
+  real prior_b__3 = normal_rng(0,0.25);
+  real prior_b__4 = normal_rng(0,0.25);
+  real prior_b__5 = normal_rng(0,0.25);
+  real prior_b__6 = normal_rng(0,0.25);
   real prior_Intercept = normal_rng(-0.25,0.1);
   real prior_sd_1 = normal_rng(1,0.1);
   real prior_cor_1 = lkj_corr_rng(M_1,2)[1, 2];

@@ -231,3 +231,5 @@ get_childes_frequencies <- function(collection = "Eng-NA",
     
 }
 
+seq_range <- function(x, n) seq(min(x, na.rm = TRUE), max(x, na.rm = TRUE), length.out = n)
+

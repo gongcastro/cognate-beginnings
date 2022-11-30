@@ -4,18 +4,29 @@
 #' @param class A character vector indicating the word classes to be included in the resulting dataset. Takes "Adjective", "Noun" and/or "Verb" as values.
 get_items <- function(bvq_data, childes, class = "Noun") {
     
+    pool_tmp <- bvq_data$pool %>% 
+        drop_na(sampa) %>% 
+        filter(
+            n_lemmas==1, # exclude items with more than two lemmas
+            !is_multiword, # exclude multi-word items
+            include # exclude problematic items (e.g., multi-word items)
+        ) %>%  
+        add_count(te, name = "n_te") %>% # get only items with one translation in each language
+        filter(n_te==2) %>% 
+        distinct(language, te, .keep_all = TRUE)
+    
     # compute normalised Levenshtein distance (see ?stringdist::`stringdist-package`)
     # number of edit operations needed to make two strings identical
     # when applied to phonological transcriptions, it provides an approximation of phonological similarity between two word-forms
-    lv_similarities <- bvq_data$pool %>% 
-        mutate(language = ifelse(grepl("cat_", item), "Catalan", "Spanish")) %>% 
+    lv_similarities <- pool_tmp %>% 
+        mutate(sampa = str_remove_all(sampa, "\\.")) %>% 
         pivot_wider(id_cols = te, names_from = language, values_from = sampa) %>% 
         mutate(
             # make sure strings are coded as UTF-8 before computing LVs
             lv = stringsim(Catalan, Spanish),
             lv_dist = as.integer(stringdist(Catalan, Spanish))
         ) %>% 
-        select(te, lv, lv_dist)
+        select(te, Catalan, Spanish, lv, lv_dist)
     
     # merge datasets
     items <- bvq_data$pool %>% 
@@ -26,14 +37,13 @@ get_items <- function(bvq_data, childes, class = "Noun") {
         # get only translation equivalents with at least one item in each language
         dplyr::filter(
             te %in% .$te[duplicated(.$te)],
-            class %in% .env$class,
-            include # exclude problematic items (e.g., multi-word items)
+            class %in% .env$class
         ) %>% 
         left_join(childes, by = c("childes_lemma" = "token")) %>% 
         drop_na(lv, list, wordbank_lemma, freq_zipf) %>% 
         select(te, item, wordbank_lemma, sampa_flat, lv, lv_dist, list, n_phon, freq_zipf) %>% 
         mutate(freq_zipf)
-        
+    
     
     # export as Parquet file
     write_ipc_stream(items, here("data", "items.parquet"))
