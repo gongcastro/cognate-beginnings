@@ -64,18 +64,23 @@ conflict_prefer("select", "dplyr")
 
 # set ggplot theme and colour palette
 theme_set(theme_custom()) # set custom ggplot theme
+clrs <- c("#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600")
 
 options(
     knitr.kable.NA = "-",
     knitr.duplicate.label = "allow",
-    ggplot2.ordinal.fill = ggsci::pal_d3()(4),
-    ggplot2.ordinal.colour = ggsci::pal_d3()(4),
-    ggplot2.discrete.fill = ggsci::pal_d3()(4),
-    ggplot2.discrete.colour = ggsci::pal_d3()(4),
+    ggplot2.ordinal.fill = clrs,
+    ggplot2.ordinal.colour = clrs,
+    ggplot2.discrete.fill = clrs,
+    ggplot2.discrete.colour = clrs,
     ggplot2.continuous.fill = ggplot2::scale_color_gradient,
     ggplot2.continuous.colour = ggplot2::scale_color_gradient
 )
 ```
+
+::: {.callout-tip}
+Data and materials are available at [OSF](https://osf.io/hy984/), and code is available at [GitHub](https://github.com/gongcastro/trajectories).
+:::
 
 # Methods
 
@@ -118,7 +123,7 @@ participants %>%
     geom_vline(xintercept = ymd("2020-03-15"), size = 0.5) +
     annotate(geom = "text", y = 350, x = ymd("2020-03-15"), label = "COVID-19 lockdown in Spain",
              angle = 90, vjust = 1.5, hjust = 1) +
-    geom_line(size = 1, colour = pal_d3()(1)[1]) +
+    geom_line(size = 1, colour = clrs[1]) +
     labs(x = "Date", y = "Number of responses", colour = "Dominant language") +
     scale_y_continuous(breaks = seq(0, 500, 100), limits = c(0, 500)) +
     theme(
@@ -137,12 +142,10 @@ participants %>%
     mutate(n = cumsum(n)) %>% 
     ggplot(aes(time_stamp, n, colour = age)) +
     geom_vline(xintercept = ymd("2020-03-15"), size = 0.5) +
-    annotate(geom = "text", y = 350, x = ymd("2020-03-15"), label = "COVID-19 lockdown in Spain",
-             angle = 90, vjust = 1.5, hjust = 1) +
     geom_line(size = 1) +
     labs(x = "Date", y = "Number of responses", colour = "Age (months(") +
-    scale_y_continuous(breaks = seq(0, 500, 100)) +
-    scale_color_d3() +
+    scale_y_continuous(breaks = seq(0, 500, 50)) +
+    scale_colour_manual(values = clrs) +
     
     plot_layout(ncol = 1) &
     
@@ -172,7 +175,7 @@ participants %>%
     count(age) %>% 
     ggplot() +
     aes(x = age, y = n) +
-    geom_col(fill = pal_d3()(3)[1]) +
+    geom_col(fill = clrs[1]) +
     geom_text(aes(label = n), size = 3.5, vjust = -1) +
     labs(
         x = "Age (months)",
@@ -198,11 +201,14 @@ Participant degree of exposure to the words' language ($DoE$): percentage of exp
 #| fig-width: 7
 #| fig-cap: "Participant degree of exposure (DoE) to Catalan and Spanish"
 participants %>% 
-    pivot_longer(c(doe_catalan, doe_spanish),
-                 names_to = "language", values_to = "doe", 
-                 names_transform = ~str_to_sentence(str_remove(., "doe_"))) %>% 
-    mutate(doe = cut(doe, breaks = seq(0, 1, 0.1), include.lowest = TRUE),
-           id = paste0(id, " (", time, ")")
+    pivot_longer(
+        c(doe_catalan, doe_spanish),
+        names_to = "language", values_to = "doe", 
+        names_transform = ~str_to_sentence(str_remove(., "doe_"))
+    ) %>% 
+    mutate(
+        doe = cut(doe, breaks = seq(0, 1, 0.1), include.lowest = TRUE),
+        id = paste0(id, " (", time, ")")
     ) %>% 
     count(language, doe) %>% 
     ggplot(aes(doe, y = n, label = n, fill = language)) +
@@ -215,6 +221,7 @@ participants %>%
         colour = "Language",
         fill = "Language"
     ) +
+    scale_fill_manual(values = clrs[c(1, 3, 5)]) +
     theme(
         legend.position = "top",
         panel.grid.major.x = element_blank(),
@@ -222,45 +229,6 @@ participants %>%
     )
 ```
 
-```{r}
-#| label: fig-participants-lp
-#| echo: true
-#| message: false
-#| warning: false
-#| fig-width: 15
-#| fig-height: 8
-#| fig-cap: "Participant degree of exposure (DoE) to Catalan and Spanish"
-participants %>% 
-    mutate(
-        dominance = ifelse(doe_catalan >= doe_spanish,
-                           "Dominant in Catalan",
-                           "Dominant in Spanish"),
-        id = paste0(id, " (", time, ")"),
-        doe_other = 1 - (doe_spanish + doe_catalan)
-    ) %>% 
-    mutate(rank = rank(doe_catalan)) %>% 
-    pivot_longer(
-        starts_with("doe_"), 
-        names_to = "language",
-        values_to = "doe", 
-        names_transform = ~str_to_sentence(str_remove(., "doe_"))
-    ) %>% 
-    mutate(language = factor(language, levels = c("Catalan", "Spanish", "Other"))) %>%
-    ggplot(aes(reorder(id, desc(rank)), doe, colour = language, fill = language)) +
-    facet_wrap(~dominance, ncol = 1, scales = "free_x") +
-    geom_line(aes(group = id), colour = "grey") +
-    geom_point(size = 0.5) +
-    labs(x = "Participant", y = "Degree of exposure (DoE)", 
-         fill = "Language", colour = "Language") +
-    scale_y_continuous(labels = percent) +
-    theme(
-        legend.position = "top",
-        legend.title = element_blank(),
-        axis.text.x = element_blank(),
-        axis.ticks.x = element_blank(),
-        panel.grid = element_blank()
-    )
-```
 ### SES/parental education
 
 Maximum educational attainment of the participant parent(s).
@@ -318,6 +286,7 @@ participants %>%
 
 ## Items
 
+
 ```{r}
 #| label: tbl-items-summary
 #| echo: true
@@ -325,7 +294,7 @@ participants %>%
 #| warning: false
 #| fig-width: 7
 #| fig-cap: "Lexical frequencies. Mean, standard error, and 95% confidence interval of lexical frequencies of items included in the Catalan and Spanish lists, reported separately for identical cognates, non-identical cognates, and non-cognates."
-items <- left_join(items, select(pool, te, item, language, class, semantic_category))
+items <- left_join(items, select(bvqdev::pool, te, item, language, class, semantic_category))
 
 items %>%
     unnest(list) %>% 
@@ -343,8 +312,8 @@ items %>%
     select(-c(n_phon_n, lv_n)) %>% 
     rename(n = freq_zipf_n) %>% 
     gt(groupname_col = "language", rowname_col = "list") %>% 
-    fmt_number(matches("freq_|n_phon_mean|n_phon_sd")) %>% 
-    fmt_percent(matches("lv_")) %>% 
+    fmt_number(matches("freq_|n_phon_mean|n_phon_sd"), decimals = 1) %>% 
+    fmt_percent(matches("lv_"), decimals = 1) %>% 
     tab_spanner("Frequency (Zipf)", columns = starts_with("freq_")) %>% 
     tab_spanner("Length (Phonemes)", columns = starts_with("n_phon_")) %>% 
     tab_spanner("Phon. similarity (Levenshtein)", columns = starts_with("lv_")) %>% 
@@ -357,11 +326,11 @@ items %>%
     cols_label(
         list = "",
         n = md("*N*"),
-        freq_zipf_mean = md("Mean (SD)"),
+        freq_zipf_mean = md("Mean ± SD"),
         freq_zipf_min = md("Range"),
-        n_phon_mean = md("Mean (SD)"),
+        n_phon_mean = md("Mean ± SD"),
         n_phon_min = md("Range"),
-        lv_mean = md("Mean (SD)"),
+        lv_mean = md("Mean ± SD"),
         lv_min = md("Range")
     ) %>% 
     tab_style(
@@ -386,6 +355,7 @@ items %>%
 ### Lexical frequency
 
 Word lexical frequency ($Frequency$): lexical frequency of the word in its corresponding language, expressed as Zipf scores [@van2014subtlex; @zipf1949human]. This variable ranges from 0 to 7, and follows and approximates a normal distribution, with most values in a corpus ranging from 3 to 5 points. Lexical frequencies were extracted from the English corpora of the [CHILDES](https://childes.talkbank.org/) database using the [{childesr}](https://langcog.github.io/childes-db-website/) R package. Available words in the corpora were then mapped to their Catalan and Spanish translations. Responses to words with missing lexical frequency score were excluded from analyses of the total number of items). 
+
 
 ```{r}
 #| label: fig-items-freq
@@ -471,7 +441,7 @@ Phonological similarity between translation equivalents was computed as the norm
 #| echo: true
 #| message: false
 #| warning: false
-#| fig-width: 7
+#| fig-width: 9
 #| fig-cap: "Distribution of Levenshtein similarities across items"
 items %>% 
     distinct(te, .keep_all = TRUE) %>% 
@@ -479,12 +449,9 @@ items %>%
     count(lv) %>% 
     mutate(prop = n/sum(n)) %>% 
     ggplot(aes(x = lv, n)) +
-    geom_col(
-        fill = ggsci::pal_d3()(4)[1],
-        colour = "white"
-    ) +
+    geom_col(fill = clrs[1], colour = "white") +
     geom_text(aes(label = paste0(n, " (", percent(prop, accuracy = 0.1), ")")),
-              position = position_nudge(y = 5)) +
+              position = position_nudge(y = 3), size = 3.5) +
     labs(x = "Levenshtein distance", y = "Probability density") +
     theme(
         panel.grid.major.x = element_blank(),
@@ -533,7 +500,7 @@ items %>%
 #| fig-width: 7
 #| fig-cap: "Association betwen lexical frequency and phonological similarity"
 items %>% 
-    left_join(select(pool, item, language)) %>% 
+    left_join(select(bvqdev::pool, item, language)) %>% 
     drop_na(freq_zipf) %>% 
     count(freq_zipf, lv, language) %>% 
     ggplot(aes(freq_zipf, lv, colour = language, fill = language, size = n)) +
@@ -563,7 +530,7 @@ items %>%
 #| fig-width: 7
 #| fig-cap: "Association betwen number of phonemes and phonological similarity"
 items %>% 
-    left_join(select(pool, item, language)) %>% 
+    left_join(select(bvqdev::pool, item, language)) %>% 
     drop_na(freq_zipf) %>% 
     count(n_phon, lv, language) %>% 
     ggplot(aes(n_phon, lv, colour = language, fill = language, size = n)) +
@@ -656,12 +623,19 @@ df %>%
 
 ### Model comparison
 
+We extracted four variables of interest for each observation (describe in previous sections):
 
-We conducted a series of nested Bayesian ordinal multilevel models to sequentially test the effects of the independent variables (number of phonemes, exposure, age, and Levenshtein) over the three levels of word learning (no, production, comprehension). In all these models participants’ and items’ individual differences were controlled by estimating different parameters for each one (different intercepts and/or slopes). This is similar to the control conducted by ANCOVAs. Thus, independent variable effects account for collective differences in word learning (unexplained by participants’ or items’ individual differences). 
+* Word lexical frequency ($Frequency$)
+* Word length ($Phonemes$)
+* Phonological similarity ($Levenshtein$)
+* Participant age ($Age$)
+* Word exposure index ($Exposure$)
+
+We fitted a series of nested Bayesian ordinal multilevel models to sequentially test the effects of the independent variables (number of phonemes, exposure, age, and Levenshtein) over the three levels of word learning (no, production, comprehension). In all these models participants’ and items’ individual differences were controlled by estimating different parameters for each one (different intercepts and/or slopes). This is similar to the control conducted by ANCOVAs. Thus, independent variable effects account for collective differences in word learning (unexplained by participants’ or items’ individual differences). 
 
 We initially fitted a base model (`model_fit_0`) that only included the predictors $Age$ (`age_std`), $Phonemes$ (`n_phon_std`), along with random intercepts and slopes of all predictors by $Participant$ (`id`) and $Item$ (`te`), and all correlation parameters. We then expanded this model by adding the main effect of $Exposure$ (`exposure`) (`model_fit_1`), and then $Levenshtein$ (`lv_std`) (`model_fit_2`) and their corresponding random slopes by $Participant$. Then, we added the $Exposure \times Levenshtein$ (`exposure_std:lv_std`) two-way interaction (`model_fit_3`) and its random slope by $Participant$. Finally, we added the $Age \times Exposure \times Levenshtein$ (`age_std:exposure_std:lv_std`) three-way interaction with its random slope by $Participant$, along with a random slope for the $Age \times Exposure$ (`age_std:exposure_std`) two-way interaction.
 
-We compared the predictive performance of the models using Bayesian leave-one-out cross-validation (LOO), a relative fit index, via the `loo` R package. LOO consists in computing the average likelihood of each observation after estimating the model's parameters leaving that same observation out of the data set. Due to computational constraints, we performed LOO based on a random subsample of 750 samples (out of `r format(dim(model_fit_4$fit)[1], big.mark = ",")`) of the posterior distribution of the fixed effects of the model.
+We compared the predictive performance of the models using Bayesian leave-one-out cross-validation (*LOO*), a relative fit index, via the `loo` R package. LOO consists in computing the average likelihood of each observation after estimating the model's parameters leaving that same observation out of the data set. Due to computational constraints, we performed LOO based on a random subsample of 750 samples (out of `r format(dim(model_fit_4$fit)[1], big.mark = ",")`) of the posterior distribution of the fixed effects of the model.
 
 ### Model equation
 
@@ -697,12 +671,10 @@ $$\begin{aligned}\beta_{0} & \sim \mathrm{Normal}(-0.25, 0.1) & [\mbox{Intercept
 
 In addition, we specified a $LKJ$ prior--$\sim LKJ(2)$ for the correlations between group-level coefficients.
 
-#### Prior predictions
-
 
 ::: {.panel-tabset}
 
-##### Prior-predicted mean
+#### Prior-predicted mean
 
 ```{r}
 #| label: fig-prior-mean
@@ -742,19 +714,12 @@ m %>%
     stat_summary(fun = "mean", geom = "line", size = 0.75) +
     scale_x_continuous(
         breaks = (seq(10, 36, 4)-mean(df$age))/(sd(df$age)),
-        labels = seq(10, 36, 4),
-        sec.axis = dup_axis(
-            name = "Age (years; months)",
-            labels = months_to_years(
-                rescale_variable(
-                    (seq(10, 36, 4)-mean(df$age))/(sd(df$age)),
-                    mean(df$age),
-                    sd(df$age)
-                )
-            )
-        )
+        labels = seq(10, 36, 4)
     ) +
-    scale_fill_brewer(palette = "Reds", labels = c("95%", "89%", "67%", "50%")) +
+    scale_fill_manual(
+        values = rev(clrs), 
+        labels = c("95%", "89%", "67%", "50%")
+    ) +
     labs(
         x = "Age (months)", 
         y = "Probability of acquisition",
@@ -763,17 +728,12 @@ m %>%
     ) +
     scale_y_continuous(labels = percent, limits = c(0, 1)) +
     theme(
-        legend.position = "top",
         axis.ticks.x = element_line(colour = "black"),
-        panel.grid.minor = element_blank(),
-        panel.grid.major.x = element_blank(),
-        panel.border = element_rect(fill = NA, colour = "black", size = 0.75),
-        strip.background = element_rect(fill = "grey", colour = NA),
-        plot.background = element_rect(fill = "white", colour = NA)
+        panel.grid = element_blank()
     )
 ```
 
-##### Prior-predictions
+#### Prior-predictions
 
 ```{r}
 #| label: fig-prior-predictions
@@ -798,26 +758,17 @@ m %>%
     pivot_longer(c(No, Understands, `Understands and Says`), names_to = ".prediction", values_to = "n") %>%
     ggplot(aes(x = age_std, y = n, fill = .prediction)) +
     geom_col(position = position_fill()) +
-    scale_x_continuous(
-        breaks = (seq(10, 36, 4)-mean(df$age))/(sd(df$age)),
-        labels = seq(10, 36, 4),
-        sec.axis = dup_axis(
-            name = "Age (years; months)",
-            labels = months_to_years(
-                rescale_variable(
-                    (seq(10, 36, 4)-mean(df$age))/(sd(df$age)),
-                    mean(df$age),
-                    sd(df$age)
-                )
-            )
-        )
-    ) +
     labs(
         x = "Age (months)", 
         y = "Probability of acquisition",
         colour = "Category", 
         fill = "Category"
     ) +
+    scale_x_continuous(
+        breaks = (seq(10, 36, 4)-mean(df$age))/(sd(df$age)),
+        labels = seq(10, 36, 4)
+    ) +
+    scale_fill_manual(values = clrs[c(1, 3, 5)]) +
     scale_y_continuous(labels = percent) +
     theme(
         legend.position = "top",
@@ -830,6 +781,7 @@ m %>%
     )
 ```
 
+:::
 
 ### Model settings
 
@@ -900,7 +852,7 @@ df %>%
     facet_wrap(~n_phon) +
     geom_col(position = position_fill()) +
     labs(x = "Age (months)", y = "Proportion of responses", fill = "Response") +
-    scale_fill_d3() +
+    scale_fill_manual(values = clrs[c(1, 3, 5)]) +
     scale_y_continuous(labels = percent) +
     theme_custom() +
     theme(
@@ -925,7 +877,7 @@ df %>%
     facet_wrap(~exposure) +
     geom_col(position = position_fill()) +
     labs(x = "Age (months)", y = "Proportion of responses", fill = "Response") +
-    scale_fill_d3() +
+    scale_fill_manual(values = clrs[c(1, 3, 5)]) +
     scale_y_continuous(labels = percent) +
     theme_custom() +
     theme(
@@ -972,51 +924,39 @@ df %>%
 #| message: false
 #| warning: false
 #| fig-width: 7
-#| tbl-cap: "Bayesian leave-one-out cross validation (LOO-CV)"
+#| tbl-cap: "Bayesian leave-one-out cross validation (LOO-CV). This procedure involves estimating the likelihood of each observation given a model fitted without such observation. The resulting likelihoods of each model were summed to compute the expected log-predicted density (*ELPD*) of the model, and correcting it for the number of parameters in the model to penalised for its the complexity. *ELPD* values closer to zero indicate better predictive acuracy. We report the *ELPD*, effective number of parameters (*p*), and information criterion (*LOO-IC*) of each model along their associated standard errors in paratheses. The first column indicates the difference in *ELPD* between each model and the model with the best predictive accuracy (`model_fit_4`)."
 model_loos %>% 
     loo_compare() %>% 
     as.data.frame() %>%   
     rownames_to_column("model") %>% 
     relocate(
         model, 
+        matches("diff"),
         matches("elpd_loo"),
         matches("p_loo"), 
-        matches("looic"), 
-        matches("diff")
+        matches("looic")
     ) %>%
     gt() %>% 
-    tab_header(
-        title = "",
-        subtitle = md("The predictive accuracy of the models was compared using leave-one-out cross-validation. The likelihood of each data point given a model fitted without including that same observation was estimated. The resulting likelihoods of each model were summarised as its expected log-predicted density (*ELPD*), which penalises the complexity of each model. *ELPD* values closer to zero indicate better predictive acuracy. We report the *ELPD*, effective number of parameters (*p*), and information criterion (*IC*) of each model along their associated standard errors (*SE*). The last column indicates the difference in *ELPD* between each model and the model with the best predictive accuracy (`model_fit_3`)")
-    ) %>% 
-    tab_spanner(md("LOO<sub>ELPD</sub>"), matches("elpd_loo")) %>% 
-    tab_spanner(md("LOO<sub>p</sub>"), matches("p_loo")) %>% 
-    tab_spanner(md("LOO<sub>IC</sub>"), matches("looic")) %>% 
-    tab_spanner(md("LOO<sub>diff</sub>"), matches("diff")) %>% 
-    fmt_number(2:9) %>% 
+    fmt_number(2:9, decimals = 1) %>% 
+    cols_merge_uncert(col_val = elpd_diff, col_uncert = se_diff) %>% 
+    cols_merge_uncert(col_val = elpd_loo, col_uncert = se_elpd_loo) %>% 
+    cols_merge_uncert(col_val = p_loo, col_uncert = se_p_loo) %>% 
+    cols_merge_uncert(col_val = looic, col_uncert = se_looic) %>% 
     cols_label(
         model = "Model",
-        # elpd
         elpd_loo = md("*ELPD*"),
-        se_elpd_loo = md("*SE*"),
-        # p
         p_loo = md("*p*"),
-        se_p_loo = md("*SE*"),
-        # looic
         looic = md("*LOO-IC*"),
-        se_looic = md("*SE*"),
-        # diff
-        elpd_diff = md("*diff*"),
-        se_diff = md("*SE*")
+        elpd_diff = md("Difference")
     ) %>% 
     tab_source_note(md("Pareto-*k* estimates of all models were acceptable (*k* < 0.5)")) %>% 
     tab_style(
         cell_text(weight = "bold"),
-        cells_column_spanners()
+        cells_column_labels()
     ) %>% 
     tab_style(
-        cell_text(align = "left"),
-        cells_title(groups = "subtitle")
+        cell_fill(color = "grey", alpha = 0.5),
+        cells_body(matches("diff"))
     )
 ```
 
@@ -1039,7 +979,7 @@ get_loo_plot <- function(x){
         data.frame(x = 1:length(.), y = .) %>% 
         ggplot(aes(x, y)) +
         geom_point(
-            size = 0.5, alpha = 0.1, colour = pal_d3()(3)[2], 
+            size = 0.5, alpha = 0.1, colour = clrs[5], 
             shape = 1
         ) +
         geom_hline(yintercept = 0.5, linetype = "dotted") +
@@ -1147,21 +1087,19 @@ intercept_footnote <- paste0(
 # summarise posterior draws
 posterior_description %>% 
     mutate(parameter = factor(parameter, levels = names(str_repl), labels = str_repl)) %>%  
-    select(parameter, median, ci_high, ci_low, rope_percentage, rhat, ess) %>% 
+    select(parameter, median, ci_high, ci_low, rope_percentage) %>% 
     gt(rowname_col = "parameter") %>% 
-    fmt_number(c(1:4, 6:7)) %>% 
-    fmt_percent(5) %>% 
+    fmt_number(c(1:4), decimals = 2) %>% 
+    fmt_percent(5, decimals = 2) %>% 
     cols_merge(c(ci_low, ci_high), pattern = "[{1}, {2}]") %>% 
     cols_label(
         median = "Median",
-        rhat = "R-hat",
-        ess = "ESS",
         ci_low = md("95% *HDI*"),
         rope_percentage = md("*ROPE* prob.")
     ) %>% 
     tab_style(
         cell_text(weight = "bold"),
-        cells_column_labels(columns = 1:7)
+        cells_column_labels(columns = 1:5)
     )
 
 post_draws_list <- split(posterior_description, posterior_description$parameter)
@@ -1225,8 +1163,8 @@ post %>%
     ggplot(aes(.value, fct_rev(.variable_name))) +
     annotate(geom = "rect", ymin = -Inf, ymax = Inf,
              xmin = rope_interval["lower"], xmax = rope_interval["upper"],
-             colour = NA, alpha = 0.2, fill = pal_d3()(3)[2],) +
-    geom_vline(xintercept = 0, size = 1, colour = pal_d3()(3)[2]) +
+             colour = NA, alpha = 0.2, fill = clrs[5],) +
+    geom_vline(xintercept = 0, size = 1, colour = clrs[5]) +
     stat_slab(
         aes(fill = stat(abs(x) < rope_interval["upper"]),
             colour = stat(abs(x) < rope_interval["upper"]),),
@@ -1256,11 +1194,11 @@ post %>%
     ) +
     scale_x_continuous(breaks = seq(-2, 2, 0.2)) +
     scale_fill_manual(
-        values = c("dodgerblue", "grey"),
+        values = clrs[c(1, 4)],
         labels = c("No", "Yes")
     ) +
     scale_colour_manual(
-        values = c("dodgerblue", "grey"),
+        values = clrs[c(1, 4)],
         labels = c("No", "Yes")
     ) +
     theme(
@@ -1300,7 +1238,7 @@ nd <- datagrid(
 marg_epreds <- predictions(
     model_fit_4,
     newdata = nd,
-    ndraws = 25, 
+    ndraws = NULL, 
     re_formula = NA
 )
 
@@ -1330,15 +1268,20 @@ marg_epreds %>%
     ) %>% 
     ggplot(aes(age_std, draw, colour = lv_std, fill = lv_std)) +
     facet_grid(group~exposure_std) +
-    geom_line(aes(group = interaction(lv_std, drawid)), 
-              size = 0.75, alpha = 0.15) +
-    stat_summary(fun = mean, geom = "line", size = 1) +
+    stat_summary(fun.data = median_hdi, geom = "ribbon",
+                 alpha = 0.5, colour = NA) +
+    # geom_line(aes(group = interaction(lv_std, drawid)), 
+    #           size = 0.75, alpha = 0.15) +
+    stat_summary(aes(linetype = lv_std), fun = median, geom = "line", size = 1) +
     labs(
         x = "Age (months)",
         y = "Probability of acquisition",
+        linetype = "Phonological similarity (Levenshtein)",
         colour = "Phonological similarity (Levenshtein)",
         fill = "Phonological similarity (Levenshtein)"
     ) +
+    scale_colour_manual(values = clrs[c(1, 3, 5)]) +
+    scale_fill_manual(values = clrs[c(1, 3, 5)]) +
     scale_y_continuous(
         breaks = seq(0, 1, 0.25),
         limits = c(0, 1),
@@ -1379,7 +1322,7 @@ marg_effects <- marginaleffects(
     model_fit_4,
     newdata = nd, 
     re_formula = NA,
-    ndraws = 25,
+    ndraws = NULL,
     vcov = FALSE,
     type = "link"
 )
@@ -1391,8 +1334,10 @@ marg_effects %>%
     mutate(draw = draw/4) %>% 
     ggplot(aes(exposure_std, draw)) +
     geom_hline(yintercept = 0, size = 1, colour = "grey") +
-    geom_line(aes(group = drawid), alpha = 0.5, size = 0.75, colour = "grey") +
-    stat_summary(fun = median, geom = "line", size = 1) +
+    # geom_line(aes(group = drawid), alpha = 0.25, size = 0.75, colour = clrs[1]) +
+    stat_summary(fun.data = median_hdi, geom = "ribbon",
+                 colour = NA, alpha = 0.5, fill = clrs[1]) +
+    stat_summary(fun = median, geom = "line", size = 1, color = clrs[1]) +
     labs(
         x = "Exposure index",
         y = "Marginal effect of phonological similarity\n(Levenshtein distance)"
@@ -1451,14 +1396,9 @@ re_id <- ranef(model_fit_4)$id[,,1] %>%
 
 re_id %>% 
     ggplot() +
-    aes(
-        x = estimate, 
-        y = reorder(id, estimate), 
-        xmin = q2_5, 
-        xmax = q97_5,
-        fill = type,
-        colour = type
-    ) +
+    aes(x = estimate, y = reorder(id, estimate), 
+        xmin = q2_5, xmax = q97_5,
+        fill = type, colour = type) +
     facet_wrap(~type) +
     geom_ribbon(aes(group = 1), alpha = 0.5, color = NA) +
     geom_line(aes(group = 1), size = 1) +
@@ -1496,14 +1436,10 @@ re_age %>%
     mutate(id = unique(model_fit_4$data$id)) %>% 
     relocate(id) %>% 
     ggplot() +
-    aes(
-        x = estimate,
-        y = reorder(id, estimate),
-        xmin = q2_5,
-        xmax = q97_5
-    ) +
-    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA) +
-    geom_line(aes(group = 1), size = 1) +
+    aes(x = estimate, y = reorder(id, estimate),
+        xmin = q2_5, xmax = q97_5) +
+    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA, fill = clrs[1]) +
+    geom_line(aes(group = 1), size = 1, colour = clrs[1]) +
     geom_vline(xintercept = 0, colour = "black", linetype = "dotted") +
     labs(
         x = "Posterior random slope estimate",
@@ -1537,13 +1473,11 @@ re_n_phon %>%
     relocate(id) %>% 
     ggplot() +
     aes(
-        x = estimate,
-        y = reorder(id, estimate),
-        xmin = q2_5,
-        xmax = q97_5
+        x = estimate, y = reorder(id, estimate),
+        xmin = q2_5, xmax = q97_5
     ) +
-    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA) +
-    geom_line(aes(group = 1), size = 1) +
+    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA, fill = clrs[1]) +
+    geom_line(aes(group = 1), size = 1, colour = clrs[1]) +
     geom_vline(xintercept = 0, colour = "black", linetype = "dotted") +
     labs(
         x = "Posterior random slope estimate",
@@ -1576,14 +1510,10 @@ re_freq %>%
     mutate(id = unique(model_fit_4$data$id)) %>% 
     relocate(id) %>% 
     ggplot() +
-    aes(
-        x = estimate,
-        y = reorder(id, estimate),
-        xmin = q2_5,
-        xmax = q97_5
-    ) +
-    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA) +
-    geom_line(aes(group = 1), size = 1) +
+    aes(x = estimate, y = reorder(id, estimate),
+        xmin = q2_5, xmax = q97_5) +
+    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA, fill = clrs[1]) +
+    geom_line(aes(group = 1), size = 1, colour = clrs[1]) +
     geom_vline(xintercept = 0, colour = "black", linetype = "dotted") +
     labs(
         x = "Posterior random slope estimate",
@@ -1617,14 +1547,10 @@ re_lv %>%
     mutate(id = unique(model_fit_4$data$id)) %>%
     relocate(id) %>%
     ggplot() +
-    aes(
-        x = estimate,
-        y = reorder(id, estimate),
-        xmin = q2_5,
-        xmax = q97_5
-    ) +
-    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA) +
-    geom_line(aes(group = 1), size = 1) +
+    aes(x = estimate, y = reorder(id, estimate),
+        xmin = q2_5, xmax = q97_5) +
+    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA, fill = clrs[1]) +
+    geom_line(aes(group = 1), size = 1, colour = clrs[1]) +
     geom_vline(xintercept = 0, colour = "black", linetype = "dotted") +
     labs(
         x = "Posterior random slope estimate",
@@ -1657,14 +1583,10 @@ re_lv %>%
     mutate(id = unique(model_fit_4$data$id)) %>%
     relocate(id) %>%
     ggplot() +
-    aes(
-        x = estimate,
-        y = reorder(id, estimate),
-        xmin = q2_5,
-        xmax = q97_5
-    ) +
-    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA) +
-    geom_line(aes(group = 1), size = 1) +
+    aes(x = estimate, y = reorder(id, estimate),
+        xmin = q2_5, xmax = q97_5) +
+    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA, fill = clrs[1]) +
+    geom_line(aes(group = 1), size = 1, colour = clrs[1]) +
     geom_vline(xintercept = 0, colour = "black", linetype = "dotted") +
     labs(
         x = "Posterior random slope estimate",
@@ -1697,14 +1619,10 @@ re_age_exposure %>%
     mutate(id = unique(model_fit_4$data$id)) %>%
     relocate(id) %>%
     ggplot() +
-    aes(
-        x = estimate,
-        y = reorder(id, estimate),
-        xmin = q2_5,
-        xmax = q97_5
-    ) +
-    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA) +
-    geom_line(aes(group = 1), size = 1) +
+    aes(x = estimate, y = reorder(id, estimate),
+        xmin = q2_5, xmax = q97_5) +
+    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA, fill = clrs[1]) +
+    geom_line(aes(group = 1), size = 1, colour = clrs[1]) +
     geom_vline(xintercept = 0, colour = "black", linetype = "dotted") +
     labs(
         x = "Posterior random slope estimate",
@@ -1737,14 +1655,10 @@ re_age_lv %>%
     mutate(id = unique(model_fit_4$data$id)) %>%
     relocate(id) %>%
     ggplot() +
-    aes(
-        x = estimate,
-        y = reorder(id, estimate),
-        xmin = q2_5,
-        xmax = q97_5
-    ) +
-    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA) +
-    geom_line(aes(group = 1), size = 1) +
+    aes(x = estimate, y = reorder(id, estimate),
+        xmin = q2_5, xmax = q97_5) +
+    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA, fill = clrs[1]) +
+    geom_line(aes(group = 1), size = 1, colour = clrs[1]) +
     geom_vline(xintercept = 0, colour = "black", linetype = "dotted") +
     labs(
         x = "Posterior random slope estimate",
@@ -1777,14 +1691,10 @@ re_age_exposure_lv %>%
     mutate(id = unique(model_fit_3$data$id)) %>%
     relocate(id) %>%
     ggplot() +
-    aes(
-        x = estimate,
-        y = reorder(id, estimate),
-        xmin = q2_5,
-        xmax = q97_5
-    ) +
-    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA) +
-    geom_line(aes(group = 1), size = 1) +
+    aes(x = estimate, y = reorder(id, estimate),
+        xmin = q2_5, xmax = q97_5) +
+    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA, fill = clrs[1]) +
+    geom_line(aes(group = 1), size = 1, colour = clrs[1]) +
     geom_vline(xintercept = 0, colour = "black", linetype = "dotted") +
     labs(
         x = "Posterior random slope estimate",
@@ -1825,10 +1735,10 @@ posterior_description_re %>%
         )
     ) %>%
     filter(var_1 != var_2) %>% 
-    ggplot(aes(x = var_1, y = fct_rev(var_2), colour = median, label = printnum(median))) +
+    ggplot(aes(x = var_1, y = fct_rev(var_2), colour = median, label = percent(median, accuracy = 0.1))) +
     geom_point(shape = 15, size = 20) +
     geom_text(colour = "black") +
-    scale_color_distiller(palette = "RdYlBu") +
+    scale_colour_gradientn(colours = clrs) +
     labs(colour = "Correlation", size = "Correlation") +
     theme(
         axis.title = element_blank(),
@@ -1876,14 +1786,9 @@ re_te <- ranef(model_fit_4)$te[,,"Intercept"] %>%
 
 re_te %>% 
     ggplot() +
-    aes(
-        x = estimate, 
-        y = reorder(te, estimate), 
-        xmin = q2_5,
-        xmax = q97_5,
-        colour = type,
-        fill = type
-    ) +
+    aes(x = estimate, y = reorder(te, estimate), 
+        xmin = q2_5, xmax = q97_5,
+        colour = type, fill = type) +
     facet_wrap(~type) +
     geom_ribbon(aes(group = 1), alpha = 0.5, colour = NA) +
     geom_line(aes(group = 1), size = 1) +
@@ -1921,14 +1826,10 @@ re_age %>%
     mutate(te = unique(model_fit_4$data$te)) %>% 
     relocate(te) %>% 
     ggplot() +
-    aes(
-        x = estimate,
-        y = reorder(te, estimate),
-        xmin = q2_5,
-        xmax = q97_5
-    ) +
-    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA) +
-    geom_line(aes(group = 1), size = 1) +
+    aes(x = estimate, y = reorder(te, estimate),
+        xmin = q2_5, xmax = q97_5) +
+    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA, fill = clrs[1]) +
+    geom_line(aes(group = 1), size = 1, colour = clrs[1]) +
     geom_vline(xintercept = 0, colour = "black", linetype = "dotted") +
     labs(
         x = "Posterior random slope estimate",
@@ -1961,14 +1862,10 @@ re_n_phon %>%
     mutate(te = unique(model_fit_3$data$te)) %>% 
     relocate(te) %>% 
     ggplot() +
-    aes(
-        x = estimate,
-        y = reorder(te, estimate),
-        xmin = q2_5,
-        xmax = q97_5
-    ) +
-    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA) +
-    geom_line(aes(group = 1), size = 1) +
+    aes(x = estimate, y = reorder(te, estimate),
+        xmin = q2_5, xmax = q97_5) +
+    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA, fill = clrs[1]) +
+    geom_line(aes(group = 1), size = 1, colour = clrs[1]) +
     geom_vline(xintercept = 0, colour = "black", linetype = "dotted") +
     labs(
         x = "Posterior random slope estimate",
@@ -2001,14 +1898,10 @@ re_doe %>%
     mutate(te = unique(model_fit_4$data$te)) %>%
     relocate(te) %>%
     ggplot() +
-    aes(
-        x = estimate,
-        y = reorder(te, estimate),
-        xmin = q2_5,
-        xmax = q97_5
-    ) +
-    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA) +
-    geom_line(aes(group = 1), size = 1) +
+    aes(x = estimate, y = reorder(te, estimate),
+        xmin = q2_5, xmax = q97_5) +
+    geom_ribbon(aes(group = 1), alpha = 0.5, color = NA, fill = clrs[1]) +
+    geom_line(aes(group = 1), size = 1, colour = clrs[1]) +
     geom_vline(xintercept = 0, colour = "black", linetype = "dotted") +
     labs(
         x = "Posterior random slope estimate",
@@ -2041,12 +1934,8 @@ re_age_doe %>%
     mutate(te = unique(model_fit_4$data$te)) %>% 
     relocate(te) %>% 
     ggplot() +
-    aes(
-        x = estimate,
-        y = reorder(te, estimate),
-        xmin = q2_5,
-        xmax = q97_5
-    ) +
+    aes(x = estimate, y = reorder(te, estimate),
+        xmin = q2_5, xmax = q97_5) +
     geom_ribbon(aes(group = 1), alpha = 0.5, color = NA) +
     geom_line(aes(group = 1), size = 1) +
     geom_vline(xintercept = 0, colour = "black", linetype = "dotted") +
@@ -2090,10 +1979,10 @@ posterior_description_re %>%
     ) %>%
     filter(var_1 != var_2) %>% 
     ggplot() +
-    aes(x = var_1, y = fct_rev(var_2), colour = median, label = printnum(median)) +
+    aes(x = var_1, y = fct_rev(var_2), colour = median, label = percent(median, accuracy = 0.1)) +
     geom_point(shape = 15, size = 40) +
     geom_text(colour = "black") +
-    scale_color_distiller(palette = "RdYlBu") +
+    scale_colour_gradientn(colours = clrs) +
     labs(
         colour = "Correlation",
         size = "Correlation"
@@ -2108,34 +1997,93 @@ posterior_description_re %>%
 
 ## Model diagnostics
 
+### Simulation-based calibration
+
+```{r}
+#| label: fig-simulation-based-calibration
+#| fig-cap: "Posterior predictive checks. We simulated 500 datasets from our model by drawing random samples from its posterior distribution. We then computed the proportion of 'No', 'Understands', and 'Understands and Says' responses in each dataset. These simulated proportions are depicted in the plot as solid horizontal lines. Their variation indicate the uncertainy of the model about what proportion of each type of response would be observe in a newly collected dataset. We also plotted the proportion of each type of response in the observed dataset (with a ± 5% interval for comparison)."
+predicted_dfs <- add_predicted_draws(
+    object = model_fit_4, 
+    newdata = df,
+    re_formula = NULL,
+    ndraws = 500,
+    seed = 888
+)
+
+observed_prop <- df %>% 
+    count(response) %>%
+    mutate(prop = n/sum(n)) %>% 
+    rename(.prediction = response)
+
+predicted_dfs %>% 
+    ungroup() %>% 
+    select(.prediction, .draw) %>% 
+    count(.draw, .prediction) %>%
+    group_by(.draw) %>% 
+    mutate(
+        prop = n/sum(n),
+        .prediction = factor(
+            .prediction,
+            levels = levels(df$response), 
+            ordered = TRUE
+        )
+    ) %>% 
+    ggplot(aes(.draw, prop, fill = .prediction, colour = .prediction)) +
+    geom_line(aes(group = .prediction)) +
+    geom_rect(
+        data = observed_prop,
+        aes(xmin = 0, xmax = max(predicted_dfs$.draw),
+            ymin = prop-0.025, ymax = prop+0.025,
+            colour = .prediction, fill = .prediction),
+        alpha = 0.25, colour = NA, inherit.aes = FALSE
+    ) +
+    # geom_segment(
+    #     data = observed_prop,
+    #     aes(x = -Inf, xend = Inf, y = prop, yend = prop,
+    #         colour = .prediction),
+    #     size = 1, inherit.aes = FALSE
+    # ) +
+    labs(
+        x = "Iteration",
+        y = "Proportion of responses",
+        colour = "Response",
+        fill = "Response"
+    ) +
+    scale_colour_d3() +
+    scale_fill_d3() +
+    scale_x_continuous(labels = label_number(big.mark = ","), 
+                       breaks = seq(0, max(predicted_dfs$.draw), 100)) +
+    scale_y_continuous(labels = percent, breaks = seq(0, 1, 0.05)) +
+    theme(
+        legend.position = "top",
+        panel.grid = element_blank()
+    )
+
+```
+
 ### Traceplots
 
 ```{r}
-# | label: fig-diagnostics-traceplots
-# | echo: true
-# | message: false
-# | warning: false
-# | fig-width: 12
+#| label: fig-diagnostics-traceplots
+#| echo: true
+#| message: false
+#| warning: false
+#| fig-width: 12
 gather_draws(model_fit_4, `b_.*`, `sd_te__.*`, regex = TRUE) %>%
     mutate(.chain = paste("Chain ", .chain)) %>%
     ggplot(aes(.iteration, .value, colour = .chain)) +
     facet_wrap(~.variable, scales = "free_y") +
-    annotate(
-        geom = "rect",
-        colour = NA,
-        xmin = 0,
-        xmax = dim(model_fit_4$fit)[1]/2,
-        ymin = -Inf,
-        ymax = Inf,
-        alpha = 0.25
-    ) +
+    annotate(geom = "rect", colour = NA,
+             xmin = 0, xmax = dim(model_fit_4$fit)[1]/2,
+             ymin = -Inf, ymax = Inf,
+             alpha = 0.25) +
     geom_line() +
     labs(
         x = "Iteration",
         y = "Sample value",
         colour = "Chain"
     ) +
-    scale_color_d3() +
+    scale_colour_manual(values = clrs[c(1, 3, 4, 5)]) +
     theme(
         legend.position = "top",
         legend.title = element_blank(),
@@ -2156,13 +2104,8 @@ gather_draws(model_fit_4, `b_.*`, `sd_te__.*`, regex = TRUE) %>%
 mcmc_rhat_data(model_rhats$model_fit_4) %>% 
     ggplot() +
     aes(x = value) +
-    geom_histogram(
-        bins = 100, 
-        na.rm = TRUE, 
-        fill = pal_d3()(1)[1], 
-        colour = "white"
-    ) +
-    geom_rug(alpha = 0.01, colour = pal_d3()(1)[1]) +
+    geom_histogram(bins = 100, na.rm = TRUE, fill = clrs[1], colour = "white") +
+    geom_rug(colour = clrs[1]) +
     labs(
         x = "R-hat",
         y = "Number of samples",
@@ -2186,12 +2129,8 @@ mcmc_rhat_data(model_rhats$model_fit_4) %>%
 mcmc_neff_data(model_neffs$model_fit_4) %>% 
     ggplot() +
     aes(x = value, fill = description, colour = description) +
-    geom_histogram(
-        bins = 100, 
-        na.rm = TRUE, 
-        colour = "white"
-    ) +
-    geom_rug(alpha = 0.01) +
+    geom_histogram(bins = 100, na.rm = TRUE, colour = "white") +
+    geom_rug() +
     geom_vline(xintercept = 1, colour = "black", size = 0.75) +
     labs(
         x = "Effective sample size ratio",
@@ -2199,6 +2138,8 @@ mcmc_neff_data(model_neffs$model_fit_4) %>%
         colour = "Rating",
         fill = "Rating"
     ) +
+    scale_fill_manual(values = clrs[c(1, 3, 5)]) +
+    scale_colour_manual(values = clrs[c(1, 3, 5)]) +
     theme(
         legend.position = "top"
     )
@@ -2224,5 +2165,5 @@ mcmc_neff_data(model_neffs$model_fit_4) %>%
 ## Session info
 
 ```{r}
-sessionInfo()
+sessioninfo::session_info()
 ```
