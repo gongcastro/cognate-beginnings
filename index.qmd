@@ -293,7 +293,7 @@ participants %>%
 #| message: false
 #| warning: false
 #| fig-width: 7
-#| fig-cap: "Lexical frequencies. Mean, standard error, and 95% confidence interval of lexical frequencies of items included in the Catalan and Spanish lists, reported separately for identical cognates, non-identical cognates, and non-cognates."
+#| tbl-cap: "Lexical frequencies. Mean, standard error, and 95% confidence interval of lexical frequencies of items included in the Catalan and Spanish lists, reported separately for identical cognates, non-identical cognates, and non-cognates."
 items <- left_join(items, select(bvqdev::pool, te, item, language, class, semantic_category))
 
 items %>%
@@ -728,6 +728,7 @@ m %>%
     ) +
     scale_y_continuous(labels = percent, limits = c(0, 1)) +
     theme(
+        legend.position = "top",
         axis.ticks.x = element_line(colour = "black"),
         panel.grid = element_blank()
     )
@@ -854,7 +855,6 @@ df %>%
     labs(x = "Age (months)", y = "Proportion of responses", fill = "Response") +
     scale_fill_manual(values = clrs[c(1, 3, 5)]) +
     scale_y_continuous(labels = percent) +
-    theme_custom() +
     theme(
         legend.position = "top",
         legend.title = element_blank(),
@@ -879,7 +879,6 @@ df %>%
     labs(x = "Age (months)", y = "Proportion of responses", fill = "Response") +
     scale_fill_manual(values = clrs[c(1, 3, 5)]) +
     scale_y_continuous(labels = percent) +
-    theme_custom() +
     theme(
         legend.position = "top",
         legend.title = element_blank(),
@@ -902,9 +901,8 @@ df %>%
     facet_wrap(~lv) +
     geom_col(position = position_fill()) +
     labs(x = "Age (months)", y = "Proportion of responses", fill = "Response") +
-    scale_fill_d3() +
     scale_y_continuous(labels = percent) +
-    theme_custom() +
+    scale_fill_manual(values = clrs[c(1, 3, 5)]) +
     theme(
         legend.position = "top",
         legend.title = element_blank(),
@@ -1119,8 +1117,6 @@ The effect of **phonological similarity** by itself (as indicated by the regress
 
 However, the 95% *HDI* of the regression coefficient of the $Exposure \times Levenshtein$ interaction excluded the *ROPE* entirely ($\beta$ = `r percent(post_draws_list[["b_exposure_std:lv_std"]]$median, accuracy = 0.01)`, 95% *HDI* = [`r percent(post_draws_list[["b_exposure_std:lv_std"]]$ci_low, accuracy = 0.01)`, `r percent(post_draws_list[["b_exposure_std:lv_std"]]$ci_high, accuracy = 0.01)`]), suggesting that the effect of phonological similarity on a word's probability of acquisition changed depending on participants' exposure to the word. Follow up analyses on this interaction (see @fig-results-marginal) showed that, when exposure to the language was low (e.g., 10%), phonological similarity increased the probability of acquisition substantially. This effect was negligible when exposure to both languages was balanced (e.g. 50-50%). Finally, when exposure to the language was high (e.g., 90%), this effect was very close to zero, although with different direction, with phonological less similar translation equivalents being more likely to be acquired than phonologically more similar ones.
 
-[TO DO: emmeans tests]
-
 The 95% *HDI* of the regression coefficient of the $Age \times Exposure$ interaction did not exclude the *ROPE* ($\beta$ = `r percent(post_draws_list[["b_age_std:exposure_std"]]$median, accuracy = 0.01)`, 95% *HDI* = [`r percent(post_draws_list[["b_age_std:doe_std"]]$ci_low, accuracy = 0.01)`, `r percent(post_draws_list[["b_age_std:exposure_std"]]$ci_high, accuracy = 0.01)`]): `r percent(post_draws_list[["b_age_std:exposure_std"]]$rope_percentage, accuracy = 0.01)` of its posterior samples fell within the *ROPE*. This shows that the effect of exposure on the speed at which participants acquired words across ages was inconclusive. Given our data, it is difficult to tell whether this *Exposure* increased or decreased the slope of the words' acquisition trajectories.
 
 The 95% *HDI* of the regression coefficient of the $Age \times Levenshtein$ interaction overlapped completely with the *ROPE* ($\beta$ = `r percent(post_draws_list[["b_age_std:lv_std"]]$median, accuracy = 0.01)`, 95% *HDI* = [`r percent(post_draws_list[["b_age_std:lv_std"]]$ci_low, accuracy = 0.01)`, `r percent(post_draws_list[["b_age_std:lv_std"]]$ci_high, accuracy = 0.01)`]), indicating that phonological similarity did not speed-up the acquisition trajectories of the words across ages.
@@ -1312,7 +1308,7 @@ nd <- datagrid(
     model = model_fit_4,
     n_phon_std = 0,
     lv_std = 0,
-    exposure_std = seq_range(model_fit_4$data$exposure_std, 10),
+    exposure_std = seq(-1.5, 1.5, length.out = 100),
     age_std = 0,
     id = NA,
     te = NA
@@ -1339,11 +1335,12 @@ marg_effects %>%
                  colour = NA, alpha = 0.5, fill = clrs[1]) +
     stat_summary(fun = median, geom = "line", size = 1, color = clrs[1]) +
     labs(
-        x = "Exposure index",
+        x = "Word exposure index",
         y = "Marginal effect of phonological similarity\n(Levenshtein distance)"
     ) +
     scale_x_continuous(
         labels = label_number(style_positive = "plus", suffix = " SD"),
+        breaks = seq(-2, 2, 0.5)
     ) +
     scale_y_continuous(
         labels = label_percent(style_positive = "plus", ),
