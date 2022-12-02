@@ -2046,8 +2046,8 @@ predicted_dfs %>%
         colour = "Response",
         fill = "Response"
     ) +
-    scale_colour_d3() +
-    scale_fill_d3() +
+    scale_colour_manual(values = clrs[c(1, 3, 5)]) +
+    scale_fill_manual(values = clrs[c(1, 3, 5)]) +
     scale_x_continuous(labels = label_number(big.mark = ","), 
                        breaks = seq(0, max(predicted_dfs$.draw), 100)) +
     scale_y_continuous(labels = percent, breaks = seq(0, 1, 0.05)) +
