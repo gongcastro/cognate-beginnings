@@ -1,0 +1,20 @@
+\begin{tikzpicture}
+
+  % nodes
+  \node (age) at (0,0) {$Age_{i, j}$};
+  \node (phonemes) at (3,4) {$Phonemes_{i, j}$};
+  \node (exposure) at (3,2) {$Exposure_{i, j}$};
+  \node (cognateness) at (3,-2) {$Cognateness_{i}$};
+  \node [ellipse, draw](p_acquisition) at (7, 0) {$P(Acquisition)$};
+  \node (response) at (11, 0) {$Response$};
+  % arrows
+  \draw [->, shorten >= 4pt, shorten <= 4pt] (age) -- (p_acquisition);
+  \draw [->, shorten >= 4pt, shorten <= 4pt] (age) -- (exposure);
+  \draw [->, shorten >= 4pt, shorten <= 4pt] (age) -- (cognateness);
+  \draw [->, shorten >= 4pt, shorten <= 4pt] (exposure) -- (p_acquisition);
+  \draw [->, shorten >= 4pt, shorten <= 4pt] (exposure) -- (cognateness);
+  \draw [->, shorten >= 4pt, shorten <= 4pt] (phonemes) -- (p_acquisition);
+  \draw [->, shorten >= 4pt, shorten <= 4pt] (cognateness) -- (p_acquisition);
+  \draw [->, shorten >= 4pt, shorten <= 4pt] (p_acquisition) -- (response);
+
+\end{tikzpicture}

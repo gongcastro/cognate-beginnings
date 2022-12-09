@@ -22,7 +22,7 @@ authors:
   - name: Ignacio Castillejo
     orcid: 0000-0001-7445-0416
     affiliations:
-      - name: Universidad Atónoma de Madrid
+      - name: Universidad Autónoma de Madrid
         department: Departamento de Psicología
   - name: Nuria Sebastian-Galles
     orcid: 0000-0001-6938-2498
@@ -78,13 +78,12 @@ options(
 )
 ```
 
+# Methods
+
+
 ::: {.callout-tip}
 Data and materials are available at [OSF](https://osf.io/hy984/), and code is available at [GitHub](https://github.com/gongcastro/trajectories).
 :::
-
-# Methods
-
-Data and materials are available at [OSF](https://osf.io/hy984/), and code is available at [GitHub](https://github.com/gongcastro/trajectories).
 
 ## Questionnaires
 
@@ -221,7 +220,7 @@ participants %>%
         colour = "Language",
         fill = "Language"
     ) +
-    scale_fill_manual(values = clrs[c(1, 3, 5)]) +
+    scale_fill_manual(values = clrs[c(1, 4)]) +
     theme(
         legend.position = "top",
         panel.grid.major.x = element_blank(),
@@ -354,7 +353,7 @@ items %>%
 
 ### Lexical frequency
 
-Word lexical frequency ($Frequency$): lexical frequency of the word in its corresponding language, expressed as Zipf scores [@van2014subtlex; @zipf1949human]. This variable ranges from 0 to 7, and follows and approximates a normal distribution, with most values in a corpus ranging from 3 to 5 points. Lexical frequencies were extracted from the English corpora of the [CHILDES](https://childes.talkbank.org/) database using the [{childesr}](https://langcog.github.io/childes-db-website/) R package. Available words in the corpora were then mapped to their Catalan and Spanish translations. Responses to words with missing lexical frequency score were excluded from analyses of the total number of items). 
+Word lexical frequency ($Frequency$): lexical frequency of the word in its corresponding language, expressed as Zipf scores [@van2014subtlex; @zipf1949human]. This variable ranges from 0 to 7, and follows and approximates a normal distribution, with most values in a corpus ranging from 3 to 5 points. Lexical frequencies were extracted from the English corpora of the [CHILDES](https://childes.talkbank.org/) database using the [{childesr}](https://langcog.github.io/childes-db-website/) R package. Available words in the corpora were then mapped to their Catalan and Spanish translations. Therefore, the Catalan and Spanish word-forms of the same translation equivalent had the same value for lexical frequency. Responses to words with missing lexical frequencies were excluded from analyses of the total number of items). 
 
 
 ```{r}
@@ -363,31 +362,23 @@ Word lexical frequency ($Frequency$): lexical frequency of the word in its corre
 #| message: false
 #| warning: false
 #| fig-width: 7
-#| fig-cap: "Distribution of lexical frequency across items"
+#| fig-height: 4
+#| fig-cap: "Distribution of lexical frequency across items. Lexical frequencies were extracted from the English CHILDES corpora, and mapped to their Catalan and Spanish translations. Therefore Catalan and Spanish word-forms that belong to the same translation equivalent had the same lexical frequency. The black dot and interval indicate the mean and standard deviation."
+
+mean_sd <- function(x, ...) {
+    m <- mean(x, ...)
+    s <- sd(x, ...)
+    data.frame(mean = m, ymin = m-s, ymax = m+s)
+}
+
 items %>% 
-    ggplot() +
-    aes(
-        x = language,
-        y = freq_zipf,
-        fill = language,
-        colour = language
-    ) +
-    stat_slab(slab_colour = "white", slab_size = 1, alpha = 0.5, scale = 0.5) +
-    stat_dots(side = "left", scale = 0.5, position = position_nudge(x = -0.05)) + 
-    stat_pointinterval(
-        position = position_dodge(width = 0.1),
-        point_size = 2.5,
-        colour = "black"
-    ) +
-    labs(
-        x = "Frequency (Zipf)",
-        y = "Probability density",
-        fill = "Language",
-        shape = "Language",
-        colour = "Language"
-    ) +
+    distinct(te, .keep_all = TRUE) %>% 
+    ggplot(aes(x = freq_zipf)) +
+    geom_histogram(fill = clrs[4], colour = "white", bins = 30)  +
+    labs(x = "Lexical frequency (Zipf score)", y = "Number of words") +
     theme(
         legend.position = "none",
+        panel.grid.minor = element_blank(),
         legend.title = element_blank()
     )
 ```
@@ -415,7 +406,7 @@ items %>%
         shape = language
     ) +
     facet_wrap(~language, ncol = 1) +
-    geom_col() +
+    geom_col(colour = "white") +
     geom_text(aes(label = n), position = position_nudge(y = 5), colour = "black") +
     labs(
         x = "# Phonemes",
@@ -425,8 +416,11 @@ items %>%
         colour = "Language"
     ) +
     scale_x_continuous(breaks = 1:15) +
+    scale_fill_manual(values = clrs[c(1, 4)]) +
     theme(
         legend.position = "none",
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank(),
         axis.ticks.x = element_line(),
         legend.title = element_blank()
     )
@@ -449,10 +443,10 @@ items %>%
     count(lv) %>% 
     mutate(prop = n/sum(n)) %>% 
     ggplot(aes(x = lv, n)) +
-    geom_col(fill = clrs[1], colour = "white") +
+    geom_col(fill = clrs[4], colour = "white") +
     geom_text(aes(label = paste0(n, " (", percent(prop, accuracy = 0.1), ")")),
               position = position_nudge(y = 3), size = 3.5) +
-    labs(x = "Levenshtein distance", y = "Probability density") +
+    labs(x = "Levenshtein distance", y = "Number of words") +
     theme(
         panel.grid.major.x = element_blank(),
         legend.position = "top"
@@ -471,14 +465,16 @@ items %>%
 #| fig-cap: "Association betwen number of lexical frequency and number of phonemes"
 items %>% 
     drop_na(freq_zipf) %>% 
-    count(n_phon, freq_zipf, language) %>% 
-    ggplot(aes(n_phon, freq_zipf, colour = language, fill = language)) +
-    facet_wrap(~language) +
-    geom_point(size = 2, alpha = 0.25) +
-    geom_smooth(method = "lm", formula = "y ~ x") +
+    distinct(te, .keep_all = TRUE) %>% 
+    count(n_phon, freq_zipf) %>% 
+    ggplot(aes(n_phon, freq_zipf)) +
+    geom_point(size = 2, alpha = 0.5, colour = clrs[4], shape = 1, stroke = 1,
+               position = position_jitter(width = 0.1), seed = 888) +
+    geom_smooth(method = "lm", formula = "y ~ x" ,
+                colour = clrs[1], fill = clrs[1]) +
     labs(
         x = "# Phonemes", 
-        y = "Lexical frequency (Zipf score)\nExtracted from SUBTLEX", 
+        y = "Lexical frequency (Zipf score)", 
         colour = "Language", 
         fill = "Language"
     ) +
@@ -500,16 +496,15 @@ items %>%
 #| fig-width: 7
 #| fig-cap: "Association betwen lexical frequency and phonological similarity"
 items %>% 
-    left_join(select(bvqdev::pool, item, language)) %>% 
+    distinct(te, .keep_all = TRUE) %>% 
     drop_na(freq_zipf) %>% 
-    count(freq_zipf, lv, language) %>% 
-    ggplot(aes(freq_zipf, lv, colour = language, fill = language, size = n)) +
-    facet_wrap(~language) +
-    geom_point(size = 2, alpha = 0.25) +
-    geom_smooth(method = "lm", formula = "y ~ x") +
+    count(freq_zipf, lv) %>% 
+    ggplot(aes(freq_zipf, lv, size = n)) +
+    geom_point(size = 2, shape = 1, stroke = 1, colour = clrs[4]) +
+    geom_smooth(method = "lm", formula = "y ~ x", colour = clrs[1], fill = clrs[1]) +
     labs(
         y = "Levenshtein similarity", 
-        x = "Lexical frequency (Zipf score)\nExtracted from SUBTLEX", 
+        x = "Lexical frequency (Zipf score)", 
         colour = "Language", 
         fill = "Language"
     ) +
@@ -528,15 +523,15 @@ items %>%
 #| message: false
 #| warning: false
 #| fig-width: 7
-#| fig-cap: "Association betwen number of phonemes and phonological similarity"
+#| fig-cap: "Association between number of phonemes and phonological similarity"
 items %>% 
-    left_join(select(bvqdev::pool, item, language)) %>% 
+    distinct(te, .keep_all = TRUE) %>% 
     drop_na(freq_zipf) %>% 
-    count(n_phon, lv, language) %>% 
-    ggplot(aes(n_phon, lv, colour = language, fill = language, size = n)) +
-    facet_wrap(~language) +
-    geom_point(shape = 1, stroke = 1) +
-    geom_smooth(method = "lm", formula = "y ~ x", size = 1) +
+    count(n_phon, lv) %>% 
+    ggplot(aes(n_phon, lv, size = n)) +
+    geom_point(shape = 1, stroke = 1, colour = clrs[4]) +
+    geom_smooth(method = "lm", formula = "y ~ x", size = 1,
+                colour = clrs[1], fill = clrs[1]) +
     labs(
         x = "# Phonemes", 
         y = "Levenshtein similarity", 
@@ -555,20 +550,20 @@ items %>%
 
 ### Language exposure-weighted lexical frequency
 
-We created a predictor ($Exposure$) to account for the exposure rate of each child to each of the words their parents responded to, weighted by the child's exposure to the language the word belongs to. the exposure of the $i$-th child to the $j$-th word measure is the product of the lexical frequency of the word (Zipf score) and the child’s degree of exposure to the corresponding language (a proportion)
+We created a predictor ($Exposure$) to account for the exposure rate of each child to each of the words their parents responded to, weighted by the child's exposure to the language the word belongs to. the exposure of the $i$-th child to the $j$-th word measure is the product of the lexical frequency of the word (Zipf score) and the child’s degree of exposure to the corresponding language (a proportion) (see @eq-exposure).
 
 $$
 \textbf{Exposure}_{ij} = \textbf{Frequency}_i \times \textbf{DoE}_{j}
-$$
+$$ {#eq-exposure}
 
-For instance, for a child who is reportedly exposure to Catalan 80% of the time, and to Spanish 20% of the time, the expected exposure to the word *cavall* (horse, in Catalan, with a lexical frequency of `r round(items$freq_zipf[items$item=="cat_cavall"], 2)`) would be `r round(items$freq_zipf[items$item=="cat_cavall"]*0.80, 2)`, while that of its translation to Spanish *caballo* would be `r round(items$freq_zipf[items$item=="cat_cavall"]*0.20, 2)`:
+For instance, for a child who is reportedly exposure to Catalan 80% of the time, and to Spanish 20% of the time, the expected exposure to the word *cavall* (horse, in Catalan, with a lexical frequency of `r round(items$freq_zipf[items$item=="cat_cavall"], 2)`) would be `r round(items$freq_zipf[items$item=="cat_cavall"]*0.80, 2)`, while that of its translation to Spanish *caballo* would be `r round(items$freq_zipf[items$item=="cat_cavall"]*0.20, 2)` (see @eq-exposure-example):
 
 $$
 \begin{aligned}
 \textbf{Exposure}_{\textbf{cavall, Catalan}} &= \textbf{Frequency}_{cavall} \times \textbf{DoE}_{Catalan} = 6.14 \times 0.8 = 4.91 \\
 \textbf{Exposure}_{\textbf{caballo, Spanish}} &= \textbf{Frequency}_{caballo} \times \textbf{DoE}_{Spanish} = 6.14 \times 0.2 = 1.23
 \end{aligned}
-$$
+$$ {#eq-exposure-example}
 
 ```{r}
 #| label: fig-exposure-distribution
@@ -616,60 +611,195 @@ df %>%
           panel.grid.minor.y = element_blank())
 ```
 
+## DAG
+
+```{r tikz-settings, include=FALSE}
+# tikz stuff
+# Necessary for using dvisvgm on macOS
+# See https://www.andrewheiss.com/blog/2021/08/27/tikz-knitr-html-svg-fun/
+font_opts <- list(dvisvgm.opts = "--font-format=woff")
+```
+
+
+```{tikz dag, engine.opts=font_opts, echo=FALSE}
+#| fig-cap: "Directed acyclic graph indicating the hypothesised causal relationship between the variables of interest. *i* and *j* indicate the variables that are affected by individual differences at the level of participants and translation equivalents, respectively. Unobserved variables are encircled, and observed variables are not. We hypothesised that the number of phonemes of the word, the age of the participant, the amount of exposure to the word, and the Levenshtein distance all affect participants' familiarity with the word (i.e., the probability of acquisition), and therefore the probability with which each response category is generated. We further hypothesised that age influences the effect of word exposure and Levenshtein distance on familiarity, and that word exposure influences the effect of Levenshtein distance on familiarity."
+#| fig-align: center
+#| fig-ext: svg
+#| out-width: 100%
+\usetikzlibrary{positioning}
+\usetikzlibrary{shapes.geometric}
+\begin{tikzpicture}
+% nodes
+\node (age) at (0,0) {$\text{Age}_{i, j}$};
+\node (phonemes) at (3,4) {$\text{Phonemes}_{i, j}$};
+\node (exposure) at (3,2) {$\text{Exposure}_{i, j}$};
+\node (levenshtein) at (3,-2) {$\text{Levenshtein}_{i}$};
+\node [ellipse, draw](familiarity) at (7, 0) {$Familiarity$};
+\node (response) at (11, 0) {$\text{Response}$};
+% arrows
+\draw [->, shorten >= 4pt, shorten <= 4pt] (age) -- (familiarity);
+\draw [->, shorten >= 4pt, shorten <= 4pt] (age) -- (exposure);
+\draw [->, shorten >= 4pt, shorten <= 4pt] (age) -- (levenshtein);
+\draw [->, shorten >= 4pt, shorten <= 4pt] (exposure) -- (familiarity);
+\draw [->, shorten >= 4pt, shorten <= 4pt] (exposure) -- (levenshtein);
+\draw [->, shorten >= 4pt, shorten <= 4pt] (phonemes) -- (familiarity);
+\draw [->, shorten >= 4pt, shorten <= 4pt] (levenshtein) -- (familiarity);
+\draw [->, shorten >= 4pt, shorten <= 4pt] (familiarity) -- (response);
+
+\end{tikzpicture}
+```
+
 
 ## Data analysis
 
+We used multilevel ordinal regression to model the cumulative probability of a *No* response, a *Understands* response, or a *Understands and Says* response [@burkner2019ordinal] using the *logit* link function. The likelihood of the cumulative probability distribution of the responses is defined by @eq-likelihood (see @fig-likelihood for a graphical representation). 
 
 
-### Model comparison
+$$
+\begin{aligned}
+\textbf{Likelihood:} \\
+y_{ij} &\sim \text{Cumulative}(p_{k})
+\end{aligned}
+$$ {#eq-likelihood}
 
-We extracted four variables of interest for each observation (describe in previous sections):
 
-* Word lexical frequency ($Frequency$)
-* Word length ($Phonemes$)
-* Phonological similarity ($Levenshtein$)
-* Participant age ($Age$)
-* Word exposure index ($Exposure$)
+where:
 
-We fitted a series of nested Bayesian ordinal multilevel models to sequentially test the effects of the independent variables (number of phonemes, exposure, age, and Levenshtein) over the three levels of word learning (no, production, comprehension). In all these models participants’ and items’ individual differences were controlled by estimating different parameters for each one (different intercepts and/or slopes). This is similar to the control conducted by ANCOVAs. Thus, independent variable effects account for collective differences in word learning (unexplained by participants’ or items’ individual differences). 
+- $y$ is an observed response ($y \in \{\text{No, Understands, Understands and Says}\}$)
+- $i$ is the participant index
+- $j$ is the translation equivalent (TE) index
+- $p_{k}$ is a probability ($p \in (0, 1)$) that indicates the threshold $k$ ($k \in (1, 2)$)) between two response categories in the latent distribution
+$p_{k}$ is then estimated using a logit regression model as indicated in @eq-linear.
 
-We initially fitted a base model (`model_fit_0`) that only included the predictors $Age$ (`age_std`), $Phonemes$ (`n_phon_std`), along with random intercepts and slopes of all predictors by $Participant$ (`id`) and $Item$ (`te`), and all correlation parameters. We then expanded this model by adding the main effect of $Exposure$ (`exposure`) (`model_fit_1`), and then $Levenshtein$ (`lv_std`) (`model_fit_2`) and their corresponding random slopes by $Participant$. Then, we added the $Exposure \times Levenshtein$ (`exposure_std:lv_std`) two-way interaction (`model_fit_3`) and its random slope by $Participant$. Finally, we added the $Age \times Exposure \times Levenshtein$ (`age_std:exposure_std:lv_std`) three-way interaction with its random slope by $Participant$, along with a random slope for the $Age \times Exposure$ (`age_std:exposure_std`) two-way interaction.
 
-We compared the predictive performance of the models using Bayesian leave-one-out cross-validation (*LOO*), a relative fit index, via the `loo` R package. LOO consists in computing the average likelihood of each observation after estimating the model's parameters leaving that same observation out of the data set. Due to computational constraints, we performed LOO based on a random subsample of 750 samples (out of `r format(dim(model_fit_4$fit)[1], big.mark = ",")`) of the posterior distribution of the fixed effects of the model.
+```{r}
+#| label: fig-likelihood
+#| fig-cap: "Graphical representation of the assumed latent distribution that generates observed responses in the questionnaire. Cumulative ordinal regression assumes that observed categorical responses (*No*, *Understands* and *Understands and Says* are generated from a common latent (i.e., unobserved) distribution. For threotical reasons, we refer to the dimension captured by such distribution as *Familiarity*. *Familiarity* describes a given participant's familiarity with a given word. When familiarity is low (below some threshold 1), the reulting response is *No*. When familiarity is higher than such threshold 1, but lower than some threshold 2, the resulting result is *Understands* (i.e., comprehension). When familiarity exceeds threshold 2, the resulting response is *Understands and Says* (i.e., comprehension and production). These thresholds are estimated in the cumulative regression model as intercepts 1, and 2. The rest of the coefficients in the regression model shift the response thresholds, making comprehension or production more likely or less likely. See @burkner2019ordinal for a detailed description of cumulative ordinal regression and its implementation."
+#| fig-width: 7
+#| fig-height: 3.5
+dist_df = tribble(~mean, ~sd, 0,   1)
 
-### Model equation
+responses <- data.frame(
+    ymin = c(-Inf, -1.5, 1.5),
+    ymax = c(-1.5, 1.5, Inf),
+    xmin = -Inf,
+    xmax = Inf,
+    .category = str_wrap(c("No", "Understands", "Understands and Says"), width = 12)
+)
 
-::: column-body-outset
-$$\begin{aligned}
-g[\mathrm{Pr}(y_{ij} \le a_s)] = \tau_s - \nu_{ij}
-\end{aligned}$$
-:::
+responses %>%
+    ggplot(aes(ymin = ymin, ymax = ymax, xmin = xmin, xmax = xmax, fill = .category)) +
+    geom_rect(alpha = 0.5) +
+    stat_dist_slab(
+        data = dist_df, 
+        aes(dist = "norm", arg1 = mean, arg2 = sd),
+        position = "dodge", inherit.aes = FALSE,
+        fill = NA, colour = "black"
+    ) +
+    geom_hline(yintercept = c(-1.5, 1.5), linetype = "dotted", size = 1) +
+    geom_text(aes(label = .category, y = c(-3, 0, 3), x = 1),
+              vjust = 1, hjust = 0.5) +
+    annotate(
+        geom = "text",
+        label = c("Threshold~1~(p[1])", "Threshold~2~(p[2])"),
+        y = c(-1.5, 2), parse = TRUE,
+        x = 0.5, angle = 90, vjust = -0.5
+    ) +
+    labs(y = "Hypothetical response-generating latent distribution",
+         x = "Response probability",
+         fill = "Response type",
+         colour = "Response type") +
+    coord_flip() +
+    scale_fill_manual(values = clrs[c(1, 4, 5)]) +
+    scale_x_continuous(labels = percent) +
+    scale_y_continuous(limits = c(-4, 4)) +
+    theme(panel.grid = element_blank(),
+          legend.position = "none")
+```
 
-$s$ is the s-th response category, $a_1 < a_2 < a_3$ are ordered response categories, $\mathrm{Pr}(y_i \le a_3) = 1$ and $\tau_s$ are threshold parameters where $\tau_1 < \tau_2 < \tau_3$.
 
-::: column-body-outset
+To test our hypotheses, we included several predictors in the regression model as fixed effects: the main effects of participant age ($Age$), number of phonemes ($Phonemes$), word exposure index ($Exposure$), and of phonological similarity ($Levenshtein$), the two-way interactions $Age \times Exposure$, $Age \times Levenshtein$, and $Exposure \times Leveshtein$, and the three-way interaction $Age \times Exposure \times Leveshtein$. We also included crossed random effects for participants and translation equivalents to account for the repeated measures in our dataset--each participant provided responses to multiple translation equivalents, and each translation equivalent was responded to by multiple participants [@gelman2020regression]. For both grouping variables, we included random intercepts, random slopes, and correlation parameters for all predictors were repeated measures were observed in our dataset [@barr2013random, see @eq-linear]. 
 
-$$\begin{aligned}
-\nu_{ij} = & \beta_0 +\beta_1\mathrm{Age}_{i} + \beta_2\mathrm{Phon}_{j} + \beta_3\mathrm{Exposure}_{ij} + \beta_4 \mathrm{Levenshtein}_{j} + & [\mbox{Main effects}]\\
-&\beta_5\mathrm{(Age_{i} \cdot \mathrm{Exposure}_{ij}}) + \beta_6\mathrm{(\mathrm{Age}_{i} \cdot \mathrm{Levenshtein}_{j}}) +  \beta_7\mathrm{(Exposure_{ij} \cdot \mathrm{Levenshtein}_{j}}) + & [\mbox{Two-way interactions}]\\
-&\beta_8{(\mathrm{Age}_{i} \cdot \mathrm{Exposure}_{ij} \cdot \mathrm{Levenshtein}_{j}}) + & [\mbox{Three-way interaction}]\\
+$$
+\begin{aligned}
+\textbf{Linear model:} \\
+logit(p_{k}) = \text{ln} \frac{p_{k}}{1-p_{k}} &= (\beta_{0_{k}} + u_{0_{i_{k}}} + w_{0_{j_{k}}}) + \\
+& (\beta_{1} + u_{1_{i}} + w_{1_{j}}) · \text{Age}_{i} + & \\
+& (\beta_{2} + u_{2_{i}} + w_{2_{j}}) · \text{Phonemes}_{ij} + & \\
+& (\beta_{3} + u_{3_{i}} + w_{3_{j}}) · \text{Exposure}_{ij} + & \\
+& (\beta_{4} + u_{4_{i}}) · \text{Levenshtein}_{ij} + & \\
+& (\beta_{5} + u_{5_{i}} + w_{3_{j}}) · (\text{Age}_{i} \times \text{Exposure}_{ij}) + & \\
+& (\beta_{6} + u_{6_{i}}) · (\text{Age}_{i} \times \text{Levenshtein}_{ij}) + & \\
+& (\beta_{7} + u_{7_{i}}) · (\text{Exposure}_{ij} \times \text{Levenshtein}_{ij}) & \\
+& (\beta_{8} + u_{8_{i}}) · (\text{Age}_{i} \times \text{Exposure}_{ij} \times \text{Levenshtein}_{ij}) & \\
+\end{aligned}
+$$ {#eq-linear}
 
-&\theta_{0j}^{(\mathrm{TE})} + \theta_{1j}^{(\mathrm{TE})}\mathrm{Age}_{i} + \theta_{2j}^{(\mathrm{TE})} \mathrm{Phon}_{j} + \theta_{3j}^{(\mathrm{TE})} \mathrm{Exposure}_{ij} +  \theta_{4j}^{(\mathrm{TE})} (\mathrm{Age}_{i} \cdot \mathrm{Exposure}_{ij}) + & [\mbox{Item-level effects}]\\
+where:
 
-&\theta_{0j}^{(\mathrm{ID})} + \theta_{1j}^{(\mathrm{ID})}\mathrm{Age}_{i} +   \theta_{2j}^{(\mathrm{ID})} \mathrm{Phon}_{j} + \theta_{3j}^{(\mathrm{ID})} \mathrm{Exposure}_{ij} + \theta_{4j}^{(\mathrm{ID})} \mathrm{Levenshtein}_{j} + \theta_{5j}^{(\mathrm{ID})} (\mathrm{Age}_{i} \cdot \mathrm{Exposure}_{ij}) & [\mbox{Participant-level effects}]
-\end{aligned}$$
-:::
+- $i$ and $j$ index the participant and translation equivalent (TE)
+- $\beta_{0_k}$ is the fixed coefficient of the regression model for the intercept of threshold $k$
+- $u_{0_{i}}$ and $w_{0_{j}}$ are the by-participant and by-TE adjustments for $\beta_{0_{k}}$ (i.e., random intercepts), respectively
+- $\beta_{1-8}$ are the fixed coefficients of the regression model for the predictors of interest
+- $u_{1-8_{i}}$ and $w_{1-3_{j}}$ are the by-participant and by-TE adjustments for$\beta_{1-8}$ (i.e., random slopes), respectively
 
-### Model prior
+We used the Bayesian framework to estimate the parameters in our model. This involves using the Bayes theorem to compute a distribution (*posterior distribution*) that describes what values of each parameter in the model are more likely given the data (*likelihood*, see @eq-likelihood), and previous knowledge about such distribution (*prior distribution*, see @eq-prior) [@mcelreath2020statistical]. This posterior distribution not only informs about the most likely values of our regression coefficients of interest, but also about the uncertainty around such estimations. We used a weakly informative prior for our parameters, with the exception of the main effect of $Age$, for which we specified a strongly informative prior based on previous literature about how age affects the acquisition of words [see @eq-prior].
 
-::: column-body-outset
-$$\begin{aligned}\beta_{0} & \sim \mathrm{Normal}(-0.25, 0.1) & [\mbox{Intercept/response category threshold}] \\
-\beta_{1} &\sim \mathrm{Normal}(1, 0.1) & [\mbox{Age population-level coefficient}]\\
-\beta_{2-9} &\sim \mathrm{Normal}(0, 1) & [\mbox{Rest of population-level coefficients}] \\
-\theta_{0-9} & \sim \mathrm{Normal}(1, 0.1) & [\mbox{Group-level coefficient variability}]\end{aligned}$$
-:::
+$$
+\begin{aligned}
+\\
+\textbf{Prior:} \\
+\beta_{0_{k}} &\sim \mathcal{N}(-0.25, 0.1) & [\mbox{Intercept/response category threshold}] \\
+\beta_{1} &\sim \mathcal{N}(1, 0.1) & [\mbox{Age population-level coefficient}]\\
+\beta_{2-8} &\sim \mathcal{N}(0, 1) & [\mbox{Rest of population-level coefficients}] \\
+u_{0-8_{i}} &\sim \mathcal{N}(0, \sigma_{u_{0-8_{i}}}) & [\mbox{Participant-level coefficient variability}] \\
+w_{0-3_{j}} &\sim \mathcal{N}(0, \sigma_{w_{0-3_{j}}}) & [\mbox{TE-level coefficient variability}] \\\\
+&&\mbox{[Participant-level coefficient variability]} \\ \\
+\Bigg(\begin{smallmatrix}
+u_{k_{0}} \\ 
+u_{1_{i}} \\ 
+\vdots \\ 
+u_{8_{i}} 
+\end{smallmatrix}\Bigg) &\sim \mathcal{N} 
+\Bigg(\Bigg(\begin{smallmatrix}0 \\
+0 \\ 
+\vdots \\
+0\end{smallmatrix}\Bigg), \Sigma_{u}\Bigg) \\
+\Sigma_{u} &= \Bigg(\begin{smallmatrix} \\
+\rho_{u_{0}} & \rho_{u_{0}} \sigma_{u_{0_{k}}} \sigma_{u_{1}} & \dots & \rho_{u_{0}} \sigma_{u_{0}} \sigma_{w_{8}}\\ 
+\rho_{u_{1}} \sigma_{u_{1}} \sigma_{u_{0}} & \rho_{u_{1}} & \dots & \rho_{u_{1}} \sigma_{u_{1}} \sigma_{u_{8}}\\ 
+\vdots & \vdots & \vdots & \vdots \\
+\rho_{8} \sigma_{u_{8}} \sigma_{u_{0_{k}}} & \dots & \dots & \rho_{u_{8}} \end{smallmatrix}\Bigg) \\
+\sigma_{u_{0-8}} &\sim \mathcal{N_{+}}(1, 0.1) \\
+\rho_{u} &\sim LKJcorr(2) \\
+\\
+&&\mbox{[TE-level coefficient variability]} \\ \\
+\Bigg(\begin{smallmatrix}
+w_{k_{0}}\\ 
+w_{1_{j}} \\ 
+\vdots \\ 
+w_{3_{j}} 
+\end{smallmatrix}\Bigg) &\sim \mathcal{N} \Bigg(\Bigg(\begin{smallmatrix}
+0\\ 
+0 \\ 
+\vdots \\
+0 
+\end{smallmatrix}\Bigg), \Sigma_{w}\Bigg) \\
+\Sigma_{w} &= \Bigg(\begin{smallmatrix} \\
+\rho_{w_{0}} & \rho_{w_{0}} \sigma_{w_{0_{k}}} \sigma_{w_{1}} & \dots & \rho_{w_{0}} \sigma_{w_{0}} \sigma_{w_{3}}\\ 
+\rho_{w_{1}} \sigma_{w_{1}} \sigma_{w_{0}} & \rho_{w_{1}} & \dots & \rho_{w_{1}} \sigma_{w_{1}} \sigma_{w_{3}}\\ 
+\vdots & \vdots & \vdots & \vdots \\
+\rho_{3} \sigma_{w_{3}} \sigma_{w_{0_{k}}} & \dots & \dots & \rho_{w_{3}} \end{smallmatrix}\Bigg) \\
+\sigma_{w_{0-3}} &\sim \mathcal{N_{+}}(1, 0.1) \\
+\rho_{w_{0-3}} &\sim LKJcorr(2)
+\end{aligned}
+$$ {#eq-prior}
 
-In addition, we specified a $LKJ$ prior--$\sim LKJ(2)$ for the correlations between group-level coefficients.
+where:
+
+- $\rho_{u_{0-8}}$ and $\rho_{w_{0-3}}$ indicate the correlation parameters between the by-participant and by-TE adjustments, respectively
+- $\sigma_{u_{0-8}}^2$ and $\sigma_{w_{0-3}}^2$ indicate the variance of the by-participant and by-TE variance of the adjustments, respectively
+- $\mathcal{N}$ indicates a normal distribution, $\mathcal{N}_{+}$ indicates a truncated normal distribution with only positive values, and $LKJcorr$ indicates a [LKJ correlation distribution](https://mc-stan.org/docs/2_22/functions-reference/lkj-correlation.html) [@lewandowski2009generating].
 
 
 ::: {.panel-tabset}
@@ -769,7 +899,7 @@ m %>%
         breaks = (seq(10, 36, 4)-mean(df$age))/(sd(df$age)),
         labels = seq(10, 36, 4)
     ) +
-    scale_fill_manual(values = clrs[c(1, 3, 5)]) +
+    scale_fill_manual(values = clrs[c(1, 4, 5)]) +
     scale_y_continuous(labels = percent) +
     theme(
         legend.position = "top",
@@ -784,13 +914,17 @@ m %>%
 
 :::
 
+### Model comparison
+
+To test of goodness of fit of our model, we compared its predictive accuracy of this extended model--which included all predictors of interest--to four simpler models that included a subset of our predictors of interest: a base model that only included the main effects of $Age$, $Phonemes$, and $Exposure$ ($\mathcal{M}_{0}$), a model that also included the $Age \times Exposure$ interaction ($\mathcal{M}_{1}$), a model that also included the main effect of $Levenshtein$ ($\mathcal{M}_{2}$), a model that also included the $Age \times Levenshtein$ interaction ($\mathcal{M}_{3}$). Only the extended model included the $Age \times Exposure \times Levenshtein$ interaction. We compared the predictive performance of the models using Bayesian leave-one-out cross-validation (*LOO*), a relative fit index, via the `loo` R package. LOO consists in computing the average likelihood of each observation after estimating the model's parameters leaving that same observation out of the data set. Due to computational constraints, we performed LOO based on a random subsample of 750 samples (out of `r format(dim(model_fit_4$fit)[1], big.mark = ",")`) of the posterior distribution of the fixed effects of the model.
+
 ### Model settings
 
 -   OS: `r sessionInfo()$running`, `r sessionInfo()$platform`
 -   R version: `r sessionInfo()$R.version$version.string`
--   Algorithm: Hamiltonian Montecarlo (No U-turn Sampler, *NUTS*)
--   Engine: Stan (brms interface, `r sessionInfo()$otherPkgs$brms$Version`)
--   brms backend: CmdStanR (cmdstanr `r sessionInfo()$loadedOnly$cmdstanr$Version`)
+-   Algorithm: Hamiltonian Monte Carlo (No U-turn Sampler)
+-   Engine: Stan (`brms` interface, `r sessionInfo()$otherPkgs$brms$Version`)
+-   `brms` backend: CmdStanR (`cmdstanr` `r sessionInfo()$loadedOnly$cmdstanr$Version`)
 -   Chains: `r dim(model_fit_4$fit)[2]`
 -   Cores: `r dim(model_fit_4$fit)[2]`
 -   Iterations: `r format(dim(model_fit_4$fit)[1], big.mark = ",")` (`r format(dim(model_fit_4$fit)[1]/2, big.mark = ",")`)
@@ -853,7 +987,7 @@ df %>%
     facet_wrap(~n_phon) +
     geom_col(position = position_fill()) +
     labs(x = "Age (months)", y = "Proportion of responses", fill = "Response") +
-    scale_fill_manual(values = clrs[c(1, 3, 5)]) +
+    scale_fill_manual(values = clrs[c(1, 4, 5)]) +
     scale_y_continuous(labels = percent) +
     theme(
         legend.position = "top",
@@ -877,7 +1011,7 @@ df %>%
     facet_wrap(~exposure) +
     geom_col(position = position_fill()) +
     labs(x = "Age (months)", y = "Proportion of responses", fill = "Response") +
-    scale_fill_manual(values = clrs[c(1, 3, 5)]) +
+    scale_fill_manual(values = clrs[c(1, 4, 5)]) +
     scale_y_continuous(labels = percent) +
     theme(
         legend.position = "top",
@@ -959,91 +1093,6 @@ model_loos %>%
 ```
 
 
-### Leave-one-out diagnostics (Pareto-*k* diagnostics)
-
-::: panel-tabset
-
-#### Model 0
-
-```{r}
-#| label: fig-loo-diagnostics-0
-#| echo: true
-#| message: false
-#| warning: false
-#| fig-width: 7
-#| fig-cap: "Bayesian leave-out-out cross-validation diagnostics of Model 0"
-get_loo_plot <- function(x){
-    x$pointwise[,5] %>% 
-        data.frame(x = 1:length(.), y = .) %>% 
-        ggplot(aes(x, y)) +
-        geom_point(
-            size = 0.5, alpha = 0.1, colour = clrs[5], 
-            shape = 1
-        ) +
-        geom_hline(yintercept = 0.5, linetype = "dotted") +
-        labs(
-            x = "Data point",
-            y = "Pareto-k value",
-            title = "PSIS diagnostic plot"
-        ) +
-        scale_x_continuous(breaks = seq(0, length(x$pointwise[,5]), 50000)) +
-        scale_y_continuous(
-            limits = c(-0.6, 0.6)
-        )
-}
-
-get_loo_plot(model_loos$model_fit_0)
-```
-
-#### Model 1
-
-```{r}
-#| label: fig-loo-diagnostics-1
-#| echo: true
-#| message: false
-#| warning: false
-#| fig-width: 7
-#| fig-cap: "Bayesian leave-out-out cross-validation diagnostics of Model 1"
-get_loo_plot(model_loos$model_fit_1)
-```
-
-#### Model 2
-
-```{r}
-#| label: fig-loo-diagnostics-2
-#| echo: true
-#| message: false
-#| warning: false
-#| fig-width: 7
-#| fig-cap: "Bayesian leave-out-out cross-validation diagnostics of Model 2"
-get_loo_plot(model_loos$model_fit_2)
-```
-
-#### Model 3
-
-```{r}
-#| label: fig-loo-diagnostics-3
-#| echo: true
-#| message: false
-#| warning: false
-#| fig-width: 7
-#| fig-cap: "Bayesian leave-out-out cross-validation diagnostics of Model 3"
-get_loo_plot(model_loos$model_fit_3)
-```
-
-#### Model 4
-
-```{r}
-#| label: fig-loo-diagnostics-4
-#| echo: true
-#| message: false
-#| warning: false
-#| fig-width: 7
-#| fig-cap: "Bayesian leave-out-out cross-validation diagnostics of Model 4"
-get_loo_plot(model_loos$model_fit_4)
-```
-
-:::
 
 ## Fixed effects
 
@@ -1117,7 +1166,7 @@ The effect of **phonological similarity** by itself (as indicated by the regress
 
 However, the 95% *HDI* of the regression coefficient of the $Exposure \times Levenshtein$ interaction excluded the *ROPE* entirely ($\beta$ = `r percent(post_draws_list[["b_exposure_std:lv_std"]]$median, accuracy = 0.01)`, 95% *HDI* = [`r percent(post_draws_list[["b_exposure_std:lv_std"]]$ci_low, accuracy = 0.01)`, `r percent(post_draws_list[["b_exposure_std:lv_std"]]$ci_high, accuracy = 0.01)`]), suggesting that the effect of phonological similarity on a word's probability of acquisition changed depending on participants' exposure to the word. Follow up analyses on this interaction (see @fig-results-marginal) showed that, when exposure to the language was low (e.g., 10%), phonological similarity increased the probability of acquisition substantially. This effect was negligible when exposure to both languages was balanced (e.g. 50-50%). Finally, when exposure to the language was high (e.g., 90%), this effect was very close to zero, although with different direction, with phonological less similar translation equivalents being more likely to be acquired than phonologically more similar ones.
 
-The 95% *HDI* of the regression coefficient of the $Age \times Exposure$ interaction did not exclude the *ROPE* ($\beta$ = `r percent(post_draws_list[["b_age_std:exposure_std"]]$median, accuracy = 0.01)`, 95% *HDI* = [`r percent(post_draws_list[["b_age_std:doe_std"]]$ci_low, accuracy = 0.01)`, `r percent(post_draws_list[["b_age_std:exposure_std"]]$ci_high, accuracy = 0.01)`]): `r percent(post_draws_list[["b_age_std:exposure_std"]]$rope_percentage, accuracy = 0.01)` of its posterior samples fell within the *ROPE*. This shows that the effect of exposure on the speed at which participants acquired words across ages was inconclusive. Given our data, it is difficult to tell whether this *Exposure* increased or decreased the slope of the words' acquisition trajectories.
+The 95% *HDI* of the regression coefficient of the $Age \times Exposure$ interaction did not exclude the *ROPE* ($\beta$ = `r percent(post_draws_list[["b_age_std:exposure_std"]]$median, accuracy = 0.01)`, 95% *HDI* = [`r percent(post_draws_list[["b_age_std:exposure_std"]]$ci_low, accuracy = 0.01)`, `r percent(post_draws_list[["b_age_std:exposure_std"]]$ci_high, accuracy = 0.01)`]): `r percent(post_draws_list[["b_age_std:exposure_std"]]$rope_percentage, accuracy = 0.01)` of its posterior samples fell within the *ROPE*. This shows that the effect of exposure on the speed at which participants acquired words across ages was inconclusive. Given our data, it is difficult to tell whether this *Exposure* increased or decreased the slope of the words' acquisition trajectories.
 
 The 95% *HDI* of the regression coefficient of the $Age \times Levenshtein$ interaction overlapped completely with the *ROPE* ($\beta$ = `r percent(post_draws_list[["b_age_std:lv_std"]]$median, accuracy = 0.01)`, 95% *HDI* = [`r percent(post_draws_list[["b_age_std:lv_std"]]$ci_low, accuracy = 0.01)`, `r percent(post_draws_list[["b_age_std:lv_std"]]$ci_high, accuracy = 0.01)`]), indicating that phonological similarity did not speed-up the acquisition trajectories of the words across ages.
 
@@ -1171,6 +1220,7 @@ post %>%
         aes(xmin = .lower, xmax = .upper, x = .value),
         width = 0.15
     ) +
+    geom_point(data = post_summary, aes(x = .value), size = 1.5) +
     geom_text(
         data = post_summary,
         aes(
@@ -1234,7 +1284,7 @@ nd <- datagrid(
 marg_epreds <- predictions(
     model_fit_4,
     newdata = nd,
-    ndraws = NULL, 
+    ndraws = 25, 
     re_formula = NA
 )
 
@@ -1264,10 +1314,10 @@ marg_epreds %>%
     ) %>% 
     ggplot(aes(age_std, draw, colour = lv_std, fill = lv_std)) +
     facet_grid(group~exposure_std) +
-    stat_summary(fun.data = median_hdi, geom = "ribbon",
-                 alpha = 0.5, colour = NA) +
-    # geom_line(aes(group = interaction(lv_std, drawid)), 
-    #           size = 0.75, alpha = 0.15) +
+    # stat_summary(fun.data = median_hdi, geom = "ribbon",
+    #              alpha = 0.5, colour = NA) +
+    geom_line(aes(group = interaction(lv_std, drawid)),
+              size = 0.75, alpha = 0.15) +
     stat_summary(aes(linetype = lv_std), fun = median, geom = "line", size = 1) +
     labs(
         x = "Age (months)",
@@ -1276,8 +1326,8 @@ marg_epreds %>%
         colour = "Phonological similarity (Levenshtein)",
         fill = "Phonological similarity (Levenshtein)"
     ) +
-    scale_colour_manual(values = clrs[c(1, 3, 5)]) +
-    scale_fill_manual(values = clrs[c(1, 3, 5)]) +
+    scale_colour_manual(values = clrs[c(1, 4, 5)]) +
+    scale_fill_manual(values = clrs[c(1, 4, 5)]) +
     scale_y_continuous(
         breaks = seq(0, 1, 0.25),
         limits = c(0, 1),
@@ -1318,7 +1368,7 @@ marg_effects <- marginaleffects(
     model_fit_4,
     newdata = nd, 
     re_formula = NA,
-    ndraws = NULL,
+    ndraws = 50,
     vcov = FALSE,
     type = "link"
 )
@@ -1330,9 +1380,9 @@ marg_effects %>%
     mutate(draw = draw/4) %>% 
     ggplot(aes(exposure_std, draw)) +
     geom_hline(yintercept = 0, size = 1, colour = "grey") +
-    # geom_line(aes(group = drawid), alpha = 0.25, size = 0.75, colour = clrs[1]) +
-    stat_summary(fun.data = median_hdi, geom = "ribbon",
-                 colour = NA, alpha = 0.5, fill = clrs[1]) +
+    geom_line(aes(group = drawid), alpha = 0.25, size = 0.75, colour = clrs[4]) +
+    # stat_summary(fun.data = median_hdi, geom = "ribbon",
+    #              colour = NA, alpha = 0.5, fill = clrs[1]) +
     stat_summary(fun = median, geom = "line", size = 1, color = clrs[1]) +
     labs(
         x = "Word exposure index",
@@ -1405,6 +1455,8 @@ re_id %>%
         y = "Participant", 
         colour = "Type"
     ) +
+    scale_fill_manual(values = clrs[c(1, 4)]) +
+    scale_colour_manual(values = clrs[c(1, 4)]) +
     scale_x_continuous(limits = c(0, 1), labels = percent) +
     theme(
         legend.position = "none",
@@ -1442,6 +1494,8 @@ re_age %>%
         x = "Posterior random slope estimate",
         y = "Participant", 
     ) +
+    scale_fill_manual(values = clrs[c(1, 4)]) +
+    scale_colour_manual(values = clrs[c(1, 4)]) +
     theme(
         legend.position = "none",
         axis.text.y = element_blank(),
@@ -1480,6 +1534,8 @@ re_n_phon %>%
         x = "Posterior random slope estimate",
         y = "Participant", 
     ) +
+    scale_fill_manual(values = clrs[c(1, 4)]) +
+    scale_colour_manual(values = clrs[c(1, 4)]) +
     theme(
         legend.position = "none",
         axis.text.y = element_blank(),
@@ -1516,6 +1572,8 @@ re_freq %>%
         x = "Posterior random slope estimate",
         y = "Participant", 
     ) +
+    scale_fill_manual(values = clrs[c(1, 4)]) +
+    scale_colour_manual(values = clrs[c(1, 4)]) +
     theme(
         legend.position = "none",
         axis.text.y = element_blank(),
@@ -1553,6 +1611,8 @@ re_lv %>%
         x = "Posterior random slope estimate",
         y = "Participant",
     ) +
+    scale_fill_manual(values = clrs[c(1, 4)]) +
+    scale_colour_manual(values = clrs[c(1, 4)]) +
     theme(
         legend.position = "none",
         axis.text.y = element_blank(),
@@ -1589,6 +1649,8 @@ re_lv %>%
         x = "Posterior random slope estimate",
         y = "Participant",
     ) +
+    scale_fill_manual(values = clrs[c(1, 4)]) +
+    scale_colour_manual(values = clrs[c(1, 4)]) +
     theme(
         legend.position = "none",
         axis.text.y = element_blank(),
@@ -1625,6 +1687,8 @@ re_age_exposure %>%
         x = "Posterior random slope estimate",
         y = "Participant",
     ) +
+    scale_fill_manual(values = clrs[c(1, 4)]) +
+    scale_colour_manual(values = clrs[c(1, 4)]) +
     theme(
         legend.position = "none",
         axis.text.y = element_blank(),
@@ -1661,6 +1725,8 @@ re_age_lv %>%
         x = "Posterior random slope estimate",
         y = "Participant",
     ) +
+    scale_fill_manual(values = clrs[c(1, 4)]) +
+    scale_colour_manual(values = clrs[c(1, 4)]) +
     theme(
         legend.position = "none",
         axis.text.y = element_blank(),
@@ -1697,6 +1763,8 @@ re_age_exposure_lv %>%
         x = "Posterior random slope estimate",
         y = "Participant",
     ) +
+    scale_fill_manual(values = clrs[c(1, 4)]) +
+    scale_colour_manual(values = clrs[c(1, 4)]) +
     theme(
         legend.position = "none",
         axis.text.y = element_blank(),
@@ -2046,8 +2114,8 @@ predicted_dfs %>%
         colour = "Response",
         fill = "Response"
     ) +
-    scale_colour_manual(values = clrs[c(1, 3, 5)]) +
-    scale_fill_manual(values = clrs[c(1, 3, 5)]) +
+    scale_colour_manual(values = clrs[c(1, 4, 5)]) +
+    scale_fill_manual(values = clrs[c(1, 4, 5)]) +
     scale_x_continuous(labels = label_number(big.mark = ","), 
                        breaks = seq(0, max(predicted_dfs$.draw), 100)) +
     scale_y_continuous(labels = percent, breaks = seq(0, 1, 0.05)) +
@@ -2088,6 +2156,93 @@ gather_draws(model_fit_4, `b_.*`, `sd_te__.*`, regex = TRUE) %>%
         axis.text.x = element_text(size = 7)
     )
 ```
+
+### Leave-one-out diagnostics (Pareto-*k* diagnostics)
+
+::: panel-tabset
+
+#### Model 0
+
+```{r}
+#| label: fig-loo-diagnostics-0
+#| echo: true
+#| message: false
+#| warning: false
+#| fig-width: 7
+#| fig-cap: "Bayesian leave-out-out cross-validation diagnostics of Model 0"
+get_loo_plot <- function(x){
+    x$pointwise[,5] %>% 
+        data.frame(x = 1:length(.), y = .) %>% 
+        ggplot(aes(x, y)) +
+        geom_point(
+            size = 0.5, alpha = 0.1, colour = clrs[4], 
+            shape = 1
+        ) +
+        geom_hline(yintercept = 0.5, linetype = "dotted") +
+        labs(
+            x = "Data point",
+            y = "Pareto-k value",
+            title = "PSIS diagnostic plot"
+        ) +
+        scale_x_continuous(breaks = seq(0, length(x$pointwise[,5]), 50000)) +
+        scale_y_continuous(
+            limits = c(-0.6, 0.6)
+        )
+}
+
+get_loo_plot(model_loos$model_fit_0)
+```
+
+#### Model 1
+
+```{r}
+#| label: fig-loo-diagnostics-1
+#| echo: true
+#| message: false
+#| warning: false
+#| fig-width: 7
+#| fig-cap: "Bayesian leave-out-out cross-validation diagnostics of Model 1"
+get_loo_plot(model_loos$model_fit_1)
+```
+
+#### Model 2
+
+```{r}
+#| label: fig-loo-diagnostics-2
+#| echo: true
+#| message: false
+#| warning: false
+#| fig-width: 7
+#| fig-cap: "Bayesian leave-out-out cross-validation diagnostics of Model 2"
+get_loo_plot(model_loos$model_fit_2)
+```
+
+#### Model 3
+
+```{r}
+#| label: fig-loo-diagnostics-3
+#| echo: true
+#| message: false
+#| warning: false
+#| fig-width: 7
+#| fig-cap: "Bayesian leave-out-out cross-validation diagnostics of Model 3"
+get_loo_plot(model_loos$model_fit_3)
+```
+
+#### Model 4
+
+```{r}
+#| label: fig-loo-diagnostics-4
+#| echo: true
+#| message: false
+#| warning: false
+#| fig-width: 7
+#| fig-cap: "Bayesian leave-out-out cross-validation diagnostics of Model 4"
+get_loo_plot(model_loos$model_fit_4)
+```
+
+:::
+
 
 ### Gelman-Rubin diagnostic (R-hat)
 
