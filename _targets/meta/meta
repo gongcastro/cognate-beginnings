@@ -1,9 +1,10 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
 %!in%|function|9c17137be680b5d3|||||||||||||||
-bvq_data|stem|0eed689b6ec0f5e6|b371471418d03804|8eedf96485bcaf7a|-1902070830||t19321.7025361462s|c90e7242a2a71015|1524681|rds|local|vector|||23.86||
-childes|stem|69a397d2a0b6638a|257adfb4dcdab016|32523a84c8af3480|-1780705379||t19321.7033478474s|c51284a70962f972|565294|rds|local|vector|||69.32||
+.Random.seed|object|0e0e045e62493151|||||||||||||||
+bvq_data|stem|bca3282e633fc8ca|b371471418d03804|8eedf96485bcaf7a|-1902070830||t19370.5716489394s|df06233325a11131|1524660|rds|local|vector|||39.78||
+childes|stem|7d131d9da3b34934|257adfb4dcdab016|32523a84c8af3480|-1780705379||t19370.572506955s|5854c77292e9709f|565294|rds|local|vector|||73.98||
 cut_age|function|032f28577fcd0b5c|||||||||||||||
-df|stem|e219e22980ca8dd5|5ee717e9a076b61d|e1f2815571f5b014|-1046211958||t19321.703553708s|61b4c15c55cb6225|690213|rds|local|vector|||0.26||
+df|stem|8619a6fadd8aedca|5ee717e9a076b61d|eeb1bbe4eece73f0|-1046211958||t19370.5821055993s|1aec1d45130760e6|690212|rds|local|vector|||0.81||
 fit_model|function|67730f6a81f902b3|||||||||||||||
 get_aoa|function|ad43b8cf863fb7a6|||||||||||||||
 get_bvq|function|8cd71f19fe416caf|||||||||||||||
@@ -15,32 +16,38 @@ get_loo|function|e7c8805dffbe0c23|||||||||||||||
 get_participants|function|789a72943f2a3488|||||||||||||||
 get_posterior_predictions|function|f16ceabde5ee23a1|||||||||||||||
 get_responses|function|998e2918594590ed|||||||||||||||
-items|stem|bb35f934bc6188c1|49b6cd25c41a1b0f|5ff18d6cbee6d471|-986180865||t19321.7035472671s|514a489587ac4e4f|12952|rds|local|vector|||0.12||
+items|stem|ec3b010945b6eb7b|49b6cd25c41a1b0f|19c0046543d73e39|-986180865||t19370.5787002261s|d319beff45ddebe7|12951|rds|local|vector|||0.13||
 make|function|6578e21d3fe82863|||||||||||||||
-model_fit_0|stem|43551307fa9fd00b|0699177c42adc8c9|bed8fb16f48303cd|1971951902||t19325.2403786535s|042aa549fa17d1dd|104810734|rds|local|vector|||49810.25||
-model_fit_1|stem|bf17ed5eabb16a49|c69e1032f1b04e6b|8f7cfae0f3760c35|1740635531||t19322.400776046s|f1391a891e960ba5|131727624|rds|local|vector|||60071.16||
-model_fit_2|stem|729691ed710cdb45|ec1bdfec488e4c7e|9417f50a4e1749e1|209045216||t19323.1018424027s|b06f4b375156daa5|146662799|rds|local|vector|||60567.28||
-model_fit_3|stem|5a80356f32af6d93|151aed15de6cc45b|891dfd1d9cf375a4|440164973||t19324.6638295544s|2c13dc9490428ff8|161972875|rds|local|vector|||64937.28||
-model_fit_4|stem|99516c9ea382c494|ffa69792492df7c2|ac9c850f57d4a3db|821530599||t19323.9121770851s|ae6e080cf60cc00b|192984418|rds|local|vector|||70006.55||
-model_fit_4_prior|stem|f05d28ac81501a70|82b98a0cbc7694ad|0dd3420805b85118|535305375||t19325.2416525246s|d55e161247729948|186261986|rds|local|vector|||70.67||
-model_log_liks|stem|e659eed390bc827c|a54699ee2d509702|edb3be9a41aa6104|847987435||t19325.2500613864s|816049d4f010f026|3626530967|rds|local|vector|||363.39||
-model_loos|stem|f4ac27a7828b3599|3d50a5b64241ec5f|604d1610e55ec422|1809489316||t19325.2564176363s|2e8f5e0c3736c6a4|35131349|rds|local|vector|||482.01|Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.|
-model_neffs|stem|e7c81265916e70ec|493fdc4617faf696|6c60d1f8ba4dbdfc|-2087403071||t19325.250817344s|8cd42480a650d99c|523452|rds|local|vector|||61.75||
-model_prior|stem|f2c3ed61c57522fc|6ccf985bdd0bca35|8596a76cdeb9adbf|-1420164522||t19321.7022241784s|4627382274fa50f9|344|rds|local|vector|||3.16||
-model_rhats|stem|32ac3fcb99078c85|cb919fd1d69dca19|3315670eb97c5586|192492602||t19325.2508187046s|a7241ebac260f334|501161|rds|local|vector|||0.05||
+manuscript|stem|5eb90f13102d6065|34c8fab79aeb866e|1be4ac0660206425|615889701|manuscript/manuscript.pdf*manuscript/manuscript.qmd|t19374.6853561127s|e894f626b3a0c64a|519450|file|local|vector|||53.01||
+model_fit_0|stem|c7dcb70f6044c76b|0699177c42adc8c9|e6c4da750fbe5fd9|1971951902||t19370.5823033598s|9d5ba5e8b335ebc1|104810720|rds|local|vector|||1.06||
+model_fit_1|stem|59924b7661fa4d37|c69e1032f1b04e6b|7c0b7f3a8a1ab6bc|1740635531||t19370.5823930962s|8262083da264a82e|131727502|rds|local|vector|||1.44||
+model_fit_2|stem|cca6c222a90faf22|ec1bdfec488e4c7e|006dab4a274d9e92|209045216||t19370.5824873828s|6c48a7930dfe9eea|146662802|rds|local|vector|||1.39||
+model_fit_3|stem|e1a4b53e8180b981|151aed15de6cc45b|23df6f7c5d2d58ef|440164973||t19370.5825876411s|8eb23d3941675890|161972827|rds|local|vector|||1.44||
+model_fit_4|stem|6544fe3594480581|ffa69792492df7c2|d9df63c4c92d7ef0|821530599||t19370.5822265338s|f83c9f687f368cfd|192984296|rds|local|vector|||2.27||
+model_fit_4_doe|stem||9ba9c4acbb408d0a|a32f53ecd8bed090|-1894463347||t19374.6509888419s||0|rds|local|vector|||0.85||Please install the cmdstanr package.
+model_fit_4_prior|stem|bd467afe883ccf54|82b98a0cbc7694ad|8ed427380797bf19|535305375||t19370.5834556276s|583f7d0e3856c62e|186261894|rds|local|vector|||1.41||
+model_log_liks|stem|0bc907b1b038b3df|a54699ee2d509702|a71898dd90ddb5cf|847987435||t19370.5886981971s|29c970d81b757eed|3624843952|rds|local|vector|||314.59||
+model_loos|stem|40179aed2083dbcb|3d50a5b64241ec5f|8eb2b576e88ab4e8|1809489316||t19370.5951209689s|82bf149a12993232|35131671|rds|local|vector|||481.13|Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.|
+model_neffs|stem|5f5931f558252168|493fdc4617faf696|0214924ddf1880b0|-2087403071||t19370.5895299818s|f8fb81cb231d8c03|523449|rds|local|vector|||0.1||
+model_prior|stem|56d01ce6ad70137f|6ccf985bdd0bca35|8596a76cdeb9adbf|-1420164522||t19370.5716494384s|7e50109c4a0b197a|346|rds|local|vector|||0.03||
+model_prior_doe|stem|cdc2c2b656166f1a|bbee0f8f9c0eaf76|8596a76cdeb9adbf|-338428838||t19374.650975493s|ef79ded412b140f0|349|rds|local|vector|||2.97||
+model_prior_frequency|stem|cdc2c2b656166f1a|bbee0f8f9c0eaf76|8596a76cdeb9adbf|849212744||t19370.571649854s|ef79ded412b140f0|349|rds|local|vector|||0.01||
+model_rhats|stem|8e2776afc9cb43a7|cb919fd1d69dca19|804c23a7ea1e3e72|192492602||t19370.5895284226s|9b0190abd43a2e3d|501158|rds|local|vector|||68.56||
 months_to_years|function|e54593a26b30f040|||||||||||||||
-participants|stem|37d44496f29fe575|faa1dd696f8b6b59|57227c45e4d7aa59|392525641||t19321.7035456511s|a94801954a66fdc5|7998|rds|local|vector|||0.04||
-posterior_description|stem|cb3a0f6590a83412|6c204512b5c02a60|5cba35fbe202bda1|-295923834||t19325.2445105048s|7221f2ff282e13a7|38228|rds|local|vector|||94.36||
-posterior_description_re|stem|25c6c86721fd73ca|1cf26fc27377b16d|cedf1ccb5a54ef71|-1937547208||t19325.2434180732s|3ee3e449e812b6c0|270405|rds|local|vector|||151.87|Identical densities found along different segments of the distribution, choosing rightmost.. Identical densities found along different segments of the distribution, choosing rightmost.|
+participants|stem|a8fa295d43718330|faa1dd696f8b6b59|5095d58e9609021d|392525641||t19370.578468548s|54f0cde7a83f527b|7999|rds|local|vector|||0.09||
+posterior_description|stem|8cd2d5ee565fa34b|6c204512b5c02a60|aef2320ff242ac02|-295923834||t19370.5833442713s|1b409547deed62f8|38231|rds|local|vector|||7.85||
+posterior_description_re|stem|616b9cf010cd1477|1cf26fc27377b16d|08bd212e68813908|-1937547208||t19370.5832530805s|abb6976cccb87e08|270261|rds|local|vector|||50.52|Identical densities found along different segments of the distribution, choosing rightmost.. Identical densities found along different segments of the distribution, choosing rightmost.|
 prop_adj|function|8f984a7e77cc1c9c|||||||||||||||
 prop_adj_ci|function|e94b05f73a7c2a8d|||||||||||||||
 prop_adj_se|function|ea05d30982a97289|||||||||||||||
+report|stem|99d97de8a6bf9533|6125ce7adf8b6a86|d502375b800acd27|-237041703|docs/index.html*docs/index.pdf*index_files*docs/index.qmd|t19370.6351899908s|ba4176e7cbb78a96|34601624|file|local|vector|||1397.05||
 rescale_variable|function|c7cc266d522398dd|||||||||||||||
-resolve_conficts|stem|0bf25546ff171d55|bf9c5cb464279940|22cd8feb20887f1e|-1176324365||t19321.702544711s|3bd8f66805fd112b|45|rds|local|vector|||0.72||
-responses|stem|db1769692300478d|6decf7be9cc643e8|5993f38215ebd776|403517661||t19321.7035449354s|32d9677fb84a82fc|880034|rds|local|vector|||16.53||
-rope_coefs|stem|48cf8a5b638e0c66|6e2c82951cef4539|8e91de530950433c|-1439564184||t19321.7033481593s|30dadf2c0faad629|618|rds|local|vector|||0.02||
-rope_interval|stem|69ba437b257cd42e|0530668dac4627cd|6dc0a4687e9caf57|-885783149||t19321.7025363421s|b2129b1ae72103bd|97|rds|local|vector|||0||
-rope_test|stem|d06152b67765488d|5a2c11302152554a|d143365a03518ec2|771829000||t19325.2407541058s|2393e838ff882561|726|rds|local|vector|||31.92||
+resolve_conficts|stem|15d7f6b08f6e9a66|bf9c5cb464279940|22cd8feb20887f1e|-1176324365||t19370.5770386764s|a1c456b03adbfbf8|44|rds|local|vector|||3.67||
+responses|stem|ca3a4ef0192df9d4|6decf7be9cc643e8|c0c271e5d53408b9|403517661||t19370.5786983113s|e93e47c5bb83912d|880037|rds|local|vector|||19.4||
+rope_coefs|stem|5fc5f0d71a2a0656|4ee03e303e23c311|8e91de530950433c|-1439564184||t19370.5784347662s|e5bbbe2c72f528d1|618|rds|local|vector|||2.95||
+rope_interval|stem|991fd37e430fed67|0530668dac4627cd|6dc0a4687e9caf57|-885783149||t19370.5711547746s|dfd0d40dc0c5171b|95|rds|local|vector|||2.94||
+rope_test|stem|20f9d9ef34ffae1f|5a2c11302152554a|fa26bf94000a0631|771829000||t19370.5826677999s|a82fd942818cd8aa|726|rds|local|vector|||6.36||
+seq_range|function|736bd8647169c41e|||||||||||||||
 theme_custom|function|890b394514acbcff|||||||||||||||
 theme_github|function|4fd11f3888ebdee7|||||||||||||||
 unmake|function|cfeb127c3d6bd55f|||||||||||||||

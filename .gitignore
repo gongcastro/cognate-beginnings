@@ -3,6 +3,7 @@
 .RData
 .Rproj
 .Ruserdata
+.Renviron
 .secrets
 *.docx
 *.pptx
