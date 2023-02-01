@@ -1,3 +1,3 @@
-*.csv
-*.rds
+**/*.csv
+**/*.rds
 index_files/*
