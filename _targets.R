@@ -1,29 +1,33 @@
 library(targets)
 library(tarchetypes)
+library(conflicted)
+library(cli)
 
 # load R functions -------------------------------------------------------------
-source("R/utils.R")
-source("R/00_importing.R")
-source("R/01_preprocessing.R")
-source("R/02_models.R")
+function_paths <- list.files("R",
+                             pattern = ".R",
+                             full.names = TRUE)
+invisible(lapply(function_paths, source))
+
+test_paths <- list.files("tests/testthat",
+                         pattern = ".R",
+                         full.names = TRUE)
+invisible(lapply(test_paths, source))
 
 # list package dependencies ----------------------------------------------------
-
 tar_option_set(
     packages = c(
         "arrow",
-        "bayesplot",
         "bayestestR",
         "brms",
         "bvqdev",
         "childesr",
+        "cli",
         "conflicted",
         "dplyr",
-        "forcats",
         "ggplot2",
-        "ggsci",
+        "glue",
         "gt",
-        "here",
         "janitor",
         "keyring",
         "knitr",
@@ -31,11 +35,9 @@ tar_option_set(
         "marginaleffects",
         "mice",
         "patchwork",
-        "papaja",
         "purrr",
         "quarto",
         "readxl",
-        "rmarkdown",
         "rlang",
         "scales",
         "stringdist",
@@ -44,22 +46,11 @@ tar_option_set(
         "tibble",
         "tidybayes",
         "tidyr",
-        "usethis",
-        "wesanderson"
+        "usethis"
     )
 )
 
-# resolve conflicts
-conflicted::conflict_prefer("last_warnings", "rlang")
-conflicted::conflict_prefer("filter", "dplyr")
-conflicted::conflict_prefer("between", "dplyr")
-conflicted::conflict_prefer("timestamp", "utils")
-conflicted::conflict_prefer("ar", "brms")
-conflicted::conflict_prefer("chisq.test", "stats")
-conflicted::conflict_prefer("discard", "scales")
-conflicted::conflict_prefer("duration", "lubridate")
-conflicted::conflict_prefer("fisher.test", "stats")
-conflicted::conflict_prefer("lag", "dplyr")
+resolve_conflicts()
 
 # define global options --------------------------------------------------------
 options(
@@ -72,36 +63,23 @@ options(
 
 list(
     ## resolve namespace conflicts ---------------------------------------------
-    tar_target(resolve_conficts,
-               {
-                   conflict_prefer("last_warnings", "rlang")
-                   conflict_prefer("filter", "dplyr")
-                   conflict_prefer("between", "dplyr")
-                   conflict_prefer("timestamp", "utils")
-                   conflict_prefer("ar", "brms")
-                   conflict_prefer("chisq.test", "stats")
-                   conflict_prefer("discard", "scales")
-                   conflict_prefer("duration", "lubridate")
-                   conflict_prefer("fisher.test", "stats")
-                   conflict_prefer("lag", "dplyr")
-               }),
+    tar_target(namespace_conficts, resolve_conflicts()),
     
     ## import data -------------------------------------------------------------
-    tar_target(bvq_data, get_bvq(update = TRUE)),
-    # see R/00_importing.R
+    tar_target(bvq_data, get_bvq(
+        update = TRUE, longitudinal = "all"
+    )),
     
     # get CHILDES frequencies
     tar_target(childes, get_childes_frequencies(age_range = c(12, 32))),
-    # see R/utils.R
     
     # items
     tar_target(items, get_items(bvq_data = bvq_data, childes = childes)),
-    # see R/01_preprocessing.R
+    tar_target(items_test, test_items(items)),
     
     # participants
     tar_target(
         participants,
-        # see R/01_preprocessing.R
         get_participants(
             bvq_data,
             age = c(12, 32),
@@ -109,22 +87,13 @@ list(
             other_threshold = 0.1
         )
     ),
+    tar_target(participants_test, test_participants(participants)),
     
     # responses
-    tar_target(responses, get_responses(bvq_data = bvq_data)),
-    # see R/01_preprocessing.R
+    tar_target(responses, get_responses(bvq_data, items, participants)),
+    tar_target(responses_test, test_responses(responses)),
     
-    # process data -------------------------------------------------------------
-    tar_target(
-        df,
-        get_data(
-            participants = participants,
-            items = items,
-            responses = responses
-        )
-    ),
-    
-    ## fit models ---------------------------------------------------------------
+    # fit models ---------------------------------------------------------------
     
     # model priors: these priors were set so that they generate data similar to
     # what we expect based on Wordbank data (see manuscript and lab notes)
@@ -165,8 +134,8 @@ list(
                     (1 + age_std + n_phon_std + exposure_std | te),
                 family = cumulative(link = "logit") # cumulative, continuation ratio
             ),
-            data = df,
-            prior = model_prior[1:7,]
+            data = responses,
+            prior = model_prior[1:7, ]
         )
     ),
     
@@ -181,8 +150,8 @@ list(
                     (1 + age_std * exposure_std + n_phon_std | te),
                 family = cumulative(link = "logit") # cumulative, continuation ratio
             ),
-            data = df,
-            prior = model_prior[c(1:7, 10),],
+            data = responses,
+            prior = model_prior[c(1:7, 10), ],
             sample_prior = "yes"
         )
     ),
@@ -193,12 +162,13 @@ list(
             name = "fit_2",
             formula = bf(
                 response ~ age_std * exposure_std + n_phon_std + lv_std +
-                    (1 + age_std * exposure_std + n_phon_std + lv_std | id) +
+                    (1 + age_std * exposure_std + n_phon_std + lv_std |
+                         id) +
                     (1 + age_std * exposure_std + n_phon_std | te),
                 family = cumulative(link = "logit") # cumulative, continuation ratio
             ),
-            data = df,
-            prior = model_prior[c(1:8, 10), ],
+            data = responses,
+            prior = model_prior[c(1:8, 10),],
             sample_prior = "yes"
         )
     ),
@@ -215,8 +185,8 @@ list(
                     (1 + age_std * exposure_std + n_phon_std | te),
                 family = cumulative(link = "logit") # cumulative, continuation ratio
             ),
-            data = df,
-            prior = model_prior[1:10,],
+            data = responses,
+            prior = model_prior[1:10, ],
             sample_prior = "yes"
             
         )
@@ -227,11 +197,12 @@ list(
             name = "fit_4",
             formula = bf(
                 response ~ age_std * exposure_std * lv_std + n_phon_std +
-                    (1 + age_std * exposure_std * lv_std + n_phon_std | id) +
+                    (1 + age_std * exposure_std * lv_std + n_phon_std |
+                         id) +
                     (1 + age_std * exposure_std + n_phon_std | te),
                 family = cumulative(link = "logit") # cumulative, continuation ratio
             ),
-            data = df,
+            data = responses,
             prior = model_prior,
             sample_prior = "yes"
             
@@ -243,7 +214,7 @@ list(
         fit_model(
             name = "fit_4_prior",
             formula = model_fit_4$formula,
-            data = df,
+            data = responses,
             prior = model_prior,
             sample_prior = "only"
         )
@@ -251,47 +222,43 @@ list(
     
     ## compare models ----------------------------------------------------------
     tar_target(model_log_liks,
-               {
-                   models <- lst(model_fit_0,
-                                 model_fit_1,
-                                 model_fit_2,
-                                 model_fit_3,
-                                 model_fit_4)
-                   # 700 samples, amount decided based on computational constraints
-                   # basically, RStudio crashes with more samples in the current machine
-                   get_log_lik(models, re_formula = NA, ndraws = 700L)
-               }),
+               # 700 samples, amount decided based on computational constraints
+               # basically, RStudio crashes with more samples in the current machine
+               get_log_lik(lst(model_fit_0,
+                               model_fit_1,
+                               model_fit_2,
+                               model_fit_3,
+                               model_fit_4), 
+                           re_formula = NA, 
+                           ndraws = 700L)),
     tar_target(model_loos,
                get_loo(model_log_liks)),
     
-    ## diagnose models ---------------------------------------------------------
-    tar_target(rope_interval, c(lower = -0.1, upper = +0.1)),
+    ## describe models ---------------------------------------------------------
+    tar_target(
+        posterior_draws,
+        get_posterior_draws(model_fit_4, data = responses)
+    ),
     
-    # describe posterior
+    tar_target(posterior_draws_re,
+               get_posterior_draws_re(model_fit_4)),
+    
+    ## marginal effects --------------------------------------------------------
     tar_target(
-        posterior_description,
-        describe_posterior(
-            model_fit_4,
-            test = "rope",
-            rope_range = rope_interval,
-            ci_method = "HDI"
-        ) %>%
-            as_tibble() %>%
-            clean_names()
+        marginal_effects_epreds,
+        posterior_predictions(model = model_fit_4, responses)
     ),
-    tar_target(rope_test,
-               as_tibble(
-                   rope(model_fit_4, rope_range = rope_interval)
-               )),
-    # describe posterior
+    
     tar_target(
-        posterior_description_re,
-        describe_posterior(model_fit_4,
-                           ci_method = "HDI",
-                           effects = "random") %>%
-            as_tibble() %>%
-            clean_names()
+        marginal_effects_epreds_te,
+        posterior_predictions_re(model = model_fit_4, responses, group = "te")
     ),
+    
+    tar_target(
+        marginal_effects_epreds_id,
+        posterior_predictions_re(model = model_fit_4, responses, group = "id")
+    ),
+    
     # R-hat (aka. Gelman-Rubin statistic)
     tar_target(model_rhats,
                map(
@@ -339,23 +306,24 @@ list(
         )
     ),
     
-    # tar_target(
-    #     model_fit_4_doe,
-    #     fit_model(
-    #         name = "fit_4_doe",
-    #         formula = bf(
-    #             response ~ age_std * doe_std * lv_std + n_phon_std + freq_std + 
-    #                 (1 + age_std * doe_std * lv_std + n_phon_std + freq_std | id) +
-    #                 (1 + age_std * doe_std + n_phon_std + freq_std | te),
-    #             family = cumulative(link = "logit") # cumulative, continuation ratio
-    #         ),
-    #         data = df,
-    #         prior = model_prior_doe,
-    #         sample_prior = "yes"
-    #         
-    #     )
-    # ),
-
+    tar_target(
+        model_fit_4_doe,
+        fit_model(
+            name = "fit_4_doe",
+            formula = bf(
+                response ~ age_std * doe_std * lv_std + n_phon_std + freq_std +
+                    (1 + age_std * doe_std * lv_std + n_phon_std + freq_std |
+                         id) +
+                    (1 + age_std * doe_std + n_phon_std + freq_std |
+                         te),
+                family = cumulative(link = "logit") # cumulative, continuation ratio
+            ),
+            data = responses,
+            prior = model_prior_doe,
+            sample_prior = "yes"
+        )
+    ),
+    
     # render report ------------------------------------------------------------
     tar_quarto(
         report,
@@ -371,4 +339,5 @@ list(
         execute = TRUE,
         quiet = FALSE
     )
+    
 )
