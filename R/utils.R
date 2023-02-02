@@ -283,3 +283,7 @@ save_files <- function(x,
     saveRDS(x, file_paths[grepl(".rds", file_paths)])
     cli_alert_success("Saved to {.path {folder}}")
 }
+
+remove_nul <- function() {
+    system("rename \\.\\C:\\Users\\U155880\\Documents\\trajectories\\nul. deletefile.txt")
+}
