@@ -382,7 +382,7 @@ list(
                 "b_age_std" = glue("Age (+1 SD, {round(sd(responses$age), 2)}, months)"),
                 "b_n_phon_std" = glue("Phonemes (+1 SD, {round(sd(responses$n_phon), 2)} phonemes)"),
                 "b_doe_std" = glue("DoE (+1 SD, {round(sd(responses$doe_std), 2)})"),
-                "b_freq_std" = glue("Frequency (+1 SD, {round(sd(responses$b_freq_std), 2)})"),
+                "b_freq_std" = glue("Frequency (+1 SD, {round(sd(responses$freq_std), 2)})"),
                 "b_lv_std" = glue("Levenshtein (+1 SD, {percent(sd(responses$lv))})"),
                 "b_doe_std:lv_std" = "Exposure \u00d7 Levenshtein",
                 "b_age_std:doe_std" = "Age \u00d7 DoE",
@@ -395,7 +395,8 @@ list(
                     .variable_name = factor(
                         .variable,
                         levels = names(str_repl),
-                        labels = str_repl
+                        labels = str_repl,
+                        ordered = TRUE
                     ) |>
                         as.character())
         }
