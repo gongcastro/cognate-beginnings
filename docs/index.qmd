@@ -45,8 +45,8 @@ echo: false
 toc: true
 colorlinks: true
 number-sections: true
-bibliography: "references.bib"
-csl: "apa7.csl"
+csl: "../assets/apa7.csl"
+bibliography: "../assets/references.bib"
 ---
 
 ```{r}
@@ -88,6 +88,7 @@ tar_load(model_fit_prior)
 tar_load(model_loos)
 tar_load(posterior_draws)
 tar_load(posterior_draws_re)
+tar_load(marginal_effects_epreds)
 
 # resolve namespace conflicts
 conflict_prefer("filter", "dplyr")
