@@ -65,6 +65,16 @@ months_to_years <- function(x, .sep = ";") {
          .sep = .sep)
 }
 
+#' Transform months to years and months
+#'
+#' @param x Time in days
+#' @param .sep Separator between months and days, ';' by default
+days_to_months <- function(x, .sep = ";") {
+    glue(floor(x %/% 30),
+         floor(x %% 30),
+         .sep = .sep)
+}
+
 #' Rescale standardised variable
 #'
 #' @param x Numeric vector to be rescaled
@@ -285,5 +295,5 @@ save_files <- function(x,
 }
 
 remove_nul <- function() {
-    system("rename \\.\\C:\\Users\\U155880\\Documents\\trajectories\\nul. deletefile.txt")
+    
 }
