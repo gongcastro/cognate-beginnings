@@ -1,5 +1,5 @@
 ---
-title: "Frequency of exposure mediates the facilitation effect of cognateness in bilingual word acquisition"
+title: "Frequency of exposure mediates the facilitation effect of cognateness in bilingual lexical acquisition"
 editor: source
 author:
   - name: Gonzalo Garcia-Castro
@@ -22,7 +22,7 @@ affiliation: Center for Brain and Cognition, Universitat Pompeu Fabra
 pagetitle: Cross-linguistic similarity and  word acquisition
 
 abstract: |
-    Recent studies have reported larger vocabulary sizes for bilingual toddlers learning languages that shared a greater amount of cognates (e.g., English-Dutch). This effect was only observed in the language to which toddlers were exposed the least, and has been suggested to be the result of a cognateness facilitation effect during word acquisition. The specific underpinnings of tyhis effect, and its relationship with the degree of exposure to the language are unclear. In this study, we present vocabulary data from 436 Catalan-Spanish bilinguals and monolinguals aged 12 to 34. We used Bayesian Item Response Theory to estimate participants' probability of acquisition of 604 words, conditional to their word's cognate status and lexical frequency, and the child's age and degree of exposure to each language. We found converging evidence for an earlier age of acquisition for cognate words, mediated by word frequeny and language exposure. Low-frequency words, and words from the language of least exposure benefitted more strongly by their cognate status than high-frequency words. Our findings support an interactive account of bilingual vocabulary acquisition in which the lexical representations in one language interact with the acquisition and processing of words in the other language.
+    One of the most prominent features of the bilingual lexicon is the availability of word-form representations from one language to those from the other language. One instance of such phenomenon is that fact that the form overlap between a word-form and its translation (i.e., cognateness) impacts how bilinguals process it. Recent studies have suggested that cognateness facilitates vocabulary acquisition in bilingual toddlers, who show larger vocabulary sizes when their languages share many cognates, and who also acquire cognates earlier in age than non-cognates. The specific mechanisms underpinning such facilitation effect are unclear. In this study, we present a model of bilingual early lexical acquisition in which cognateness interacts with lexical frequency and language exposure to facilitate the acquisition of low-frequency words. We tested this model against vocabulary data from 436 Catalan-Spanish bilinguals aged 12 to 34 months. We used Bayesian Item Response Theory to estimate participants’ probability of acquisition of 604 words, conditional to the cognate status and lexical frequency of the word-form, and the age and degree of exposure to each language of the toddler. We found converging evidence for an earlier age of acquisition for cognate words, and for such effect being mediated by lexical frequency and language exposure. Low-frequency words, and words from the language of least exposure benefited more strongly by their cognate status than high-frequency words. Overall, our findings support an interactive account of bilingual vocabulary acquisition in which the lexical representations in one language interact with the acquisition and processing of words in the other language.
 
 thanks: |
     This research was supported by grants from the Spanish Ministerio de Ciencia, Innovación y Universidades (PGC2018-101831-B-I00 and PRE2019-088165), and the Catalan Government [ICREA (Catalan Institution for Research and Advanced Studies) Academia 2019 award]. Gonzalo Garcia-Castro was supported by a fellowship of the Spanish Ministerio de Ciencia, Innovación y Universidades (FPI 2019). The authors declare no conflicts of interest with regard to the funding source of this study. We are grateful to Chiara Santolin, Alicia Franco-Martínez, Cristina Rodríguez-Prada, and Ege E. Özer for their help-ful feedback. We thank Xavier Mayoral, Silvia Blanch, and Cristina Cuadrado for their technical support. We also thank Cristina Dominguez and Katia Pistrin for their efforts in recruiting infants. We would like to thank the clinics Quirón and Sagrada Familia that allowed us to recruit participants in their premises. We also thank all families and infants who participated in the experiments. Data collection was half-way when the COVID-19 pandemic started. We would like to pay special tribute to the families that collaborated with us under these difficult circumstances.
@@ -40,6 +40,8 @@ format:
     pdf-engine: xelatex
     whitespace: small
     linestretch: 1.5
+  docx: 
+    reference-doc: "../assets/templates/template.docx"
 
 ---
 
@@ -137,7 +139,7 @@ Evidence supporting an earlier age of acquisition for cognates is nonetheless sc
 
 More recently, @mitchell2022cognates addressed this issue providing a more fine grained measure of a  cognateness facilitation effect in vocabulary acquisition. Using a longitudinal sample of 47 16-to-30 month-old French-English bilinguals living in Canada, the authors collected data on expressive vocabulary data in both languages. They created two lists of translation equivalents: one made of 131 cognates, and one made of 406 non-cognates. The proportion of translation equivalents that children were reportedly able to produce was higher in the cognate lists than in the non-cognate list across ages, even when both lists were matched by semantic category (furniture, animals, food were similarity represented in both lists) and age of acquisition norms (an index of word difficulty). These findings shed some light on the ongoing exploration of why (if at all) bilinguals' vocabulary size grows faster when both languages are phonologically more similar: word-forms sharing more phonemes with their translation equivalents (i.e., cognates) seem to be acquired faster. Parallel activation remains a plausible explanation for this effect. When a child is exposed to a word form, its (phonologically similar) translation equivalent is activated, and this cross-language activation increases the chances of acquisition. The precise underpinnings of this effect are still unclear.
 
-In this study, we provide an account for the cognate facilitation on word acquisition rooted in accumulator models of language acquisition [@hidaka2013computational; @mollica2017how]. We build on the assumption that word acquisition is a function of mainly, but not exclusively, the amount of experience a child has accrued with the word-referent pairing [see @kachergis2022standard for review]. As infants accumulate linguistic input, they also accumulate opportunities to associate familiar word-forms to their corresponding referents. Words with high lexical frequency like *flower* [`r floor(childes[childes$token=="flower",]$freq_million)` times per million words in the CHILDES corpus, @macwhinney2000childes] are more likely to be acquired earlier than words with low lexical frequency such as *headphones* (`r floor(childes[childes$token=="headphones",]$freq_million)` times per million words) [e.g., @goodman2008does]: infants might accumulate learning experiences with *flower* faster than with *headphones*. In the case of bilinguals, the amount of exposures to a word-form an infants receives is mediated by their degree of exposure to their languages. Assuming that bilinguals and monolinguals are exposed to an equivalent amount of linguistic input, a Spanish-English bilingual who is exposed to Spanish 80% of the time and to English 20% of the time might need longer to accumulate the same experience with *flower* and *headphones* than an English monolingual does (who listens 100% of the time to English).
+In this study, we provide an account for the cognate facilitation on word acquisition rooted in accumulator models of language acquisition [@hidaka2013computational; @mollica2017how]. We build on the assumption that word acquisition is a function of mainly---but not exclusively---the amount of experience a child has accrued with the corresponding word-referent pairing [see @kachergis2022standard for review]. As infants accumulate linguistic input, they also accumulate opportunities to associate familiar word-forms to their corresponding referents. Words with high lexical frequency like 'flower' [`r format(floor(childes[childes$token=="flower",]$freq_million), big.mark = ",")` times per million words in the CHILDES corpus, @macwhinney2000childes] are more likely to be acquired earlier than words with low lexical frequency such as 'headphones' (`r format(floor(childes[childes$token=="headphones",]$freq_million), big.mark = ",")` times per million words) [e.g., @goodman2008does]. Infants might accumulate learning experiences with 'flower' faster than with 'headphones'. In the case of bilinguals, the amount of exposures to a word-form an infants receives is mediated by their degree of exposure to their languages. Assuming that bilinguals and monolinguals are exposed to an equivalent amount of linguistic input, a Spanish-English bilingual who is exposed to Spanish 80% of the time and to English 20% of the time might need longer to accumulate the same experience with 'flower' and 'headphones' than an English monolingual does (who listens 100% of the time to English).
 
 We suggest that the cognateness effect proposed by @floccia2018results and @mitchell2022cognates facilitates word acquisition by reducing the number of learning instances needed by a word to be acquired, and that this effect takes place *only* once the (cognate) translation of such word has been acquired. We hypothesise that both forms in the translation equivalent (e.g., *flower* and *flor*, for an English-Spanish bilingual) follow their acquisition trajectory in a similar way they would for a monolingual child: accumulating learning instances, which occur a a rate proportional to the lexical frequency of the word-form and the amount of exposure to the language they belong to. When one of the word-forms is acquired, the acquisition trajectory of the other is impacted, so that the number of needed learning instances left for acquisition are reduced. This facilitation would occur as the result of the semantic and phonological overlap between both words. When the child has acquired *flower*, and therefore its form-referent association has been formed, future presentations of the similar sounding translation *flor* in the presence of the same reference should lead to an increased likelihood of acquisition. In the case of a non-cognate translation equivalent, such facilitation would be unlikely. For instance, even if the child has already acquired the word *dog*, hearing its dissimilar Spanish translation *perro* would hardly lead to an increased probability of acquisition. In line with this account, only the later-acquired form of the translation equivalent would benefit from its cognate status. Given that children are more likely to acquire words from languages to which they are exposed more often [@david2008individual; @cattani2014how; @thordardottir2006bilingual], the acquisition of words in the language of lower exposure should, on average, be more susceptible to the effect of cognateness. For instance, if the previous child is exposed 80% of the time to English, and 20% of the time to Spanish, words in Spanish (especially low-frequency ones) would show a cognateness facilitation effect, with an earlier age of acquisition for cognates than for non-cognates.
 
@@ -330,6 +332,15 @@ Data processing and visualisation was done in R [@rcoreteam2013language, `r r_ve
 ```{r}
 #| label: results-values
 #| echo: false
+
+rhats_df <- map_df(model_rhats, bind_rows, .id = "model") |> 
+    mutate(model = paste0("Model ", str_extract(model, "[0-9]"))) |> 
+    pivot_longer(-model, 
+                 names_to = ".variable",
+                 values_to = ".rhat") |>
+    filter(str_detect(.variable, "b_|sd_")) |> 
+    drop_na() 
+
 loo_diff <- loo_compare(model_loos)[2, 1]
 loo_diff_se <- loo_compare(model_loos)[2, 2]
 
@@ -447,9 +458,9 @@ marginal_effects_epreds |>
         linetype = "Phonological similarity (Levenshtein)",
         colour = "Phonological similarity (Levenshtein)",
         fill = "Phonological similarity (Levenshtein)",
-        subtitle = glue("**Phonological similarity**<br> <span style = 'color:{clrs_reorder[5]};'>0% similarity</span>   <span style = 'color:{clrs_reorder[4]};'>50% similarity</span>   <span style = 'color:{clrs_reorder[1]};'>100% similarity</span>")) +
-    scale_colour_manual(values = clrs[c(5, 4, 1)]) +
-    scale_fill_manual(values = clrs[c(5, 4, 1)]) +
+        subtitle = glue("**Phonological similarity**<br> <span style = 'color:{clrs_reorder[5]};'>0% similarity</span>   <span style = 'color:{clrs_reorder[4]};'>50% similarity</span>   <span style = 'color:{clrs_reorder[3]};'>100% similarity</span>")) +
+    scale_colour_manual(values = clrs_reorder[c(5, 4, 3)]) +
+    scale_fill_manual(values = clrs_reorder[c(5, 4, 3)]) +
     scale_y_continuous(
         breaks = seq(0, 1, 0.25),
         limits = c(0, 1),
@@ -513,10 +524,9 @@ In summary, our study has replicated previous studies and provided novel insight
 
 :::
 
+{{< pagebreak >}}
 
-
-
-# Appendix 1: Model predictors {#sec-appendix-predictors .appendix}
+# Appendix 1: model predictors {#sec-appendix-predictors .appendix}
 
 ### Word exposure index 
 
@@ -533,7 +543,7 @@ For instance, for a child who is reportedly exposure to Catalan 80% of the time,
 
 ### Levenshtein similarity
 
-Generally, a pair of words from two different languages that share meaning---translation equivalents---are considered as *cognates* if they share etymological origin (e.g., *table* and *taula*, in English and Catalan). The fact that two words share etymological origin frequently leads to them also being form-similar, as reflected by their overlapping orthographic or phonological form. This makes many cognates perceptually similar. In psycholinguistics, the term *cognateness* is often used to refer to the form-similarity that a pair of translation equivalents share, which has been found to impact how bilinguals process such word-forms (e.g., @costa2000cognate; @spivey1999cross). Whether two form-similar translation equivalents are etymologically related or not is arguably tangential to the question of how cognateness affect language processing. For instance, the translation pair *much* and *mucho*, in English and Spanish have the same meaning, and are considerably similar at the orthographical and phonological level. Nonetheless, they come from different Proto-Indo-European roots [@campbell2007glossary]. This does not keep bilinguals from processing such kind of word-forms word forms differently than other translation equivalents with no form-similarity like *dog* and *perro*, in English and Spanish. In the scope of this experiment, we consider any form-similar translation equivalent as a *cognate* pair, regardless of whether both word-forms share etymological origin.
+Generally, a pair of words from two different languages that share meaning---translation equivalents---are considered as *cognates* if they share etymological origin (e.g., *table* and *taula*, in English and Catalan). The fact that two words share etymological origin frequently leads to them also being form-similar, as reflected by their overlapping orthographic or phonological form. This makes many cognates perceptually similar. In psycholinguistics, the term *cognateness* is often used to refer to the form-similarity that a pair of translation equivalents share, which has been found to impact how bilinguals process such word-forms (e.g., @costa2000cognate; @spivey1999cross). Whether two form-similar translation equivalents are etymologically related or not is arguably tangential to the question of how cognateness affect language processing. For instance, the translation pair *much* and *mucho*, in English and Spanish have the same meaning, and are considerably similar at the orthographical and phonological level. Nonetheless, they come from different Proto-Indo-European roots [@campbell2007glossary]. This does not keep bilinguals from processing such kind of word-forms word forms differently than other translation equivalents with no form-similarity like 'dog' and *perro*, in English and Spanish. In the scope of this experiment, we consider any form-similar translation equivalent as a *cognate* pair, regardless of whether both word-forms share etymological origin.
 
 Our study capitalises in phonology, therefore we operationalised *cognateness* as the phonological similarity between a pair of translation equivalents. Our dataset contained `r max(n_items)` translation equivalents, each consisting in two word-forms: Catalan and Spanish (see @tbl-translation-levenshtein for an example). Measuring the phonological similarity between two word forms is non trial. While orthographic similarity can be calculated using string similarity/distance measures on the written word-forms, phonology poses additional challenges. A first, bottom-up approach to to the task might be considering acoustic similarity as a proxy to phonological similarity. This may involve registering audio recordings of a talker reading each word-form aloud, and then comparing their spectrograms,  cochleograms, or formant tracks [e.g., @heeringa2003norwegian]. While this is possible, this method computes acoustic similarity, as opposed to phonological similarity. This is not optimal, since a purely acoustic measure of similarity ignores how the actual signal is perceived by a actual listener. Since approximately 12 months of age, humans perceive the acoustic sounds in speech as phonemes, according to the phonology of their native language(s) [@werker1984crosslanguage; @kuhl1992linguistic]. This means that two listeners may not perceive the same linguistically relevant acoustic signal identically. This is why phonological similarity needs to be computed from discrete units that are meaningful for language perception.
 
@@ -576,7 +586,9 @@ The R package `stringdist` [@van-der-loo2014stringdist] offers the `stringsim()`
 
 : Normalised Levenshtein similarity computed for three exemplars of translation pairs in our study  {#tbl-translation-levenshtein}
 
-# Appendix 2: Model details {#sec-appendix-model .appendix}
+{{< pagebreak >}}
+
+# Appendix 2: model details {#sec-appendix-model .appendix}
 
 We used multilevel ordinal regression to model the cumulative probability of a *No* response, a *Understands* response, or a *Understands and Says* response [@burkner2019ordinal] using the *logit* link function. The likelihood of the cumulative probability distribution of the responses is defined by @eq-likelihood. 
 
@@ -748,6 +760,8 @@ m |>
     )
 ```
 
+{{< pagebreak >}}
+
 # Appendix 3: model comparisons {.appendix}
 
 ```{r}
@@ -794,18 +808,25 @@ model_loos |>
               cells_title(groups = "subtitle"))
 ```
 
-# Appendix 4: Convergence diagnostics {#sec-appendix-diagnostics .appendix}
+{{< pagebreak >}}
 
-## Gelman-Rubin diagnostic
+# Appendix 4: convergence diagnostics {.appendix}
+
+We used Stan [@carpenter2017stan] as the probabilistic language behind the estimation of our Bayesian models in this study, with `brms` as its R interface [@burkner2017brms]. This language implements the Markov Chain Monte-Carlo (MCMC) algorithm to explore the posterior distribution of the model. Broadly, this algorithm is used to iteratively sample the joint sampling space of the parameters to be estimated in the model, and compute, for each value sampled, its likelihood under some probability distribution previously defined. We run `r dim(model_fit_4$fit)[2]` MCMC chains, each `r dim(model_fit_4$fit)[1]` iterations long each. The correct performance of this algorithm is critical to the quality of the statistical evidence to which the outcomes of the model lead.
+
+One way to diagnose the behaviour of MCMC is to inspect whether the different MCMC chains (if more than one) have converged to a similar region of the posterior. The Gelman-Rubin diagnostic [$\hat{R}$ or R-hat @gelman1992inference] provides a measure of chain convergence by comparing the variance within each chain *versus* the variance between each chain. Both are expected to be identical when chains have perfectly converged, so that $\hat{R} = 1$. Values lower than 1.01 are recommended, while values higher than 1.05 indicate that chains might have trouble converging and therefore the estimated parameters must be taken with caution. @fig-model-rhats-neffs (A) shows the distribution of $\hat{R}$ values for the coefficients of the fixed effect of our models, which we used for statistical inference. Most values are lower than 1.01, and never higher than 1.05, which provides evidence of successful MCMC convergence.
+
+Another diagnostic of good MCMC converge is the ratio of effective sample size to total sample size ($N_{eff}/N$), which indicates the proportion of samples in the chain that resulted from a non-divergent transition. Values closer to 1 are ideal, as they indicate that all posterior samples from the MCMC were used to estimate the posterior distribution of the parameter. Values larger than 0.1 are recommended. @fig-model-rhats-neffs (B) shows the distribution of the effective sample sizes of the coefficients of the fixed effects in our models. Most values are larger than 0.1, although model 0 ($\mathcal{M}_0$) accumulates most effective sample sizes close to 0.1.
+
 
 ```{r}
-#| label: fig-model-rhats
+#| label: fig-model-rhats-neffs
 #| fig-cap: "Gelman-Rubin (R-hat) convergence diagnostic of the MCMC chains in the Bayesian models."
 #| echo: false
 #| message: false
 #| warning: false
-#| fig-height: 3
-#| fig-width: 8
+#| fig-height: 6
+#| fig-width: 9
 map_df(model_rhats, bind_rows, .id = "model") |> 
     mutate(model = paste0("Model ", str_extract(model, "[0-9]"))) |> 
     pivot_longer(-model, 
@@ -815,31 +836,14 @@ map_df(model_rhats, bind_rows, .id = "model") |>
     drop_na() |> 
     ggplot(aes(.rhat, colour = model, fill = model)) +
     facet_wrap(~model, nrow = 1) +
-    annotate(geom = "rect",
-             fill = "grey80",
-             xmin = 1,
-             xmax = 1.01,
-             ymin = -Inf,
-             ymax = Inf) +
-    geom_histogram(bins = 10, colour = "white") +
+    geom_vline(xintercept = 1.01, colour = "grey", linewidth = 0.75) +
+    geom_histogram(bins = 12, colour = "white") +
     geom_rug(alpha = 0.5) +
     labs(x = "Gelman Rubin diagnostic (R-hat)",
-         y = "Number of MCMC samples") +
-    theme(legend.position = "none")
-```
-
-
-## Effective sample size
-
-```{r}
-#| label: fig-model-ess
-#| fig-cap: "Ratio of effective sample size in the MCMC chains in the Bayesian models."
-#| echo: false
-#| message: false
-#| warning: false
-#| fig-height: 3
-#| fig-width: 8
-map_df(model_neffs, bind_rows, .id = "model") |> 
+         y = "MCMC samples",
+         title = "Gelman-Rubin (R-hat) diagnostic") +
+    
+    map_df(model_neffs, bind_rows, .id = "model") |> 
     mutate(model = paste0("Model ", str_extract(model, "[0-9]"))) |> 
     pivot_longer(-model, 
                  names_to = ".variable",
@@ -852,13 +856,19 @@ map_df(model_neffs, bind_rows, .id = "model") |>
     geom_histogram(bins = 10, colour = "white") +
     geom_rug(alpha = 0.5) +
     labs(x = "Gelman Rubin diagnostic (R-hat)",
-         y = "Number of MCMC samples") +
+         y = "MCMC samples",
+          title = "Ratio of effective sample size") +
     scale_x_continuous(labels = percent) +
-    theme(legend.position = "none")
+    
+    plot_layout(ncol = 1) &
+    plot_annotation(tag_levels = "A") &
+    theme(legend.position = "none",
+          panel.grid = element_blank())
 ```
 
 
-# Appendix 5: Frequency and language exposure as separate predictors {#sec-appendix-doe  .appendix}
+
+# Appendix 5: frequency and language exposure as separate predictors {.appendix}
 
 ```{r}
 #| label: fig-coefs-doe

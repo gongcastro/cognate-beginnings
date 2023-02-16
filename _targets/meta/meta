@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|8a6d5aecba4ba8e6|||||||||||||||
+.Random.seed|object|e1b83d1e2afdfba6|||||||||||||||
 bvq_data|stem|144fe6d65c7de8f4|91e6648cf4e14b06|c9e7eba8494344da|-1902070830||t19390.3981321339s|8a8c2419100812c3|1526866|rds|local|vector|||30.18||
 childes|stem|7d131d9da3b34934|257adfb4dcdab016|e862719ee8306882|-1780705379||t19390.3990171731s|5854c77292e9709f|565294|rds|local|vector|||76.33||
 cut_age|function|032f28577fcd0b5c|||||||||||||||
@@ -22,7 +22,7 @@ get_responses|function|641a0b345b3640d4|||||||||||||||
 items|stem|bae7969c759e1d89|49b6cd25c41a1b0f|022496b7979ee94a|-986180865||t19390.3990307729s|53da72da5bff5806|16269|rds|local|vector|||0.21||
 items_test|stem|32af597cbdb2a163|762d2cbc9b05fe3c|8da67deb2feb6ec6|883923261||t19390.3990634612s|ac45463db19e2cbe|48|rds|local|vector|||0.45||
 make|function|6578e21d3fe82863|||||||||||||||
-manuscript|stem|c71a7ea9e8a7d1ab|e1b74f10ec368cb4|42d9d7c4a1dd91d7|615889701|manuscript/manuscript.pdf*manuscript/manuscript.qmd|t19404.4999538832s|c9b038b6ed97fc13|423049|file|local|vector|||42||
+manuscript|stem|8fce6b24167677e9|7500313450d1e2c3|de60ce68f5e535e4|615889701|manuscript/manuscript.docx*manuscript/manuscript.pdf*manuscript/manuscript.qmd|t19404.7481489417s|59fd38e2e923748f|2095423|file|local|vector|||105.31||
 marginal_effects_epreds|stem|ba715f6e0a081fb5|b52b9d151f6cb34b|b7fb38644ba6f7b9|2132376814||t19401.4917870623s|1919c14a77b7ba90|137675|rds|local|vector|||2.76||
 marginal_effects_epreds_id|stem|8d9515eb736756f8|a2a8fa68953fb158|bb0692bf5a2bd88f|-1713814384||t19398.7582092741s||1512210|rds|local|vector|||3.02||Problem while computing lv  factor....Caused by error in factor invalid labels length 3 should be 1 or 1
 marginal_effects_epreds_te|stem|9503fde7f4a4788a|b6a7c72d9b3d601b|54989fac2afcf247|-258282318||t19401.5861652438s||2.2250738585072e-308|rds|local|vector|||33.19||Problem while computing lv  lv_std  sddatalv  meandatalv.Caused by error in datalv object of type closure is not subsettable
@@ -44,7 +44,7 @@ namespace_conficts|stem|144b828dde081a80|6130ab64ebc11cb1|899d8e82ef884c4e|42005
 participants|stem|734bda2cd773cdfb|faa1dd696f8b6b59|ae511e1d7669b415|392525641||t19390.3990282426s|80c9923076e1198c|9071|rds|local|vector|||0.21||
 participants_test|stem|32af597cbdb2a163|ffc69402e3973190|30d4756c4f8ebb10|-717703539||t19390.399041179s|ac45463db19e2cbe|48|rds|local|vector|||0.88||
 posterior_draws|stem|cd202e89084ed09e|66d0e2ab6b38d3f2|a7a1ebfa0ebc74aa|-1530540741||t19398.7576320462s|f372e9641b16ba1f|287563|rds|local|vector|||15.73||
-posterior_draws_doe|stem|9aa08f7ee01964aa|2c9ad8b231a889bf|92b8fc79dcab2390|1361510468||t19403.8248869709s|7dfebf5c14619d5a|22669|rds|local|vector|||18.77|Unknown or uninitialised column b_freq_std.|
+posterior_draws_doe|stem|090748c8276838de|38eda9188f0c7182|92b8fc79dcab2390|1361510468||t19404.5293821405s|1a8c82463e78cef5|22662|rds|local|vector|||19.16||
 posterior_draws_re|stem|461bba9f05ecfecb|654da3a611d32b8f|79be2605802edeef|1383172958||t19398.7573097604s|e2e05973d18ab990|135346959|rds|local|vector|||20.08|gather_ was deprecated in tidyr 1.2.0.ℹ Please use gather instead.ℹ The deprecated feature was likely used in the tidybayes package.  Please report the issue at httpsgithub.commjskaytidybayesissuesnew.|
 posterior_predictions|function|849ebd07ce58fe15|||||||||||||||
 posterior_predictions_re|function|36ee57b2ca6282ea|||||||||||||||
