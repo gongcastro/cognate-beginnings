@@ -10,10 +10,10 @@ fit_model <- function(name, ...) {
         iter = 2000,
         chains = 4,
         init = 0.5,
-        
         seed = 888,
         backend = "cmdstanr",
         file = glue("results/fits/{name}.rds"),
+        file_refit = "on_change",
         control = list(adapt_delta = 0.9,
                        max_treedepth = 15),
         save_model = glue("stan/{name}.stan")
