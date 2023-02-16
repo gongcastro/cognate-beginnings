@@ -1,62 +1,62 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-%!in%|function|9c17137be680b5d3|||||||||||||||
-.onLoad|function|bd608f071203c4f8|||||||||||||||
-.Random.seed|object|9178bab9972908d2|||||||||||||||
-bvq_data|stem|c077290f120f6f76|91e6648cf4e14b06|c9e7eba8494344da|-1902070830||t19388.5044233849s|bd76d36272debb97|1526867|rds|local|vector|||28.29||
-childes|stem|7d131d9da3b34934|257adfb4dcdab016|e862719ee8306882|-1780705379||t19388.6276354917s|5854c77292e9709f|565294|rds|local|vector|||66.25||
+.Random.seed|object|8a6d5aecba4ba8e6|||||||||||||||
+bvq_data|stem|144fe6d65c7de8f4|91e6648cf4e14b06|c9e7eba8494344da|-1902070830||t19390.3981321339s|8a8c2419100812c3|1526866|rds|local|vector|||30.18||
+childes|stem|7d131d9da3b34934|257adfb4dcdab016|e862719ee8306882|-1780705379||t19390.3990171731s|5854c77292e9709f|565294|rds|local|vector|||76.33||
 cut_age|function|032f28577fcd0b5c|||||||||||||||
-fit_model|function|abeaa9bcbabeccc7|||||||||||||||
+days_to_months|function|04bfa6e1e044ea0e|||||||||||||||
+fit_model|function|5a88aca23ce15f75|||||||||||||||
 flatten_columns|function|315e6f1e29563edc|||||||||||||||
-function_paths|object|9096f4e7a376b03f|||||||||||||||
-generate_newdata|function|169d00d1fbc510e5|||||||||||||||
+function_paths|object|61f3efc29d65c52f|||||||||||||||
+generate_newdata|function|4d1be0d427365f71|||||||||||||||
 get_aoa|function|bf0f3b93ca8ee651|||||||||||||||
 get_bvq|function|3ce26eea61d8b956|||||||||||||||
 get_childes_frequencies|function|df67cde1e6918e71|||||||||||||||
 get_items|function|b0c6d485ef01a53a|||||||||||||||
 get_log_lik|function|ad1040a21550bc1a|||||||||||||||
 get_loo|function|a0631c6424e32120|||||||||||||||
+get_mid|function|1c1bebbb226556e5|||||||||||||||
 get_participants|function|444a7004e0cdddd7|||||||||||||||
 get_posterior_draws|function|91006c16bc1188ff|||||||||||||||
 get_posterior_draws_re|function|10e089dc18cd678d|||||||||||||||
-get_posterior_predictions|function|ebcf6d5411f60537|||||||||||||||
 get_responses|function|641a0b345b3640d4|||||||||||||||
-items|stem|bae7969c759e1d89|49b6cd25c41a1b0f|37a760d6d89682e2|-986180865||t19388.5100018741s|53da72da5bff5806|16269|rds|local|vector|||0.36||
-items_test|stem|32af597cbdb2a163|762d2cbc9b05fe3c|8da67deb2feb6ec6|883923261||t19388.510040877s|ac45463db19e2cbe|48|rds|local|vector|||0.42||
+items|stem|bae7969c759e1d89|49b6cd25c41a1b0f|022496b7979ee94a|-986180865||t19390.3990307729s|53da72da5bff5806|16269|rds|local|vector|||0.21||
+items_test|stem|32af597cbdb2a163|762d2cbc9b05fe3c|8da67deb2feb6ec6|883923261||t19390.3990634612s|ac45463db19e2cbe|48|rds|local|vector|||0.45||
 make|function|6578e21d3fe82863|||||||||||||||
-manuscript|stem|1fa34a7116aa914c|13be7814ea08da23|cff7ed6fb4ffdebc|615889701|manuscript/manuscript.pdf*manuscript/manuscript.qmd|t19388.645883887s|4f2628c632d71df0|530771|file|local|vector|||40.25||
-marginal_effects_epreds|stem|24ecbe83d80ac9d8|40a8fa0b5fd5bb55|3f7d0613a1b8e53e|2132376814||t19388.5103361761s|32cae4bf2506e7a4|350779|rds|local|vector|||2.44||
-marginal_effects_epreds_id|stem|44924eb7d9ea9a76|5fb75e0801fbe6b8|775aae16c005f53c|-1713814384||t19388.5103944834s|a72bd0a93b5de0a9|1512343|rds|local|vector|||4.89||
-marginal_effects_epreds_te|stem|8f4d1ac96405c1f7|7fdb5f784c9d38b1|775aae16c005f53c|-258282318||t19388.5108890225s|b896133decc5edcc|17528444|rds|local|vector|||41.08||
-model_fit_0|stem|e23347786e49b08b|1aa51c3a12cbfb20|b7abe14a5cc4a669|1971951902||t19388.5101459866s|bd4b803fb9ac7eeb|36903484|rds|local|vector|||0.33||
-model_fit_1|stem|23084038ee232048|08f73d8acbffd5b0|199bd7c07005f35b|1740635531||t19388.5101792625s|dacb680efb11d673|46120784|rds|local|vector|||0.63||
-model_fit_2|stem|d9953f986b93b3c7|f597abccd0f93d41|475ca483b50c809c|209045216||t19388.5102130359s|763ea7657fcb8754|51250854|rds|local|vector|||0.42||
-model_fit_3|stem|8c6c4671681aa539|98e490b3d6599079|60d4827268ada231|440164973||t19388.510252471s|73d9c52fb35ec4dd|56538345|rds|local|vector|||0.68||
-model_fit_4|stem|81c2f1439461491d|1bba8383445d00c5|22da98be8f089f1d|821530599||t19388.510093657s|53be1c8e196d8ef2|67298926|rds|local|vector|||1.58||
-model_fit_4_doe|stem|ea45568229549867|305b27f8dacee7c7|ae40459985c6ecc4|-1894463347||t19388.510303214s|ccec4f51b70428ac|76116633|rds|local|vector|||0.84||
-model_fit_4_prior|stem|8ae279e61b788b50|19eeef75ab1f1ce9|b59428dc601589e6|535305375||t19388.5109296297s|ca5bb1131ab06815|63922701|rds|local|vector|||0.5||
-model_log_liks|stem|e1265886d69ec537|ea0ff1b88fcebe9b|5d500f6d4994c5b1|847987435||t19389.6623759609s|8bcb93cb20e5827c|3534816081|rds|local|vector|||311.16||
-model_loos|stem|07c23f0b9fdab88a|3d50a5b64241ec5f|3eb95f07e95e2811|1809489316||t19388.5224267089s|bcb0e15b4ceb828a|33560707|rds|local|vector|||483.66|Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.|
-model_neffs|stem|b51b2fb3e0961bce|493fdc4617faf696|df48fe45706551df|-2087403071||t19388.5168070813s|95afe7c8f3e87c89|210168|rds|local|vector|||0.04||
-model_prior|stem|56d01ce6ad70137f|6ccf985bdd0bca35|8596a76cdeb9adbf|-1420164522||t19388.5044238235s|7e50109c4a0b197a|346|rds|local|vector|||0.03||
-model_prior_doe|stem|cdc2c2b656166f1a|bbee0f8f9c0eaf76|8596a76cdeb9adbf|-338428838||t19388.5040620421s|ef79ded412b140f0|349|rds|local|vector|||2.91||
-model_rhats|stem|d1678092a40a4862|cb919fd1d69dca19|1ced41646e7196b0|192492602||t19388.5168061426s|0e6a22489553145d|197134|rds|local|vector|||23.33||
+manuscript|stem|c71a7ea9e8a7d1ab|e1b74f10ec368cb4|42d9d7c4a1dd91d7|615889701|manuscript/manuscript.pdf*manuscript/manuscript.qmd|t19404.4999538832s|c9b038b6ed97fc13|423049|file|local|vector|||42||
+marginal_effects_epreds|stem|ba715f6e0a081fb5|b52b9d151f6cb34b|b7fb38644ba6f7b9|2132376814||t19401.4917870623s|1919c14a77b7ba90|137675|rds|local|vector|||2.76||
+marginal_effects_epreds_id|stem|8d9515eb736756f8|a2a8fa68953fb158|bb0692bf5a2bd88f|-1713814384||t19398.7582092741s||1512210|rds|local|vector|||3.02||Problem while computing lv  factor....Caused by error in factor invalid labels length 3 should be 1 or 1
+marginal_effects_epreds_te|stem|9503fde7f4a4788a|b6a7c72d9b3d601b|54989fac2afcf247|-258282318||t19401.5861652438s||2.2250738585072e-308|rds|local|vector|||33.19||Problem while computing lv  lv_std  sddatalv  meandatalv.Caused by error in datalv object of type closure is not subsettable
+model_fit_0|stem|997d04f8048b0dec|1aa51c3a12cbfb20|c83ed6289c394169|1971951902||t19398.7564976491s|e811a539d63c0f46|71210791|rds|local|vector|||2.08||
+model_fit_1|stem|a29f43841a1370b1|08f73d8acbffd5b0|a4f65c13779d9007|1740635531||t19398.7565737778s|84b92553ec919614|89556367|rds|local|vector|||2.47||
+model_fit_2|stem|e06266b4b4cb2387|f597abccd0f93d41|20a6cae01801f572|209045216||t19398.7566541507s|c017e20ac05e30a7|99716513|rds|local|vector|||2.38||
+model_fit_3|stem|ca966a4f14959fa4|98e490b3d6599079|a5bc056d0afaa7f2|440164973||t19398.7567429983s|8095f1a850ded1b1|110219720|rds|local|vector|||2.7||
+model_fit_4|stem|ae10549439974b7b|1bba8383445d00c5|564130f267d3c7c7|821530599||t19398.7564337091s|17abee60c4c5ebca|131601526|rds|local|vector|||3.28||
+model_fit_4_doe|stem|5b627567645cbb2e|305b27f8dacee7c7|2e9cb14c27e1e86c|-1894463347||t19398.7563178529s|9ee5a873015aa66c|149585018|rds|local|vector|||5.96||
+model_fit_4_prior|stem|d4b20930f52f6d77|19eeef75ab1f1ce9|b15983943afd5e5a|535305375||t19398.7574130359s|c0302b825483e2a1|125102875|rds|local|vector|||2.87||
+model_log_liks|stem|d7e942082b01d802|ea0ff1b88fcebe9b|19114bd79ba50a6c|847987435||t19398.7635837672s|66349e429b1a29c3|3534139689|rds|local|vector|||326.91||
+model_loos|stem|fb462dbd3aeb15db|3d50a5b64241ec5f|84955cc795545f1e|1809489316||t19398.5421618135s|3eb0fc31b11a9bb3|33556560|rds|local|vector|||503.26|Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.|
+model_neffs|stem|8f45450326c2d989|493fdc4617faf696|69eb7bd7f4fd375b|-2087403071||t19398.7640774958s|4a772d1687600e1b|210148|rds|local|vector|||39.44||
+model_prior|stem|56d01ce6ad70137f|6ccf985bdd0bca35|8596a76cdeb9adbf|-1420164522||t19390.3981326722s|7e50109c4a0b197a|346|rds|local|vector|||0.03||
+model_prior_doe|stem|cdc2c2b656166f1a|bbee0f8f9c0eaf76|8596a76cdeb9adbf|-338428838||t19390.3977486939s|ef79ded412b140f0|349|rds|local|vector|||2.87||
+model_rhats|stem|8093763321bd1bb4|cb919fd1d69dca19|24121243fcbca634|192492602||t19398.7640782501s|820ab695c146dbc1|193776|rds|local|vector|||0.03||
 months_to_years|function|f02f03cafdc688ca|||||||||||||||
-namespace_conficts|stem|cf248c8962a1b172|6130ab64ebc11cb1|899d8e82ef884c4e|420052052||t19388.6232410032s|1d635f53cb385f1d|65|rds|local|vector|||0.64||
-participants|stem|734bda2cd773cdfb|faa1dd696f8b6b59|ac78a905c0d8e01d|392525641||t19388.5053163365s|80c9923076e1198c|9071|rds|local|vector|||0.15||
-participants_test|stem|32af597cbdb2a163|ffc69402e3973190|30d4756c4f8ebb10|-717703539||t19388.5100142462s|ac45463db19e2cbe|48|rds|local|vector|||1.05||
-posterior_draws|stem|3dad6bd98c7087ca|66d0e2ab6b38d3f2|a516d101942e3b34|-1530540741||t19388.5110625334s|690f0f6737e15a74|161636|rds|local|vector|||11.22||
-posterior_draws_re|stem|a5b1f998c1386a28|654da3a611d32b8f|ae0f1bb3eeeef2bd|1383172958||t19388.5112430725s|9bec2f106abcdbcf|68223078|rds|local|vector|||10.95|gather_ was deprecated in tidyr 1.2.0.ℹ Please use gather instead.ℹ The deprecated feature was likely used in the tidybayes package.  Please report the issue at httpsgithub.commjskaytidybayesissuesnew.|
-posterior_predictions|function|b0d93d00ababa37b|||||||||||||||
-posterior_predictions_re|function|e63d7b5f351edcf9|||||||||||||||
+namespace_conficts|stem|144b828dde081a80|6130ab64ebc11cb1|899d8e82ef884c4e|420052052||t19390.399025701s|1d635f53cb385f1d|65|rds|local|vector|||0.72||
+participants|stem|734bda2cd773cdfb|faa1dd696f8b6b59|ae511e1d7669b415|392525641||t19390.3990282426s|80c9923076e1198c|9071|rds|local|vector|||0.21||
+participants_test|stem|32af597cbdb2a163|ffc69402e3973190|30d4756c4f8ebb10|-717703539||t19390.399041179s|ac45463db19e2cbe|48|rds|local|vector|||0.88||
+posterior_draws|stem|cd202e89084ed09e|66d0e2ab6b38d3f2|a7a1ebfa0ebc74aa|-1530540741||t19398.7576320462s|f372e9641b16ba1f|287563|rds|local|vector|||15.73||
+posterior_draws_doe|stem|9aa08f7ee01964aa|2c9ad8b231a889bf|92b8fc79dcab2390|1361510468||t19403.8248869709s|7dfebf5c14619d5a|22669|rds|local|vector|||18.77|Unknown or uninitialised column b_freq_std.|
+posterior_draws_re|stem|461bba9f05ecfecb|654da3a611d32b8f|79be2605802edeef|1383172958||t19398.7573097604s|e2e05973d18ab990|135346959|rds|local|vector|||20.08|gather_ was deprecated in tidyr 1.2.0.ℹ Please use gather instead.ℹ The deprecated feature was likely used in the tidybayes package.  Please report the issue at httpsgithub.commjskaytidybayesissuesnew.|
+posterior_predictions|function|849ebd07ce58fe15|||||||||||||||
+posterior_predictions_re|function|36ee57b2ca6282ea|||||||||||||||
 prop_adj|function|46e207be81f63a6a|||||||||||||||
 prop_adj_ci|function|e94b05f73a7c2a8d|||||||||||||||
 prop_adj_se|function|5a38f93826250f66|||||||||||||||
-report|stem||89e84b19a5e5c960|ed064beb68ec5df9|-237041703||t19388.6464352703s||0|file|local|vector|||180.95||System command quarto.exe failed
+remove_nul|function|7f751aef04cd03cd|||||||||||||||
+report|stem||47298d6bbe8319e9|7c94562e145ad434|-237041703||t19398.7072745252s||0|file|local|vector|||185.55||System command quarto.exe failed
 rescale_variable|function|c7cc266d522398dd|||||||||||||||
-resolve_conficts|stem|15d7f6b08f6e9a66|bf9c5cb464279940|22cd8feb20887f1e|-1176324365||t19388.505314324s|a1c456b03adbfbf8|44|rds|local|vector|||0.78||
 resolve_conflicts|function|089a88de9596871d|||||||||||||||
-responses|stem|adef5ec4d63a4b6b|d6c1f45abce97916|ec899fdbbb227058|403517661||t19388.5100358093s|ee2b508bda4fb63f|1330172|rds|local|vector|||1.61||
-responses_test|stem|32af597cbdb2a163|c526232cbe04f108|9b2a40d280d0ff63|-1505889607||t19388.5101218724s|ac45463db19e2cbe|48|rds|local|vector|||1.98||
+responses|stem|adef5ec4d63a4b6b|d6c1f45abce97916|80ef9b686a9cd455|403517661||t19390.3990580836s|ee2b508bda4fb63f|1330172|rds|local|vector|||1.22||
+responses_test|stem|32af597cbdb2a163|c526232cbe04f108|9b2a40d280d0ff63|-1505889607||t19391.8570666845s|ac45463db19e2cbe|48|rds|local|vector|||1.78||
 save_files|function|ddfdac55b8935d49|||||||||||||||
 seq_range|function|785383eae343c3e3|||||||||||||||
 test_items|function|602ea01cf692a76f|||||||||||||||
@@ -64,6 +64,5 @@ test_participants|function|442221beba03de97|||||||||||||||
 test_paths|object|f5d5bf166174a7c2|||||||||||||||
 test_responses|function|ca469913d91d14c4|||||||||||||||
 theme_custom|function|890b394514acbcff|||||||||||||||
-theme_github|function|4fd11f3888ebdee7|||||||||||||||
 unmake|function|cfeb127c3d6bd55f|||||||||||||||
 welcome_message|function|28143d09eb1f2f2d|||||||||||||||
