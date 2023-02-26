@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|e1b83d1e2afdfba6|||||||||||||||
+.Random.seed|object|255d642c4fabce15|||||||||||||||
 bvq_data|stem|144fe6d65c7de8f4|91e6648cf4e14b06|c9e7eba8494344da|-1902070830||t19390.3981321339s|8a8c2419100812c3|1526866|rds|local|vector|||30.18||
 childes|stem|7d131d9da3b34934|257adfb4dcdab016|e862719ee8306882|-1780705379||t19390.3990171731s|5854c77292e9709f|565294|rds|local|vector|||76.33||
 cut_age|function|032f28577fcd0b5c|||||||||||||||
@@ -11,7 +11,7 @@ generate_newdata|function|4d1be0d427365f71|||||||||||||||
 get_aoa|function|bf0f3b93ca8ee651|||||||||||||||
 get_bvq|function|3ce26eea61d8b956|||||||||||||||
 get_childes_frequencies|function|df67cde1e6918e71|||||||||||||||
-get_items|function|b0c6d485ef01a53a|||||||||||||||
+get_items|function|0962fd752280b85a|||||||||||||||
 get_log_lik|function|ad1040a21550bc1a|||||||||||||||
 get_loo|function|a0631c6424e32120|||||||||||||||
 get_mid|function|1c1bebbb226556e5|||||||||||||||
@@ -19,10 +19,10 @@ get_participants|function|444a7004e0cdddd7|||||||||||||||
 get_posterior_draws|function|91006c16bc1188ff|||||||||||||||
 get_posterior_draws_re|function|10e089dc18cd678d|||||||||||||||
 get_responses|function|641a0b345b3640d4|||||||||||||||
-items|stem|bae7969c759e1d89|49b6cd25c41a1b0f|022496b7979ee94a|-986180865||t19390.3990307729s|53da72da5bff5806|16269|rds|local|vector|||0.21||
+items|stem|bae7969c759e1d89|49b6cd25c41a1b0f|37d1cce794224070|-986180865||t19411.7481285638s|53da72da5bff5806|16269|rds|local|vector|||0.22||
 items_test|stem|32af597cbdb2a163|762d2cbc9b05fe3c|8da67deb2feb6ec6|883923261||t19390.3990634612s|ac45463db19e2cbe|48|rds|local|vector|||0.45||
 make|function|6578e21d3fe82863|||||||||||||||
-manuscript|stem|8fce6b24167677e9|7500313450d1e2c3|de60ce68f5e535e4|615889701|manuscript/manuscript.docx*manuscript/manuscript.pdf*manuscript/manuscript.qmd|t19404.7481489417s|59fd38e2e923748f|2095423|file|local|vector|||105.31||
+manuscript|stem|f88041f66caa43d8|284b43c124d53521|531e5afdd1d17fe2|615889701|manuscript/manuscript.html*manuscript/manuscript.qmd|t19412.4796440451s||247650|file|local|vector|||||_paths_ missing files manuscriptmanuscript.html
 marginal_effects_epreds|stem|ba715f6e0a081fb5|b52b9d151f6cb34b|b7fb38644ba6f7b9|2132376814||t19401.4917870623s|1919c14a77b7ba90|137675|rds|local|vector|||2.76||
 marginal_effects_epreds_id|stem|8d9515eb736756f8|a2a8fa68953fb158|bb0692bf5a2bd88f|-1713814384||t19398.7582092741s||1512210|rds|local|vector|||3.02||Problem while computing lv  factor....Caused by error in factor invalid labels length 3 should be 1 or 1
 marginal_effects_epreds_te|stem|9503fde7f4a4788a|b6a7c72d9b3d601b|54989fac2afcf247|-258282318||t19401.5861652438s||2.2250738585072e-308|rds|local|vector|||33.19||Problem while computing lv  lv_std  sddatalv  meandatalv.Caused by error in datalv object of type closure is not subsettable
@@ -35,7 +35,9 @@ model_fit_4_doe|stem|5b627567645cbb2e|305b27f8dacee7c7|2e9cb14c27e1e86c|-1894463
 model_fit_4_prior|stem|d4b20930f52f6d77|19eeef75ab1f1ce9|b15983943afd5e5a|535305375||t19398.7574130359s|c0302b825483e2a1|125102875|rds|local|vector|||2.87||
 model_log_liks|stem|d7e942082b01d802|ea0ff1b88fcebe9b|19114bd79ba50a6c|847987435||t19398.7635837672s|66349e429b1a29c3|3534139689|rds|local|vector|||326.91||
 model_loos|stem|fb462dbd3aeb15db|3d50a5b64241ec5f|84955cc795545f1e|1809489316||t19398.5421618135s|3eb0fc31b11a9bb3|33556560|rds|local|vector|||503.26|Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.|
+model_mcmc_pairs|stem|c3b26d89e77d7713|c8301bc80999a6de|b1b7f2220fdab4f3|-1229421444||t19413.7351578679s|0e53dea1f7a7d0f8|12619685|rds|local|vector|||22.07|The following arguments were unrecognized and ignored fill, colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored fill, colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored fill, colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following|
 model_neffs|stem|8f45450326c2d989|493fdc4617faf696|69eb7bd7f4fd375b|-2087403071||t19398.7640774958s|4a772d1687600e1b|210148|rds|local|vector|||39.44||
+model_ppcs|stem|1df98d66279d9056|d4e8f3e289b6c586|50c3d285972dd025|1213183795||t19414.6917292577s|f4db9a39518b9e0f|2019074|rds|local|vector|||131.57||
 model_prior|stem|56d01ce6ad70137f|6ccf985bdd0bca35|8596a76cdeb9adbf|-1420164522||t19390.3981326722s|7e50109c4a0b197a|346|rds|local|vector|||0.03||
 model_prior_doe|stem|cdc2c2b656166f1a|bbee0f8f9c0eaf76|8596a76cdeb9adbf|-338428838||t19390.3977486939s|ef79ded412b140f0|349|rds|local|vector|||2.87||
 model_rhats|stem|8093763321bd1bb4|cb919fd1d69dca19|24121243fcbca634|192492602||t19398.7640782501s|820ab695c146dbc1|193776|rds|local|vector|||0.03||
@@ -51,7 +53,7 @@ posterior_predictions_re|function|36ee57b2ca6282ea|||||||||||||||
 prop_adj|function|46e207be81f63a6a|||||||||||||||
 prop_adj_ci|function|e94b05f73a7c2a8d|||||||||||||||
 prop_adj_se|function|5a38f93826250f66|||||||||||||||
-remove_nul|function|7f751aef04cd03cd|||||||||||||||
+remove_nul|function|5ca46e3aaa553081|||||||||||||||
 report|stem||47298d6bbe8319e9|7c94562e145ad434|-237041703||t19398.7072745252s||0|file|local|vector|||185.55||System command quarto.exe failed
 rescale_variable|function|c7cc266d522398dd|||||||||||||||
 resolve_conflicts|function|089a88de9596871d|||||||||||||||

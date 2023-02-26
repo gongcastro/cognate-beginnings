@@ -46,10 +46,10 @@
     },
     "MASS": {
       "Package": "MASS",
-      "Version": "7.3-58.1",
+      "Version": "7.3-58.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "762e1804143a332333c054759f89a706"
+      "Hash": "e02d1a0f6122fd3e634b25b433704344"
     },
     "Matrix": {
       "Package": "Matrix",
@@ -240,13 +240,6 @@
       "Repository": "CRAN",
       "Hash": "10d231579bc9c06ab1c320618808d4ff"
     },
-    "bookdown": {
-      "Package": "bookdown",
-      "Version": "0.31",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "c82b3e63de8c679339feaef9df19d624"
-    },
     "bridgesampling": {
       "Package": "bridgesampling",
       "Version": "1.1-2",
@@ -350,6 +343,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "3f038e5ac7f41d4ac41ce658c85e3042"
+    },
+    "clustermq": {
+      "Package": "clustermq",
+      "Version": "0.8.95.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b2a10ed0f27e60aeaaf566c15ada5879"
     },
     "coda": {
       "Package": "coda",
@@ -713,13 +713,6 @@
       "Repository": "CRAN",
       "Hash": "5b45a553fca2217a07b6f9c843304c44"
     },
-    "here": {
-      "Package": "here",
-      "Version": "1.0.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "24b224366f9c2e7534d2344d10d59211"
-    },
     "highr": {
       "Package": "highr",
       "Version": "0.10",
@@ -986,6 +979,13 @@
       "Repository": "CRAN",
       "Hash": "7a7541cc284cb2ba3ba7eae645892af5"
     },
+    "narray": {
+      "Package": "narray",
+      "Version": "0.5.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "7ec5a2396d3c9ad4374495283dfcdc83"
+    },
     "nleqslv": {
       "Package": "nleqslv",
       "Version": "3.3.3",
@@ -1020,13 +1020,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "2735eb4b51c302014f53acbb3c80a65f"
-    },
-    "papaja": {
-      "Package": "papaja",
-      "Version": "0.1.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "f9f3049e73e59b394c624568ad209b54"
     },
     "parallelly": {
       "Package": "parallelly",
@@ -1223,13 +1216,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "4e29299e1f4c7eabb0b8365b338adf3c"
-    },
-    "rmdfiltr": {
-      "Package": "rmdfiltr",
-      "Version": "0.1.3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "d2e1277195d221e6118d8a77dda2e877"
     },
     "rprojroot": {
       "Package": "rprojroot",
@@ -1447,13 +1433,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "8548b44f79a35ba1791308b61e6012d7"
-    },
-    "tinylabels": {
-      "Package": "tinylabels",
-      "Version": "0.2.3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "2cba68be303261e64987a11f6997fdfb"
     },
     "tinytex": {
       "Package": "tinytex",
