@@ -18,6 +18,7 @@ invisible(lapply(test_paths, source))
 tar_option_set(
     packages = c(
         "arrow",
+        "bayesplot",
         "bayestestR",
         "brms",
         "bvqdev",
@@ -331,6 +332,15 @@ list(
                    ),
                    neff_ratio
                )),
+    
+    # posterior predictive checks
+    tar_target(
+        model_ppcs,
+        {
+            yrep_char <- posterior_predict(model_fit_4, ndraws = 50)
+            sapply(data.frame(yrep_char, stringsAsFactors = TRUE), as.integer)
+        }
+    ),
     
     # appendix -----------------------------------------------------------------
     

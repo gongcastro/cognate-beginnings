@@ -1,0 +1,17 @@
+toc: false
+citation: true
+tbl-cap-location: top
+
+fig-dpi: 1000
+
+editor: source
+
+format:
+  pdf:
+    pdf-engine: xelatex
+    whitespace: small
+    linestretch: 1.5
+    header-includes:
+        - \usepackage{tipa}
+  docx:
+    reference-doc: "../assets/templates/template.docx"

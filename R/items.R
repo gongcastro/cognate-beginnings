@@ -17,7 +17,8 @@ get_items <- function(bvq_data, childes, class = "Noun") {
         # drop items with missing observations in these variables
         drop_na(sampa, wordbank_lemma) |>
         filter(n_lemmas == 1,
-               # exclude items with more than two lemmas!is_multiword,
+               # exclude items with more than two lemmas
+               !is_multiword,
                # exclude multi-word items
                include,
                # exclude problematic items (e.g., multi-word items)
@@ -47,7 +48,7 @@ get_items <- function(bvq_data, childes, class = "Noun") {
     items <- pool_tmp |>
         rename(list = version) |>
         left_join(lv_similarities) |> # add LVs
-        left_join(childes, by = c("childes_lemma" = "token")) |>
+        left_join(childes, by = c("childes_lemma" = "token")) |> 
         drop_na(lv, list, wordbank_lemma, freq_zipf) |>
         mutate(n_phon = nchar(sampa_flat),
                item = str_remove(item, "cat_|spa_")) |>

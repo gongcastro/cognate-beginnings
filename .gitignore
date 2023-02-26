@@ -26,3 +26,5 @@ nul
 manuscript/manuscript_files/
 manuscript/*.docx/
 index/index_files/
+
+/.quarto/
