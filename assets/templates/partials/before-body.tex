@@ -1,6 +1,14 @@
 $if(has-frontmatter)$
-\frontmatter
-$endif$
-$if(title)$
-\maketitle
+  \begin{frontmatter}
+  \begin{titlepage}
+  $_titlepage.tex()$
+  
+  \end{titlepage}
+  \end{frontmatter}
+
+$else$
+  \begin{titlepage}
+  $_titlepage.tex()$
+
+  \end{titlepage}
 $endif$

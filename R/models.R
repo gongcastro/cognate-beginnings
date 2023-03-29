@@ -1,23 +1,21 @@
 
-#' Specify and sample a brms model
+#' Specify and sample a [brms::brm()] model
 #' @param name A character string indicating the name to be assigned to the model
-#' @param ... Arguments to be passed to \code{brms::brm()}
+#' @param ... Arguments to be passed to [brms::brm()]
 fit_model <- function(name, ...) {
     # we run the model in the background as an RStudio job to keep the console free
     # see R/utils.R
-    fit <- brm(
-        ...,
-        iter = 2000,
-        chains = 4,
-        init = 0.5,
-        seed = 888,
-        backend = "cmdstanr",
-        file = glue("results/fits/{name}.rds"),
-        file_refit = "on_change",
-        control = list(adapt_delta = 0.9,
-                       max_treedepth = 15),
-        save_model = glue("stan/{name}.stan")
-    )
+    fit <- brm(...,
+               iter = 2000,
+               chains = 4,
+               init = 0.5,
+               seed = 888,
+               backend = "cmdstanr",
+               file = glue("results/fits/{name}.rds"),
+               file_refit = "on_change",
+               control = list(adapt_delta = 0.9,
+                              max_treedepth = 15),
+               save_model = glue("stan/{name}.stan"))
     
     return(fit)
 }
@@ -38,8 +36,7 @@ get_log_lik <- function(x, ...) {
     
     # pre-allocate vectors
     n_models <- length(x)
-    log_liks <- vector(mode = "list",
-                       length = n_models)
+    log_liks <- vector(mode = "list", length = n_models)
     
     # compute likelihoods
     cli_progress_bar("Computing likelihoods", total = n_models)
@@ -63,8 +60,7 @@ get_log_lik <- function(x, ...) {
 get_loo <- function(x, ...) {
     # pre-allocate vector
     n_models <- length(x)
-    loos <- vector(mode = "list",
-                   length = n_models)
+    loos <- vector(mode = "list", length = n_models)
     
     # compute loo
     cli_progress_bar("Computing LOOs", total = n_models)
@@ -97,26 +93,21 @@ get_posterior_draws <- function(model,
         "b_Intercept[1]" = "Comprehension and Production",
         "b_Intercept[2]" = "Comprehension",
         "b_age_std" = glue("Age (+1 SD, {round(sd(data$age), 2)}, months)"),
-        "b_n_phon_std" = glue("Phonemes (+1 SD, {round(sd(data$n_phon), 2)} phonemes)"),
+        "b_n_phon_std" = glue("Length (+1 SD, {round(sd(data$n_phon), 2)} phonemes)"),
         "b_exposure_std" = glue("Exposure (+1 SD, {round(sd(data$exposure), 2)})"),
-        "b_lv_std" = glue("Levenshtein (+1 SD, {percent(sd(data$lv))})"),
-        "b_exposure_std:lv_std" = "Exposure \u00d7 Levenshtein",
+        "b_lv_std" = glue("Cognateness (+1 SD, {percent(sd(data$lv))})"),
+        "b_exposure_std:lv_std" = "Exposure \u00d7 Cognateness",
         "b_age_std:exposure_std" = "Age \u00d7 Exposure",
-        "b_age_std:lv_std" = "Age \u00d7 Levenshtein",
-        "b_age_std:exposure_std:lv_std" = "Age \u00d7 Exposure \u00d7 Levenshtein"
+        "b_age_std:lv_std" = "Age \u00d7 Cognateness",
+        "b_age_std:exposure_std:lv_std" = "Age \u00d7 Exposure \u00d7 Cognateness"
     )
     
     # posterior draws
-    posterior_draws <- gather_draws(model,
-                                    `b_.*`,
-                                    regex = TRUE,
-                                    ...) |>
+    posterior_draws <- gather_draws(model, `b_.*`, regex = TRUE, ...) |>
         mutate(
-            .variable_name = factor(
-                .variable,
-                levels = names(str_repl),
-                labels = str_repl
-            ) |>
+            .variable_name = factor(.variable,
+                                    levels = names(str_repl),
+                                    labels = str_repl) |>
                 as.character(),
             type = ifelse(
                 str_detect(.variable, "Intercept"),
@@ -129,52 +120,36 @@ get_posterior_draws <- function(model,
                 .variable
             )
         ) |>
-        select(.variable,
-               .variable_name,
-               .type = type,
-               .chain,
-               .iteration,
-               .draw,
-               .value) |>
+        select(.variable, .variable_name, .type = type, 
+               .chain, .iteration, .draw, .value) |>
         ungroup()
     
     # posterior summary
-    posterior_summary <- describe_posterior(
-        model,
-        test = "rope",
-        rope_range = rope_interval,
-        ci_method = "HDI",
-        ...
-    ) |>
+    posterior_summary <- describe_posterior(model,
+                                            test = "rope",
+                                            rope_range = rope_interval,
+                                            ci_method = "HDI",
+                                            ...) |>
         as_tibble() |>
         clean_names() |>
-        mutate(
-            .variable_name = factor(
-                parameter,
-                levels = names(str_repl),
-                labels = str_repl
-            ) |>
+        mutate(.variable_name = factor(
+            parameter,
+            levels = names(str_repl),
+            labels = str_repl) |>
                 as.character(),
-            type = ifelse(
-                str_detect(parameter, "Intercept"),
-                glue("Intercepts (at {round(mean(data$age, 2))} months)"),
-                "Slopes"
-            ),
-            parameter = ifelse(
-                str_detect(parameter, "Intercept"),
-                str_remove_all(parameter, "Intercept \\(|\\)"),
-                parameter
-            )
-        ) |>
-        select(
-            .variable = parameter,
-            .variable_name,
-            .type = type,
-            .median = median,
-            .upper = ci_high,
-            .lower = ci_low,
-            .rope_overlap = rope_percentage
-        ) |>
+            type = ifelse(str_detect(parameter, "Intercept"),
+                          glue("Intercepts (at {round(mean(data$age, 2))} months)"),
+                          "Slopes"),
+            parameter = ifelse(str_detect(parameter, "Intercept"),
+                               str_remove_all(parameter, "Intercept \\(|\\)"),
+                               parameter)) |>
+        select(.variable = parameter,
+               .variable_name,
+               .type = type,
+               .median = median,
+               .upper = ci_high,
+               .lower = ci_low,
+               .rope_overlap = rope_percentage) |>
         ungroup()
     
     # make list with posterior
@@ -188,17 +163,17 @@ get_posterior_draws <- function(model,
     return(posterior)
 }
 
-#' Extract posterior draws of random effect coefficients (aka. group-level coefficients) from brmsfit model via \code{tidybayes::gather_draws}.
+#' Extract posterior draws of random effect coefficients (a.k.a. group-level coefficients) from brmsfit model via [tidybayes::gather_draws()].
 #' 
 #' @param model A brmsfit object
-#' @param data Dataset of responses as generated by the \code{get_responses} function
-#' @param ... Arguments to be passed to \code{tidybayes::gather_draws}
+#' @param data Dataset of responses as generated by the [get_responses()].
+#' @param ... Arguments to be passed to [tidybayes::gather_draws()].
 get_posterior_draws_re <- function(model) {
     # get posterior draws of dixed effects
     posterior_draws <- gather_draws(model, `b_.*`, regex = TRUE) |>
         rename(.value_fixed = .value) |>
         mutate(
-            type = case_when(
+            .type = case_when(
                 .variable == "b_Intercept[2]" ~ "Comprehension",
                 .variable == "b_Intercept[1]" ~ "Comprehension and Production",
                 TRUE ~ "Both"

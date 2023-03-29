@@ -1,0 +1,104 @@
+% This is a combination of Pandoc templating and LaTeX
+% Pandoc templating https://pandoc.org/MANUAL.html#templates
+% See the README for help
+
+$if(titlepage-geometry)$
+\newgeometry{$for(titlepage-geometry)$$titlepage-geometry$$sep$,$endfor$}
+$endif$
+\begin{minipage}[b][\textheight][s]{\textwidth}
+
+\par\noindent\rule{\textwidth}{0.4pt}
+
+% Title and subtitle
+\begin{center}
+{\huge\nohyphens{$title$}}\\[1\baselineskip] 
+$if(subtitle)${\large{$subtitle$}}\baselineskip$endif$
+\end{center}
+
+\par\noindent\rule{\textwidth}{0.4pt}
+
+\vfill 
+% Authors	
+% This hairy bit of code is to get "and" between the last 2
+% authors such that it works if there is 1, 2 or 2+ authors.
+$if(by-author/allbutlast)$%
+$for(by-author/allbutlast)$%
+{\large{$by-author.name.literal$}}%
+$for(by-author.affiliations)$%
+{\textsuperscript{$it.number$}}$sep$\textsuperscript{,}%
+$endfor$%
+$if(by-author.email)$%
+$if(by-author.affiliations)$\textsuperscript{,}$endif$%
+{\textsuperscript{*}}%
+$endif$%
+$sep$, %
+$endfor$%
+$for(by-author/last)$%
+{ and {$by-author.name.literal$}}%
+$for(by-author.affiliations)$%
+{\textsuperscript{$it.number$}}$sep$\textsuperscript{,}%
+$endfor$%
+$if(by-author.email)$%
+$if(by-author.affiliations)$\textsuperscript{,}$endif$%
+{\textsuperscript{*}}%
+$endif$%
+$endfor$%
+$else$%
+$for(by-author/last)$%
+{lLarge{$by-author.name.literal$}}%
+$for(by-author.affiliations)$%
+{\textsuperscript{$it.number$}}$sep$\textsuperscript{,}$endfor$%
+$if(by-author.email)$%
+$if(by-author.affiliations)$\textsuperscript{,}$endif$%
+{\textsuperscript{,*}}%
+$endif$%
+$endfor$%
+$endif$
+
+\vfill
+
+%%%%%% Affiliations
+$for(by-affiliation)$%
+{$it.number$}.~$if(by-affiliation.name)${$it.name$}$endif$%
+$if(by-affiliation.department)$%
+$if(by-affiliation.name)$, $endif$%
+{$it.department$}%
+$endif$%
+$if(by-affiliation.address)$%
+$if(by-affiliation.name)$, $else$%
+$if(by-affiliation.department)$, $endif$$endif$%
+{$it.address$}%
+$endif$%
+$sep$
+$endfor$
+
+%%%%%% Correspondence
+\vspace{1\baselineskip} 
+
+$for(by-author)$
+$if(by-author.email)$
+* \textit{Correspondence:}~$by-author.email$
+$endif$
+$endfor$
+
+%%%%%% Abstract
+\vfill
+\textbf{\Large{Abstract}}\newline
+%\vspace{2\baselineskip} 
+$if(abstract)${$abstract$}$endif$%
+
+
+%use \vfill instead to get the space to fill flexibly	
+%\vspace{0.25\textheight} % Whitespace between the title block and the publisher
+
+\vfill
+
+
+% Whitespace between the title block and the tagline
+\vspace{1\baselineskip} 
+
+
+\end{minipage}
+$if(titlepage-geometry)$
+\restoregeometry
+$endif$

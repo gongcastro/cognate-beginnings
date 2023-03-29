@@ -1,9 +1,9 @@
 #' Get participant-level data
 #'
-#' @param bvq_data A named list resulting from calling \code{get_bvq}
-#' @param longitudinal Should longitudinal data be included? If "all" (default), all responses (including repeated measures) are included. If "no", participants with more than one responses to the questionnaire (regardless of the version) are excluded. If "first", only the first response of each participant is included. If "last", only the last response of each participant is included. If "only", only responses with repeated measures are included.
+#' @param bvq_data A named list resulting from calling [get_bvq()]
+#' @param longitudinal Should longitudinal data be included? If `"all"` (default), all responses (including repeated measures) are included. If `"no"`, participants with more than one responses to the questionnaire (regardless of the version) are excluded. If `"first"`, only the first response of each participant is included. If `"last"`, only the last response of each participant is included. If `"only"`, only responses with repeated measures are included.
 #' @param age Numeric vector of length two indicating the minimum and maximum age of participants that will be included in the resulting dataset.
-#' @param lp Character vector indicating the language profile (LP) of the participants that will be included in the resulting dataset. In takes "Monolingual", "Bilingual", and/or "Other" as values.
+#' @param lp Character vector indicating the language profile (LP) of the participants that will be included in the resulting dataset. In takes `"Monolingual"`, `"Bilingual"`, and/or `"Other"` as values.
 #' @param other_threshold Numeric value between 0 and 1 indicating the minimum exposure to a language other than Catalan or Spanish that a participant need to be exposed to to be excluded.
 get_participants <- function(bvq_data,
                              longitudinal = "all",
@@ -33,16 +33,8 @@ get_participants <- function(bvq_data,
         # see ?multilex::get_longitudinal
         get_longitudinal(longitudinal = longitudinal) |>
         mutate(id = as.integer(as.factor(id_bvq))) |>  # make ID shorter
-        select(id,
-               id_bvq,
-               time,
-               time_stamp,
-               list = version,
-               age,
-               lp,
-               doe_catalan,
-               doe_spanish,
-               edu_parent) |> 
+        select(id, id_bvq, time, time_stamp, list = version,
+               age, lp, doe_catalan, doe_spanish, edu_parent) |> 
     arrange(id)
     
     # export data

@@ -27,6 +27,7 @@ tar_option_set(
         "conflicted",
         "dplyr",
         "ggplot2",
+        "ggtext",
         "glue",
         "gt",
         "janitor",
@@ -238,19 +239,19 @@ list(
     ## describe models ---------------------------------------------------------
     tar_target(
         posterior_draws,
-        get_posterior_draws(model_fit_4, data = responses)
+        get_posterior_draws(model_fit_3, data = responses)
     ),
     
-    # tar_target(posterior_draws_re,
-    #            get_posterior_draws_re(model_fit_4)),
+    tar_target(posterior_draws_re,
+               get_posterior_draws_re(model_fit_3)),
     
     ## marginal effects --------------------------------------------------------
     tar_target(
         marginal_effects_epreds,
         posterior_predictions(
-            model = model_fit_4,
+            model = model_fit_3,
             responses, 
-            age_std = scale(seq(12, 50),
+            age_std = scale(seq(0, 50),
                             mean(responses$age),
                             sd(responses$age)),
             exposure_std = c(-1, 0, 1),
@@ -337,7 +338,7 @@ list(
     tar_target(
         model_ppcs,
         {
-            yrep_char <- posterior_predict(model_fit_4, ndraws = 50)
+            yrep_char <- posterior_predict(model_fit_3, ndraws = 50)
             sapply(data.frame(yrep_char, stringsAsFactors = TRUE), as.integer)
         }
     ),
@@ -393,11 +394,11 @@ list(
                 "b_n_phon_std" = glue("Phonemes (+1 SD, {round(sd(responses$n_phon), 2)} phonemes)"),
                 "b_doe_std" = glue("DoE (+1 SD, {round(sd(responses$doe_std), 2)})"),
                 "b_freq_std" = glue("Frequency (+1 SD, {round(sd(responses$freq_std), 2)})"),
-                "b_lv_std" = glue("Levenshtein (+1 SD, {percent(sd(responses$lv))})"),
-                "b_doe_std:lv_std" = "Exposure \u00d7 Levenshtein",
+                "b_lv_std" = glue("Cognateness (+1 SD, {percent(sd(responses$lv))})"),
+                "b_doe_std:lv_std" = "Exposure \u00d7 Cognateness",
                 "b_age_std:doe_std" = "Age \u00d7 DoE",
-                "b_age_std:lv_std" = "Age \u00d7 Levenshtein",
-                "b_age_std:doe_std:lv_std" = "Age \u00d7 DoE \u00d7 Levenshtein"
+                "b_age_std:lv_std" = "Age \u00d7 Cognateness",
+                "b_age_std:doe_std:lv_std" = "Age \u00d7 DoE \u00d7 Cognateness"
             )
             
             get_posterior_draws(model_fit_4_doe, data = responses)$summary |> 
