@@ -1,9 +1,9 @@
 
 #' Prepare data for analyses
 #' 
-#' @param bvq_data A named list resulting from calling \code{get_bvq}
-#' @param items A data frame resulting from calling \code{get_items}
-#' @param participants A data frame resulting from calling \code{get_participants}
+#' @param bvq_data A named list resulting from calling [get_bvq()].
+#' @param items A data frame resulting from calling [get_items()].
+#' @param participants A data frame resulting from calling [get_participants()].
 get_responses <- function(bvq_data, items, participants) {
     # merge all datasets
     responses_tmp <- bvq_data$responses |>
@@ -23,12 +23,12 @@ get_responses <- function(bvq_data, items, participants) {
         reduce(inner_join) |>
         mutate(
             # code responses as factor
-            response = factor(
-                response,
-                levels = c(1, 2, 3),
-                labels = c("No", "Understands", "Understands and Says"),
-                ordered = TRUE
-            ),
+            response = factor(response,
+                              levels = c(1, 2, 3),
+                              labels = c("No",
+                                         "Understands",
+                                         "Understands and Says"),
+                              ordered = TRUE),
             # does should have the value of the corresponding language
             doe = ifelse(language == "Catalan", doe_catalan, doe_spanish),
             # standardise numeric predictors
@@ -41,27 +41,9 @@ get_responses <- function(bvq_data, items, participants) {
             exposure_std = scale(exposure)[, 1],
         ) |>
         # get only relevant variables
-        select(
-            id,
-            time,
-            age,
-            age_std,
-            te,
-            language,
-            meaning,
-            item,
-            response,
-            lv,
-            lv_std,
-            freq,
-            freq_std,
-            n_phon,
-            n_phon_std,
-            doe,
-            doe_std,
-            exposure,
-            exposure_std
-        ) |>
+        select(id, time, age, age_std, te, language, meaning, item, response,
+               lv, lv_std, freq, freq_std, n_phon, n_phon_std, doe, doe_std,
+               exposure, exposure_std) |>
         # reorder rows
         arrange(id, te, language)
     

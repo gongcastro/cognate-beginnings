@@ -1,5 +1,3 @@
-# utils
-
 # run the targets workflow
 make <- function() {
     job::job({
@@ -8,6 +6,13 @@ make <- function() {
     },
     import = NULL,
     title = "Trajectories")
+    
+    to_delete <- c("manuscript/QTDublinIrish.otf")
+    for(i in to_delete) {
+        if (file.exists(i)) {
+            file.remove(i)
+        }
+    }
 }
 
 # remove targets products
@@ -47,12 +52,11 @@ resolve_conflicts <- function() {
 #' Custom ggplot2 theme
 theme_custom <- function() {
     theme_minimal() +
-        theme(
-            panel.grid = element_line(colour = "grey", linetype = "dotted"),
-            axis.line = element_line(colour = "black"),
-            text = element_text(size = 12, colour = "black"),
-            axis.text = element_text(colour = "black")
-        )
+        theme(panel.grid = element_line(colour = "grey",
+                                        linetype = "dotted"),
+              axis.line = element_line(colour = "black"),
+              text = element_text(size = 12, colour = "black"),
+              axis.text = element_text(colour = "black"))
 }
 
 #' Transform months to years and months
@@ -118,8 +122,7 @@ prop_adj_se <- function(y, n) {
 prop_adj_ci <- function(y, n, .width = 0.95, limit) {
     prop <- (y + 2) / (n + 4)
     se <- sqrt(prop * (1 - prop) / (n + 4))
-    ci <-
-        prop + qnorm(c((1 - .width) / 2, (1 - (1 - .width) / 2))) * se
+    ci <- prop + qnorm(c((1 - .width) / 2, (1 - (1 - .width) / 2))) * se
     ci[1] <- ifelse(ci[1] < 0, 0, ci[1]) # truncate at 0
     ci[2] <- ifelse(ci[2] > 1, 1, ci[2]) # truncate at 1
     
@@ -159,82 +162,82 @@ get_childes_frequencies <- function(collection = "Eng-NA",
     
     suppressMessages({
         
-    roles <- c(
-        "Mother",
-        "Father",
-        "Investigator",
-        "Sibling",
-        "Sister",
-        "Grandmother",
-        "Adult",
-        "Friend",
-        "Brother",
-        "Visitor",
-        "Relative",
-        "Grandfather",
-        "Teacher",
-        "Student"
-    )
-    
-    counts <- get_types(collection = collection, role = roles, ...)
-    
-    speaker_ids <- distinct(counts,
-                            collection_id,
-                            corpus_id,
-                            transcript_id,
-                            speaker_id)
-    
-    speakers <- speaker_ids |>
-        left_join(
-            get_speaker_statistics(collection = collection),
-            by = c("collection_id",
-                   "corpus_id", 
-                   "speaker_id", 
-                   "transcript_id")) |>
-        select(collection_id,
-               corpus_id,
-               transcript_id,
-               speaker_id,
-               num_tokens)
-    
-    childes <- counts |>
-        left_join(speakers,
-                  by = c("collection_id", 
-                         "corpus_id",
-                         "speaker_id", 
-                         "transcript_id")) |>
-        mutate(
-            id = as.character(id),
-            age_months = target_child_age,
-            age_bin = as.integer(floor(age_months / 6) * 6),
-            token = tolower(gloss)
-        ) |>
-        group_by(age_bin, token, target_child_id, transcript_id) |>
-        summarise(
-            transcript_count = sum(count),
-            transcript_num_tokens = sum(num_tokens),
-            .groups = "drop"
-        ) |>
-        filter(between(age_bin,
-                       age_range[1],
-                       age_range[2])) |>
-        group_by(token) |>
-        summarise(
-            freq_count = mean(transcript_count),
-            total_count = mean(transcript_num_tokens),
-            n_children = length(unique(target_child_id)),
-            .groups = "drop"
-        ) |>
-        mutate(
-            freq_million = freq_count / total_count * 1e6,
-            freq_zipf = log10(freq_million) + 3
-        ) |>
-        relocate(token,
-                 n_children,
-                 freq_count,
-                 freq_million,
-                 freq_zipf)
-    
+        roles <- c(
+            "Mother",
+            "Father",
+            "Investigator",
+            "Sibling",
+            "Sister",
+            "Grandmother",
+            "Adult",
+            "Friend",
+            "Brother",
+            "Visitor",
+            "Relative",
+            "Grandfather",
+            "Teacher",
+            "Student"
+        )
+        
+        counts <- get_types(collection = collection, role = roles, ...)
+        
+        speaker_ids <- distinct(counts,
+                                collection_id,
+                                corpus_id,
+                                transcript_id,
+                                speaker_id)
+        
+        speakers <- speaker_ids |>
+            left_join(
+                get_speaker_statistics(collection = collection),
+                by = c("collection_id",
+                       "corpus_id", 
+                       "speaker_id", 
+                       "transcript_id")) |>
+            select(collection_id,
+                   corpus_id,
+                   transcript_id,
+                   speaker_id,
+                   num_tokens)
+        
+        childes <- counts |>
+            left_join(speakers,
+                      by = c("collection_id", 
+                             "corpus_id",
+                             "speaker_id", 
+                             "transcript_id")) |>
+            mutate(
+                id = as.character(id),
+                age_months = target_child_age,
+                age_bin = as.integer(floor(age_months / 6) * 6),
+                token = tolower(gloss)
+            ) |>
+            group_by(age_bin, token, target_child_id, transcript_id) |>
+            summarise(
+                transcript_count = sum(count),
+                transcript_num_tokens = sum(num_tokens),
+                .groups = "drop"
+            ) |>
+            filter(between(age_bin,
+                           age_range[1],
+                           age_range[2])) |>
+            group_by(token) |>
+            summarise(
+                freq_count = mean(transcript_count),
+                total_count = mean(transcript_num_tokens),
+                n_children = length(unique(target_child_id)),
+                .groups = "drop"
+            ) |>
+            mutate(
+                freq_million = freq_count / total_count * 1e6,
+                freq_zipf = log10(freq_million) + 3
+            ) |>
+            relocate(token,
+                     n_children,
+                     freq_count,
+                     freq_million,
+                     freq_zipf)
+        
     })
     
     return(childes)

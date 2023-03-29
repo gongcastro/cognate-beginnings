@@ -1,8 +1,7 @@
-
 # Trajectories [[report](https://gongcastro.github.io/trajectories)]
 
 ## Table of Contents
-1. [Introduction](#introduction)
+1. [What this repository is about](#introduction)
 2. [Downloading this repository](#downloading)
 3. [Reproducing this repository](#reproducing)<br>
         3.1. [Installing package dependencies with {renv}](#packages)<br>

@@ -1,18 +1,32 @@
 author:
   - name: Gonzalo Garcia-Castro
-    orcid: 0000-0002-8553-4209
-    affiliations:
-      - Center for Brain and Cognition, Universitat Pompeu Fabra
+    affiliations: 
+      - ref: cbc
     corresponding: true
-  - name: Daniela S. Ávila-Varela
-    affiliations:
-      - Center for Brain and Cognition, Universitat Pompeu Fabra
+    email: gonzalo.garciadecastro@upf.edu
+    
+  - name: Daniela S. Avila-Varela
+    affiliations: 
+      - ref: cbc
+      - ref: ul
   - name: Ignacio Castillejo
-    affiliations:
-      - Departamento de Psicología, Universidad Autónoma de Madrid
-  - name: Núria Sebastian-Galles
-    affiliations:
-      - Center for Brain and Cognition, Universitat Pompeu Fabra
+    affiliations: 
+      - ref: uam
       
+  - name: Núria Sebastian-Galles
+    affiliations: 
+      - ref: cbc
+        
+affiliations:
+  - id: cbc
+    name: Center for Brain and Cognition
+    department: Universitat Pompeu Fabra
+  - id: ul
+    name: Facultade de Letras
+    department: Universidade de Lisboa
+  - id: uam 
+    name: Departamento de Psicología
+    department: Universidad Autónoma de Madrid
+
 csl: "../assets/apa7.csl"
 bibliography: "../assets/references.bib"

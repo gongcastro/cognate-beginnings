@@ -1,8 +1,8 @@
 #' Get item data
 #'
-#' @param bvq_data A named list resulting from calling \code{get_bvq}
-#' @param childes A dataframe with lexical frequencies extracted from CHILDES, as returned by the \code{get_childes_frequencies}
-#' @param class A character vector indicating the word classes to be included in the resulting dataset. Takes "Adjective", "Noun" and/or "Verb" as values.
+#' @param bvq_data A named list resulting from calling [get_bvq()]
+#' @param childes A data frame with lexical frequencies extracted from CHILDES, as returned by the [get_childes_frequencies()]
+#' @param class A character vector indicating the word classes to be included in the resulting dataset. Takes `"Adjective"`, `"Noun"` and/or `"Verb"` as values.
 get_items <- function(bvq_data, childes, class = "Noun") {
     classes_available <- c("Noun", "Verb", "Adjective")
     if (!(class %in% classes_available)) {
@@ -52,18 +52,8 @@ get_items <- function(bvq_data, childes, class = "Noun") {
         drop_na(lv, list, wordbank_lemma, freq_zipf) |>
         mutate(n_phon = nchar(sampa_flat),
                item = str_remove(item, "cat_|spa_")) |>
-        select(
-            te,
-            meaning = wordbank_lemma,
-            language,
-            item,
-            ipa,
-            sampa = sampa_flat,
-            lv,
-            n_phon,
-            freq = freq_zipf,
-            list
-        ) |>
+        select(te, meaning = wordbank_lemma, language, item, ipa,
+               sampa = sampa_flat, lv, n_phon, freq = freq_zipf, list) |>
         arrange(te)
     
     # export to data folder
@@ -83,22 +73,20 @@ get_childes_frequencies <- function(collection = "Eng-NA",
     
     suppressMessages({
         
-        roles <- c(
-            "Mother",
-            "Father",
-            "Investigator",
-            "Sibling",
-            "Sister",
-            "Grandmother",
-            "Adult",
-            "Friend",
-            "Brother",
-            "Visitor",
-            "Relative",
-            "Grandfather",
-            "Teacher",
-            "Student"
-        )
+        roles <- c("Mother",
+                   "Father",
+                   "Investigator",
+                   "Sibling",
+                   "Sister",
+                   "Grandmother",
+                   "Adult",
+                   "Friend",
+                   "Brother",
+                   "Visitor",
+                   "Relative",
+                   "Grandfather",
+                   "Teacher",
+                   "Student")
         
         counts <- get_types(collection = collection, role = roles, ...)
         
@@ -127,32 +115,24 @@ get_childes_frequencies <- function(collection = "Eng-NA",
                              "corpus_id",
                              "speaker_id", 
                              "transcript_id")) |>
-            mutate(
-                id = as.character(id),
-                age_months = target_child_age,
-                age_bin = as.integer(floor(age_months / 6) * 6),
-                token = tolower(gloss)
-            ) |>
+            mutate(id = as.character(id),
+                   age_months = target_child_age,
+                   age_bin = as.integer(floor(age_months / 6) * 6),
+                   token = tolower(gloss)) |>
             group_by(age_bin, token, target_child_id, transcript_id) |>
-            summarise(
-                transcript_count = sum(count),
-                transcript_num_tokens = sum(num_tokens),
-                .groups = "drop"
-            ) |>
+            summarise(transcript_count = sum(count),
+                      transcript_num_tokens = sum(num_tokens),
+                      .groups = "drop") |>
             filter(between(age_bin,
                            age_range[1],
                            age_range[2])) |>
             group_by(token) |>
-            summarise(
-                freq_count = mean(transcript_count),
-                total_count = mean(transcript_num_tokens),
-                n_children = length(unique(target_child_id)),
-                .groups = "drop"
-            ) |>
-            mutate(
-                freq_million = freq_count / total_count * 1e6,
-                freq_zipf = log10(freq_million) + 3
-            ) |>
+            summarise(freq_count = mean(transcript_count),
+                      total_count = mean(transcript_num_tokens),
+                      n_children = length(unique(target_child_id)),
+                      .groups = "drop") |>
+            mutate(freq_million = freq_count / total_count * 1e6,
+                   freq_zipf = log10(freq_million) + 3) |>
             relocate(token,
                      n_children,
                      freq_count,
