@@ -23,8 +23,9 @@ results/**/*.parquet
 img/*
 *.zip
 nul
-manuscript/manuscript_files/
-manuscript/*.docx/
+manuscript_files/
+*.docx
 index/index_files/
 
 /.quarto/
+_freeze/*

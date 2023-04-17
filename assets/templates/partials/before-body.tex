@@ -1,14 +1,4 @@
-$if(has-frontmatter)$
-  \begin{frontmatter}
-  \begin{titlepage}
-  $_titlepage.tex()$
-  
-  \end{titlepage}
-  \end{frontmatter}
-
-$else$
-  \begin{titlepage}
-  $_titlepage.tex()$
-
-  \end{titlepage}
-$endif$
+\usepackage[pinyin,australian]{babel}
+\babelprovide[import,language=Chinese Simplified]{chinese-simplified}
+\babelfont[chinese-simplified]{rm}{Noto Serif CJK SC}
+\babelfont[chinese-simplified]{sf}{Noto Sans CJK SC}

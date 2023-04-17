@@ -1,0 +1,47 @@
+
+```{r apafg-coefs-doe}
+#| label: apafg-coefs-doe
+#| apa-cap: "Posterior distribution of regression coefficients in the probability scale"
+#| apa-note: "Median: median of the posterior distribution in the logit scale. 95\\% HDI: 95\\% highest density interval of the distribution; narrowest range of values that contains 95\\% of the distribution, and therefore is 95\\% likely to contain the true value, given the data. On top of each distribution, we indicate the proportion of posterior samples in the 95\\% HDI that fall into the region of practical equivalence (ROPE). This proportion indicates the probability of the true value of the coefficient being equivalent to zero. Lower values indicate that the true value is unlikely to be zero of equivalent to zero."
+#| echo: false
+#| message: false
+#| warning: false
+#| out-width: 100%
+#| fig-height: 3
+#| fig-width: 12
+# summarise posterior draws
+bind_rows("Exposure model" = posterior_draws$summary,
+          "DoE-Frequency model" = posterior_draws_doe,
+          .id = "model") |> 
+    mutate(
+        across(c(.median, .lower, .upper),
+               function(x) {
+                   ifelse(
+                       .type=="Intercepts (at 22 months)",
+                       plogis(x),
+                       x/4
+                   )
+               }
+        )) |>
+    filter(.type == "Slopes") |> 
+    ggplot(aes(.median, .variable_name,
+               xmin = .lower, xmax = .upper)) +
+    facet_wrap(~model, scales = "free") +
+    annotate(geom = "rect",
+             ymin = -Inf,
+             ymax = Inf,
+             xmin = -0.1/4,
+             xmax = +0.1/4,
+             fill = "grey70") +
+    geom_errorbar(linewidth = 1, width = 0.25) +
+    geom_point(size = 2.5) +
+    labs(x = "Median and 95% HDI of the posterior distribution",
+         y = "Predictor",
+         colour = "Model") +
+    scale_x_continuous(labels = percent) +
+    scale_colour_manual(values = clrs[c(1, 4)]) +
+    theme(legend.position = "none",
+          axis.title.y = element_blank(),
+          panel.grid.major.y = element_blank())
+```
+

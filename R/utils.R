@@ -37,6 +37,7 @@ resolve_conflicts <- function() {
     suppressMessages({
         conflict_prefer("last_warnings", "rlang")
         conflict_prefer("filter", "dplyr")
+        conflict_prefer("lag", "dplyr")
         conflict_prefer("between", "dplyr")
         conflict_prefer("timestamp", "utils")
         conflict_prefer("ar", "brms")

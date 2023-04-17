@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|5f0b277b9f295b53|||||||||||||||
+.Random.seed|object|ecda31f797f059b9|||||||||||||||
 age_range|object|185c15eff6e88661|||||||||||||||
 age_step|object|ed77be4a2960536d|||||||||||||||
 aoa_df|object|1792c2f60cb2dcd7|||||||||||||||
@@ -7,17 +7,18 @@ bvq_data|stem|144fe6d65c7de8f4|91e6648cf4e14b06|c9e7eba8494344da|-1902070830||t1
 childes|stem|7d131d9da3b34934|257adfb4dcdab016|e862719ee8306882|-1780705379||t19390.3990171731s|5854c77292e9709f|565294|rds|local|vector|||76.33||
 clrs|object|b905d5e58541fc82|||||||||||||||
 cut_age|function|032f28577fcd0b5c|||||||||||||||
-dataset|object|827e3d3a357539b8|||||||||||||||
+dataset|object|3fb4311e3796ae22|||||||||||||||
 days_to_months|function|04bfa6e1e044ea0e|||||||||||||||
 doe_l1|object|8947dd2ed92a6714|||||||||||||||
 eli_df|object|861b0a8c962cdf7e|||||||||||||||
-elis_plot|object|cc0e8656eb0ac45b|||||||||||||||
+elis_plot|object|6d19fbc35666cca0|||||||||||||||
 fit_model|function|5a88aca23ce15f75|||||||||||||||
 flatten_columns|function|315e6f1e29563edc|||||||||||||||
 freq_month|object|ded833868582137a|||||||||||||||
 freq_sd|object|f3582cdc107e111b|||||||||||||||
 function_paths|object|c1b93368527c9bae|||||||||||||||
 generate_aoa|function|229246fff4ad0332|||||||||||||||
+generate_figures|function|68df68d5dc453543|||||||||||||||
 generate_newdata|function|4d1be0d427365f71|||||||||||||||
 get_aoa|function|bf0f3b93ca8ee651|||||||||||||||
 get_bvq|function|3ce26eea61d8b956|||||||||||||||
@@ -30,13 +31,13 @@ get_participants|function|444a7004e0cdddd7|||||||||||||||
 get_posterior_draws|function|599a0f5cbb10ddca|||||||||||||||
 get_posterior_draws_re|function|3ed41d05ed6f4b35|||||||||||||||
 get_responses|function|641a0b345b3640d4|||||||||||||||
-img|object|3d5922c2e3b6bd00|||||||||||||||
+img|object|31b20509b8322341|||||||||||||||
 item_df|object|afa64fd1f405e413|||||||||||||||
 items|stem|bae7969c759e1d89|49b6cd25c41a1b0f|37d1cce794224070|-986180865||t19411.7481285638s|53da72da5bff5806|16269|rds|local|vector|||0.22||
 items_test|stem|32af597cbdb2a163|762d2cbc9b05fe3c|8da67deb2feb6ec6|883923261||t19390.3990634612s|ac45463db19e2cbe|48|rds|local|vector|||0.45||
 make|function|32845fc4a0ebb3eb|||||||||||||||
-manuscript|stem|f88041f66caa43d8|28f4b80d61292d07|09de0adf74eefc01|615889701|manuscript/manuscript.html*manuscript/manuscript.qmd|t19412.4796440451s||247650|file|local|vector|||||_paths_ missing files manuscriptmanuscript.html
-marginal_effects_epreds|stem|ef0b6e229ecfbddb|d5b736ab198672ad|67886581f448fd06|2132376814||t19437.7477561212s|f4feb21e2d433340|355795|rds|local|vector|||2.46||
+manuscript|stem|d72f30d109fe9ec6|9c37d0b9aa447d90|d84d7cdd1c3c4b08|615889701|manuscript.docx*manuscript.pdf*manuscript.qmd|t19464.6536503525s||17138004|file|local|vector|||295.33|package dplyr was built under R version 4.2.3. package ggplot2 was built under R version 4.2.3. package lubridate was built under R version 4.2.3. package readxl was built under R version 4.2.3. package rlang was built under R version 4.2.3. package tibble was built under R version 4.2.3. package tidyr was built under R version 4.2.3|System command quarto.exe failed
+marginal_effects_epreds|stem|c31569b8dfec66b0|58be616b257a2fc4|67886581f448fd06|2132376814||t19464.4655774541s|2a014971bc724fb1|240871|rds|local|vector|||2.34||
 marginal_effects_epreds_id|stem|8d9515eb736756f8|a2a8fa68953fb158|bb0692bf5a2bd88f|-1713814384||t19398.7582092741s||1512210|rds|local|vector|||3.02||Problem while computing lv  factor....Caused by error in factor invalid labels length 3 should be 1 or 1
 marginal_effects_epreds_te|stem|9503fde7f4a4788a|b6a7c72d9b3d601b|54989fac2afcf247|-258282318||t19401.5861652438s||2.2250738585072e-308|rds|local|vector|||33.19||Problem while computing lv  lv_std  sddatalv  meandatalv.Caused by error in datalv object of type closure is not subsettable
 model_fit_0|stem|997d04f8048b0dec|1aa51c3a12cbfb20|c83ed6289c394169|1971951902||t19398.7564976491s|e811a539d63c0f46|71210791|rds|local|vector|||2.08||
@@ -55,7 +56,7 @@ model_prior|stem|56d01ce6ad70137f|6ccf985bdd0bca35|8596a76cdeb9adbf|-1420164522|
 model_prior_doe|stem|cdc2c2b656166f1a|bbee0f8f9c0eaf76|8596a76cdeb9adbf|-338428838||t19390.3977486939s|ef79ded412b140f0|349|rds|local|vector|||2.87||
 model_rhats|stem|8093763321bd1bb4|cb919fd1d69dca19|24121243fcbca634|192492602||t19398.7640782501s|820ab695c146dbc1|193776|rds|local|vector|||0.03||
 months_to_years|function|f02f03cafdc688ca|||||||||||||||
-namespace_conficts|stem|144b828dde081a80|6130ab64ebc11cb1|899d8e82ef884c4e|420052052||t19390.399025701s|1d635f53cb385f1d|65|rds|local|vector|||0.72||
+namespace_conficts|stem|39337d3b898d7268|6130ab64ebc11cb1|a2715c8de70c2864|420052052||t19461.5030637591s|9dfd31c781e2fd5b|66|rds|local|vector|||3.52|package lubridate was built under R version 4.2.3. package readxl was built under R version 4.2.3. package rlang was built under R version 4.2.3|
 participants|stem|734bda2cd773cdfb|faa1dd696f8b6b59|ae511e1d7669b415|392525641||t19390.3990282426s|80c9923076e1198c|9071|rds|local|vector|||0.21||
 participants_test|stem|32af597cbdb2a163|ffc69402e3973190|30d4756c4f8ebb10|-717703539||t19425.3672458417s|ac45463db19e2cbe|48|rds|local|vector|||0.91||
 posterior_draws|stem|f2c071fd11937f09|0037def546f747b8|9f27e92cab79afbe|-1530540741||t19443.6774671888s|629523da9ffa7cde|217786|rds|local|vector|||13||
@@ -63,14 +64,14 @@ posterior_draws_doe|stem|6a30b8861d6c0696|20c0c704c4f9d8bb|9577559c06afa5d2|1361
 posterior_draws_re|stem|f62077965c6887c9|623dbeb7660f525c|7a74f9ea96b84a22|1383172958||t19425.3926326981s|ff5db98019f31106|134993752|rds|local|vector|||20.61|gather_ was deprecated in tidyr 1.2.0.ℹ Please use gather instead.ℹ The deprecated feature was likely used in the tidybayes package.  Please report the issue at httpsgithub.commjskaytidybayesissuesnew.|
 posterior_predictions|function|bfb9badbdabc8014|||||||||||||||
 posterior_predictions_re|function|4fa3a3674d62696b|||||||||||||||
-probs_plot|object|d9e4cd01742116d3|||||||||||||||
+probs_plot|object|11bcbd0241d923fd|||||||||||||||
 prop_adj|function|46e207be81f63a6a|||||||||||||||
 prop_adj_ci|function|e94b05f73a7c2a8d|||||||||||||||
 prop_adj_se|function|5a38f93826250f66|||||||||||||||
 remove_nul|function|5ca46e3aaa553081|||||||||||||||
 report|stem||47298d6bbe8319e9|7c94562e145ad434|-237041703||t19398.7072745252s||0|file|local|vector|||185.55||System command quarto.exe failed
 rescale_variable|function|c7cc266d522398dd|||||||||||||||
-resolve_conflicts|function|089a88de9596871d|||||||||||||||
+resolve_conflicts|function|b12cf1e416e886a2|||||||||||||||
 responses|stem|adef5ec4d63a4b6b|d6c1f45abce97916|80ef9b686a9cd455|403517661||t19390.3990580836s|ee2b508bda4fb63f|1330172|rds|local|vector|||1.22||
 responses_test|stem|32af597cbdb2a163|c526232cbe04f108|9b2a40d280d0ff63|-1505889607||t19391.8570666845s|ac45463db19e2cbe|48|rds|local|vector|||1.78||
 save_files|function|ddfdac55b8935d49|||||||||||||||
