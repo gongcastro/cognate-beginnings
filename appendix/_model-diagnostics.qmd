@@ -1,0 +1,119 @@
+We used Stan [@carpenter2017stan] as the probabilistic language behind the estimation of our Bayesian models in this study, with `brms` as its R interface [@burkner2017brms]. This language implements the Markov Chain Monte-Carlo (MCMC) algorithm to explore the posterior distribution of the model. Broadly, this algorithm is used to iteratively sample the joint sampling space of the parameters to be estimated in the model, and compute, for each value sampled, its likelihood under some probability distribution previously defined. We run `r dim(model_fit_3$fit)[2]` MCMC chains, each `r dim(model_fit_3$fit)[1]` iterations long each. The correct performance of this algorithm is critical to the quality of the statistical evidence to which the outcomes of the model lead.
+
+One way to diagnose the behaviour of MCMC is to inspect whether the different MCMC chains (if more than one) have converged to a similar region of the posterior. The Gelman-Rubin diagnostic [$\hat{R}$ or R-hat @gelman1992inference] provides a measure of chain convergence by comparing the variance within each chain *versus* the variance between each chain. Both are expected to be identical when chains have perfectly converged, so that $\hat{R} = 1$. Values lower than 1.01 are recommended, while values higher than 1.05 indicate that chains might have trouble converging and therefore the estimated parameters must be taken with caution. {apafg-model-rhats-neffs} (A) shows the distribution of $\hat{R}$ values for the coefficients of the fixed effect of our models, which we used for statistical inference. Most values are lower than 1.01, and never higher than 1.05, which provides evidence of successful MCMC convergence.
+
+Another diagnostic of good MCMC converge is the ratio of effective sample size to total sample size ($N_{eff}/N$), which indicates the proportion of samples in the chain that resulted from a non-divergent transition. Values closer to 1 are ideal, as they indicate that all posterior samples from the MCMC were used to estimate the posterior distribution of the parameter. Values larger than 0.1 are recommended. {apafg-model-rhats-neffs} (B) shows the distribution of the effective sample sizes of the coefficients of the fixed effects in our models. Most values are larger than 0.1, although model 0 ($\mathcal{M}_0$) accumulates most effective sample sizes close to 0.1.
+
+```{r apafg-model-rhats-neffs}
+#| label: apafg-model-rhats-neffs
+#| apa-cap: "Gelman-Rubin (R-hat) convergence diagnostic of the MCMC chains in the Bayesian models."
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-height: 6
+#| fig-width: 9
+#| out-width: 100%
+map_df(model_rhats, bind_rows, .id = "model") |> 
+    mutate(model = paste0("Model ", str_extract(model, "[0-9]"))) |> 
+    pivot_longer(-model, 
+                 names_to = ".variable",
+                 values_to = ".rhat") |>
+    drop_na() |> 
+    ggplot(aes(.rhat)) +
+    facet_wrap(~model, nrow = 1) +
+    geom_vline(xintercept = 1.01, linetype = "dashed") +
+    geom_histogram(binwidth = 0.001, colour = "white", fill = "grey60") +
+    labs(x = "Gelman Rubin diagnostic (R-hat)",
+         y = "MCMC samples",
+         title = "Gelman-Rubin (R-hat) diagnostic") +
+    
+    map_df(model_neffs, bind_rows, .id = "model") |> 
+    mutate(model = paste0("Model ", str_extract(model, "[0-9]"))) |> 
+    pivot_longer(-model, 
+                 names_to = ".variable",
+                 values_to = ".rhat") |>
+    # filter(str_detect(.variable, "b_|sd_")) |> 
+    drop_na() |> 
+    ggplot(aes(.rhat)) +
+    facet_wrap(~model, nrow = 1) +
+    geom_vline(xintercept = 1.01, linetype = "dashed") +
+    geom_histogram(binwidth = 0.1, colour = "white", fill = "grey60") +
+    labs(x = "Gelman Rubin diagnostic (R-hat)",
+         y = "MCMC samples",
+         title = "Ratio of effective sample size") +
+    plot_layout(ncol = 1) &
+    plot_annotation(tag_levels = "A") &
+    theme(legend.position = "none",
+          panel.grid = element_blank())
+```
+
+## Posterior draws and bi-variate scatterplots {.unnumbered}
+
+```{r}
+#| label: fig-model-pairs
+#| fig-cap: "Marginal distribution and bi-variate scatterplot of posterior samples for the fixed regression coefficients in Model 3."
+#| fig-height: 8
+#| fig-width: 10
+#| out-width: 100%
+#| out-height: 100%
+#| echo: false
+#| warning: false
+#| message: false
+color_scheme_set(rep("grey60", 6))
+titles <- c("Comprehension",
+            "Production",
+            "Age",
+            "Length",
+            "Exposure",
+            "Cognateness",
+            "Age × Exposure",
+            "Age × Cognateness",
+            "Exposure × Cognateness")
+posterior <- as.array(model_fit_3)
+np <- nuts_params(model_fit_3) 
+mcmc_pairs(posterior,
+           np = np, 
+           pars = c("b_Intercept[1]",
+                    "b_Intercept[2]",
+                    "b_age_std",
+                    "b_n_phon_std",
+                    "b_exposure_std",
+                    "b_lv_std",
+                    "b_age_std:exposure_std",
+                    "b_exposure_std:lv_std"),
+           draws = c(1, 0),
+           grid_args = list(titles = titles),
+           off_diag_args = list(size = 0.5,
+                                alpha = 1/10))
+```
+
+## Posterior-predictive checks {.unnumbered}
+
+```{r apafg-model-ppc}
+#| label: apafg-model-ppc
+#| apa-cap: "Model posterior predictive checks (PPC). Bars indicate the observed proportion of responses to each category (No, Understands, and Understands and Says). Blue dots and error bars represent the mean proportion of responses simulated from the posterior for each category, and its 95\\% interval."
+#| eval: true
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 6
+#| fig-height: 3
+#| out-width: 50%
+#| out-height: 50%
+y_int <- as.integer(as.integer(responses$response))
+color_scheme_set(c(rep("grey60", 2), rep("black", 4)))
+
+ppc_bars(y_int, 
+         model_ppcs,
+         prob = 0.95,
+         linewidth = 1,
+         size = 1.25,
+         fatten = 2,
+         freq = FALSE) +
+     scale_x_continuous(breaks = 1:3,
+                        labels = c("No",
+                                   "Understands", 
+                                   "Understands and Says")) +
+    theme(legend.position = "none",
+          axis.text = element_text(size = 11))
+```

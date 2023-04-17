@@ -1,0 +1,707 @@
+---
+title: "Lexical frequency mediates the facilitation effect of cognateness in bilingual lexical acquisition"
+
+shorttitle: Frequency and cognateness in lexical acquisition
+
+author:
+  - name: Gonzalo Garcia-Castro
+    corresponding: true
+    orcid: 0000-0002-8553-4209
+    email: gonzalo.garciadecastro@upf.edu
+    affiliations:
+      - id: cbc
+        name: Universitat Pompeu Fabra
+        department: Center for Brain and Cognition
+        address: Ramon Trias Fargas 25-27
+        city: Barcelona
+        region: Spain
+        postal-code: "08005"
+    
+  - name: Daniela S. Avila-Varela
+    orcid: 0000-0002-3518-8117
+    affiliations: 
+      - ref: cbc
+      - id: ul
+        name: Universidade de Lisboa
+        department: Facultade de Letras
+        address: Alameda da Universidade
+        city: Lisboa
+        region: Portugal
+        postal-code: "1600-214"
+      
+  - name: Ignacio Castillejo
+    orcid: 0000-0001-7445-0416
+    affiliations: 
+      - id: uam 
+        name: Universidad Autónoma de Madrid
+        department: Departamento de Psicología
+        address: Iván Pavlov, 6
+        city: Madrid
+        region: Spain
+        postal-code: "28049"
+      
+  - name: Núria Sebastian-Galles
+    orcid: 0000-0001-6938-2498
+    affiliations: 
+      - ref: cbc
+
+csl: "assets/apa7.csl"
+bibliography: "assets/references.bib"
+
+editor: source
+
+format:
+  apaquarto-docx: default
+  apaquarto-pdf:
+    pdf-engine: xelatex
+    documentmode: man
+    fontsize: 12pt
+    keep-tex: false
+    floatsintext: true
+    blank-lines-above-title: 2
+    header-includes:
+      - \usepackage{tipa}
+      - \usepackage[pinyin]{babel}
+      - \usepackage{CJKutf8}
+      - \usepackage{fontspec}
+      - \babelprovide[script=CJK, language={Chinese Simplified}]{chinese-simplified}
+      - \babelfont[chinese-simplified]{rm}[Ligatures = Common]{Noto Serif CJK SC}
+      - \babelfont[chinese-simplified]{sf}[Ligatures = Common]{Noto Sans CJK SC}
+
+    include-in-header:
+      - text: '\usepackage{lineno}\linenumbers'
+
+author-note:
+  blank-lines-above-author-note: 3
+  disclosures:
+    conflict-of-interest: |
+        The authors declare no conflicts of interest with regard to the funding source of this study.
+    financial-support: |
+        This research was supported by grants from the Spanish Ministerio de Ciencia, Innovación y Universidades (PGC2018-101831-B-I00 and PRE2019-088165), and the Catalan Government [ICREA (Catalan Institution for Research and Advanced Studies) Academia 2019 award]. Gonzalo Garcia-Castro was supported by a fellowship of the Spanish Ministerio de Ciencia, Innovación y Universidades (FPI 2019).
+    gratitude: |
+        We are grateful to Chiara Santolin, Alicia Franco-Martínez, Cristina Rodríguez-Prada, Ege E. Özer, and the rest of the Speech Acquisition and Perception research group for their helpful feedback. We thank Xavier Mayoral, Silvia Blanch, and Cristina Cuadrado for their technical support. We also thank Cristina Dominguez and Katia Pistrin for their efforts in recruiting infants. We also thank all families and infants who participated in the experiments.
+
+abstract: |
+    Language non-selectivity is prominent feature of bilingual lexical processing. An instance of such non-selectivity is embodied by cognateness, which recent studies have suggested to facilitate vocabulary acquisition in bilingual toddlers, who show larger vocabulary sizes when their languages share many cognates, and to be acquired at earlier ages than non-cognates. The specific mechanisms behind such facilitation are unclear. We present an account of early bilingual vocabulary growth in which cognateness interacts with lexical frequency and language exposure to facilitate the word acquisition. We evaluated this model against vocabulary data from 436 Catalan-Spanish bilinguals aged 12 to 34 months. We used Bayesian Exploratory Item Response Models to estimate participants’ probability of acquisition of 604 words, conditional to the cognate status and lexical frequency of the word-form, and the age and degree of exposure to each language of the toddler. We found converging evidence for an earlier age-of-acquisition for cognate words, and for such effect being mediated by lexical frequency and language exposure. Low-frequency words, and words from the language of least exposure were more strongly benefitted by their cognate status than high-frequency words. Overall, our findings support an interactive account of bilingual vocabulary acquisition in which the lexical representations in one language interact with the acquisition of words in the other language.
+
+keywords: [lexical acquisition, vocabulary, bilingualism, item response theory, bayesian]
+
+fig-dpi: 1000
+---
+{{< include _extensions/wjschne/apaquarto/_apa_title.qmd >}}
+
+```{r setup}
+#| label: setup
+#| echo: false
+#| message: false
+#| warning: false
+# load packages ----------------------------------------------------------------
+tar_load_globals()
+
+# load objects -----------------------------------------------------------------
+tar_load_everything()
+
+items <- bvq_data$pool  |>  
+    mutate(item = str_remove(item, "cat_|spa_")) |> 
+    select(item, language, semantic_category, class) |> 
+    right_join(items, by = c("item", "language"))
+
+# set ggplot theme and colour palette ------------------------------------------
+
+theme_set(theme_custom())
+
+bayesplot_theme_set(theme_custom()  +
+                        theme(panel.grid = element_blank(),
+                              axis.text = element_text(size = 5),
+                              strip.text = element_text(size = 5),
+                              plot.title = element_text(size = 8),
+                              plot.subtitle = element_text(size = 8)))
+
+clrs <- c("#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600")
+
+# set params -------------------------------------------------------------------
+
+color_scheme_set(rep(clrs[1], 6))
+options(ggplot2.ordinal.fill = clrs,
+        ggplot2.ordinal.colour = clrs,
+        ggplot2.discrete.fill = clrs,
+        ggplot2.discrete.colour = clrs,
+        ggplot2.continuous.fill = scale_color_gradient,
+        ggplot2.continuous.colour = scale_color_gradient,
+        knitr.graphics.error = FALSE) 
+```
+
+# Introduction 
+
+The foundations of word learning are in place early in age. From six months of age, infants start directing their gaze to some objects when hearing their labels, according to both experimental data [@jusczyk1995infants; @tincoff1999beginnings; @bergelson2012months; @bergelson2015early] and parental vocabulary reports [@fenson2007macarthurbates; @samuelson2021precision]. During the last half of their second year, new word forms are acquired at an increasingly fast rate [@goldfield1990early; @fenson1994variability; @mayor2011statistical; @bloom2002how; @bergelson2020comprehension]. Such early stages of lexical acquisition are characterised by substantial variation across children reflected, for instance, on the variability of the number of words they know [i.e., vocabulary size, @fenson1994variability; @frank2021variability]. Despite this variability, trajectories of early vocabulary growth seem quite stable across languages. @tardif2008baby collected data about the first ten words acquired by 10-- to 16--month-old infants living in the United States, Hong Kong, and Beijing. Since birth, these infants had been learning English, Cantonese, and Mandarin, respectively. The authors found a common pattern across the three groups: their first ten words referred to roughly the same concepts, namely relatives/caregivers (*daddy*, *mommy*), social routines (*bye*, *uh-oh*) or animal sounds (*woof-woof*). These results were later extended by @frank2021variability to a more diverse set of languages, and found that such cross-language commonalities are stronger at earlier stages of lexical acquisition.
+
+Most research on early word acquisition relies extensively on data from monolingual children, and is oblivious to substantial proportion of the world population acquiring more than one language since early ages [@grosjean2021extent]. Previous research on bilingual vocabulary acquisition pointed to bilingual toddlers knowing, on average, less words in each of their languages than their monolinguals peers, and also to both groups knowing a similar amount of words when the bilinguals' two languages are taken into account. @hoff2012dual found that English-Spanish bilingual toddlers in South Florida (United States) knew less words in English than monolinguals did. Both groups knew a similar total amount of words when both English and Spanish vocabularies were counted together, which substantiates the importance of collecting data on both languages when assessing bilinguals' communicative development. Other studies have provided converging evidence that bilinguals know a similar or even larger number of words than monolinguals when the two languages are aggregated [@oller2002language; @pearson1994patterns; @pearson1993lexical; @patterson2004comparing; @patterson2004bilingual; @smithson2014bilingualism; @petitto2001bilingual; @gonzalez-barrero2020bilingual]. These studies rely on bilingual samples whose languages are relatively distant in typology: English is a Germanic language, while Spanish is a Romance language, and both languages differ substantially at the grammatical or the phonological level. Little is known about vocabulary acquisition in bilinguals learning a pair of typologically closer languages (e.g., when both are Romance languages).
+
+For a given set of concepts, bilingual children may be exposed to two distinct sets of word-forms: one in each language. Depending on the similarity between both languages, the two sets of words may overlap in form in varying degrees. When both languages are typologically close, like Spanish and Catalan (both Romance languages), they are more likely to share a large amount of cognates (i.e., form-similar translation equivalents) than two typologically more distant languages, like Spanish and English (Romance and Germanic languages, respectively). For instance, in the presence of a door, a Spanish-Italian (or a Spanish-Catalan) bilingual might be exposed to the words *puerta* and *porta* (cognates), whereas a Spanish-English bilingual might hear *puerta* and *door* (non-cognates). It could be the case that mapping two phonologically similar labels (cognates like *puerta*-*porta*) onto the same referent is easier than doing the same with two phonologically dissimilar labels (non-cognates, like *puerta* and *door*). If cognates are easier to acquire than non-cognates, bilinguals learning two languages that share a high proportion of cognates should benefit more often from this facilitation effect than bilinguals learning two languages with a lower proportion of cognates, and should therefore show larger vocabulary sizes.
+
+@floccia2018introduction provided evidence in line with this claim. The authors collected vocabulary data on word comprehension and production from 372 24-month-old bilingual toddlers living in the United Kingdom who were learning English and an additional language. The additional language was one of 13 typologically diverse languages: Bengali, Cantonese Chinese, Dutch, French, German, Greek, Hindi/Urdu, Italian, Mandarin Chinese, Polish, Portuguese, Spanish and Welsh. The authors calculated the average phonological overlap between the words in each of these additional languages and their translation equivalents in English, which was taken as a proxy of the degree of *cognateness* between each pair of languages. Phonological overlap was measured by computing the Levenshtein distance between each cross-language pair of phonetic transcriptions. The Levenshtein distance is a metric that computes the distance between two strings of characters/phonemes by counting the smallest number of insertions, deletions and substitutions one of the strings has to undergo to become identical to the other [@levenshtein1966binary]. For instance, the Levenshtein distance for the translation equivalent *cat*-*kat* (/kæt/-/\textipa{kAt}/) in English and Dutch would be one: a single edition would be needed to make both phonological translation identical (replacing /æ/ by /\textipa{A}/). The same translation equivalent in English and Greek (*cat*-*$\gamma\acute{\alpha}\tau\alpha$*, /kæt/-/\textipa{Gata}/) would score three, as it requires at least three editions: substituting /k/ for /\textipa{G}/, substituting /æ/ for /a/ and adding another /a/.
+
+Levenshtein distance scores are divided by the length of the longest string to normalise the similarity scores between 0 and 1. Finally, the result is subtracted from one, to get the complementary, and therefore a measure of phonological similarity, instad of dissimilarity. Following the previous examples: $1/4 = 0.25$ for /kæt/-/\textipa{kAt}/, and $3/4 = 0.75$ for /kæt/-/\textipa{Gata}/. Finally, this variable was included as a predictor of participants' vocabulary sizes. Among other findings, Floccia and co-workers reported an increase in vocabulary size in the additional language (i.e., not English) associated with an increase in the average phonological similarity between the translation equivalents of each language pair. For example, English-Dutch bilinguals (0.2214 mean phonological overlap), were able to produce more Dutch words than English-Mandarin bilinguals (0.0197 mean phonological overlap) were able to produce in Mandarin.
+
+Floccia et al. pointed to *parallel activation* as the underpinning mechanism behind their results. The parallel activation hypothesis stems from the language non-selective account of lexical access, which suggests that bilinguals activate both languages simultaneously during speech production [@costa2000cognate; @hoshino2008cognate] or comprehension [@spivey1999cross; @thierry2007brain], even in fully monolingual environments. One of the clearest pieces of evidence of parallel activation was provided by @costa2000cognate. In this study, Spanish monolinguals and Catalan-Spanish bilingual adults were asked to name pictures of common objects in Spanish. In half of the trials, the object labels were cognates in Spanish and Catalan (*árbol*-*arbre*, translations of *tree*), whereas in the other half of the trial labels were non-cognates (*mesa*-*taula*, translations of *table*), importantly such distinction was only relevant for bilinguals. Bilinguals named cognate pictures faster than non-cognate pictures, even after adjusting for the lexical frequency of the items. In contrast, Spanish monolinguals, who were unfamiliar with the Catalan translations of the Spanish words they uttered, showed equivalent naming times for the two types of stimuli. These results showed that bilinguals' Catalan phonology was activated during the production of Spanish words, facilitating the naming of cognate pictures.
+
+Regarding word acquisition, the parallel activation account is a plausible explanation for Floccia et al.'s results in the light of two observations. First, bilingual toddlers' lexicon seems to consist of a large proportion of translation equivalents: the presence of a word in their lexicon is a good predictor of its translation equivalent also being present [@bilson2015semantic; @tsui2022are; @pearson1995crosslanguage]. Second, there is experimental evidence of parallel activation during word comprehension in children and toddlers [@vonholzen2012language; @poulin-dubois2013lexical; @bosma2020cognate]. It is possible that cognateness increases the amount of cross-language activation, facilitating word acquisition. This could ultimately lead to children who are learning languages with a larger proportion of cognates (e.g., English and Dutch) showing larger vocabulary sizes. This account in which cognateness underlies the facilitation effect of typological language distance is also in line with previous studies suggesting that the acquisition of new words is facilitated by their phonological or semantic similarity with other words [@hills2009longitudinal; @fourtassi2020growth; @laing2022phonological; @jones2019children]. If phonological similarity plays a cross-language facilitation role during word acquisition, cognate translation equivalents---which share both semantic and phonological similarity---should be acquired, on average, earlier that non-cognate translation equivalents---which share semantic similarity (e.g., are taxonomically related) but not phonological similarity. 
+
+Evidence supporting an earlier age of acquisition for cognates is scarce. @bosch2014first collected parental reports of expressive vocabulary from 48 Catalan-Spanish bilinguals aged 18 months, and found that cognates represented a larger proportion of participant's vocabulary than non-cognates. @schelletter2002effect provided converging evidence from a longitudinal single-case study, in which an English-German bilingual produced cognates earlier than non-cognates, on average. The low sample size in these two studies makes it challenging to draw strong conclusions about the effect of cognateness on vocabulary growth. Floccia et al.'s estimates are statistically more reliable given their remarkably larger sample size (372 participants). Although their results suggest a cognateness effect on vocabulary size, their study was not aimed at testing the effect of cognateness on age of acquisition at the *word-level*. The response variable in this study was the proportion of words each participant understood and/or produced (i.e., vocabulary size), from the list of lexical items in the vocabulary checklists. By aggregating the responses from all words into a single datum per child, it was no longer possible to test the effect of cognateness on word acquisition at the word-form level. Also, all participants were aged 24 months, meaning that even if the unaggregated responses to individual items were included as the response variable, age-sensitive claims about the effect of cognateness on word acquisition should be taken with caution [a limitation also present in the @bosch2014first study].
+
+More recently, @mitchell2022cognates addressed this issue providing a more fine grained measure of a  cognateness facilitation effect in vocabulary acquisition. Using a longitudinal sample of 47 16-to-30 month-old French-English bilinguals living in Canada, the authors collected data on expressive vocabulary data in both languages. They created two lists of translation equivalents: one made of 131 cognates, and one made of 406 non-cognates. The proportion of translation equivalents that children were reportedly able to produce was higher in the cognate lists than in the non-cognate list across ages, even when both lists were matched by semantic category (furniture, animals, food were similarity represented in both lists) and age of acquisition norms (an index of word difficulty). These findings shed some light on the ongoing exploration of why (if at all) bilinguals' vocabulary size seems to grow faster when both languages are more similar at the lexical level. Word-forms sharing more phonemes with their translation equivalents (i.e., cognates) seem to be acquired faster. Parallel activation remains a plausible explanation for this effect. When a child is exposed to a word form, its (phonologically similar) translation equivalent is activated, and this cross-language activation increases the chances of acquisition. The precise underpinnings of this effect are still unclear.
+
+In the present investigation we approach the cognate facilitation on word learning by extending the conceptual framework of accumulator models of language acquisition to the bilingual case. Accumulator models formalise the widespread assumption that a child's vocabulary growth rate is a function of mainly---but not exclusively---the number of learning instances that a child has accrued with a particular word [see @kachergis2022standard for review]. A learning instance of a word consists, for example, in hearing such word-form (*flower*) in the presence of its referent (a flower). As infants receive linguistic input, they also accumulate opportunities to learn words until a threshold is crossed, an the word can be considered to be acquired. In line with this account, the frequency with which a child encounters a particular word-form in their speech input is a critical determiner of the age at which such word will be acquired. The more frequently [@hidaka2013computational; @mollica2017how]. For instance, words with high lexical frequency like 'flower' [`r format(floor(childes[childes$token=="flower",]$freq_million), big.mark = ",")` times per million words in the CHILDES corpus, @macwhinney2000childes] are more likely to be acquired earlier than words with low lexical frequency such as 'taxi' (`r format(floor(childes[childes$token=="taxi",]$freq_million), big.mark = ",")` times per million words) [e.g., @goodman2008does]: infants might accumulate learning experiences with 'flower' faster than with 'taxi'. 
+
+Previous accounts on vocabulary growth based on accumulator models are a convenient framework to study bilingual vocabulary growth, as bilinguals share fundamentally similar learning mechanisms with monolinguals. Developmental divergences between both groups can be understood as the result of the the negotiation between such mechanisms and the particular demands of a dual language input [e.g., @werker2005primir; @curtin2011bilingual]. One of such divergences is the fact that bilinguals' frequency of exposure to a word-form is mediated by their degree of exposure to their languages. Assuming that bilinguals and monolinguals are exposed to an equivalent amount of linguistic input, a Spanish-English bilingual who is exposed to Spanish 80% of the time and to English 20% of the time would need more time to accumulate the same experience with 'flower' and 'taxi' than an English monolingual would (who listens 100% of the time to English).
+
+We suggest that the cognateness effect proposed by Floccia et al. and Mitchell et al. facilitates word acquisition by reducing the number of learning instances needed by a word to be acquired, and that this effect takes place *only* once the (cognate) translation of such word has been acquired. We hypothesise that both forms in the translation equivalent (e.g., *gat* and *gato* [Catalan and Spanish for 'cat'], for a Catalan-Spanish bilingual) follow their acquisition trajectory as they would for a monolingual child: accumulating learning instances, which occur a a rate proportional to the lexical frequency of the word-form and the amount of exposure to the language they belong to. When one of the word-forms is sufficiently acquired, the number of learning instances left needed for the acquisition of the other word-form is reduced.
+
+This facilitation would occur as the result of the semantic and phonological overlap between both words. When the child has sufficient lexical knowledge of *gat*, and therefore there is some for-referent association in place, future presentations of the similar sounding translation *gato* in the presence of the same reference should lead to an increased likelihood of acquisition. In the case of a non-cognate translation equivalent, such facilitation would be unlikely. For instance, even if the child has already acquired the word *gos*, hearing its dissimilar Spanish translation *perro* would hardly lead to an increased probability of acquisition. In line with this account, only the later-acquired form of the translation equivalent would benefit from its cognate status. Given that children are more likely to acquire words from languages to which they are more often exposed to [@david2008individual; @cattani2014how; @thordardottir2006bilingual], the acquisition of words in the language of lower exposure should, on average, be more susceptible to the effect of cognateness. For instance, if the previous child is exposed 80% of the time to English, and 20% of the time to Spanish, words in Spanish (especially low-frequency ones) would show a cognateness facilitation effect, with an earlier age of acquisition for cognates than for non-cognates.
+
+{apafg-hypotheses} illustrates graphically a theoretical account of the acquisition of a Catalan-Spanish cognate translation equivalent, *gat*-*gato* [cat] whose word-forms share three phonemes, and of a non-cognate translation equivalent, *gos*-*perro* [dog] whose word-forms only share one phoneme. We assume the case of a Catalan-Spanish bilingual child who is exposed 65% of the time to Catalan, and 35% of the time to Spanish. On the top panels, we illustrate the cumulative sum of learning instances that a child accumulates across ages for the Catalan word-form (/gat/ or /gos/) and its Spanish translation (/perro/ or /gato/). We assume an arbitrary threshold of learning instances at which the child is considered to have acquired a word (solid grey line). Points and triangles show the age-of-acquisition at which the amount of learning instances reaches the threshold. We show the predicted age-of-acquisition under two hypothesis: (1) a cognateness facilitation effect that lowers the acquisition threshold after one of the word-forms (in this case Catalan /gat/) has been acquired, and (2) no cognateness facilitation, for which the acquisition of the second word-form occurs unconditionally of the acquisition of the first. On the bottom, we show the predicted probability of acquisition for the Catalan and Spanish words under each hypothesis, as it would be expected to observe in a vocabulary questionnaire like the one in the present study. We assume that such probability starts at 0% at birth, reaches 50% (and grows the fastest) at the age of acquisition, and reaches 100% at some points in later ages.
+
+```{r apafg-hypotheses}
+#| label: apafg-hypotheses
+#| apa-cap: "Schematic representation of the hypothesised cognate facilitation effect on word acquisition."
+#| out-width: 100%
+knitr::include_graphics(normalizePath("assets/img/diagram.png"))
+```
+
+In line with this hypothesis, the size of the effect of linguistic similarity on vocabulary size that Floccia et al. reported was larger in the additional language (language of lower exposure) vocabulary than in English vocabulary (language of higher exposure). Most participants in their sample were English-dominant, meaning that their relative amount of exposure to English was larger than in the additional language. Therefore, participants may have on average learned the English word-form of translation equivalents earlier than the word-form in the additional language. Because of children's imbalance in exposure to words in English and in the additional language, the acquisition of English words by English-dominant participants might then benefit less frequently from their cognate status (the other word-form is unlikely to be available yet), while the acquisition of words in the additional language would benefit more frequently from their phonological similarity with the (more likely available) English translation.
+
+We tested the hypothesis that the cognate effect on word acquisition is conditional to a child's exposure rate to the word, which would support the hypothesis that cognateness plays a role in the acquisition of a word *only* once its translation has been already acquired. We collected vocabulary data on production and comprehension from a large sample of bilingual Catalan-Spanish children using an online vocabulary checklist designed for the present study. Participants were aged `r min(floor(participants$age))` to `r max(floor(participants$age))` months, and were exposed to Catalan and/or Spanish to varying degrees. We adopted a Bayesian explanatory item response theory  [IRT, see @kachergis2022standard for a similar approach] approach to model the probability of a given participant being reported to *understand* or *understand and say* each word-form in the checklist, conditional to participants age and rate of exposure to the word-form, and the cognate status of the word form, while adjusting for the the number of phonemes in the word form (an indicator of word acquisition difficulty).
+
+To operationalise participants' exposure rate to a word-form, we used a composite measure that captures the lexical frequency of the word-form (an approximation of how often a participant is exposed to it), and child's amount of exposure to the language such word belongs to. This measure was calculated by multiplying the word-form's lexical frequency with participant's degree of exposure to the language the word belongs to. Lexical frequencies were extracted from the CHILDES corpora [@macwhinney2000childes; @sanchez2019childes] (see Appendix A for more details). Participants' degree of exposure were reported by caregivers in a language exposure questionnaire they filled before the vocabulary checklist. Caregivers provided a proportion of the time the child was estimated to listen to any language they were spoken to regularly (described in the methods section). The resulting measure is a exposure-weighted lexical frequency measure, which was included in analyses as a proxy of how often bilingual participants were exposed to each word-form.
+
+*Cognateness* was defined as a continuous measure of phonological similarity between translation equivalents. We quantified the phonological similarity between each pair of Catalan-Spanish word-forms by computing the inverse of the normalised Levenshtein distance between their X-SAMPA phonetic transcriptions [@levenshtein1966binary; @wells1995computer]. This score is computed by counting the number of insertions, deletions and replacements needed by both transcriptions to become identical, dividing the resulting value by the length of the longest transcription, and finally subtracting this value from one. This results in a proportion that indicates how much the two phonetic transcriptions of the translation equivalent are similar to each other, ranging from zero (no similarity at all) to one (both transcriptions are identical) [see @floccia2018introduction; @fourtassi2020growth; @laing2022phonological for similar approaches]. For instance, this measure of phonological similarity returns 0% for *ocell* `[uceL]` and *pájaro* `[paxa4o]`, Catalan and Spanish for 'bird', and returns 50% for *lluna* `[Lun5]` and *luna* `[luna]`, Catalan and Spanish for 'moon' (see Appendix A for more details).
+
+# Methods {#sec-methods}
+
+All materials, data, and reproducible code can be found at the OSF ([https://osf.io/hy984/](https://osf.io/hy984/)) and GitHub ([https://github.com/gongcastro/trajectories](https://github.com/gongcastro/trajectories)) repositories. This study was conducted according to guidelines laid down in the Declaration of Helsinki, and was approved by the Drug Research Ethical Committee (CEIm) of the IMIM Parc de Salut Mar, reference 2020/9080/I.
+
+
+## Questionnaire {#sec-questionnaire}
+
+```{r}
+#| label: items
+#| echo: false
+#| message: false
+#| warning: false
+#| include: false
+n_categories <- nrow(distinct(bvq_data$pool, semantic_category))
+
+n_te <- length(unique(bvq_data$pool$te))
+
+n_items <- length(unique(bvq_data$pool$item))
+
+n_item_language <- bvq_data$pool |> 
+    count(language) |>
+    pull(n) |>
+    set_names(c("catalan", "spanish"))
+
+n_items_version <- bvq_data$pool |>
+    unnest(version) |> 
+    count(version, language) |> 
+    pivot_wider(names_from = language,
+                values_from = n) |> 
+    clean_names() |> 
+    mutate(version = tolower(version))
+
+```
+
+To collect vocabulary data from participants, we created an *ad hoc* questionnaire: the Barcelona Vocabulary Questionnaire. This questionnaire was inspired by the MacArthur-Bates Communicative Development Inventory [@fenson2007macarthurbates] and its adaptations to other languages, and was implemented on-line using the formR platform [@arslan2020formr]. This questionnaire is structured in three blocks: (1) a language exposure questionnaire, (2) a demographic survey, and (3) two vocabulary checklists. Vocabulary checklists followed a similar structure as the Oxford Communicative Developmental Inventory [@hamilton2000infant] and consisted in two lists of words: one in Catalan and one in Spanish. both lists included items from a diverse sample of `r n_categories` semantic/functional categories. The Catalan checklist contained `r n_item_language["catalan"]` items and the Spanish checklist contained `r n_item_language["spanish"]`. Items in one language were translation equivalents of the items in the other language, roughly following a one-to-one mapping (e.g., the same participant responded to both *gos* and *perro*, Catalan and Spanish for 'dog') (see {apatb-items} for a summary of the questionnaire items).
+
+```{r apatb-items}
+#| label: apatb-items
+#| apa-cap: "Summary of the items included in the final analyses."
+#| eval: true
+#| echo: false
+#| warning: false
+items |> 
+    arrange(language, list) |> 
+    distinct(te, .keep_all = TRUE) |> 
+    mutate(a = grepl("A", list),
+           b = grepl("B", list),
+           c = grepl("C", list),
+           d = grepl("D", list)) |> 
+    group_by(semantic_category) |> 
+    summarise(across(a:d, sum), 
+              items = list(meaning),
+              .groups = "drop") |> 
+    mutate(total = rowSums(across(a:d)),
+           items = map(items, function(x) head(x, 2))) |>  
+    arrange(desc(total)) |> 
+    relocate(a:d, total, items) |> 
+    gt(rowname_col = "semantic_category") |> 
+    fmt_percent(matches("_prop"), decimals = 1) |> 
+    cols_label(a = "List A",
+               b = "List B",
+               c = "List C",
+               d = "List D",
+               total = "Total",
+               items = "Examples") |> 
+    tab_style(cell_text(size = "small"),
+              list(cells_body(),
+                   cells_stub(),
+                   cells_column_labels(),
+                   cells_column_spanners(),
+                   cells_row_groups())) |> 
+    tab_style(cell_text(weight = "bold"),
+              cells_column_spanners()) |> 
+    tab_style(cell_text(style = "italic"),
+              cells_column_labels()) |> 
+    tab_options(data_row.padding = px(2),
+                row_group.padding = px(1.2)) |> 
+    tab_style(cell_text(size = "x-small", align = "left"),
+              cells_body(items)) 
+
+```
+
+For each word included in the vocabulary checklists, we asked parents to report whether their child was able to understand it, understand *and* say it, or did not understand or say it (checked out by default). Given the large number of words in the vocabulary checklists, we created four different subsets of the complete list of items. Each subset contained a random but representative sub-sample of the items from the complete list. Semantic/functional categories with less than 16 items---thus resulting in less than four items after dividing it in four lists---were not divided in the short version of the questionnaire: all of their items were included in the four lists. Items that were part of the trial lists of some ongoing experiments in the lab were also included in all versions. The resulting reduced vocabulary checklists contained between `r min(n_items_version$catalan)` and  `r max(n_items_version$catalan)` Catalan words, and between `r min(n_items_version$spanish)` and  `r max(n_items_version$spanish)` Spanish words. Participants were randomly allocated into one of the four subsets. Each response to the questionnaire provided data for a minimum of `r min(n_items_version$catalan, n_items_version$spanish)` and a maximum of `r max(n_items_version$catalan, n_items_version$spanish)` translation equivalents. 
+
+## Participants {#sec-participants}
+
+```{r participants}
+#| label: participants
+#| echo: false
+#| message: false
+#| warning: false
+#| include: false
+# load packages
+n_participants <- responses |>
+    distinct(id, age) |>
+    count(id) |>
+    pull(n) |>
+    table()
+
+diff_responses <- responses |>
+    distinct(id, age) |>
+    left_join(distinct(participants, id, time_stamp, age),
+              by = c("id", "age")) |> 
+    group_by(id) |> 
+    arrange(id, time_stamp) |> 
+    mutate(diff_lag = time_stamp-dplyr::lag(time_stamp, default = NA)) |> 
+    summarise(diff_min = min(diff_lag, na.rm = TRUE),
+              diff_max = max(diff_lag, na.rm = TRUE),
+              .groups = "drop") |> 
+    filter(!(diff_min %in% c(-Inf, Inf))) |>
+    summarise(diff_min = min(diff_min, na.rm = TRUE),
+              diff_max = max(diff_max, na.rm = TRUE))
+
+n_responses <- nrow(distinct(responses, id, age))
+
+dates <- participants$time_stamp |> 
+    range(na.rm = TRUE) |> 
+    as_date()
+
+n_trilingual <- participants |> 
+    select(starts_with("doe_")) |> 
+    mutate(doe_total = rowSums(across(everything())),
+           is_trilingual = doe_total < 1) |> 
+    add_count(name = "n_total") |> 
+    count(is_trilingual, n_total) |> 
+    mutate(prop = n/n_total)
+
+participants_edu <- table(participants$edu_parent)
+```
+
+We collected `r n_responses` responses to the questionnaire from `r sum(n_participants)` distinct children from the Metropolitan Area of Barcelona between the `r format(dates[1], "%dth of %B, %Y")` and the `r format(dates[2], "%dth of %B, %Y")`: `r n_participants[1]` of those participants participated once, `r n_participants[2]` twice,  `r n_participants[3]` three times, and  `r n_participants[4]` four times. Recurrent participants provided responses with a minimum of `r as.numeric(diff_responses$diff_min)` days between responses, and a maximum of `r as.numeric(diff_responses$diff_max)`, and were always allocated to the same questionnaire list (A, B, C, or D). Participants were part of the database of the Laboratori de Recerca en Infància (Universitat Pompeu Fabra), and were contacted by e-mail or phone if their child were aged between `r floor(min(responses$age))` and `r ceiling(max(responses$age))` months, and had not been reported to be exposed more than 10% of the time to a language other than Spanish or Catalan (see {apatb-participants} for a more detailed description of the sample). In total, `r n_trilingual$n[2]` participants (`r percent(n_trilingual$prop[2], accuracy = 0.01)`) participants were reported to be exposed to a third language other than Catalan and Spanish. All families provided informed consent before participating. Upon consent, families were sent a link to the questionnaire via e-mail, which they filled from a computer, laptop, or mobile device. Filling the questionnaire took 30 minutes approximately. After completion, families were rewarded with a token of appreciation.
+
+```{r apatb-participants}
+#| label: apatb-participants
+#| echo: false
+#| message: false
+#| warning: false
+#| apa-cap: "Participant sample size by age and degree of exposure to Catalan."
+#| apa-note: "Information about language degree of exposure (DoE) was provided by families before filling the questionnaire. In this table, a 100\\% indicates that the participant was exclusively exposed to Catalan, and never to Spanish. A 0\\% indicates that the participant was not exposed to Catalan ever, and most of the time to Spanish. A 50\\% indicates that the participant was exposed to Catalan and Spanish approximately half of the time each. The 100\\%, 0\\%, and 50\\% would be traditionaly classified as Catalan monolingual, Spanish monolingual, and Catalan-Spanish bilingual, respectively. For illustration purposes this table, DoEs were binned into 25\\%-wide bins, and ages (in months) binned into 4 month-wide bins. Hyphens indicate that no participants from that specific combination of age and DoE filled the questionnaire."
+participants |>
+    mutate_at(vars(starts_with("doe_")), 
+              (\(x) floor(x * 10) / 10)) |> 
+    mutate(
+        age = cut(floor(age),
+                  c(10, 14, 18, 22, 26, 30, 34, 36),
+                  include.lowest = TRUE),
+        doe_catalan = cut(
+            doe_catalan,
+            c(0, 0.25, 0.5, 0.75, 1),
+            labels = c("0-25%",
+                       "25-50%", 
+                       "50-75%",
+                       "75-100%"),
+            include.lowest = TRUE
+        ) |>
+            as.character()
+    ) |>
+    count(age, doe_catalan) |>
+    arrange(desc(doe_catalan)) |>
+    pivot_wider(names_from = age, values_from = n) |>
+    gt() |>
+    summary_rows(
+        columns = 2:7,
+        fns = list("Total" = ~ sum(., na.rm = TRUE)),
+        formatter = fmt_integer
+    ) |>
+    sub_missing(everything(), everything(), missing_text = "--") |>
+    cols_label(doe_catalan = "Catalan exposure") |>
+    tab_spanner("Age (months)", 2:8) |>
+    tab_style(cell_text(align = "left"),
+              list(cells_body(doe_catalan),
+                   cells_column_labels(doe_catalan)))
+```
+
+We used the highest self-reported educational attainment of parents or caregivers as a proxy of participants' socio-economic status (SES). This information was provided by each parent or caregiver by selecting one of six possible alternatives in line with the current educational system in Spain: 'sense escolaritzar/sin escolarizar' [no education], 'educació primària/educación primaria' [primary school], 'educació secundària/educación secundaria' [secondary school], 'batxillerat/bachillerato' [complementary studies/high school], 'cicles formatius/ciclos formativos' [vocational training], and 'educació universitària/educación universitaria' [university degree]. Most families reported university studies (`r participants_edu["University"]`, `r percent(participants_edu["University"]/sum(participants_edu))`), followed by families were the highest educational attainment were vocational studies (`r table(participants$edu_parent)["Vocational"]`, `r percent(participants_edu["Vocational"]/sum(participants_edu))`), complementary studies (`r participants_edu["Complementary"]`,  `r percent(participants_edu["Complementary"]/sum(participants_edu))`), secondary education (`r participants_edu["Secondary"]`, `r percent(participants_edu["Secondary"]/sum(participants_edu))`), no formal education (`r participants_edu["No education"]`, <1%) and primary education (`r participants_edu["Primary"]`, <1%).
+
+
+## Data analysis {#sec-analysis}
+
+```{r sample-sizes}
+#| label: sample-sizes
+#| echo: false
+#| message: false
+#| warning: false
+#| include: false
+n_obs <- nrow(responses)
+
+sum_obs <- responses |>
+    mutate(te = factor(te)) |>
+    count(te) |>
+    summarise(across(n, lst(median, min, max), 
+                     .names = "{.fn}"))
+
+# attrition
+n_items <- bvq_data$pool
+
+n_items_nouns <- n_items |> 
+    filter(class=="Noun") 
+
+n_items_freq <- n_items_nouns |> 
+    left_join(childes,
+              by = c("childes_lemma" = "token")) |> 
+    drop_na(freq_zipf, wordbank_lemma)
+
+n_items_lemma <- n_items_freq |> 
+    filter(n_lemmas == 1)
+
+n_items_multi <- n_items_lemma |> 
+    filter(!is_multiword) |> 
+    filter(include, !is.na(wordbank_lemma)) |> 
+    drop_na(sampa) |> 
+    distinct(te, language)
+
+n_items_duplicated <- n_items_multi |> 
+    add_count(te, name = "n_te") |>
+    filter(n_te == 2)
+
+n_items_final <- n_items_duplicated |> 
+    count(language) |> 
+    group_split(language) |> 
+    set_names(c("Catalan", "Spanish")) |>
+    map_int("n")
+
+n_te <- length(unique(responses$te))
+
+rope_interval <- percent(c(lower = -0.1/4, upper = 0.1/4), accuracy = 0.1)
+
+r_info <- sessionInfo()
+
+r_version <- glue(r_info$R.version$major, 
+                  r_info$R.version$minor, 
+                  .sep = ".")
+```
+
+From the responses to the `r format(nrow(n_items), big.mark = ",")` items included in the questionnaire, we restricted the analyses to responses to nouns (`r nrow(n_items)-nrow(n_items_nouns)` items corresponding to other grammatical classes were excluded) [@fourtassi2020growth]. We then excluded items with missing lexical frequency scores (*n* = `r nrow(n_items_nouns)-nrow(n_items_freq)`), items that included more than one lemma (e.g., *mono/mico* [monkey], *n* = `r nrow(n_items_freq)-nrow(n_items_lemma)`), multi-word items or phrases (e.g., *barrita de cereales* [cereal bar], *n* = `r nrow(n_items_lemma)-nrow(n_items_multi)`). Finally, we removed items without a translation in the other language (*n* = `r nrow(n_items_multi)-nrow(n_items_duplicated)`). This resulted in a final list of `r sum(n_items_final)` items, corresponding to words `r n_items_final["Catalan"]` Catalan words and their `r n_items_final["Spanish"]` Spanish translations (`r n_te` translation equivalents). After collecting participants' responses, the final dataset consisted of `r format(n_obs, big.mark = ",")` observations, each corresponding to a single response of one participant to one item. Each translation equivalent received a median of `r round(sum_obs$median)` responses (*Min* = `r round(sum_obs$min)`, *Max* = `r round(sum_obs$max)`) from participants, both languages pooled together. 
+
+We modelled the probability of participants answering each response category (*No* < *Understands* < *Understands and Says*) using a Bayesian, mixed-effects ordinal regression model (`r dim(model_fit_3$fit)[2]` sampling chains with `r format(dim(model_fit_3$fit)[1], big.mark = ",")` iterations each). This model allowed us to estimate both item and participant word-acquisition trajectories, as a function of different fixed effects from $\text{Age}$ (number of months elapsed between participants' birth date and questionnaire completion), $\text{Length}$ (number of phonemes in the X-SAMPA phonological transcription of the word-form), $\text{Exposure}$ (composite measure of lexical frequency and language degree of exposure), and $\text{Cognateness}$ (a measure of cognateness, defined as the phonological similarity between translation equivalents). For an easier interpretation of the regression coefficients, the values of all predictors were standardised before entering the model by subtracting the mean of the predictor from each value and dividing the result by the standard deviation of the predictor. Participant- and item-level random intercepts and slopes were included when appropriate, according to the structure of the data [@barr2013random]. We specified a weakly informative prior around the parameters of the model (see Appendix C for details).
+
+We built a baseline model $\mathcal{M}_{0}$ that only included the intercept and the main effects of $\text{Age}$, $\text{Length}$, and $\text{Exposure}$ as predictors, and compared it against increasingly more complex models, which introduced predictors in the following order: $\text{Age} \times \text{Exposure}$ ($\mathcal{M}_{1}$), $\text{Cognateness}$ ($\mathcal{M}_{2}$), $\text{Exposure} \times \text{Cognateness}$ ($\mathcal{M}_{3}$), and finally $\text{Age} \times \text{Cognateness}$ and $\text{Age} \times \text{Exposure} \times \text{Cognateness}$ ($\mathcal{M}_{4}$). We compared the predictive performance of the models using Bayesian leave-one-out cross-validation [LOO-CV, @vehtari2017practical]^[Due to computational constraints, we performed LOO-CV based on a random sub-sample of `r format(dim(model_log_liks$model_fit_3)[1], big.mark = ",")` samples of the posterior distribution of the fixed effects [@magnusson2020leaveoneout]]. LOO-CV involves computing the likelihood of each data point, given a model  fitted excluding such data point. The likelihoods generated by the model for each of the data points are summarised together in a measure of predictive performance: the expected log-predicted density (ELPD). This measure penalises the complexity of the model ELPD. ELPD values closer to zero indicate better predictive accuracy. We compared the ELPD of each model, and selected for interpretation the one showing the best performance (see Appendix C for more details about the models).
+
+We assessed the practical relevance of the estimated regression coefficients of the selected model following @kruschke2018bayesian. First, we specified a region of practical equivalence (ROPE) from `r rope_interval["lower"]` to +`r rope_interval["upper"]`, in the probability scale. This region indicates the range of values that we considered equivalent to zero. The degree of overlap between the posterior distribution of a regression coefficient with the  can be interpreted as support for the true parameter of the coefficient being zero or equivalent. We then computed the 95% highest density interval (HDI) of the posterior distribution of each regression coefficient. This interval contains the true value of this coefficient with 95% probability, given the data. Finally, we calculated the proportion of posterior samples in the 95% HDI that fell into the ROPE, which indicates the probability that the true value of the regression coefficient falls into the ROPE, and should therefore be considered equivalent to zero. For example, a 90% overlap between the HDI of a coefficient's posterior distribution and the  indicates that, given our data, there is a 90% probability that the true value of the coefficient falls within the ROPE, and is therefore equivalent to zero.
+
+Data processing and visualisation was done in R [@rcoreteam2013language, version `r r_version`] using the Tidyverse family of packages [@wickham2019welcome]. Bayesian modelling was done using the `brms` [@burkner2017brms; @carpenter2017stan], `loo` [@vehtari2022loo], `tidybayes` [@kay2021tidybayes] and `marginaleffects` [@arel-bundock2022marginaleffects] R packages.
+
+# Results {#sec-results}
+
+```{r results-values}
+#| label: results-values
+#| echo: false
+rhats_df <- map_df(model_rhats, bind_rows, .id = "model") |> 
+    mutate(model = paste0("Model ", str_extract(model, "[0-9]"))) |> 
+    pivot_longer(-model, 
+                 names_to = ".variable",
+                 values_to = ".rhat") |>
+    filter(str_detect(.variable, "b_|sd_")) |> 
+    drop_na() 
+
+loo_diff <- loo_compare(model_loos)[2, 1]
+loo_diff_se <- loo_compare(model_loos)[2, 2]
+
+post_draws_list <- posterior_draws$summary |> 
+    mutate(across(.median:.lower,
+                  \(x) ifelse(grepl("Intercept", .type), plogis(x), x/4))) |> 
+    split(posterior_draws$summary$.variable)
+```
+
+All models showed adequate convergence diagnostics and little evidence of multicollinearity between predictors (see Appendix D for details). $\mathcal{M}_{3}$, which did *not* include the $\text{Age} \times \text{Exposure} \times \text{Cognateness}$ three-way interaction, showed the best predictive performance with a difference in expected log-predicted density (ELPD) compared to the second best-performing model ($\mathcal{M}_{4}$) of `r round(loo_diff, 2)` $\pm$ `r round(loo_diff_se, 2)`. Given our data, the predictions of the $\mathcal{M}_{3}$ are confidently more accurate than those of the other models (see {apatb-results-loos} for all model comparisons). Both $\mathcal{M}_3$ and $\mathcal{M}_4$ performed considerably better than the rest of the models, which did not include the $\text{Exposure} \times \text{Cognateness}$ two-way interaction. This points to the effect of $\text{Cognateness}$ being strongly modulated by $\text{Exposure}$, and that this interaction remains relatively stable across ages.
+
+```{r apatb-loos}
+#| label: apatb-results-loos
+#| echo: false
+#| message: false
+#| warning: false
+#| eval: true
+#| apa-cap: "Bayesian leave-one-out cross validation (LOO-CV)."
+#| apa-note: "We report the ELPD of each model along their associated standard errors (SE). The last column indicates the difference in ELPD between each model and the model with the best predictive accuracy (Model 3). Pareto-k estimates of all models were acceptable (k < 0.5)."
+model_loos |>
+    loo_compare() |>
+    as.data.frame() |>
+    rownames_to_column("model") |>
+    mutate(model = paste0("Model ", str_remove(model, "model_fit_"))) |>
+    select(model, elpd_loo, se_elpd_loo, elpd_diff, se_diff) |> 
+    gt(rowname_col = "model") |>
+    fmt_number(2:5, decimals = 2, sep_mark = ",") |>
+    cols_merge_uncert(elpd_loo, se_elpd_loo) |> 
+    cols_merge_uncert(elpd_diff, se_diff) |> 
+    cols_label(
+        model = "Model",
+        elpd_loo = "ELPD $$\\pm$$ SE",
+        elpd_diff = "Diff. $$\\pm$$ SE"
+    ) |>
+    tab_style(cell_text(weight = "bold", style = "italic"),
+              cells_column_labels()) |>
+    tab_style(cell_text(align = "left"),
+              cells_title(groups = "subtitle"))
+```
+
+{apatb-coefs} shows the summary of the posterior distribution of the fixed regression coefficients of $\mathcal{M}_{3}$, and their degree of overlap with the ROPE. For interpretability, we report the estimated regression coefficients transformed to the probability scale. The resulting values correspond to the maximum difference in probability of acquisition (*Comprehension* or *Comprehension and Production*) that corresponds to a one standard deviation change in each predictor^[The logit and probability scales relate non-linearly. This means that one logit difference is not necessarily translated to a unique value in the probability scale. For example, the probability of acquisition of a given word might increase in 5% when age increases from 22 to 23 months, the probability of acquisition of the same word might only increase in 0.2% when age increases from 30 to 32 months. The linear growth of the probability of acquisition differs along the logistic curve, and therefore deciding the age point at which to report the estimates of the regression coefficients in the probability scale is not trivial. Following @gelman2020regression, we report the maximum value of such coefficient, which corresponds to the linear growth (i.e. derivative) of the logistic curve at the age at which most participants were acquiring a given word. This value can be approximated by dividing the coefficient in the logit scale by four: $\hat{\beta_j}/4$, where $\hat{\beta_j}$ is the estimated mean of the posterior distribution of coefficient $j$.].
+
+```{r apatb-coefs}
+#| label: apatb-coefs
+#| apa-cap: "Posterior distribution of regression coefficients Model 3."
+#| apa-note: "Median: median of the posterior distribution in the probability scale. 95\\% HDI: 95\\% highest density interval of the distribution; narrowest range of values that contains 95\\% of the distribution, and therefore is 95\\% likely to contain the true value, given the data. On top of each distribution, we indicate the proportion of posterior samples in the 95\\% HDI that fall into the region of practical equivalence (ROPE). This proportion indicates the probability of the true value of the coefficient being equivalent to zero. Lower values indicate that the true value is unlikely to be zero of equivalent to zero."
+#| echo: false
+#| message: false
+#| warning: false
+# summarise posterior draws
+intercept_label <- "Intercepts (at 22 months)"
+
+posterior_draws$summary |>
+    select(.variable_name, .median, .lower, .upper, .rope_overlap, .type) |>
+    mutate(across(.median:.upper,
+                  \(x) ifelse(.type==intercept_label, plogis(x), x/4))) |> 
+    gt(groupname_col = ".type", 
+       rowname_col = ".variable_name") |>
+    fmt_percent(.rope_overlap) |> 
+    fmt_number(c(.median:.upper)) |>
+    cols_merge(c(.lower, .upper),
+               pattern = "[{1}, {2}]") |>
+    cols_label(
+        .variable_name = "Parameter",
+        .median = "Median",
+        .lower = md("95% HDI"),
+        .rope_overlap = md("ROPE prob.")
+    ) |>
+    tab_style(cell_text(weight = "bold"),
+              cells_column_labels(columns = 1:5)) |>
+    tab_style(cell_text(align = "left"),
+              cells_title(groups = "subtitle")) |> 
+    tab_style(cell_text(size = "small"), 
+              list(cells_body(),
+                   cells_row_groups(),
+                   cells_stub())) |> 
+    tab_style(cell_text(style = "italic"),
+              cells_row_groups())
+```
+
+The main effect of $\text{Age}$ showed the strongest association with the probability of acquisition ($\beta$ = `r round(post_draws_list[["b_age_std"]]$.median, 2)`, 95% HDI = [`r round(post_draws_list[["b_age_std"]]$.lower, 2)`, `r round(post_draws_list[["b_age_std"]]$.upper, 2)`]), with all of its posterior samples falling out of the ROPE. A one-month increment in age increased a maximum of `r round(post_draws_list[["b_age_std"]]$.median/sd(responses$age), 2)` the probability of acquisition. Similarly, the word exposure index ($\text{Exposure}$) had a strong effect on the probability of acquisition ($\beta$ = `r round(post_draws_list[["b_exposure_std"]]$.median, 2)`, 95% HDI = [`r round(post_draws_list[["b_exposure_std"]]$.lower, 2)`, `r round(post_draws_list[["b_exposure_std"]]$.upper, 2)`]). All of the posterior samples of this regression coefficient excluded the ROPE. The impact of this predictor on the probability of acquisition was positive: for every standard deviation increase in exposure, the participant was `r round(post_draws_list[["b_exposure_std"]]$.median/sd(responses$exposure), 2)` more likely to acquire it. Word-form length also showed a significant association with probability of acquisition ($\beta$ = `r round(post_draws_list[["b_n_phon_std"]]$.median, 2)`, 95% HDI = [`r round(post_draws_list[["b_n_phon_std"]]$.lower, 2)`, `r round(post_draws_list[["b_n_phon_std"]]$.upper, 2)`]). For every phoneme in the word-form, participants were `r round((post_draws_list[["b_n_phon_std"]]$.median)/sd(responses$n_phon), 2)` less likely to know it. The 95% HDI of the regression coefficient of the $\text{Age} \times \text{Exposure}$ interaction also excluded the ROPE ($\beta$ = `r round(post_draws_list[["b_age_std:exposure_std"]]$.median, 2)`, 95% HDI = [`r round(post_draws_list[["b_age_std:exposure_std"]]$.lower, 2)`, `r round(post_draws_list[["b_age_std:exposure_std"]]$.upper, 2)`]), showing that the effect of the word exposure index differed across ages: older children were more sensitive likely to acquire words with higher exposure rate than younger children.
+
+The posterior distribution of the main effect of cognateness excluded the ROPE completely ($\beta$ = `r round(post_draws_list[["b_lv_std"]]$.median, 2)`, 95% HDI = [`r round(post_draws_list[["b_lv_std"]]$.lower, 2)`, `r round(post_draws_list[["b_lv_std"]]$.upper, 2)`]). For every 10% increment in cognateness, the acquisition of a word increased in `r round(post_draws_list[["b_lv_std"]]$.median/(40*sd(responses$lv)), 2)`. The effect of $\text{Cognateness}$ interacted with that of $\text{Exposure}$: the 95% HDI of the regression coefficient of interaction excluded the ROPE entirely ($\beta$ = `r round(post_draws_list[["b_exposure_std:lv_std"]]$.median, 2)`, 95% HDI = [`r round(post_draws_list[["b_exposure_std:lv_std"]]$.lower, 2)`, `r round(post_draws_list[["b_exposure_std:lv_std"]]$.upper, 2)`]), suggesting that the effect of cognateness on a word's probability of acquisition changed depending on participants' exposure to word. Follow-up analyses on this interaction showed that when exposure rate was low (e.g., -1 SD), cognateness increased the probability of acquisition substantially. This effect was negligible when for words with median or high exposure (+1 SD) (see {apafg-results-marginal}).
+
+```{r apafg-results-marginal}
+#| label: apafg-results-marginal
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 8
+#| fig-height: 6
+#| eval: true
+#| apa-cap: "Posterior marginal effects of Model 3. Thin lines correspond to 50 mean predictions generated from 50 MCMC samples of the posterior distribution of the model. Thicker lines indicate the median of those predictions. Different colours indicate different levels of phonological similarity (as indicated by the Cognateness similarity between pairs of translation equivalents). Predictions are presented separately for different degrees of word exposure index: little exposure to the word, mean exposure, and high exposure. Predictions for Comprehension are show on top and predictions for Comprehension and Production are shown on the bottom. In-sample predictions lie inside the grey rectangles."
+
+clrs_reorder <- c("#58508d", "#003f5c", "#122A36", "#ffa600", "#ff6361", "#bc5090")
+
+marginal_effects_epreds |> 
+    mutate(age = rescale_variable(age_std, 
+                                  mean(responses$age), 
+                                  sd(responses$age)),
+           exposure = factor(exposure_std,
+                             levels = unique(exposure_std),
+                             labels = c("Low exposure (-1 SD)",
+                                        "Mean exposure",
+                                        "High exposure (+1 SD)"),
+                             ordered = TRUE),
+           lv = factor(lv_std,
+                       levels = unique(lv_std),
+                       labels = paste0(c(0, 50, 100), "%"),
+                       ordered = TRUE),
+           .category = ifelse(.category=="Understands",
+                              "Comprehension",
+                              "Production")) |> 
+    ggplot(aes(age, .value, colour = lv, fill = lv)) +
+    facet_grid(.category~exposure) +
+    annotate(geom = "rect",
+             xmin = min(responses$age),
+             xmax = max(responses$age),
+             ymin = -Inf,
+             ymax = Inf,
+             fill = "grey95",
+             colour = NA) +
+    annotate(geom = "text",
+             x = mean(responses$age),
+             y = 0,
+             hjust = -0.1,
+             vjust = 0,
+             label = "Observed age range",
+             size = 2) +
+    geom_vline(xintercept = mean(responses$age), 
+               linetype = "dotted") +
+    geom_hline(yintercept = 0.5,
+               linetype = "dotted") +
+    geom_line(aes(group = interaction(lv, .draw)),
+              linewidth = 0.5,
+              alpha = 1/10) +
+    stat_summary(fun = median, geom = "line", linewidth = 0.75) +
+    labs(
+        x = "Age (months)",
+        y = "Probability of acquisition",
+        linetype = "Cognateness (phonological similarity)",
+        colour = "Cognateness (phonological similarity)",
+        fill = "Cognateness (phonological similarity)") +
+    scale_colour_manual(values = clrs_reorder[c(4, 5, 1)]) +
+    scale_fill_manual(values = clrs_reorder[c(4, 5, 1)]) +
+    scale_y_continuous(breaks = seq(0, 1, 0.25),
+                       limits = c(0, 1)) +
+    scale_x_continuous(breaks = seq(0, 50, 5)) +
+    theme(legend.position = "top",
+          legend.key.size = unit(1, "cm"),
+          legend.key.height = unit(1, "cm"),
+          axis.text.x = element_text(size = 9),
+          panel.grid = element_blank(),
+          panel.border = element_rect(fill = NA, 
+                                      colour = "black", 
+                                      linewidth = 0.75),
+          plot.subtitle = element_textbox_simple(fill = "grey90",
+                                                 padding = margin(8, 8, 8, 8),
+                                                 margin = margin(0, 0, 10, 0))) +
+    guides(colour = guide_legend(override.aes = list(linewidth = 2)))
+```
+
+# Discussion {#sec-discussion}
+
+The present study explored the cognateness facilitation effect on bilingual word acquisition. We found such effect to be mediated by lexical frequency and degree of language exposure: phonologically similar translation equivalents were on average acquired earlier in age compared to phonologically dissimilar translation equivalents, but this effect was only observed for word-forms to which participants were exposed less often, i.e., words with low lexical frequency and/or words from the language of lower daily exposure. Our results are relevant in the light of two previous findings. First, @floccia2018introduction reported that bilingual toddlers learning two typologically close languages (which shared many cognates, e.g., English-German) showed larger vocabulary sizes than those learning typologically more distance languages (which shared fewer cognates, e.g.,  English-Mandarin). Second, @mitchell2022cognates found an earlier age-of-acquisition for cognates, compared to non-cognates. The outcomes of both studies pointed to cognateness facilitating word acquisition, but the underpinnings of such effect were unclear.
+
+In this study, we capitalised on accumulator models of language acquisition to propose a theoretical account of bilingual word learning, in which cognateness interacts with lexical frequency and language exposure to boost the acquisition of translation equivalents. We suggested that words benefit from their cognate status only *after* their translation equivalent has been acquired: after the child acquires a word-form, the number of learning instances they need to acquire its translation decreases. We further hypothesised that such facilitation is proportional to the phonological similarity between both word-forms. If two translation equivalents sharing a fair deal of phonological similarity (e.g., /\textipa{"pOR.t@}/-/\textipa{"pweR.ta}/, `r percent(stringdist::stringsim("pORt@", "pweRta"))` Levenshtein similarity), learning of one of them should facilitate the acquisition of the other more strongly, compared to when both word-forms share only few phonemes (e.g., /\textipa{k@"Di.R@}/-/\textipa{"si.\textlambda a}/ , `r percent(stringdist::stringsim("DiR@", "siLa"))`).
+
+Under such scenario, we predicted that words from the language of lower exposure would benefit more often from their cognate status than those from the language of higher exposure. The rationale behind such prediction was that children are less frequently exposed to word-forms in the former language than to words in the latter [@cattani2014how; @thordardottir2006bilingual]. Words in the language of lower exposure are therefore more likely to be acquired later in age than their translations in the other language. For instance, an infant exposed to Catalan and Spanish 65% and 35% of the time, respectively, is more likely to learn the Spanish word-form /\textipa{"ga.to}/ later in age than its Catalan translation /\textipa{gat}/. If this is the case, /\textipa{"ga.to}/ is more likely to receive facilitation from the acquisition of /\textipa{gat}/ than *vice versa* (see {apafg-hypotheses} for a graphic illustration). In line with these predictions, we found that cognateness facilitated word acquisition more strongly in words from the language of lower exposure. This asymmetric facilitation effect provides support for the hypothesis that words benefit from their cognate status *after* their translation has been acquired. Overall, our results provide support for an interactive account of bilingual vocabulary learning in which word representations from one language contribute to the acquisition of words in the other.
+
+These findings are, to a large extent, in line with previous literature on word acquisition. First, words-forms with fewer phonemes like /\textipa{sO\textltilde}/ (Catalan for *sun*) were on average more likely to be acquired than word-forms with more phonemes like /\textipa{ku.ku"DRi\textltilde}/ (Catalan for *crocodile*). These results converge with previous studies found word length to be more strongly associated with receptive vocabulary than with expressive vocabulary [e.g., @braginsky2019consistency; @jones2019children]. This facilitation is most likely due to the fact that shorter word-forms are generally simpler to encode as phonological representations in the lexicon than longer word-forms. Shorter word-forms are easier to produce, and therefore to be reported as acquired in parental vocabulary checklists. 
+
+Our participants were also more likely to know words to which they were more frequently exposed to, replicating previously reported effects of lexical frequency [e.g., @braginsky2019consistency], and bilingual language exposure [e.g., @cattani2014how; @thordardottir2006bilingual]. This strong effect of word frequency is a key component of accumulator models of word acquisition, which suggest that the age-of-acquisition of a word is, to a large extent, a function of the child's rate of exposure to such word, which conspires with child- and word-level factors in the process of forming a representation of the word in the child's lexicon [@mollica2017how; @hidaka2013computational]. Our results provide ground for the central role of word frequency in accumulator models to be extended to the bilingual case, in the form of a composite measure of word rate of exposure that accounted for both lexical frequency and language exposure [@cattani2014how; @floccia2018results]. Interestingly, our findings pointed to this predictor playing a stronger role during earlier ages: younger infants benefited from higher exposure rates at earlier ages, suggesting that early word acquisition is supported by mere exposure to word forms more strongly than later word acquisition.
+
+Finally, we found a frequency-mediated facilitation effect of cognateness, adding some nuance to the findings from previous studies [@floccia2018results; @mitchell2022cognates; @bosch2014first; @schelletter2002effect]. Only words to which children were exposed to less frequently benefited from their cognate status. These results favour the account that a word-form benefits from its phonological similarity with its translation only after such translation has been acquired first. On the one hand, our results provide converging evidence for @floccia2018results, and arguably account for the language distance facilitation effect they found in the additional (non-English) language of their bilingual sample. Most children in their sample were English-dominant, and therefore their exposure to English was higher than their exposure to the additional language. However, it was in the vocabulary of the additional language where the authors found a facilitation effect of cognateness: bilingual children learning two languages that shared many cognateness (e.g., English-German) had larger vocabularies in their additional language than those bilingual who were learning two languages that shared less cognates (e.g., English-Chinese). Given our results, we argue that it is language exposure that mediates the relationship between cognateness and vocabulary size in @floccia2018results's sample. 
+
+Overall, our findings parallel cognates' significant role in many models of bilingual language processing. The importance of cognates in these model stems in the fact that cognates provide evidence for a language non-selective account of lexical processing, in which bilinguals activate unselected lexical representations in both languages, even in fully monolingual situations [@thierry2007brain; @christoffels2007bilingual]. As mentioned in the introduction, naming pictures whose labels are cognates leads to shorter latencies than when labels are non-cognates, which suggests that phonological similarity across translations facilitates production [@costa2000cognate; @hoshino2008cognate]. When acting as distractors in naming tasks, cognates exert larger interference effects than non-cognate distractors [@hoshino2011language; @colome2010which]. Both findings suggest that the non-selected translation of the target in @costa2000cognate, or of the distractor in @colome2010which was activated, and that when such word-form was phonologically related to its translation, the facilitation or interference effect was stronger.
+
+Evidence supporting the language-non selective account of lexical access is not restricted to production or the auditory modality, but rather extend to comprehension and translation, and to the visual modality (reading and signing) [@spivey1999cross; @schwartz2007reading; @schwartz2006bilingual; @morford2011when; @vanhell2008sentence; @gimeno-martinez2021crosslinguistic; see @kroll2013multilingual for review]. For instance, @thierry2007brain found neurophysiological evidence of Chinese-English bilinguals activating both languages in a word comprehension task. In this experiment, participants were presented with couples of words in English, and were asked to respond if the words were related in meaning. Unbeknownst to participants, the translations to Chinese of half of such word pairs shared a character. Participants would be presented (visually in a first experiment and auditorily in a second experiment) with an English word pair 'train-ham', which are semantically unrelated, but share a character in their Chinese translations (\foreignlanguage{chinese-simplified}{火車} [Huo Che]-\foreignlanguage{chinese-simplified}{火腿} [Huo Tui]). Bilinguals' brain signal differed across words pairs with and without translation overlap (e.g., 'apple-table', \foreignlanguage{chinese-simplified}{平果} [Ping Guo]–\foreignlanguage{chinese-simplified}{桌子} [Zhuo Zi]). This suggests that participants were sensitive to the form-similarity of the Chinese translation of the word-pairs they were presented, despite the whole experimental task taking place in English.
+
+Bilingual toddlers and children---still in the process to developing a mature lexicon---also show evidence of parallel activation during comprehension [@vonholzen2012language; @vonholzen2019impact; @bosma2020cognate; @poarch2012crosslanguage; @schroter2016orthographic]. Whether---and if so, how---the language non-selectivity shapes the early bilingual lexicon is still unclear. Previous work has pointed to an interactive account of lexical acquisition, in which toddlers' lexical representations in one language influence the acquisition of words in the other language. The acquisition of translation equivalents embodies a notable divergence between monolingual and bilingual developmental trajectories. For instance, monolingual word acquisition benefits from the semantic relatedness between the words the child learns [@fourtassi2020growth; @hills2009longitudinal], but is inhibited during the acquisition of words from the same language with the *equivalent* meaning, i.e. synonyms. This learning heuristic, called *mutual exclusivity*, is one of many that play a relevant role in models of monolingual word learning [@golinkoff1994early], acting as a constrainer of the hypothesis space for all possible word-referent associations: if a referent already holds a label, any label uttered in the presence of such referent is associated with a different referent [e.g., @markman1990constraints]. Although this heuristic seems useful in the monolingual case (children are rarely exposed to synonyms), it would come with a huge cost for bilinguals, how are frequently exposed to more than one label for the same referent, one in each language. It was initially predicted that bilinguals would follow *mutual exclusivity*, and therefore avoid learning translation equivalents [@volterra1978acquisition].
+
+This prediction has been robustly contested by two main sources of evidence. First, experimental work suggests that bilinguals may not apply *mutual exclusivity* during word learning, or at least not as consistently monolinguals do [@byers-heinlein2009monolingual; @byers-heinlein2013lexicon]. Second, detailed analyses of bilingual children's vocabulary contents shows that bilingual children do acquire translation equivalents from early ages [e.g., @pearson1995crosslanguage]. In fact, translation equivalents may even be overrepresented in the early bilingual lexicon. For instance, @bilson2015semantic found that bilingual toddlers produced a higher proportion of translation equivalents than it would be expected if they learned two independent lexica simultaneously, which suggests that bilingual children preferentially acquired words for which they already knew a label in the other language. In the same line, @bosch2014first reported a similar overrepresentation of translation equivalents in Catalan-Spanish bilinguals: a high proportion of acquired Catalan words held an also acquired translation in Spanish. Finally, a recent investigation by @tsui2022area presented a quantitative model of bilingual vocabulary acquisition which showed a consistent preferential acquisition of translation equivalents by English-French bilinguals, with such preference being stronger at early stages of vocabulary growth. Overall, these findings suggest that bilingual children benefit from a semantic facilitation effect driven by the acquisition of translation equivalents. This is a substantial divergence from monolingual trajectories of lexical acquisition. Our study provides further evidence for a pivotal role of translation equivalents, showing that, especially in the case of cognates, translation equivalents, are not only part of bilinguals' vocabulary contents, but are also acquired close in age, depending primarily on children's degree of exposure to each language.
+
+The divergent trajectories of bilingual lexical acquisition go beyond semantics. As highlighted before, the phonological overlap between the languages being learned seems to impact vocabulary growth in bilinguals. Bilinguals learning languages that share many cognates show larger vocabulary sizes than those learning two languages sharing fewer cognates [@floccia2018introduction; @blom2020crosslanguage; @bosma2019longitudinal]. This finding can be explained to a large extent by the fact that cognates seem to be acquired at earlier ages than non-cognates [@mitchell2022cognates]. This phonological facilitation effect mimics previous findings in monolinguals, who seem to preferentially learn phonologically similar words. For instance, @jones2019children found that English monolingual toddlers show a facilitation effect when acquiring words from dense phonological neighbourhoods: a larger number of similar-sounding words was associated with an increase in likelihood of a word form being part of a toddler's productive vocabulary. A network analysis by @fourtassi2020growth found evidence in favour of a phonological (and semantic) preferential acquisition of new words in monolingual children: words with higher phonological relatedness to other words were more likely to be acquired. Again, these findings contrast with those in bilingual children in that the facilitation effect or preferential acquisition mechanisms described are based on phonological similarity *without* translation equivalence. The amount of similar-sounding words in the child input or their acquired vocabulary predicts a larger probability of acquisition of new words with *different* meaning. In the case of bilinguals, there is evidence of such phonological facilitation at the level of translation equivalents, as shown by an earlier acquisition of cognates than non-cognates in English-French [@mitchell2022cognates] and in the Catalan-Spanish bilinguals in the present study. Evidence of a cross-language facilitation effect between non-translation equivalents is to date absent.
+
+We consider three alternative explanations for our results. Regarding the cognate facilitation effect, it is possible that when hearing cognate translation equivalents, bilingual children accept both word forms as acceptable variations of the *same* word. This contrasts with monolinguals' high sensitivity to mispronunciations during word recognition [@swingley200511montholds; @swingley2000spoken; @tamasi2017pupillometry; @mani2011does; @bailey2002phonological]. It might be the case that every exposure to either of the word-forms of the translation equivalent is counted as a learning instance for both. This would impact the acquisition mechanism in such way that any cognate effect is not explained by a reduction of the number of learning instances needed to acquired a word (after its translation has been acquired), but by a faster increase in cumulative learning instances across ages, leading to a similar outcome: an earlier age-of-acquisition for cognates. Supporting such alternative explanation, @ramon-casas2009vowel examined 18-26 months-old Catalan-Spanish bilingual toddlers' sensitivity to mispronunciations in a word-recognition task and found that, contrary to their Catalan monolingual peers, bilinguals seemed to recognise mispronounced words, disregarding vowel replacements involving the Catalan vowel contrast /e/-/\textepsilon/. The same population of bilingual infants shows sensitivity to such contrast before 12 months of age in phoneme discrimination tasks [@bosch2003simultaneous]---which do not involve word-referent associations---suggesting that bilingual infants dismiss subtle changes in phonological forms when presented with their referents. Using the same procedure, @ramon2010non tested bilingual infants' recognition of mispronunciations involving the /e/-/\textepsilon/ contrast embedded in exclusively *non-cognate* word-forms. The materials in this study contrasted with those in @ramon-casas2009vowel in that the latter included almost 60% of cognate words in their stimuli list. @ramon2010non hypothesised that bilinguals' frequent exposure to cognates---which often involve vowel replacements between Catalan and Spanish word-forms---may have led bilinguals to be less alert to such changes when occurring within similar word-forms. With this new set of stimuli, including non-cognate words only, bilinguals showed monolingual-level sensitivity to mispronunciations involving the /e/-/\textepsilon/ contrast. Overall, these results suggest, at face value, that that bilinguals may to some degree encode similar-sounding word-forms with shared referent as into a common lexical representation, especially when the word-forms involved are cognates.
+
+```{r discussion-examples}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: 60%
+lv_distr <- items |> 
+    mutate(lv_bin = cut(lv, 
+                        breaks = seq(0, 1, 0.1),
+                        include.lowest = TRUE,
+                        labels = c("0-10%", "10-20%", "20-30%", "30-40%",
+                                   "40-50%", "50-60%", "60-70%", "70-80%",
+                                   "80-90%", "90-100%"))) |>
+    add_count(name = "n_total") |> 
+    count(lv_bin, n_total) |> 
+    mutate(prop = n/n_total)
+```
+
+```{r discussion-pool}
+#| echo: false
+#| warning: false
+#| message: false
+E_e <- bvq_data$pool |>
+    mutate(item = gsub("cat_|spa_", "", item),
+           sampa = gsub("\\.", "", sampa)) |>
+    filter(te %in% items$te, 
+           item %in% items$item) |>
+    select(te, language, sampa) |> 
+    pivot_wider(names_from = language,
+                values_from = sampa, 
+                id_cols = te,
+                names_repair = janitor::make_clean_names) |>
+    filter(grepl("E", catalan), 
+           grepl("e", spanish)) |>
+    left_join(distinct(items, te, lv),
+              by = "te")
+```
+
+
+We identify three main reasons why bilingual children are unlikely to conflate similar sounding translations into the same lexical representations. First, when @ramon-casas2009vowel probed Catalan-Spanish bilinguals using the /e/-/i/ contrast---present in both Catalan *and* Spanish---in the same task, bilinguals showed monolingual-level sensitivity to mispronunciations, suggesting that the conflation of variations of the same word-form into a similar lexical representation may be specific to some language-specific contrasts, and perhaps associated with the acoustic distance between the phonemes involved. The /e/-/\textepsilon/ contrast in which Catalan-Spanish bilinguals failed to mispronunciations, is particularly problematic this regard: both vowels differ in only one acoustic feature (/e/ is closed-mid, while /\textepsilon/ is open-mid) and is only present in Catalan. Our results are unlikely to be explained by the possibility that Catalan-Spanish bilingual toddlers form common lexical representations for cognate words. Second, few phoneme substitutions that separate Catalan word-forms from their cognate Spanish translations involve the /e/-/\textepsilon/ contrast. Rather, due to vowel reduction, Spanish and Catalan cognates predominantly involve the /a/-/\textschwa/, /e/-/\textschwa/, /\textepsilon/ and /o/-/u/ contrasts [@vigario2009phonetics]. Only `r percent(nrow(E_e)/length(unique(items$te)))` translation equivalents in our questionnaire involved a /e/-/\textepsilon/ change between the Catalan and the Spanish items, only one of such was a minimal pair: /\textipa{tREn}/-/\textipa{tRen}/ [*train*].
+
+Second, few words in our study differ only in one phoneme substitution. Only `r percent(lv_distr$prop[nrow(lv_distr)], accuracy = 0.01)` of the translation equivalents included in our analyses shared between 90 and 100% phonological similarity (measured as the Levenshtein similarity between the X-SAMPA transcriptions of the Catalan and Spanish form), and only `r percent(lv_distr$prop[nrow(lv_distr)-1], accuracy = 0.01)` shared between 80 and 90% similarity. This shows that the presence of identical and near-identical cognates in our study is very low, and therefore most translation equivalents differed in more than one phoneme. In summary, even if any cognate involved the /a/-/\textepsilon/ substitution (or any phonetically close contrast that bilingual might disregard at the lexical level), such is very likely to have occurred in the context of a sufficiently distinct word-form to be distinguished and treated and relevant at the lexical level. Third, and perhaps more critically, bilinguals are able to learn new minimal pairs involving the /e/-/\textepsilon/ contrast, suggesting that their tolerance towards cognate mispronunciations might be restricted to familiar word recognition, while such subtle variations in the word-forms are considered relevant during word learning [@ramon-casas2017minimalpair].
+
+It cannot be neglected a potential bias by caregivers when filling the questionnaire, in which the likelihood of two translation equivalents being present in a child's lexicon results not as a function of such phonological facilitation effect, but by caregivers assuming that because the child knows a word in one language, the child must also know the word in the other language. This bias might be especially likely when both words are similar-sounding (i.e., cognates). Although there is little possibility to test this account, it is worth noting that parents were explicitly instructed *not* to rely on their responses to the words in one languages when responding to words in the other language. The potential presence of responder biases is pervasive across many measurement instruments that rely on caregivers' reports of the developmental status of the child. The outcomes of such instruments, like the one used in the present study, are susceptible to biases induced by the child themselves (i.e., assigned gender, temperament), their caregivers (e.g., time spent with the child, preconceptions about language acquisition), or even the researchers (e.g., the items included might over-rely on canonical realisations of words), which push against evidence of validity of the questionnaire as an instrument of the developmental status of the child. The findings in this investigation should be weighted according to the aforementioned limitations.
+
+Our results should also be taken with caution if generalised to other bilingual populations, given the particular typological similarity and sociolinguistic status of the languages being learned by our participants. Catalan and Spanish are both Romance languages, share a considerable amount of cognates, and very often co-exist in the same social spaces (families, schools, working place, etc.). Although there are no populations of bilinguals with identical sociolinguistic characteristics, and therefore it would be pointless to compare the sample in this study to any "standard" population of bilinguals, the generalisability of our results should be taken with a grain of salt. It is possible, for instance, that the large amount of cognates that Catalan-Spanish bilingual children are exposed leads them to learn at early stages of word acquisition that words tend to sound similar in both languages, and therefore to be more keen on assuming that similar sounding words are semantically related. Children exposed to a pair of languages sharing a fewer amount of cognates might not make the same assumption, even when the word-forms they hear in the presence of the same referents are very similar at the phonological level.
+
+Another limitation of the present study is the predominantly cross-sectional design of our data set. We collected vocabulary data from children aged 12 to 32 months, a critical period in development in which the foundations of a lexicon get established. We estimated word acquisition curves by modelling the probability of comprehension and production across ages. However, most participants provided data at only one age point. Effectively, we are making longitudinal inferences based on cross-sectional data, and drawing conclusions about the development of a single participant across multiple age points using data from different participants at individual age points. For this reason, and also because of the observational nature of our study, causal inferences derived from our analyses are unwarranted [@kraemer2000how; @kesmodel2018crosssectional]. One counterpoint to this shortcoming is that, while data our data is cross-sectional if participants are considered as the observational unit, data about word-forms/translation equivalents is longitudinal. The same translation equivalent is responded to at multiple ages. Since translation equivalents are our main observational unit of interest over which we primarily conduct statistical inference (e.g., estimating the size of the cognateness-effect), this provides some further justification for our conclusions. 
+
+Future studies addressing this subject may benefit for a more adequate design oriented towards making causal inferences. One such design can be partially satisfied by (1) collecting a more substantial longitudinal dataset, in which the same participant provides data points for each translation equivalent at multiple ages, and (2) testing the role of cognateness and word exposure in an experimental context, in which such variables can be orthogonally manipulated or randomised. This second possibility would also allow to explore an interpretation of the results obtained in the context of *word learning*, which is not possible in the present study. Another consideration for future investigations is the involvement of a more diverse range of language pairs as in @braginsky2019consistency or @floccia2018introduction to improve the generalisability of the resulting inferences across more populations of bilinguals.
+
+In summary, our study has replicated previous studies and provided novel insights about word acquisition in bilingual contexts, and how the presence of cognates in the children's linguistic input impacts the early formation of the lexicon. We found that during the acquisition of low frequency words, bilingual children seem to benefit more strongly from the word's phonological similarity with its translation in the other language. We suggest that this effect might be explained by the need of a robust lexical representation of one of the translations for cognateness to play a role.
+
+# References {#sec-references}
+
+::: {#refs}
+
+:::
+
+{{< pagebreak >}}
+
+# Appendix A: model predictors {.appendix .unnumbered}
+
+{{< include appendix/_model-predictors.qmd >}}
+
+{{< pagebreak >}}
+
+# Appendix B: model details {.appendix .unnumbered}
+
+{{< include appendix/_model-details.qmd >}}
+
+{{< pagebreak >}}
+
+# Appendix C: convergence diagnostics {.appendix .unnumbered}
+
+{{< include appendix/_model-diagnostics.qmd >}}
+
+{{< pagebreak >}}
+
+
+# Appendix D: frequency and language exposure as separate predictors {.appendix .unnumbered}
+
+{{< include appendix/_model-doe.qmd >}}
+
+{{< pagebreak >}}

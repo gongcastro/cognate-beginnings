@@ -12,6 +12,7 @@ invisible(lapply(function_paths, source))
 test_paths <- list.files("tests/testthat",
                          pattern = ".R",
                          full.names = TRUE)
+
 invisible(lapply(test_paths, source))
 
 # list package dependencies ----------------------------------------------------
@@ -60,7 +61,8 @@ options(
     brms.backend = "cmdstanr",
     tidyverse.quiet = TRUE,
     knitr.duplicate.label = "allow",
-    loo.cores = 1
+    loo.cores = 1,
+    knitr.graphics.error = FALSE
 )
 
 list(
@@ -251,7 +253,7 @@ list(
         posterior_predictions(
             model = model_fit_3,
             responses, 
-            age_std = scale(seq(0, 50),
+            age_std = scale(seq(7, 40),
                             mean(responses$age),
                             sd(responses$age)),
             exposure_std = c(-1, 0, 1),
@@ -401,14 +403,13 @@ list(
                 "b_age_std:doe_std:lv_std" = "Age \u00d7 DoE \u00d7 Cognateness"
             )
             
-            get_posterior_draws(model_fit_4_doe, data = responses)$summary |> 
+            get_posterior_draws(model_fit_4_doe,
+                                data = responses)$summary |> 
                 mutate(
-                    .variable_name = factor(
-                        .variable,
-                        levels = names(str_repl),
-                        labels = str_repl,
-                        ordered = TRUE
-                    ) |>
+                    .variable_name = factor(.variable,
+                                            levels = names(str_repl),
+                                            labels = str_repl,
+                                            ordered = TRUE) |>
                         as.character())
         }
     ),
@@ -424,7 +425,7 @@ list(
     # render manuscript
     tar_quarto(
         manuscript,
-        "manuscript/manuscript.qmd",
+        "manuscript.qmd",
         execute = TRUE,
         cache = FALSE,
         quiet = FALSE
