@@ -47,6 +47,8 @@ map_df(model_rhats, bind_rows, .id = "model") |>
           panel.grid = element_blank())
 ```
 
+{{< pagebreak >}}
+
 ## Posterior draws and bi-variate scatterplots {.unnumbered}
 
 ```{r}
@@ -86,6 +88,8 @@ mcmc_pairs(posterior,
            off_diag_args = list(size = 0.5,
                                 alpha = 1/10))
 ```
+
+{{< pagebreak >}}
 
 ## Posterior-predictive checks {.unnumbered}
 

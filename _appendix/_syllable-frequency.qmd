@@ -1,0 +1,312 @@
+
+````{r}
+duplicated_te <- bvq_data$pool$te[duplicated(bvq_data$pool$te)]
+
+pool_tmp <- bvq_data$pool |>
+    # drop items with missing observations in these variables
+    drop_na(sampa, wordbank_lemma) |>
+    mutate(xsampa = ipa(ipa)) |> 
+    filter(n_lemmas == 1,
+           # exclude items with more than two lemmas
+           !is_multiword,
+           # exclude multi-word items
+           include,
+           # exclude problematic items (e.g., multi-word items)
+           te %in% duplicated_te) |>
+    add_count(te, name = "n_te") |> # get only items with one translation in each language
+    filter(n_te == 2) |>
+    distinct(language, te, .keep_all = TRUE) |> 
+    select(language, te, item, label, childes_lemma, xsampa) |> 
+    mutate(syll = strsplit(xsampa, 
+                           split = paste0(.sep = c("\\.", "\\\""), 
+                                          collapse = "|")),
+           syll = lapply(syll, function(x) x[x != ""]),
+           n_syll = map_int(syll, length),
+           item = str_remove(item, "cat_|spa_")) 
+
+items <- items |> 
+    mutate(xsampa = ipa(ipa)) |> 
+    mutate(syll = strsplit(xsampa, 
+                           split = paste0(.sep = c("\\.", "\\\""), 
+                                          collapse = "|")),
+           syll = lapply(syll, function(x) x[x != ""]),
+           n_syll = map_int(syll, length),
+           item = str_remove(item, "cat_|spa_"))
+```
+
+We define syllable frequency as the rate of appearance of individual syllables in the word-forms included in the Barcelona Vocabulary Questionnaire (BVQ). Each item corresponds to a Catalan or Spanish word, and has an associated phonological transcription in X-SAMPA format. These transcriptions are syllabified. Some examples:
+
+```{r items-table}
+#| label: tbl-items
+#| tbl-cap: Sample of items included in the BVQ questionnaire and their syllabified SAMPA transcriptions in Catalan and Spanish
+items |> 
+    distinct(te, item, language, meaning, xsampa, n_syll) |> 
+    left_join(distinct(pool_tmp, te, language, item, label),
+              by = join_by(te, item, language)) |> 
+    pivot_wider(names_from = language,
+                values_from = c(item, label, xsampa, n_syll),
+                id_cols = c(te, meaning),
+                names_repair = make_clean_names,
+                values_fn = first) |> 
+    sample_n(15) |> 
+    gt() |> 
+    cols_hide(c(te, item_catalan, item_spanish)) |> 
+    tab_spanner("Catalan", matches("catalan")) |> 
+    tab_spanner("Spanish", matches("spanish")) |> 
+    cols_label(meaning = "Translation",
+               label_catalan = "Item",
+               xsampa_catalan = "X-SAMPA",
+               n_syll_catalan = "Syllables",
+               label_spanish = "Item",
+               xsampa_spanish = "X-SAMPA",
+               n_syll_spanish = "Syllables") |> 
+    tab_style(cell_text(weight = "bold"),
+              cells_column_spanners()) |> 
+    tab_style(cell_text(style = "italic"),
+              cells_column_labels())
+```
+
+
+Most Catalan and Spanish words had two syllables, with Spanish words having three and four syllables more often than Catalan words. Less than 1% of the words included in the analyses presented in the main body of the manuscripts had five syllables. No words had more than five syllables (see {apafg-syl-number}). We extracted lexical frequencies from the English corpora in the CHILDES database. Using the Catalan and Spanish corpora was not possible due to the low number of children and tokens included in the corpora.
+
+
+
+```{r apafg-syl-number}
+#| label: apafg-syl-number
+#| apa-cap: Distribution of the number of syllables in Catalan and Spanish
+#| fig-width: 7
+#| fig-height: 3
+pool_tmp |> 
+    group_by(language) |> 
+    add_count(language, name = "n_lang") |> 
+    ungroup() |> 
+    count(language, n_lang, n_syll) |> 
+    mutate(prop = n/n_lang) |> 
+    ggplot(aes(n_syll, n)) +
+    facet_wrap(~ language) +
+    geom_col(colour = "white", fill = "grey70") +
+    geom_text(aes(label = percent(prop)),
+              size = 3,
+              position = position_nudge(y = 15),
+              colour = "black") +
+    labs(x = "Number of syllables",
+         y = "Number of words",
+         fill = "Language") +
+    theme(legend.position = "none",
+          panel.grid.minor = element_blank(),
+          panel.grid.major.x = element_blank())
+```
+
+
+
+We now present how syllable frequencies were calculated. Every exposure to a word-form also counts as a exposure to each of the syllables that make up such word. Every time a child hears the word *casa* [house], they are exposed to the syllables *ca* and *sa*. Syllables that appear embedded in words with higher lexical frequency will also be more frequent. To compute the relative frequency of each syllable in Catalan and Spanish (i.e., how many times the syllables appears in every million words in Catalan or Spanish speech), we summed the relative lexical frequency in CHILDES of every word that contains such syllable in the corresponding language. {apafg-syl-freq} shows the distribution of frequencies across syllables in Catalan and Spanish. In the log10 scale, syllable frequencies in Catalan and Spanish followed a slightly asymmetric distribution, with most syllables scoring around 1,000 counts per million, and a longer tail to the right of the distribution.
+
+```{r apafg-syl-freq}
+#| label: apafg-syl-freq
+#| apa-cap: "Distribution of apositional syllable frequencies in Spanish and Catalan"
+#| fig-height: 3.5
+#| fig-width: 7
+syll <- items |> 
+    left_join(distinct(pool_tmp, te, childes_lemma),
+              by = join_by(te)) |> 
+    left_join(select(childes, token, freq_lex = freq_million),
+              by = c("childes_lemma" = "token")) |> 
+    select(language, item, te, meaning, xsampa, lv, freq_lex, syll) |> 
+    unnest_longer(syll) |> 
+    group_by(language, syll) |> 
+    summarise(freq_syll = sum(freq_lex),
+              .groups = "drop") |> 
+    arrange(language, desc(freq_syll))
+
+syll |> 
+    add_count(language, name = "n_lang") |> 
+    mutate(language = paste0(language, " (n = ", n_lang, ")")) |> 
+    ggplot(aes(freq_syll)) +
+    facet_wrap(~language) +
+    geom_histogram(colour = "white",
+                   bins = 20,
+                   fill = "grey70",
+                   position = position_nudge(y = 0.1)) +
+    geom_rug(alpha = 1/10) +
+    labs(x = "Relative frequency (counts per million)",
+         y = "Counts",
+         fill = "Language",
+         colour = "Language") +
+    scale_x_continuous(trans = "log10",
+                       labels = \(x) format(x, big.mark = ",")) +
+    theme(legend.title = element_blank(),
+          panel.grid = element_blank(),
+          legend.position = "none")
+```
+
+{apafg-top-syll-freq} shows the top twenty most frequent syllables in Spanish. In both languages, most of the most frequent syllables followed a consonant-vowel (CV) structured. In Catalan, the most common nucleus in the most frequent syllables was /\textschwa/ (most likely due to vowel reduction in unstressed syllables), followed by /u/. In Spanish, the most common nucleus in the most frequent syllables were /a/ and /o/.
+
+```{r apafg-top-syll-freq}
+#| label: apafg-top-syll-freq
+#| apa-cap: "Top 20 most frequent syllables"
+#| fig-width: 8
+#| fig-height: 3
+#| out-width: 80%
+syll |> 
+    group_by(language) |> 
+    top_n(20, freq_syll) |> 
+    ggplot(aes(reorder_within(syll, desc(freq_syll), language),
+               freq_syll)) +
+    facet_wrap(~ language,
+               scales = "free_x",
+               ncol = 1) +
+    geom_col(colour = "white",
+             fill = "grey70") +
+    labs(x = "Syllable",
+         y = "Relative frequency\n(counts per million)",
+         colour = "Language",
+         fill = "Language") +
+    scale_x_reordered() +
+    scale_y_continuous(labels = \(x) format(x, big.mark = ",")) +
+    theme(legend.position = "none",
+          axis.title.x = element_blank(),
+          axis.text.x = element_text(size = 10),
+          panel.grid = element_blank())
+```
+
+
+To estimate the association between word-level syllabic frequency and cognateness while controlling for the number of syllables in the word, as words are expected to necessarily increase the syllabic frequency of the word), we fit a multilevel, Bayesian linear regression model with syllabic frequency (the sum of the syllabic frequency of the syllables in a word) as response variable, and the main effect of the number of syllables ($Syllables$) and $Cognateness$ (Levenshtein similarity between a word and its translation equivalent) as predictors. We added translation equivalent-level random effects for the intercept and the main effect of $Syllables$ (some translation pairs had a different number of syllables in each language). We used a Gaussian distribution to model syllabic frequency scores after standardising this variable and the predictors. We used a weakly informative prior for all parameters involved in the model (see @eq-model-syllables for a formal equation of this model and its prior).
+
+$$
+\begin{aligned}
+\text{Syllable frequency} &\sim \mathcal{N}(\mu, \sigma)\\
+\mu &= (\beta_0 + u_{0_{i}}) + (\beta_1 + u_{1_{i}}) \text{Syllables} + \beta_2 \text{Cognateness} \\
+\beta_{0-3} &\sim \mathcal{N}(0, 10) \\
+u_{{0-1}_{i}} &\sim \mathcal{N}(0, \sigma_{u_i}) \\
+\sigma_y & \sim \text{Exponential}(2)\\
+\Big(\begin{smallmatrix}
+u_{0_{i}} \\ 
+u_{1_{i}} \\ 
+\end{smallmatrix}\Big) &\sim \mathcal{N} 
+\Big(\Big(\begin{smallmatrix}0 \\
+0\end{smallmatrix}\Big), \Sigma_{u}\Big) \\
+\Sigma_{u} &= \Big(\begin{smallmatrix} \\
+\sigma_{u_{0}} & \rho_{u_{0}} \sigma_{u_{0}} \sigma_{u_{1}} \\ 
+\rho_{u_{1}} \sigma_{u_{1}} \sigma_{u_{0}} & \sigma_{u_{1}} \end{smallmatrix}\Big) \\
+\sigma_{u_{0-1}} &\sim \mathcal{N_{+}}(1, 0.1) \\
+\rho_{u} &\sim LKJcorr(2) \\
+\end{aligned}
+$$ {#eq-model-syllables}
+
+```{r syllables-posterior}
+rope_interval <- c(lower = -0.5, upper = 0.5)
+# tidy predictor names
+str_repl <- c(
+    "b_Intercept" = "Intercept",
+    "b_n_syll_std" = glue("Syllables (+1 SD, {round(sd(syllables_data$n_syll), 3)})"),
+    "b_lv_std" = glue("Cognateness (+1 SD, {percent(sd(syllables_data$lv), accuracy = 0.01)})")
+)
+
+post_syllables <- model_fit_syllables |>
+    describe_posterior(test = "rope",
+                       rope_range = rope_interval,
+                       ci_method = "HDI") |>
+    as_tibble() |>
+    clean_names() |>
+    mutate(.variable_name = factor(
+        parameter,
+        levels = names(str_repl),
+        labels = str_repl) |>
+            as.character(),
+        parameter = ifelse(str_detect(parameter, "Intercept"),
+                           str_remove_all(parameter, "Intercept \\(|\\)"),
+                           parameter)) |>
+    select(.variable = parameter,
+           .variable_name,
+           .median = median,
+           .upper = ci_high,
+           .lower = ci_low,
+           .rope_overlap = rope_percentage) |>
+    ungroup()
+
+post_draws_list <- post_syllables |> 
+    split(post_syllables$.variable)
+
+```
+
+We fit this model running `r dim(model_fit_syllables$fit)[2]` sampling chains with `r format(dim(model_fit_syllables$fit)[1], big.mark = ",")` iterations each. {apatb-coefs} shows a summary of the posterior distribution of the fixed effects in the model. As expected, words with more syllables scored higher in syllabic frequency: all posterior draws for the regression coefficient of the main effect of this predictor fell outside the ROPE defined between -0.5 and +0.5 ($\beta$ = `r round(post_draws_list[["b_n_syll_std"]]$.median, 2)`, 95% HDI = [`r round(post_draws_list[["b_n_syll_std"]]$.lower, 2)`, `r round(post_draws_list[["b_n_syll_std"]]$.upper, 2)`]). Keeping the number of syllables constant, the effect of cognateness was negligible: all of the posterior distributions of this predictor fell within the ROPE, providing evidence that the true value of the increment in syllabic frequency for every increase in cognateness is equivalent to zero ($\beta$ = `r round(post_draws_list[["b_lv_std"]]$.median, 2)`, 95% HDI = [`r round(post_draws_list[["b_lv_std"]]$.lower, 2)`, `r round(post_draws_list[["b_lv_std"]]$.upper, 2)`]).
+
+```{r apatb-syllable-coefs}
+#| label: apatb-syllable-coefs
+#| apa-cap: "Posterior distribution of regression coefficients."
+#| apa-note: "Median: median of the posterior distribution in the probability scale. 95\\% HDI: 95\\% highest density interval of the distribution; narrowest range of values that contains 95\\% of the distribution, and therefore is 95\\% likely to contain the true value, given the data. On top of each distribution, we indicate the proportion of posterior samples in the 95\\% HDI that fall into the region of practical equivalence (ROPE). This proportion indicates the probability of the true value of the coefficient being equivalent to zero. Lower values indicate that the true value is unlikely to be zero of equivalent to zero."
+#| echo: false
+#| message: false
+#| warning: false
+# summarise posterior draws
+post_syllables |> 
+    select(.variable_name, .median, .lower, .upper, .rope_overlap) |>
+    gt(rowname_col = ".variable_name") |>
+    fmt_percent(.rope_overlap, decimals = 2) |> 
+    fmt_number(c(.median:.upper), decimals = 2) |>
+    cols_merge(c(.lower, .upper),
+               pattern = "[{1}, {2}]") |>
+    cols_label(
+        .variable_name = "Parameter",
+        .median = "Median",
+        .lower = md("95% HDI"),
+        .rope_overlap = md("ROPE prob.")
+    ) |>
+    tab_style(cell_text(weight = "bold"),
+              cells_column_labels(columns = 1:5)) |>
+    tab_style(cell_text(align = "left"),
+              cells_title(groups = "subtitle")) |> 
+    tab_style(cell_text(size = "small"), 
+              list(cells_body(),
+                   cells_row_groups(),
+                   cells_stub())) |> 
+    tab_style(cell_text(style = "italic"),
+              cells_row_groups())
+```
+
+{apafg-syllable-marginal} shows the median posterior-predicted syllabic frequencies for words with one to four syllables, for the whole range of cognateness values. Overall, cognate words' syllabic frequency is equivalent to that of non-cognates. This suggests that the cognate facilitation effect in word acquisition reported in the present study is not the result from an association between cognateness and higher syllabic frequencies.
+
+```{r apafg-syllable-marginal}
+#| label: apafg-syllable-marginal
+#| apa-cap: "Posterior-predictions of the syllabic frequency model. Thicker lines indicate the median of the posterior predictions, and thinner lines indicate individual posterior predictions."
+#| fig-width: 7
+#| fig-height: 5
+#| out-width: 80%
+#| echo: false
+#| message: false
+#| warning: false
+expand_grid(lv_std = scale(seq(0, 1, 0.1),
+                           center = mean(syllables_data$lv),
+                           scale = sd(syllables_data$lv))[, 1],
+            n_syll_std = scale(seq(1, 4, 1),
+                           center = mean(syllables_data$n_syll),
+                           scale = sd(syllables_data$n_syll))[, 1]) |> 
+    add_epred_draws(model_fit_syllables, ndraws = 50,
+                    re_formula = NA) |> 
+    mutate(lv_std = rescale_variable(lv_std,
+                                     mean = mean(syllables_data$lv),
+                                     sd = sd(syllables_data$lv)),
+           n_syll_std = rescale_variable(n_syll_std,
+                                     mean = mean(syllables_data$n_syll),
+                                     sd = sd(syllables_data$n_syll)),
+           n_syll_std = as.factor(n_syll_std)) |> 
+    ggplot(aes(lv_std, .epred, colour = n_syll_std)) +
+    geom_point(data = filter(syllables_data, n_syll < 5),
+               aes(x = lv,
+                   y = freq_syll,
+                   colour = as.factor(n_syll)),
+               shape = 1,
+               stroke = 1,
+               alpha = 1/2) +
+    geom_line(aes(group = interaction(.draw, n_syll_std)),
+              alpha = 1/10) +
+    labs(x = "Cognateness (Levenshtein similarity)",
+         y = "Syllabic frequency",
+         colour = "Number of syllables") +
+    scale_color_manual(values = clrs) +
+    scale_y_continuous(n.breaks = 8) +
+    theme(panel.grid = element_blank())
+```
+
+
+

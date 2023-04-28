@@ -198,14 +198,13 @@ participants %>%
     count(age) %>% 
     ggplot() +
     aes(x = age, y = n) +
-    geom_col(fill = clrs[1]) +
+    geom_col(fill = "grey60") +
     geom_text(aes(label = n), size = 3.5, vjust = -1) +
-    labs(
-        x = "Age (months)",
-        y = "# participants"
-    ) +
+    labs(x = "Age (months)",
+         y = "# participants") +
     scale_x_continuous(breaks = seq(0, 40, 2)) +
-    scale_y_continuous(limits = c(0, 55), breaks = seq(0, 55, 10)) +
+    scale_y_continuous(limits = c(0, 55),
+                       breaks = seq(0, 55, 10)) +
     theme(
         panel.grid.major.x = element_blank(),
         panel.grid.minor.x = element_blank()
@@ -216,93 +215,106 @@ participants %>%
 
 Participant degree of exposure to the words' language ($DoE$): percentage of exposure to the language the word belonged to. For example, for a participant with 90% exposure to Catalan, and 10% to Spanish, the DoE of the Catalan word *taula* would be 90%, and the DoE for the Spanish word *mesa* would be 10%.
 
-```{r}
-#| label: fig-participants-lp
+```{r apatb-participants}
+#| label: tab-participants
 #| echo: false
 #| message: false
 #| warning: false
-#| fig-width: 7
-#| fig-cap: "Participant degree of exposure (DoE) to Catalan and Spanish"
-participants %>% 
-    pivot_longer(
-        c(doe_catalan, doe_spanish),
-        names_to = "language", values_to = "doe", 
-        names_transform = ~str_to_sentence(str_remove(., "doe_"))
-    ) %>% 
+#| tbl-cap: "Participant sample size by age and degree of exposure to Catalan. Information about language degree of exposure (DoE) was provided by families before filling the questionnaire. In this table, a 100\\% indicates that the participant was exclusively exposed to Catalan, and never to Spanish. A 0\\% indicates that the participant was not exposed to Catalan ever, and most of the time to Spanish. A 50\\% indicates that the participant was exposed to Catalan and Spanish approximately half of the time each. The 100\\%, 0\\%, and 50\\% would be traditionaly classified as Catalan monolingual, Spanish monolingual, and Catalan-Spanish bilingual, respectively. For illustration purposes this table, DoEs were binned into 25\\%-wide bins, and ages (in months) binned into 4 month-wide bins. Hyphens indicate that no participants from that specific combination of age and DoE filled the questionnaire."
+participants |>
+    mutate_at(vars(starts_with("doe_")), 
+              (\(x) floor(x * 10) / 10)) |> 
     mutate(
-        doe = cut(doe, breaks = seq(0, 1, 0.1), include.lowest = TRUE),
-        id = paste0(id, " (", time, ")")
-    ) %>% 
-    count(language, doe) %>% 
-    ggplot(aes(doe, y = n, label = n, fill = language)) +
-    geom_col(colour = "white", size = 1) +
-    geom_text(position = position_nudge(y = 5)) +
-    facet_wrap(~language, ncol = 1) + 
-    labs(
-        x = "Degree of exposure to Catalan",
-        y = "Number of participants",
-        colour = "Language",
-        fill = "Language"
-    ) +
-    scale_fill_manual(values = clrs[c(1, 4)]) +
-    theme(
-        legend.position = "top",
-        panel.grid.major.x = element_blank(),
-        panel.grid.minor = element_blank()
-    )
+        age = cut(floor(age),
+                  c(10, 14, 18, 22, 26, 30, 34, 36),
+                  include.lowest = TRUE),
+        doe_catalan = cut(
+            doe_catalan,
+            c(0, 0.25, 0.5, 0.75, 1),
+            labels = c("0-25%",
+                       "25-50%", 
+                       "50-75%",
+                       "75-100%"),
+            include.lowest = TRUE
+        ) |>
+            as.character()
+    ) |>
+    count(age, doe_catalan) |>
+    arrange(desc(doe_catalan)) |>
+    pivot_wider(names_from = age, values_from = n) |>
+    gt() |>
+    summary_rows(
+        columns = 2:7,
+        fns = list("Total" = ~ sum(., na.rm = TRUE)),
+        formatter = fmt_integer
+    ) |>
+    sub_missing(everything(), everything(), missing_text = "--") |>
+    cols_label(doe_catalan = "Catalan exposure") |>
+    tab_spanner("Age (months)", 2:8) |>
+    tab_style(cell_text(align = "left"),
+              list(cells_body(doe_catalan),
+                   cells_column_labels(doe_catalan)))
 ```
 
 ### SES/parental education
 
-<!-- # ```{r} -->
-<!-- #| label: tbl-participants-edu -->
-<!-- #|  tbl-cap: "Participant exposure to the language (DoE) and socio-economic status (SES)." -->
-<!-- # participants %>% -->
-<!-- #     left_join(bvq_data$logs) %>% -->
-<!-- #     mutate( -->
-<!-- #         edu_parent = fct_explicit_na(as.factor(edu_parent)), -->
-<!-- #         doe_catalan = cut(doe_catalan, breaks = seq(0, 1, 0.2), include.lowest = TRUE) -->
-<!-- #     ) %>% -->
-<!-- #     count(doe_catalan, edu_parent) %>% -->
-<!-- #     right_join( -->
-<!-- #         expand_grid( -->
-<!-- #             doe_catalan = levels(.$doe_catalan), -->
-<!-- #             edu_parent = unique(bvq_data$logs$edu_parent) -->
-<!-- #         ) -->
-<!-- #     ) %>% -->
-<!-- #     rename(total = n) %>% -->
-<!-- #     pivot_wider(names_from = edu_parent, -->
-<!-- #                 values_from = total,  -->
-<!-- #                 values_fill = 0) %>% -->
-<!-- #     mutate(total = rowSums(cbind(.[,3:8]), na.rm = TRUE)) %>% -->
-<!-- #     rename(Total = total) %>% -->
-<!-- #     select(-"NA") %>%  -->
-<!-- #     gt()  -->
-<!-- # summary_rows( -->
-<!-- #     columns = Complementary:Primary, -->
-<!-- #     fns = list(Total = ~sum(., na.rm = TRUE)), -->
-<!-- #     formatter = fmt_integer -->
-<!-- # ) %>% -->
-<!-- # cols_label(doe_catalan = "DoE Catalan") %>% -->
-<!-- # sub_missing(columns = 2:8, missing_text = "--") %>% -->
-<!-- # tab_spanner("Educational attainment", Secondary:Primary) %>% -->
-<!-- # tab_style( -->
-<!-- #     style = list(cell_borders(weight = px(2), sides = "left", color = "grey50")), -->
-<!-- #     locations = cells_body(columns = 9, rows = 1:5) -->
-<!-- # ) %>% -->
-<!-- # tab_style( -->
-<!-- #     cell_text(style = "italic"), -->
-<!-- #     cells_column_labels(columns = 2:7) -->
-<!-- # ) %>% -->
-<!-- # tab_style( -->
-<!-- #     cell_text(weight = "bold"), -->
-<!-- #     cells_column_labels(columns = c(1, 8)) -->
-<!-- # ) %>% -->
-<!-- # tab_style( -->
-<!-- #     cell_text(weight = "bold"), -->
-<!-- #     cells_column_spanners(spanners = "Educational attainment") -->
-<!-- # ) -->
-<!-- ``` -->
+```{r}
+#| label: tbl-participants-edu
+#|  tbl-cap: "Participant exposure to the language (DoE) and socio-economic status (SES)."
+participants %>%
+    mutate(id = as.character(id)) |> 
+    left_join(bvq_data$logs) %>%
+    mutate(
+        edu_parent = edu_parent |> 
+            as.factor() |> 
+            fct_na_value_to_level(),
+        doe_catalan = cut(doe_catalan,
+                          breaks = seq(0, 1, 0.2),
+                          include.lowest = TRUE)
+    ) %>%
+    count(doe_catalan, edu_parent) %>%
+    right_join(
+        expand_grid(
+            doe_catalan = levels(.$doe_catalan),
+            edu_parent = unique(bvq_data$logs$edu_parent)
+        )
+    ) %>%
+    rename(total = n) %>%
+    pivot_wider(names_from = edu_parent,
+                values_from = total,
+                values_fill = 0) %>%
+    mutate(total = rowSums(cbind(.[,3:8]), na.rm = TRUE)) %>%
+    rename(Total = total) %>%
+    select(-"NA") %>%
+    gt() |> 
+    summary_rows(columns = Complementary:Primary,
+                 fns = list(Total = ~sum(., na.rm = TRUE)),
+                 formatter = fmt_integer) %>%
+    cols_label(doe_catalan = "DoE Catalan") %>%
+    sub_missing(columns = everything(),
+                missing_text = "--") %>%
+    tab_spanner("Educational attainment", 
+                Secondary:Primary) %>%
+    tab_style(
+        style = list(cell_borders(weight = px(2),
+                                  sides = "left", 
+                                  color = "grey50")),
+        locations = cells_body(columns = 9,
+                               rows = 1:5)
+    ) %>%
+    tab_style(
+        cell_text(style = "italic"),
+        cells_column_labels(columns = 2:7)
+    ) %>%
+    tab_style(
+        cell_text(weight = "bold"),
+        cells_column_labels(columns = c(1, 8))
+    ) %>%
+    tab_style(
+        cell_text(weight = "bold"),
+        cells_column_spanners(spanners = "Educational attainment")
+    )
+```
 
 ## Items
 
@@ -310,62 +322,53 @@ participants %>%
 ```{r}
 #| label: tbl-items-summary
 #| tbl-cap: "Lexical frequencies. Mean, standard error, and 95% confidence interval of lexical frequencies of items included in the Catalan and Spanish lists, reported separately for identical cognates, non-identical cognates, and non-cognates."
-# items <- left_join(items, select(bvq_data$pool, te, item, language, class, semantic_category))
-# 
-# items %>%
-#     unnest(list) %>%
-#     group_by(language, list) %>%
-#     summarise_at(
-#         vars(freq, n_phon, lv),
-#         list(
-#             n = ~sum(!is.na(.)),
-#             mean = ~mean(., na.rm = TRUE),
-#             sd = ~sd(., na.rm = TRUE),
-#             min = ~min(., na.rm = TRUE),
-#             max = ~max(., na.rm = TRUE)
-#         )
-#     ) %>%
-#     select(-c(n_phon_n, lv_n)) %>%
-#     rename(n = freq_n) %>%
-#     gt(groupname_col = "language", rowname_col = "list") %>%
-#     fmt_number(matches("freq_|n_phon_mean|n_phon_sd"), decimals = 1) %>%
-#     fmt_percent(matches("lv_"), decimals = 1) %>%
-#     tab_spanner("Frequency (Zipf)", columns = starts_with("freq_")) %>%
-#     tab_spanner("Length (Phonemes)", columns = starts_with("n_phon_")) %>%
-#     tab_spanner("Phon. similarity (Levenshtein)", columns = starts_with("lv_")) %>%
-#     cols_merge_uncert(col_val = freq_mean, col_uncert = freq_sd) %>%
-#     cols_merge_uncert(col_val = n_phon_mean, col_uncert = n_phon_sd) %>%
-#     cols_merge_uncert(col_val = lv_mean, col_uncert = lv_sd) %>%
-#     cols_merge_range(col_begin = freq_min, col_end = freq_max) %>%
-#     cols_merge_range(col_begin = n_phon_min, col_end = n_phon_max) %>%
-#     cols_merge_range(col_begin = lv_min, col_end = lv_max) %>%
-#     cols_label(
-#         list = "",
-#         n = md("*N*"),
-#         freq_mean = md("Mean ± SD"),
-#         freq_min = md("Range"),
-#         n_phon_mean = md("Mean ± SD"),
-#         n_phon_min = md("Range"),
-#         lv_mean = md("Mean ± SD"),
-#         lv_min = md("Range")
-#     ) %>%
-#     tab_style(
-#         cell_text(style = "italic"),
-#         cells_column_labels(everything())
-#     ) %>%
-#     tab_style(
-#         cell_text(weight = "bold"),
-#         cells_column_spanners(everything())
-#     ) %>%
-#     summary_rows(
-#         fns = list("Grand mean" = ~mean(.)),
-#         columns = ends_with("_mean")
-#     ) %>%
-#     summary_rows(
-#         fns = list("N" = ~sum(.)),
-#         columns = n,
-#         formatter = fmt_integer
-#     )
+items <- left_join(items, select(bvq_data$pool, te, item, language, class, semantic_category))
+
+items %>%
+    unnest(list) %>%
+    summarise(n = n(),
+              across(c(freq, n_phon, lv),
+                     lst(mean, sd, min, max)),
+              .by = c(language, list)) |> 
+    gt(groupname_col = "language", 
+       rowname_col = "list") %>%
+    fmt_number(-c(list, n),
+               decimals = 1) %>%
+    tab_spanner("Frequency (Zipf)",
+                columns = starts_with("freq_")) %>%
+    tab_spanner("Length (Phonemes)",
+                columns = starts_with("n_phon_")) %>%
+    tab_spanner("Levenshtein (cognateness)", 
+                columns = starts_with("lv_")) %>%
+    cols_merge_uncert(col_val = freq_mean,
+                      col_uncert = freq_sd) %>%
+    cols_merge_uncert(col_val = n_phon_mean,
+                      col_uncert = n_phon_sd) %>%
+    cols_merge_uncert(col_val = lv_mean, 
+                      col_uncert = lv_sd) %>%
+    cols_merge_range(col_begin = freq_min, 
+                     col_end = freq_max) %>%
+    cols_merge_range(col_begin = n_phon_min, 
+                     col_end = n_phon_max) %>%
+    cols_merge_range(col_begin = lv_min,
+                     col_end = lv_max) %>%
+    cols_label(list = "",
+               n = md("*N*"),
+               freq_mean = md("Mean ± SD"),
+               freq_min = md("Range"),
+               n_phon_mean = md("Mean ± SD"),
+               n_phon_min = md("Range"),
+               lv_mean = md("Mean ± SD"),
+               lv_min = md("Range")) %>%
+    tab_style(cell_text(style = "italic"),
+              cells_column_labels(everything())) %>%
+    tab_style(cell_text(weight = "bold"),
+              cells_column_spanners(everything())) %>%
+    summary_rows(fns = list("Grand mean" = ~mean(.)),
+                 columns = ends_with("_mean")) %>%
+    summary_rows(fns = list("N" = ~sum(.)),
+                 columns = n,
+                 formatter = fmt_integer)
 ```
 
 ### Lexical frequency
@@ -378,8 +381,8 @@ Word lexical frequency ($Frequency$): lexical frequency of the word in its corre
 #| echo: false
 #| message: false
 #| warning: false
-#| fig-width: 7
-#| fig-height: 4
+#| fig-width: 6
+#| fig-height: 3
 #| fig-cap: "Distribution of lexical frequency across items. Lexical frequencies were extracted from the English CHILDES corpora, and mapped to their Catalan and Spanish translations. Therefore Catalan and Spanish word-forms that belong to the same translation equivalent had the same lexical frequency. The black dot and interval indicate the mean and standard deviation."
 mean_sd <- function(x, ...) {
     m <- mean(x, ...)
@@ -390,7 +393,9 @@ mean_sd <- function(x, ...) {
 items %>% 
     distinct(te, .keep_all = TRUE) %>% 
     ggplot(aes(x = freq)) +
-    geom_histogram(fill = clrs[4], colour = "white", bins = 30)  +
+    geom_histogram(fill = "grey60",
+                   colour = "white",
+                   bins = 30)  +
     labs(x = "Lexical frequency (Zipf score)", y = "Number of words") +
     theme(
         legend.position = "none",
@@ -399,9 +404,9 @@ items %>%
     )
 ```
 
-### \# Phonemes
+### Word length
 
-Word length ($Phonemes$), computed as the number of phonemes in the phonological transcription of the word-form in [SAMPA](https://en.wikipedia.org/wiki/SAMPA) format.
+Word length ($Length$), computed as the number of phonemes in the phonological transcription of the word-form in [SAMPA](https://en.wikipedia.org/wiki/SAMPA) format.
 
 
 ```{r}
@@ -412,38 +417,28 @@ Word length ($Phonemes$), computed as the number of phonemes in the phonological
 #| fig-width: 7
 #| fig-cap: "Distribution of number of phonemes across items"
 items %>%
-    mutate(language = ifelse(str_detect(item, "cat_"), "Catalan", "Spanish")) %>%
     count(language, n_phon) %>%
-    ggplot() +
-    aes(
-        x = n_phon,
-        y = n,
-        fill = language,
-        colour = language,
-        shape = language
-    ) +
+    ggplot(aes(x = n_phon, y = n)) +
     facet_wrap(~language, ncol = 1) +
-    geom_col(colour = "white") +
-    geom_text(aes(label = n), position = position_nudge(y = 5), colour = "black") +
-    labs(
-        x = "# Phonemes",
-        y = "Number of words",
-        fill = "Language",
-        shape = "Language",
-        colour = "Language"
-    ) +
+    geom_col(fill = "grey60", colour = "white") +
+    geom_text(aes(label = n),
+              position = position_nudge(y = 5),
+              colour = "black") +
+    labs(x = "Phonemes",
+         y = "Number of words",
+         fill = "Language",
+         shape = "Language",
+         colour = "Language") +
     scale_x_continuous(breaks = 1:15) +
     scale_fill_manual(values = clrs[c(1, 4)]) +
-    theme(
-        legend.position = "none",
-        panel.grid.major.x = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.ticks.x = element_line(),
-        legend.title = element_blank()
-    )
+    theme(legend.position = "none",
+          panel.grid.major.x = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.ticks.x = element_line(),
+          legend.title = element_blank())
 ```
 
-### Phonological similarity (Levenshtein)
+### Levenshtein (cognateness)
 
 Phonological similarity between translation equivalents was computed as the normalised Levenshtein similarity between the word-form and its translation in the other language [@levenshtein1966binary]. This score is calculated by first calculating the Levenshtein distance between the two transcriptions (number of insertions, deletions or replacements needed for the shortest transcription to become identical to the longer transcription), then dividing the resulting value by the length of the longest transcription, and finally subtracting this value from 1. This results in a proportion that indicates how much the two phonological transcriptions of the translation equivalent are similar to each other, ranging from 0% (no similarity at all) to 100% (both transcriptions are identical) [see @floccia2018vocabulary; @fourtassi2020growth; @laing2022phonological for similar approaches]. 
 
@@ -458,11 +453,16 @@ items %>%
     distinct(te, .keep_all = TRUE) %>% 
     mutate(lv = cut(lv, breaks = seq(0, 1, 0.1), include.lowest = TRUE)) %>% 
     count(lv) %>% 
-    mutate(prop = n/sum(n)) %>% 
+    mutate(prop = n/sum(n),
+           labels = paste0(
+               n, " (",
+               percent(prop, accuracy = 0.1), 
+               ")")) %>% 
     ggplot(aes(x = lv, n)) +
-    geom_col(fill = clrs[4], colour = "white") +
-    geom_text(aes(label = paste0(n, " (", percent(prop, accuracy = 0.1), ")")),
-              position = position_nudge(y = 3), size = 3.5) +
+    geom_col(fill = "grey60", colour = "white") +
+    geom_text(aes(label = labels),
+              position = position_nudge(y = 3), 
+              size = 3.5) +
     labs(x = "Levenshtein distance", y = "Number of words") +
     theme(
         panel.grid.major.x = element_blank(),
@@ -470,7 +470,7 @@ items %>%
     )
 ```
 
-### Frequency by \# Phonemes
+### Frequency by word length
 
 ```{r}
 #| label: fig-items-frequency-phonemes
@@ -485,10 +485,15 @@ items %>%
     distinct(te, .keep_all = TRUE) %>% 
     count(n_phon, freq) %>% 
     ggplot(aes(n_phon, freq)) +
-    geom_point(size = 2, alpha = 0.5, colour = clrs[4], shape = 1, stroke = 1,
-               position = position_jitter(width = 0.1), seed = 888) +
-    geom_smooth(method = "lm", formula = "y ~ x" ,
-                colour = clrs[1], fill = clrs[1]) +
+    geom_point(size = 2,
+               alpha = 0.5,
+               colour = "grey60", 
+               shape = 1, 
+               stroke = 1,
+               position = position_jitter(width = 0.1)) +
+    geom_smooth(method = "lm",
+                formula = "y ~ x" ,
+                colour = "black") +
     labs(
         x = "# Phonemes", 
         y = "Lexical frequency (Zipf score)", 
@@ -516,15 +521,18 @@ items %>%
     distinct(te, .keep_all = TRUE) %>% 
     drop_na(freq) %>% 
     count(freq, lv) %>% 
-    ggplot(aes(freq, lv, size = n)) +
-    geom_point(size = 2, shape = 1, stroke = 1, colour = clrs[4]) +
-    geom_smooth(method = "lm", formula = "y ~ x", colour = clrs[1], fill = clrs[1]) +
-    labs(
-        y = "Levenshtein similarity", 
-        x = "Lexical frequency (Zipf score)", 
-        colour = "Language", 
-        fill = "Language"
-    ) +
+    ggplot(aes(freq, lv)) +
+    geom_point(size = 2,
+               shape = 1, 
+               colour = "grey60",
+               stroke = 1) +
+    geom_smooth(method = "lm", 
+                formula = "y ~ x", 
+                colour ="black") +
+    labs(y = "Levenshtein similarity", 
+         x = "Lexical frequency (Zipf score)", 
+         colour = "Language", 
+         fill = "Language") +
     scale_y_continuous(labels = percent) +
     theme(
         legend.position = "none",
@@ -532,7 +540,7 @@ items %>%
     )
 ```
 
-### \# Phonemes by Levenshtein
+### Word length by Levenshtein
 
 ```{r}
 #| label: fig-items-nphon-lv
@@ -546,22 +554,22 @@ items %>%
     drop_na(freq) %>% 
     count(n_phon, lv) %>% 
     ggplot(aes(n_phon, lv, size = n)) +
-    geom_point(shape = 1, stroke = 1, colour = clrs[4]) +
-    geom_smooth(method = "lm", formula = "y ~ x", size = 1,
-                colour = clrs[1], fill = clrs[1]) +
-    labs(
-        x = "# Phonemes", 
-        y = "Levenshtein similarity", 
-        colour = "Language", 
-        fill = "Language"
-    ) +
+    geom_point(shape = 1,
+               stroke = 1,
+               colour = "grey60") +
+    geom_smooth(method = "lm",
+                formula = "y ~ x",
+                size = 1,
+                colour = "black") +
+    labs(x = "# Phonemes", 
+         y = "Levenshtein similarity", 
+         colour = "Language", 
+         fill = "Language") +
     scale_y_continuous(labels = percent) +
     scale_x_continuous(breaks = seq(0, 16, 1)) +
-    theme(
-        legend.position = "none",
-        panel.grid.minor = element_blank(),
-        panel.grid.major.x = element_blank()
-    ) 
+    theme(legend.position = "none",
+          panel.grid.minor = element_blank(),
+          panel.grid.major.x = element_blank()) 
 ```
 
 
@@ -590,54 +598,46 @@ $$ {#eq-exposure-example}
 #| fig-width: 13
 responses %>%
     mutate(
-        language = ifelse(grepl("cat_", item), "Catalan", "Spanish"),
-        exposure = cut(
-            exposure,
+        exposure = cut(exposure,
             breaks = seq(0, 9, 1),
-            include.lowest = TRUE
-        )
-    ) %>%
+            include.lowest = TRUE)) %>%
     count(exposure, language) %>%
-    ggplot(aes(exposure, n, fill = language)) +
+    ggplot(aes(exposure, n)) +
     facet_wrap( ~ language) +
-    geom_col(colour = "white") +
+    geom_col(colour = "white",
+             fill = "grey60") +
     labs(x = "Exposure-weighted frequency\n(Frequency \u00d7 DoE)",
          y = "Number of observations",
          fill = "Language") +
     
     responses %>%
-    mutate(
-        language = ifelse(grepl("cat_", item), "Catalan", "Spanish"),
-        exposure = cut(
-            exposure,
+    mutate(exposure = cut(exposure,
             breaks = seq(0, 9, 1),
-            include.lowest = TRUE
-        ),
-        freq = cut(freq, breaks = seq(0, 9, 0.25), include.lowest = TRUE)
-    ) %>%
+            include.lowest = TRUE),
+        freq = cut(freq, 
+                   breaks = seq(0, 9, 0.25), 
+                   include.lowest = TRUE)) %>%
     count(exposure, freq, language) %>%
-    ggplot(aes(
-        x = freq,
-        y = exposure,
-        colour = language,
-        size = n
-    )) +
+    ggplot(aes(x = freq,
+               y = exposure,
+               size = n)) +
     facet_wrap( ~ language) +
-    geom_point() +
-    labs(
-        x = "Frequency (Zipf score)",
-        y = "Exposure-weighted frequency\n(Frequency \u00d7 DoE)",
-        colour = "Language",
-        fill = "Language",
-        size = "Number of observations"
-    ) +
+    geom_point(colour = "grey60",
+               alpha = 1/2) +
+    labs(x = "Frequency (Zipf score)",
+         y = "Exposure-weighted frequency\\
+         (Frequency \u00d7 DoE)",
+         colour = "Language",
+         fill = "Language",
+         size = "Number of observations") +
     theme(panel.grid = element_blank()) +
     plot_layout(ncol = 1) &
     scale_colour_manual(values = clrs[c(1, 4)]) &
     scale_fill_manual(values = clrs[c(1, 4)]) &
     guides(fill = "none", colour = "none") &
     theme(panel.grid.major.x = element_blank(),
-          panel.grid.minor.y = element_blank())
+          panel.grid.minor.y = element_blank(),
+          legend.position = "none")
 ```
 
 

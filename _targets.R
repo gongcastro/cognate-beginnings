@@ -31,6 +31,7 @@ tar_option_set(
         "ggtext",
         "glue",
         "gt",
+        "ipa",
         "janitor",
         "keyring",
         "knitr",
@@ -49,6 +50,7 @@ tar_option_set(
         "tibble",
         "tidybayes",
         "tidyr",
+        "tidytext",
         "usethis"
     )
 )
@@ -412,6 +414,26 @@ list(
                                             ordered = TRUE) |>
                         as.character())
         }
+    ),
+    
+    tar_target(syllables_data,
+               get_syllable_data(items)),
+    
+    tar_target(model_fit_syllables,
+               {
+                   fit_model(
+                       name = "fit_syllables",
+                       formula = freq_syll ~ n_syll_std + lv_std + 
+                           (1 + n_syll_std | te),
+                       prior = c(prior(normal(0, 10), class = "Intercept"),
+                                 prior(normal(0, 10), class = "b"),
+                                 prior(exponential(3), class = "sigma"),
+                                 prior(exponential(3), class = "sd"),
+                                 prior(lkj(3), class = "cor")),
+                       data = syllables_data,
+                       sample_prior = "yes"
+                   )
+               }
     ),
     
     # render report ------------------------------------------------------------

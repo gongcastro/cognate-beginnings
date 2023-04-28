@@ -7,24 +7,30 @@ test_items <- function(items){
                                        "language",
                                        "item",
                                        "ipa",
-                                       "sampa",
+                                       "xsampa",
                                        "lv",
                                        "n_phon",
+                                       "n_syll",
+                                       "syll",
                                        "freq",
+                                       "freq_syll",
                                        "list"))
         )
     })
     
-    test_that("item variable classes are right", {
+    test_that("item variableclasses are right", {
         expect_type(items$te, "integer")
         expect_type(items$meaning, "character")
         expect_type(items$language, "character")
         expect_type(items$item, "character")
         expect_type(items$ipa, "character")
-        expect_type(items$sampa, "character")
+        expect_type(items$xsampa, "character")
         expect_type(items$lv, "double")
         expect_type(items$n_phon, "integer")
         expect_type(items$freq, "double")
+        expect_type(items$freq_syll, "double")
+        expect_type(items$n_syll, "integer")
+        expect_type(items$syll, "list")
         expect_type(items$list, "list")
     })
     
@@ -41,11 +47,17 @@ test_items <- function(items){
         expect_true(
             all(items$freq > 0)
         )
+        expect_true(
+            all(items$freq_syll > 0, na.rm = TRUE)
+        )
     })
     
-    test_that("all n_phon are positive", {
+    test_that("all n_phon and n_syll are positive", {
         expect_true(
             all(items$n_phon > 0)
+        )
+        expect_true(
+            all(items$n_syll > 0)
         )
     })
     
