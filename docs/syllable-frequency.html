@@ -2,14 +2,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.269">
+<meta name="generator" content="quarto-1.3.326">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Gonzalo Garcia-Castro">
-<meta name="author" content="Daniela S. Avila-Varela">
-<meta name="author" content="Ignacio Castillejo">
-<meta name="author" content="Núria Sebastian-Galles">
 
 <title>Syllable frequency by cognateness</title>
 <style>
@@ -21,7 +17,7 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
 </style>
@@ -53,50 +49,10 @@ ul.task-list li input[type="checkbox"] {
 </div>
 
 
-<div class="quarto-title-meta-author">
-  <div class="quarto-title-meta-heading">Authors</div>
-  <div class="quarto-title-meta-heading">Affiliations</div>
-  
-    <div class="quarto-title-meta-contents">
-    Gonzalo Garcia-Castro 
-  </div>
-    <div class="quarto-title-meta-contents">
-        <p class="affiliation">
-            Center for Brain and Cognition
-          </p>
-      </div>
-      <div class="quarto-title-meta-contents">
-    Daniela S. Avila-Varela 
-  </div>
-    <div class="quarto-title-meta-contents">
-        <p class="affiliation">
-            Center for Brain and Cognition
-          </p>
-        <p class="affiliation">
-            Facultade de Letras
-          </p>
-      </div>
-      <div class="quarto-title-meta-contents">
-    Ignacio Castillejo 
-  </div>
-    <div class="quarto-title-meta-contents">
-        <p class="affiliation">
-            Departamento de Psicología
-          </p>
-      </div>
-      <div class="quarto-title-meta-contents">
-    Núria Sebastian-Galles 
-  </div>
-    <div class="quarto-title-meta-contents">
-        <p class="affiliation">
-            Center for Brain and Cognition
-          </p>
-      </div>
-    </div>
 
 <div class="quarto-title-meta">
 
-      
+    
   
     
   </div>
@@ -104,20 +60,16 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<div class="cell">
-
-</div>
 <p>We define syllable frequency as the rate of appearance of individual syllables in the word-forms included in the Barcelona Vocabulary Questionnaire (BVQ). Each item corresponds to a Catalan or Spanish word, and has an associated phonological transcription in International Phonological Alphabet (IPA) format. These transcriptions are syllabified: syllables are separated by the <code>.</code> or the <code>ˈ</code> (marking that the upcoming syllable after is) symbols. Some examples:</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="tbl-items" class="anchored">
 
-<div id="hpmclmekxs" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="juctecdrat" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-:where(#hpmclmekxs) .gt_table {
+#juctecdrat .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -142,7 +94,7 @@ ul.task-list li input[type="checkbox"] {
   border-left-color: #D3D3D3;
 }
 
-:where(#hpmclmekxs) .gt_heading {
+#juctecdrat .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -154,12 +106,12 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-:where(#hpmclmekxs) .gt_caption {
+#juctecdrat .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-:where(#hpmclmekxs) .gt_title {
+#juctecdrat .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -171,7 +123,7 @@ ul.task-list li input[type="checkbox"] {
   border-bottom-width: 0;
 }
 
-:where(#hpmclmekxs) .gt_subtitle {
+#juctecdrat .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -183,13 +135,13 @@ ul.task-list li input[type="checkbox"] {
   border-top-width: 0;
 }
 
-:where(#hpmclmekxs) .gt_bottom_border {
+#juctecdrat .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-:where(#hpmclmekxs) .gt_col_headings {
+#juctecdrat .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -204,7 +156,7 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-:where(#hpmclmekxs) .gt_col_heading {
+#juctecdrat .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -224,7 +176,7 @@ ul.task-list li input[type="checkbox"] {
   overflow-x: hidden;
 }
 
-:where(#hpmclmekxs) .gt_column_spanner_outer {
+#juctecdrat .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -236,15 +188,15 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 4px;
 }
 
-:where(#hpmclmekxs) .gt_column_spanner_outer:first-child {
+#juctecdrat .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-:where(#hpmclmekxs) .gt_column_spanner_outer:last-child {
+#juctecdrat .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-:where(#hpmclmekxs) .gt_column_spanner {
+#juctecdrat .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -256,7 +208,7 @@ ul.task-list li input[type="checkbox"] {
   width: 100%;
 }
 
-:where(#hpmclmekxs) .gt_group_heading {
+#juctecdrat .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -282,7 +234,7 @@ ul.task-list li input[type="checkbox"] {
   text-align: left;
 }
 
-:where(#hpmclmekxs) .gt_empty_group_heading {
+#juctecdrat .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -297,15 +249,15 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 
-:where(#hpmclmekxs) .gt_from_md > :first-child {
+#juctecdrat .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-:where(#hpmclmekxs) .gt_from_md > :last-child {
+#juctecdrat .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-:where(#hpmclmekxs) .gt_row {
+#juctecdrat .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -324,7 +276,7 @@ ul.task-list li input[type="checkbox"] {
   overflow-x: hidden;
 }
 
-:where(#hpmclmekxs) .gt_stub {
+#juctecdrat .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -337,7 +289,7 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-:where(#hpmclmekxs) .gt_stub_row_group {
+#juctecdrat .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -351,11 +303,11 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: top;
 }
 
-:where(#hpmclmekxs) .gt_row_group_first td {
+#juctecdrat .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-:where(#hpmclmekxs) .gt_summary_row {
+#juctecdrat .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -365,16 +317,16 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-:where(#hpmclmekxs) .gt_first_summary_row {
+#juctecdrat .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-:where(#hpmclmekxs) .gt_first_summary_row.thick {
+#juctecdrat .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-:where(#hpmclmekxs) .gt_last_summary_row {
+#juctecdrat .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -384,7 +336,7 @@ ul.task-list li input[type="checkbox"] {
   border-bottom-color: #D3D3D3;
 }
 
-:where(#hpmclmekxs) .gt_grand_summary_row {
+#juctecdrat .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -394,7 +346,7 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-:where(#hpmclmekxs) .gt_first_grand_summary_row {
+#juctecdrat .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -404,11 +356,11 @@ ul.task-list li input[type="checkbox"] {
   border-top-color: #D3D3D3;
 }
 
-:where(#hpmclmekxs) .gt_striped {
+#juctecdrat .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-:where(#hpmclmekxs) .gt_table_body {
+#juctecdrat .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -417,7 +369,7 @@ ul.task-list li input[type="checkbox"] {
   border-bottom-color: #D3D3D3;
 }
 
-:where(#hpmclmekxs) .gt_footnotes {
+#juctecdrat .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -431,7 +383,7 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-:where(#hpmclmekxs) .gt_footnote {
+#juctecdrat .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-left: 4px;
@@ -440,7 +392,7 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-:where(#hpmclmekxs) .gt_sourcenotes {
+#juctecdrat .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -454,7 +406,7 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-:where(#hpmclmekxs) .gt_sourcenote {
+#juctecdrat .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -462,192 +414,229 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-:where(#hpmclmekxs) .gt_left {
+#juctecdrat .gt_left {
   text-align: left;
 }
 
-:where(#hpmclmekxs) .gt_center {
+#juctecdrat .gt_center {
   text-align: center;
 }
 
-:where(#hpmclmekxs) .gt_right {
+#juctecdrat .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-:where(#hpmclmekxs) .gt_font_normal {
+#juctecdrat .gt_font_normal {
   font-weight: normal;
 }
 
-:where(#hpmclmekxs) .gt_font_bold {
+#juctecdrat .gt_font_bold {
   font-weight: bold;
 }
 
-:where(#hpmclmekxs) .gt_font_italic {
+#juctecdrat .gt_font_italic {
   font-style: italic;
 }
 
-:where(#hpmclmekxs) .gt_super {
+#juctecdrat .gt_super {
   font-size: 65%;
 }
 
-:where(#hpmclmekxs) .gt_footnote_marks {
+#juctecdrat .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 75%;
   vertical-align: 0.4em;
 }
 
-:where(#hpmclmekxs) .gt_asterisk {
+#juctecdrat .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-:where(#hpmclmekxs) .gt_indent_1 {
+#juctecdrat .gt_indent_1 {
   text-indent: 5px;
 }
 
-:where(#hpmclmekxs) .gt_indent_2 {
+#juctecdrat .gt_indent_2 {
   text-indent: 10px;
 }
 
-:where(#hpmclmekxs) .gt_indent_3 {
+#juctecdrat .gt_indent_3 {
   text-indent: 15px;
 }
 
-:where(#hpmclmekxs) .gt_indent_4 {
+#juctecdrat .gt_indent_4 {
   text-indent: 20px;
 }
 
-:where(#hpmclmekxs) .gt_indent_5 {
+#juctecdrat .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
-<table class="gt_table"><caption>Table&nbsp;1:  Sample of items included in the BVQ questionnaire and their syllabified IPA transcriptions in Catalan and Spanish </caption>
-  
-  <thead class="gt_col_headings">
-    <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" style="font-style: italic;" scope="col" id="Translation equivalent">Translation equivalent</th>
-      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2" style="font-weight: bold;" scope="colgroup" id="Catalan">
-        <span class="gt_column_spanner">Catalan</span>
-      </th>
-      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2" style="font-weight: bold;" scope="colgroup" id="Spanish">
-        <span class="gt_column_spanner">Spanish</span>
-      </th>
-    </tr>
-    <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-style: italic;" scope="col" id="Item">Item</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-style: italic;" scope="col" id="IPA">IPA</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-style: italic;" scope="col" id="Item">Item</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-style: italic;" scope="col" id="IPA">IPA</th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><td headers="meaning" class="gt_row gt_left">fly (animal)</td>
-<td headers="label_catalan" class="gt_row gt_left">mosca</td>
-<td headers="ipa_catalan" class="gt_row gt_left">ˈmos.kə</td>
-<td headers="label_spanish" class="gt_row gt_left">mosca</td>
-<td headers="ipa_spanish" class="gt_row gt_left">ˈmos.ka</td></tr>
-    <tr><td headers="meaning" class="gt_row gt_left">juice</td>
-<td headers="label_catalan" class="gt_row gt_left">suc</td>
-<td headers="ipa_catalan" class="gt_row gt_left">suk</td>
-<td headers="label_spanish" class="gt_row gt_left">zumo</td>
-<td headers="ipa_spanish" class="gt_row gt_left">ˈθu.mo</td></tr>
-    <tr><td headers="meaning" class="gt_row gt_left">bun</td>
-<td headers="label_catalan" class="gt_row gt_left">brioix</td>
-<td headers="ipa_catalan" class="gt_row gt_left">bɾiˈɔʃ</td>
-<td headers="label_spanish" class="gt_row gt_left">brioix</td>
-<td headers="ipa_spanish" class="gt_row gt_left">ˈbo.ʎo</td></tr>
-    <tr><td headers="meaning" class="gt_row gt_left">dinosaur</td>
-<td headers="label_catalan" class="gt_row gt_left">dinosaure</td>
-<td headers="ipa_catalan" class="gt_row gt_left">di.nuˈsaw.ɾə</td>
-<td headers="label_spanish" class="gt_row gt_left">dinosaurio</td>
-<td headers="ipa_spanish" class="gt_row gt_left">di.noˈsaw.ɾjo</td></tr>
-    <tr><td headers="meaning" class="gt_row gt_left">comb (object)</td>
-<td headers="label_catalan" class="gt_row gt_left">pinta</td>
-<td headers="ipa_catalan" class="gt_row gt_left">ˈpin.tə</td>
-<td headers="label_spanish" class="gt_row gt_left">peine</td>
-<td headers="ipa_spanish" class="gt_row gt_left">ˈpej.ne</td></tr>
-    <tr><td headers="meaning" class="gt_row gt_left">rain</td>
-<td headers="label_catalan" class="gt_row gt_left">pluja</td>
-<td headers="ipa_catalan" class="gt_row gt_left">ˈpɫu.ʒə</td>
-<td headers="label_spanish" class="gt_row gt_left">lluvia</td>
-<td headers="ipa_spanish" class="gt_row gt_left">ˈʎu.βja</td></tr>
-    <tr><td headers="meaning" class="gt_row gt_left">police</td>
-<td headers="label_catalan" class="gt_row gt_left">policia</td>
-<td headers="ipa_catalan" class="gt_row gt_left">pu.ɫiˈsi.ə</td>
-<td headers="label_spanish" class="gt_row gt_left">policia</td>
-<td headers="ipa_spanish" class="gt_row gt_left">po.liˈθi.a</td></tr>
-    <tr><td headers="meaning" class="gt_row gt_left">nose</td>
-<td headers="label_catalan" class="gt_row gt_left">nas</td>
-<td headers="ipa_catalan" class="gt_row gt_left">nas</td>
-<td headers="label_spanish" class="gt_row gt_left">nariz</td>
-<td headers="ipa_spanish" class="gt_row gt_left">naˈɾiθ</td></tr>
-    <tr><td headers="meaning" class="gt_row gt_left">ambulance</td>
-<td headers="label_catalan" class="gt_row gt_left">ambulància</td>
-<td headers="ipa_catalan" class="gt_row gt_left">əm.buˈɫan.si.ə</td>
-<td headers="label_spanish" class="gt_row gt_left">ambulància</td>
-<td headers="ipa_spanish" class="gt_row gt_left">am.buˈlan.θja</td></tr>
-    <tr><td headers="meaning" class="gt_row gt_left">trolley</td>
-<td headers="label_catalan" class="gt_row gt_left">cistella (compra)</td>
-<td headers="ipa_catalan" class="gt_row gt_left">sisˈte.ʎə</td>
-<td headers="label_spanish" class="gt_row gt_left">carrito (compra)</td>
-<td headers="ipa_spanish" class="gt_row gt_left">kaˈri.to</td></tr>
-    <tr><td headers="meaning" class="gt_row gt_left">train</td>
-<td headers="label_catalan" class="gt_row gt_left">tren</td>
-<td headers="ipa_catalan" class="gt_row gt_left">tɾɛn</td>
-<td headers="label_spanish" class="gt_row gt_left">tren</td>
-<td headers="ipa_spanish" class="gt_row gt_left">tɾen</td></tr>
-    <tr><td headers="meaning" class="gt_row gt_left">grandma</td>
-<td headers="label_catalan" class="gt_row gt_left">àvia</td>
-<td headers="ipa_catalan" class="gt_row gt_left">ˈa.βi.ə</td>
-<td headers="label_spanish" class="gt_row gt_left">abuela (yaya)</td>
-<td headers="ipa_spanish" class="gt_row gt_left">aˈβwe.la</td></tr>
-    <tr><td headers="meaning" class="gt_row gt_left">bicycle</td>
-<td headers="label_catalan" class="gt_row gt_left">bici / bicicleta</td>
-<td headers="ipa_catalan" class="gt_row gt_left">bi.si</td>
-<td headers="label_spanish" class="gt_row gt_left">bici / bicicleta</td>
-<td headers="ipa_spanish" class="gt_row gt_left">ˈbi.θi</td></tr>
-    <tr><td headers="meaning" class="gt_row gt_left">oven</td>
-<td headers="label_catalan" class="gt_row gt_left">forn</td>
-<td headers="ipa_catalan" class="gt_row gt_left">forn</td>
-<td headers="label_spanish" class="gt_row gt_left">horno</td>
-<td headers="ipa_spanish" class="gt_row gt_left">ˈoɾ.no</td></tr>
-    <tr><td headers="meaning" class="gt_row gt_left">fish (food)</td>
-<td headers="label_catalan" class="gt_row gt_left">peix</td>
-<td headers="ipa_catalan" class="gt_row gt_left">peʃ</td>
-<td headers="label_spanish" class="gt_row gt_left">pescado</td>
-<td headers="ipa_spanish" class="gt_row gt_left">pesˈka.ðo</td></tr>
-    <tr><td headers="meaning" class="gt_row gt_left">sea</td>
-<td headers="label_catalan" class="gt_row gt_left">mar</td>
-<td headers="ipa_catalan" class="gt_row gt_left">mar</td>
-<td headers="label_spanish" class="gt_row gt_left">mar</td>
-<td headers="ipa_spanish" class="gt_row gt_left">maɾ</td></tr>
-    <tr><td headers="meaning" class="gt_row gt_left">aunt</td>
-<td headers="label_catalan" class="gt_row gt_left">tia / tieta</td>
-<td headers="ipa_catalan" class="gt_row gt_left">ˈti.ə</td>
-<td headers="label_spanish" class="gt_row gt_left">tía</td>
-<td headers="ipa_spanish" class="gt_row gt_left">ˈti.a</td></tr>
-    <tr><td headers="meaning" class="gt_row gt_left">cloud</td>
-<td headers="label_catalan" class="gt_row gt_left">núvol</td>
-<td headers="ipa_catalan" class="gt_row gt_left">ˈnu.βuɫ</td>
-<td headers="label_spanish" class="gt_row gt_left">nube</td>
-<td headers="ipa_spanish" class="gt_row gt_left">ˈnu.βe</td></tr>
-    <tr><td headers="meaning" class="gt_row gt_left">racket</td>
-<td headers="label_catalan" class="gt_row gt_left">raqueta</td>
-<td headers="ipa_catalan" class="gt_row gt_left">rəˈkɛ.tə</td>
-<td headers="label_spanish" class="gt_row gt_left">raqueta</td>
-<td headers="ipa_spanish" class="gt_row gt_left">raˈke.ta</td></tr>
-    <tr><td headers="meaning" class="gt_row gt_left">party</td>
-<td headers="label_catalan" class="gt_row gt_left">festa</td>
-<td headers="ipa_catalan" class="gt_row gt_left">ˈfes.tə</td>
-<td headers="label_spanish" class="gt_row gt_left">fiesta</td>
-<td headers="ipa_spanish" class="gt_row gt_left">ˈfjes.ta</td></tr>
-  </tbody>
-  
-  
+
+<div id="tbl-items" class="anchored">
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Table&nbsp;1: Sample of items included in the BVQ questionnaire and their syllabified IPA transcriptions in Catalan and Spanish</caption>
+<thead class="gt_col_headings">
+<tr class="header">
+<th rowspan="2" id="Translation equivalent" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" style="font-style: italic" scope="col">Translation equivalent</th>
+<th colspan="2" id="Catalan" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" style="font-weight: bold" scope="colgroup"><span class="gt_column_spanner">Catalan</span></th>
+<th colspan="2" id="Spanish" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" style="font-weight: bold" scope="colgroup"><span class="gt_column_spanner">Spanish</span></th>
+</tr>
+<tr class="odd">
+<th id="Item" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" style="font-style: italic" scope="col">Item</th>
+<th id="IPA" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" style="font-style: italic" scope="col">IPA</th>
+<th id="Item" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" style="font-style: italic" scope="col">Item</th>
+<th id="IPA" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" style="font-style: italic" scope="col">IPA</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="meaning">star</td>
+<td class="gt_row gt_left" headers="label_catalan">estel</td>
+<td class="gt_row gt_left" headers="ipa_catalan">əsˈtɛɫ</td>
+<td class="gt_row gt_left" headers="label_spanish">estrella</td>
+<td class="gt_row gt_left" headers="ipa_spanish">esˈtɾe.ʎa</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="meaning">black</td>
+<td class="gt_row gt_left" headers="label_catalan">negre</td>
+<td class="gt_row gt_left" headers="ipa_catalan">ˈnɛ.ɣɾə</td>
+<td class="gt_row gt_left" headers="label_spanish">negro</td>
+<td class="gt_row gt_left" headers="ipa_spanish">ˈne.ɣɾo</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="meaning">coat</td>
+<td class="gt_row gt_left" headers="label_catalan">abric</td>
+<td class="gt_row gt_left" headers="ipa_catalan">əˈβɾik</td>
+<td class="gt_row gt_left" headers="label_spanish">abrigo</td>
+<td class="gt_row gt_left" headers="ipa_spanish">aˈβɾi.ɣo</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="meaning">glass</td>
+<td class="gt_row gt_left" headers="label_catalan">got</td>
+<td class="gt_row gt_left" headers="ipa_catalan">ɡɔt</td>
+<td class="gt_row gt_left" headers="label_spanish">vaso</td>
+<td class="gt_row gt_left" headers="ipa_spanish">ˈba.so</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="meaning">cheese</td>
+<td class="gt_row gt_left" headers="label_catalan">formatge</td>
+<td class="gt_row gt_left" headers="ipa_catalan">furˈma.d͡ʒə</td>
+<td class="gt_row gt_left" headers="label_spanish">queso (quesitos)</td>
+<td class="gt_row gt_left" headers="ipa_spanish">ˈke.so</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="meaning">blender</td>
+<td class="gt_row gt_left" headers="label_catalan">batedora</td>
+<td class="gt_row gt_left" headers="ipa_catalan">bə.təˈðo.ɾə</td>
+<td class="gt_row gt_left" headers="label_spanish">batidora</td>
+<td class="gt_row gt_left" headers="ipa_spanish">ba.tiˈðo.ɾa</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="meaning">tooth</td>
+<td class="gt_row gt_left" headers="label_catalan">dents</td>
+<td class="gt_row gt_left" headers="ipa_catalan">dens</td>
+<td class="gt_row gt_left" headers="label_spanish">dientes</td>
+<td class="gt_row gt_left" headers="ipa_spanish">ˈdjen.tes</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="meaning">button</td>
+<td class="gt_row gt_left" headers="label_catalan">botó</td>
+<td class="gt_row gt_left" headers="ipa_catalan">buˈto</td>
+<td class="gt_row gt_left" headers="label_spanish">botón</td>
+<td class="gt_row gt_left" headers="ipa_spanish">boˈton</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="meaning">blocks</td>
+<td class="gt_row gt_left" headers="label_catalan">galleda</td>
+<td class="gt_row gt_left" headers="ipa_catalan">ɡəˈʎɛ.ðə</td>
+<td class="gt_row gt_left" headers="label_spanish">cubo</td>
+<td class="gt_row gt_left" headers="ipa_spanish">ˈku.βo</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="meaning">bicycle</td>
+<td class="gt_row gt_left" headers="label_catalan">bici / bicicleta</td>
+<td class="gt_row gt_left" headers="ipa_catalan">bi.si</td>
+<td class="gt_row gt_left" headers="label_spanish">bici / bicicleta</td>
+<td class="gt_row gt_left" headers="ipa_spanish">ˈbi.θi</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="meaning">kitchen</td>
+<td class="gt_row gt_left" headers="label_catalan">cuina</td>
+<td class="gt_row gt_left" headers="ipa_catalan">ˈkuj.nə</td>
+<td class="gt_row gt_left" headers="label_spanish">cocina</td>
+<td class="gt_row gt_left" headers="ipa_spanish">koˈθi.na</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="meaning">turtle</td>
+<td class="gt_row gt_left" headers="label_catalan">tortuga</td>
+<td class="gt_row gt_left" headers="ipa_catalan">turˈtu.ɣə</td>
+<td class="gt_row gt_left" headers="label_spanish">tortuga</td>
+<td class="gt_row gt_left" headers="ipa_spanish">toɾˈtu.ɣa</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="meaning">motorcycle</td>
+<td class="gt_row gt_left" headers="label_catalan">moto</td>
+<td class="gt_row gt_left" headers="ipa_catalan">ˈmo.tu</td>
+<td class="gt_row gt_left" headers="label_spanish">moto</td>
+<td class="gt_row gt_left" headers="ipa_spanish">ˈmo.to</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="meaning">mouse</td>
+<td class="gt_row gt_left" headers="label_catalan">ratolí</td>
+<td class="gt_row gt_left" headers="ipa_catalan">rə.tuˈli</td>
+<td class="gt_row gt_left" headers="label_spanish">ratón</td>
+<td class="gt_row gt_left" headers="ipa_spanish">raˈton</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="meaning">pajamas</td>
+<td class="gt_row gt_left" headers="label_catalan">pijama</td>
+<td class="gt_row gt_left" headers="ipa_catalan">piˈʒa.mə</td>
+<td class="gt_row gt_left" headers="label_spanish">pijama</td>
+<td class="gt_row gt_left" headers="ipa_spanish">piˈxa.ma</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="meaning">sausage</td>
+<td class="gt_row gt_left" headers="label_catalan">salsitxa</td>
+<td class="gt_row gt_left" headers="ipa_catalan">səɫˈsi.t͡ʃə</td>
+<td class="gt_row gt_left" headers="label_spanish">salchicha</td>
+<td class="gt_row gt_left" headers="ipa_spanish">salˈtʃi.tʃa</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="meaning">fox</td>
+<td class="gt_row gt_left" headers="label_catalan">guineu</td>
+<td class="gt_row gt_left" headers="ipa_catalan">ɡiˈnɛw</td>
+<td class="gt_row gt_left" headers="label_spanish">zorro</td>
+<td class="gt_row gt_left" headers="ipa_spanish">ˈθo.ro</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="meaning">witch</td>
+<td class="gt_row gt_left" headers="label_catalan">bruixa</td>
+<td class="gt_row gt_left" headers="ipa_catalan">ˈbɾu.ʃə</td>
+<td class="gt_row gt_left" headers="label_spanish">bruja</td>
+<td class="gt_row gt_left" headers="ipa_spanish">ˈbɾu.xa</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="meaning">beans</td>
+<td class="gt_row gt_left" headers="label_catalan">llenties</td>
+<td class="gt_row gt_left" headers="ipa_catalan">ʎənˈti.əs</td>
+<td class="gt_row gt_left" headers="label_spanish">lentejas</td>
+<td class="gt_row gt_left" headers="ipa_spanish">lenˈte.xas</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="meaning">cow</td>
+<td class="gt_row gt_left" headers="label_catalan">vaca</td>
+<td class="gt_row gt_left" headers="ipa_catalan">ˈba.kə</td>
+<td class="gt_row gt_left" headers="label_spanish">vaca</td>
+<td class="gt_row gt_left" headers="ipa_spanish">ˈba.ka</td>
+</tr>
+</tbody>
 </table>
 </div>
+
 </div>
 </div>
 </div>
@@ -763,9 +752,23 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
   const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
     }
   });
   clipboard.on('success', function(e) {
@@ -830,6 +833,92 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return note.innerHTML;
     });
   }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {

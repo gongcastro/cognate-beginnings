@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|ecda31f797f059b9|||||||||||||||
+.Random.seed|object|ea801b4fa237d177|||||||||||||||
 age_range|object|185c15eff6e88661|||||||||||||||
 age_step|object|ed77be4a2960536d|||||||||||||||
 aoa_df|object|1792c2f60cb2dcd7|||||||||||||||
@@ -14,6 +14,7 @@ eli_df|object|861b0a8c962cdf7e|||||||||||||||
 elis_plot|object|6d19fbc35666cca0|||||||||||||||
 fit_model|function|5a88aca23ce15f75|||||||||||||||
 flatten_columns|function|315e6f1e29563edc|||||||||||||||
+flatten_xsampa|function|7ce8e1985c8847cf|||||||||||||||
 freq_month|object|ded833868582137a|||||||||||||||
 freq_sd|object|f3582cdc107e111b|||||||||||||||
 function_paths|object|c1b93368527c9bae|||||||||||||||
@@ -23,20 +24,21 @@ generate_newdata|function|4d1be0d427365f71|||||||||||||||
 get_aoa|function|bf0f3b93ca8ee651|||||||||||||||
 get_bvq|function|3ce26eea61d8b956|||||||||||||||
 get_childes_frequencies|function|df67cde1e6918e71|||||||||||||||
-get_items|function|0962fd752280b85a|||||||||||||||
+get_items|function|003cbed1fef3f7c5|||||||||||||||
 get_log_lik|function|ad1040a21550bc1a|||||||||||||||
 get_loo|function|a0631c6424e32120|||||||||||||||
 get_mid|function|1c1bebbb226556e5|||||||||||||||
 get_participants|function|444a7004e0cdddd7|||||||||||||||
-get_posterior_draws|function|599a0f5cbb10ddca|||||||||||||||
+get_posterior_draws|function|b806e43a9bb56371|||||||||||||||
 get_posterior_draws_re|function|3ed41d05ed6f4b35|||||||||||||||
 get_responses|function|641a0b345b3640d4|||||||||||||||
+get_syllable_data|function|ee800368d21533e0|||||||||||||||
 img|object|31b20509b8322341|||||||||||||||
 item_df|object|afa64fd1f405e413|||||||||||||||
-items|stem|bae7969c759e1d89|49b6cd25c41a1b0f|37d1cce794224070|-986180865||t19411.7481285638s|53da72da5bff5806|16269|rds|local|vector|||0.22||
-items_test|stem|32af597cbdb2a163|762d2cbc9b05fe3c|8da67deb2feb6ec6|883923261||t19390.3990634612s|ac45463db19e2cbe|48|rds|local|vector|||0.45||
+items|stem|ca997a79c94f6063|49b6cd25c41a1b0f|291fcccdc5638758|-986180865||t19474.3866835165s|57d88cfc78112499|26086|rds|local|vector|||0.3||
+items_test|stem|32af597cbdb2a163|762d2cbc9b05fe3c|97d41c9467148b25|883923261||t19474.3867161968s|ac45463db19e2cbe|48|rds|local|vector|||0.78||
 make|function|32845fc4a0ebb3eb|||||||||||||||
-manuscript|stem|d72f30d109fe9ec6|9c37d0b9aa447d90|d84d7cdd1c3c4b08|615889701|manuscript.docx*manuscript.pdf*manuscript.qmd|t19464.6536503525s||17138004|file|local|vector|||295.33|package dplyr was built under R version 4.2.3. package ggplot2 was built under R version 4.2.3. package lubridate was built under R version 4.2.3. package readxl was built under R version 4.2.3. package rlang was built under R version 4.2.3. package tibble was built under R version 4.2.3. package tidyr was built under R version 4.2.3|System command quarto.exe failed
+manuscript|stem|1821c1bb5ad25ddf|03adf362dc5672d7|d84d7cdd1c3c4b08|615889701|manuscript.pdf*manuscript.qmd|t19475.6851406855s|07a9787ed73c648f|7450834|file|local|vector|||118.4|package dplyr was built under R version 4.2.3. package ggplot2 was built under R version 4.2.3. package ipa was built under R version 4.2.3. package lubridate was built under R version 4.2.3. package readxl was built under R version 4.2.3. package rlang was built under R version 4.2.3. package tibble was built under R version 4.2.3. package tidyr was built under R version 4.2.3|
 marginal_effects_epreds|stem|c31569b8dfec66b0|58be616b257a2fc4|67886581f448fd06|2132376814||t19464.4655774541s|2a014971bc724fb1|240871|rds|local|vector|||2.34||
 marginal_effects_epreds_id|stem|8d9515eb736756f8|a2a8fa68953fb158|bb0692bf5a2bd88f|-1713814384||t19398.7582092741s||1512210|rds|local|vector|||3.02||Problem while computing lv  factor....Caused by error in factor invalid labels length 3 should be 1 or 1
 marginal_effects_epreds_te|stem|9503fde7f4a4788a|b6a7c72d9b3d601b|54989fac2afcf247|-258282318||t19401.5861652438s||2.2250738585072e-308|rds|local|vector|||33.19||Problem while computing lv  lv_std  sddatalv  meandatalv.Caused by error in datalv object of type closure is not subsettable
@@ -47,6 +49,7 @@ model_fit_3|stem|ca966a4f14959fa4|98e490b3d6599079|a5bc056d0afaa7f2|440164973||t
 model_fit_4|stem|ae10549439974b7b|1bba8383445d00c5|564130f267d3c7c7|821530599||t19398.7564337091s|17abee60c4c5ebca|131601526|rds|local|vector|||3.28||
 model_fit_4_doe|stem|5b627567645cbb2e|305b27f8dacee7c7|2e9cb14c27e1e86c|-1894463347||t19398.7563178529s|9ee5a873015aa66c|149585018|rds|local|vector|||5.96||
 model_fit_4_prior|stem|d4b20930f52f6d77|19eeef75ab1f1ce9|b15983943afd5e5a|535305375||t19398.7574130359s|c0302b825483e2a1|125102875|rds|local|vector|||2.87||
+model_fit_syllables|stem|17f68d8c1f871063|432568149ce35c40|fe8d77fd0ef3ba1a|-1600143829||t19475.5871773683s|0938050632a98c59|16803092|rds|local|vector|||41.92||
 model_log_liks|stem|d7e942082b01d802|ea0ff1b88fcebe9b|19114bd79ba50a6c|847987435||t19398.7635837672s|66349e429b1a29c3|3534139689|rds|local|vector|||326.91||
 model_loos|stem|fb462dbd3aeb15db|3d50a5b64241ec5f|84955cc795545f1e|1809489316||t19398.5421618135s|3eb0fc31b11a9bb3|33556560|rds|local|vector|||503.26|Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.|
 model_mcmc_pairs|stem|c3b26d89e77d7713|c8301bc80999a6de|b1b7f2220fdab4f3|-1229421444||t19413.7351578679s|0e53dea1f7a7d0f8|12619685|rds|local|vector|||22.07|The following arguments were unrecognized and ignored fill, colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored fill, colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored fill, colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following arguments were unrecognized and ignored colour. The following|
@@ -59,8 +62,8 @@ months_to_years|function|f02f03cafdc688ca|||||||||||||||
 namespace_conficts|stem|39337d3b898d7268|6130ab64ebc11cb1|a2715c8de70c2864|420052052||t19461.5030637591s|9dfd31c781e2fd5b|66|rds|local|vector|||3.52|package lubridate was built under R version 4.2.3. package readxl was built under R version 4.2.3. package rlang was built under R version 4.2.3|
 participants|stem|734bda2cd773cdfb|faa1dd696f8b6b59|ae511e1d7669b415|392525641||t19390.3990282426s|80c9923076e1198c|9071|rds|local|vector|||0.21||
 participants_test|stem|32af597cbdb2a163|ffc69402e3973190|30d4756c4f8ebb10|-717703539||t19425.3672458417s|ac45463db19e2cbe|48|rds|local|vector|||0.91||
-posterior_draws|stem|f2c071fd11937f09|0037def546f747b8|9f27e92cab79afbe|-1530540741||t19443.6774671888s|629523da9ffa7cde|217786|rds|local|vector|||13||
-posterior_draws_doe|stem|6a30b8861d6c0696|20c0c704c4f9d8bb|9577559c06afa5d2|1361510468||t19443.6773073567s|08da1117d69ee359|22660|rds|local|vector|||18.6||
+posterior_draws|stem|b7868707a8f369d2|0037def546f747b8|b031066cef3089de|-1530540741||t19475.6493523006s|11fac792a5ea3b2b|217907|rds|local|vector|||14.53||
+posterior_draws_doe|stem|6a30b8861d6c0696|20c0c704c4f9d8bb|da7bcff708b39bc6|1361510468||t19475.6495806053s|08da1117d69ee359|22660|rds|local|vector|||18.58||
 posterior_draws_re|stem|f62077965c6887c9|623dbeb7660f525c|7a74f9ea96b84a22|1383172958||t19425.3926326981s|ff5db98019f31106|134993752|rds|local|vector|||20.61|gather_ was deprecated in tidyr 1.2.0.ℹ Please use gather instead.ℹ The deprecated feature was likely used in the tidybayes package.  Please report the issue at httpsgithub.commjskaytidybayesissuesnew.|
 posterior_predictions|function|bfb9badbdabc8014|||||||||||||||
 posterior_predictions_re|function|4fa3a3674d62696b|||||||||||||||
@@ -72,12 +75,14 @@ remove_nul|function|5ca46e3aaa553081|||||||||||||||
 report|stem||47298d6bbe8319e9|7c94562e145ad434|-237041703||t19398.7072745252s||0|file|local|vector|||185.55||System command quarto.exe failed
 rescale_variable|function|c7cc266d522398dd|||||||||||||||
 resolve_conflicts|function|b12cf1e416e886a2|||||||||||||||
-responses|stem|adef5ec4d63a4b6b|d6c1f45abce97916|80ef9b686a9cd455|403517661||t19390.3990580836s|ee2b508bda4fb63f|1330172|rds|local|vector|||1.22||
+responses|stem|adef5ec4d63a4b6b|d6c1f45abce97916|ee20c66ab3b3b354|403517661||t19474.3867066437s|ee2b508bda4fb63f|1330172|rds|local|vector|||1.75||
 responses_test|stem|32af597cbdb2a163|c526232cbe04f108|9b2a40d280d0ff63|-1505889607||t19391.8570666845s|ac45463db19e2cbe|48|rds|local|vector|||1.78||
 save_files|function|ddfdac55b8935d49|||||||||||||||
 seq_range|function|785383eae343c3e3|||||||||||||||
-syllable_frequencies|stem|cd2842ea689e5b98|d4f2e219eafae8f0|9d6d78dace7dee13|1360932008|docs/syllable-frequency.html*docs/syllable-frequency.qmd|t19419.4474990435s|ea733c808379c654|42732|file|local|vector|||22.67||
-test_items|function|602ea01cf692a76f|||||||||||||||
+syllabify_xsampa|function|b21330241de1eeb8|||||||||||||||
+syllable_frequencies|stem|8826bc12cf81eb5b|854bc56b2dcea93a|df90caf7d5932e07|1360932008|docs/syllable-frequency.pdf*docs/syllable-frequency.qmd|t19474.3869451249s|0c09edca4c40fd80|154566|file|local|vector|||19.8||
+syllables_data|stem|e9bb04b54c02b00b|7bd1e86b6d8e8a7e|21a734b66efcb31a|-594601804||t19475.5335182061s|61bf1fc8a5ba4eb6|15352|rds|local|vector|||0.03||
+test_items|function|9e2ae8fb60bfde9f|||||||||||||||
 test_participants|function|442221beba03de97|||||||||||||||
 test_paths|object|f5d5bf166174a7c2|||||||||||||||
 test_responses|function|ca469913d91d14c4|||||||||||||||

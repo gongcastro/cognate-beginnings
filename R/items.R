@@ -4,10 +4,13 @@
 #' @param childes A data frame with lexical frequencies extracted from CHILDES, as returned by the [get_childes_frequencies()]
 #' @param class A character vector indicating the word classes to be included in the resulting dataset. Takes `"Adjective"`, `"Noun"` and/or `"Verb"` as values.
 get_items <- function(bvq_data, childes, class = "Noun") {
+    
     classes_available <- c("Noun", "Verb", "Adjective")
+    
     if (!(class %in% classes_available)) {
         cli_abort("class must be one of {classes_available}")
     }
+    
     classes <- class
     
     # find TEs that have one word-form in each language
@@ -24,22 +27,39 @@ get_items <- function(bvq_data, childes, class = "Noun") {
                # exclude problematic items (e.g., multi-word items)
                te %in% duplicated_te,
                # get only translation equivalents with at least one item in each language
-               class %in% classes) |>
+               class %in% classes) |> 
         add_count(te, name = "n_te") |> # get only items with one translation in each language
         filter(n_te == 2) |>
-        distinct(language, te, .keep_all = TRUE)
+        distinct(language, te, .keep_all = TRUE) |> 
+        mutate(xsampa = ipa(ipa),
+               xsampa_flat = flatten_xsampa(xsampa),
+               syll = syllabify_xsampa(xsampa),
+               n_syll = map_int(syll, length),
+               item = str_remove(item, "cat_|spa_")) 
+    
+    syll_freq <- pool_tmp |> 
+        left_join(childes, by = c("childes_lemma" = "token")) |> 
+        replace_na(list(freq_million = 1)) |>
+        unnest_longer(syll) |> 
+        summarise(freq_syll = sum(freq_million),
+                  .by = c(language, syll)) |> 
+        mutate(freq_syll = log10(freq_syll) + 3)
+    
+    syllables <- pool_tmp |> 
+        unnest_longer(syll, indices_to = "position") |> 
+        left_join(syll_freq, by = c("syll", "language")) |> 
+        summarise(freq_syll_sum = sum(freq_syll),
+                  .by = c(te, n_syll, language))
     
     # compute normalised Levenshtein distance (see ?stringdist::`stringdist-package`)
     # number of edit operations needed to make two strings identical
     # when applied to phonological transcriptions, it provides an approximation of phonological similarity between two word-forms
     lv_similarities <- pool_tmp |>
-        mutate(sampa = str_remove_all(sampa, "\\.")) |>
-        pivot_wider(
-            id_cols = te,
-            names_from = language,
-            values_from = sampa,
-            names_repair = make_clean_names
-        ) |>
+        mutate(xsampa = flatten_xsampa(sampa)) |>
+        pivot_wider(id_cols = te,
+                    names_from = language,
+                    values_from = xsampa,
+                    names_repair = make_clean_names) |>
         # make sure strings are coded as UTF-8 before computing LVs
         mutate(lv = stringsim(catalan, spanish)) |>
         distinct(te, lv)
@@ -47,13 +67,16 @@ get_items <- function(bvq_data, childes, class = "Noun") {
     # merge datasets
     items <- pool_tmp |>
         rename(list = version) |>
-        left_join(lv_similarities) |> # add LVs
+        left_join(lv_similarities,
+                  by = join_by(te)) |> # add LVs
         left_join(childes, by = c("childes_lemma" = "token")) |> 
+        left_join(syllables,by = join_by(language, te, n_syll)) |> 
         drop_na(lv, list, wordbank_lemma, freq_zipf) |>
         mutate(n_phon = nchar(sampa_flat),
                item = str_remove(item, "cat_|spa_")) |>
         select(te, meaning = wordbank_lemma, language, item, ipa,
-               sampa = sampa_flat, lv, n_phon, freq = freq_zipf, list) |>
+               xsampa, lv, n_phon, n_syll, syll, freq = freq_zipf, 
+               freq_syll = freq_syll_sum, list) |>
         arrange(te)
     
     # export to data folder
@@ -142,4 +165,27 @@ get_childes_frequencies <- function(collection = "Eng-NA",
     })
     
     return(childes)
+}
+
+
+flatten_xsampa <- function(x) {
+    str_rm <- c("\\.", "\\\\", ",", "/", "?", "'", '"')
+    str <- gsub(paste0(str_rm, collapse = "|"), "", x)
+    str <- gsub("\\{", "\\\\{", str)
+    return(str)
+}
+
+syllabify_xsampa <- function(x, .sep = c("\\.", "\\\"")) {
+    syll <- strsplit(x, split = paste0(.sep, collapse = "|"))
+    syll <- lapply(syll, function(x) x[x != ""]) 
+    return(syll)
+}
+
+get_syllable_data <- function(items) {
+    items |> 
+        select(te, item, lv, n_syll, freq_syll) |> 
+        drop_na(freq_syll) |> 
+        mutate(across(c(n_syll, lv, freq_syll, lv), 
+                      \(x) scale(x)[, 1],
+                      .names = "{.col}_std"))
 }

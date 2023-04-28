@@ -95,7 +95,7 @@ get_posterior_draws <- function(model,
         "b_age_std" = glue("Age (+1 SD, {round(sd(data$age), 2)}, months)"),
         "b_n_phon_std" = glue("Length (+1 SD, {round(sd(data$n_phon), 2)} phonemes)"),
         "b_exposure_std" = glue("Exposure (+1 SD, {round(sd(data$exposure), 2)})"),
-        "b_lv_std" = glue("Cognateness (+1 SD, {percent(sd(data$lv))})"),
+        "b_lv_std" = glue("Cognateness (+1 SD, {percent(sd(data$lv), accuracy = 0.01)})"),
         "b_exposure_std:lv_std" = "Exposure \u00d7 Cognateness",
         "b_age_std:exposure_std" = "Age \u00d7 Exposure",
         "b_age_std:lv_std" = "Age \u00d7 Cognateness",
@@ -104,22 +104,16 @@ get_posterior_draws <- function(model,
     
     # posterior draws
     posterior_draws <- gather_draws(model, `b_.*`, regex = TRUE, ...) |>
-        mutate(
-            .variable_name = factor(.variable,
-                                    levels = names(str_repl),
-                                    labels = str_repl) |>
-                as.character(),
-            type = ifelse(
-                str_detect(.variable, "Intercept"),
-                glue("Intercepts (at {round(mean(data$age, 2))} months)"),
-                "Slopes"
-            ),
-            parameter = ifelse(
-                str_detect(.variable, "Intercept"),
-                str_remove_all(.variable, "Intercept \\(|\\)"),
-                .variable
-            )
-        ) |>
+        mutate(.variable_name = factor(.variable,
+                                       levels = names(str_repl),
+                                       labels = str_repl) |>
+                   as.character(),
+               type = ifelse(str_detect(.variable, "Intercept"),
+                             glue("Intercepts (at {round(mean(data$age, 2))} months)"),
+                             "Slopes"),
+               parameter = ifelse(str_detect(.variable, "Intercept"),
+                                  str_remove_all(.variable, "Intercept \\(|\\)"),
+                                  .variable)) |>
         select(.variable, .variable_name, .type = type, 
                .chain, .iteration, .draw, .value) |>
         ungroup()
