@@ -13,7 +13,7 @@
 !assets/*.docx
 
 _targets/*
-
+.json
 data/**/*.rds
 data/**/*.csv
 data/**/*.parquet
@@ -29,3 +29,4 @@ index/index_files/
 
 /.quarto/
 _freeze/*
+/.luarc.json
