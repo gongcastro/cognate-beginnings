@@ -18,7 +18,7 @@ get_items <- function(bvq_data, childes, class = "Noun") {
     
     pool_tmp <- bvq_data$pool |>
         # drop items with missing observations in these variables
-        drop_na(sampa, wordbank_lemma) |>
+        drop_na(xsampa, wordbank_lemma) |>
         filter(n_lemmas == 1,
                # exclude items with more than two lemmas
                !is_multiword,
@@ -31,8 +31,7 @@ get_items <- function(bvq_data, childes, class = "Noun") {
         add_count(te, name = "n_te") |> # get only items with one translation in each language
         filter(n_te == 2) |>
         distinct(language, te, .keep_all = TRUE) |> 
-        mutate(xsampa = ipa(ipa),
-               xsampa_flat = flatten_xsampa(xsampa),
+        mutate(xsampa_flat = flatten_xsampa(xsampa),
                syll = syllabify_xsampa(xsampa),
                n_syll = map_int(syll, length),
                item = str_remove(item, "cat_|spa_")) 
@@ -55,10 +54,9 @@ get_items <- function(bvq_data, childes, class = "Noun") {
     # number of edit operations needed to make two strings identical
     # when applied to phonological transcriptions, it provides an approximation of phonological similarity between two word-forms
     lv_similarities <- pool_tmp |>
-        mutate(xsampa = flatten_xsampa(sampa)) |>
         pivot_wider(id_cols = te,
                     names_from = language,
-                    values_from = xsampa,
+                    values_from = xsampa_flat,
                     names_repair = make_clean_names) |>
         # make sure strings are coded as UTF-8 before computing LVs
         mutate(lv = stringsim(catalan, spanish)) |>
@@ -72,8 +70,9 @@ get_items <- function(bvq_data, childes, class = "Noun") {
         left_join(childes, by = c("childes_lemma" = "token")) |> 
         left_join(syllables,by = join_by(language, te, n_syll)) |> 
         drop_na(lv, list, wordbank_lemma, freq_zipf) |>
-        mutate(n_phon = nchar(sampa_flat),
-               item = str_remove(item, "cat_|spa_")) |>
+        mutate(n_phon = nchar(xsampa_flat),
+               item = str_remove(item, "cat_|spa_"),
+               ipa = xsampa(xsampa)) |>
         select(te, meaning = wordbank_lemma, language, item, ipa,
                xsampa, lv, n_phon, n_syll, syll, freq = freq_zipf, 
                freq_syll = freq_syll_sum, list) |>

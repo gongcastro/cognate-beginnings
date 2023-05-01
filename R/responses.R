@@ -8,14 +8,15 @@ get_responses <- function(bvq_data, items, participants) {
     # merge all datasets
     responses_tmp <- bvq_data$responses |>
         mutate(time = as.integer(time),
+               language = ifelse(grepl("cat_", item), "Catalan", "Spanish"),
                item = str_remove(item, "cat_|spa_")) |>
         # drop missing responses
         # by default datasets are expanded so that every participant has rows for all items,
         # even for those that were not included in their version of the questionnaire
         drop_na(response) |>
-        rename(id_bvq = id) |>
-        inner_join(distinct(participants, id, id_bvq)) |>
-        select(id_bvq, time, code, language, item, response)
+        inner_join(distinct(participants, id),
+                   by = join_by(id)) |>
+        select(id, time, code, language, item, response)
     
     responses <- lst(select(items, -list),
                      responses_tmp,
@@ -38,8 +39,7 @@ get_responses <- function(bvq_data, items, participants) {
             age_std = scale(age)[, 1],
             doe_std = scale(doe)[, 1],
             exposure = freq * doe,
-            exposure_std = scale(exposure)[, 1],
-        ) |>
+            exposure_std = scale(exposure)[, 1]) |>
         # get only relevant variables
         select(id, time, age, age_std, te, language, meaning, item, response,
                lv, lv_std, freq, freq_std, n_phon, n_phon_std, doe, doe_std,

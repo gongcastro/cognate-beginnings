@@ -12,8 +12,7 @@ get_participants <- function(bvq_data,
                              other_threshold = 0.1) {
     
     participants <- bvq_data$logs |>
-        filter(
-            completed,
+        filter(completed,
             # get only short versions of the questionnaire
             str_detect(version, "Lockdown|Short"),
             # get only data from complete questionnaire responses
@@ -22,18 +21,14 @@ get_participants <- function(bvq_data,
             lp %in% .env$lp,
             between(age, .env$age[1], .env$age[2]),
             sum(doe_catalan + doe_spanish) > .env$other_threshold,
-            id_bvq != "bilexicon_1699",
-            # exclude participants (duplicated entry)
             # make sure that degrees of exposure are between 0 and 1
             between(doe_spanish, 0, 1),
             between(doe_catalan, 0, 1),
-            between(doe_others, 0, 1)
-        ) |>
+            between(doe_others, 0, 1)) |>
         mutate(time = as.integer(time)) |> 
         # see ?bvq::get_longitudinal
         get_longitudinal(longitudinal = longitudinal) |>
-        mutate(id = as.integer(as.factor(id_bvq))) |>  # make ID shorter
-        select(id, id_bvq, time, time_stamp, list = version,
+        select(id, time, time_stamp = date_finished, list = version,
                age, lp, doe_catalan, doe_spanish, edu_parent) |> 
     arrange(id)
     

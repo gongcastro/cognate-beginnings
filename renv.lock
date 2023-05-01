@@ -114,6 +114,13 @@
       "Repository": "CRAN",
       "Hash": "0ddbe51591ab1d3e7362e0da3727c837"
     },
+    "SnowballC": {
+      "Package": "SnowballC",
+      "Version": "0.7.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "bc26e07c0d747fd287c370fe355e7b85"
+    },
     "StanHeaders": {
       "Package": "StanHeaders",
       "Version": "2.21.0-7",
@@ -282,18 +289,18 @@
       "Repository": "CRAN",
       "Hash": "a7fbf03946ad741129dc81098722fca1"
     },
-    "bvqdev": {
-      "Package": "bvqdev",
-      "Version": "0.0.0.9000",
+    "bvq": {
+      "Package": "bvq",
+      "Version": "0.2.0",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "gongcastro",
-      "RemoteRepo": "bvqdev",
+      "RemoteRepo": "bvq",
       "RemoteRef": "main",
-      "RemoteSha": "176a880c5b178ddb1b6fdd2928fcaedb721f6643",
+      "RemoteSha": "2b9ee7834f0163fd2ddaec96e2cd7c3105271648",
       "Remotes": "github::rubenarslan/formr",
-      "Hash": "3937ee3232cf2e03417bafe78d1e5350"
+      "Hash": "6ae798d5d042ded2e1e16810d3a66d13"
     },
     "cachem": {
       "Package": "cachem",
@@ -437,10 +444,10 @@
     },
     "datawizard": {
       "Package": "datawizard",
-      "Version": "0.6.5",
+      "Version": "0.7.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "6af559e24be9cec37516e37a00a6cfc3"
+      "Hash": "001775ea47f92ef8e2916ed0cfa59735"
     },
     "dbplyr": {
       "Package": "dbplyr",
@@ -799,10 +806,17 @@
     },
     "insight": {
       "Package": "insight",
-      "Version": "0.18.8",
+      "Version": "0.19.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "63e5c0b19f7a78e13cda42e1c3b03549"
+      "Hash": "b7a721ab3228268ed3a4ac3d585a09bf"
+    },
+    "ipa": {
+      "Package": "ipa",
+      "Version": "0.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "a088dab8d8630acfe5dee20928321733"
     },
     "isoband": {
       "Package": "isoband",
@@ -810,6 +824,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "0080607b4a1a7b28979aecef976d8bc2"
+    },
+    "janeaustenr": {
+      "Package": "janeaustenr",
+      "Version": "1.0.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "26f391e42073877818f2d4f0470dca24"
     },
     "janitor": {
       "Package": "janitor",
@@ -1462,6 +1483,13 @@
       "Repository": "CRAN",
       "Hash": "79540e5fcd9e0435af547d885f184fd5"
     },
+    "tidytext": {
+      "Package": "tidytext",
+      "Version": "0.4.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "eb8386c938a086eb3216595eba76831d"
+    },
     "timechange": {
       "Package": "timechange",
       "Version": "0.2.0",
@@ -1475,6 +1503,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "facc02f3d63ed7dd765513c004c394ce"
+    },
+    "tokenizers": {
+      "Package": "tokenizers",
+      "Version": "0.3.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "76d35ebfaaf291e08c15696c9f2ec96d"
     },
     "tzdb": {
       "Package": "tzdb",

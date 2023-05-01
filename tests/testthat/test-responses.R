@@ -26,7 +26,7 @@ test_responses <- function(responses) {
     })
     
     test_that("responses variable classes are right", {
-        expect_type(responses$id, "integer")
+        expect_type(responses$id, "character")
         expect_type(responses$time, "integer")
         expect_type(responses$age, "double")
         expect_type(responses$age_std, "double")

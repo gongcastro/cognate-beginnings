@@ -117,8 +117,8 @@ generate_figures <- function() {
     
     img <- c(cat = "assets/img/diagram_cat.png",
              dog = "assets/img/diagram_dog.png") |> 
-        map(image_read) |>
-        map(\(x) image_ggplot(x, interpolate = FALSE))
+        map(magick::image_read) |>
+        map(\(x) magick::image_ggplot(x, interpolate = FALSE))
     
     # cumulative learning instances plot -------------------------------------------
     elis_plot <- dataset$eli_df |> 
@@ -180,7 +180,7 @@ generate_figures <- function() {
         scale_linetype_manual(values = c("solid", "dashed")) +
         theme_custom() +
         theme(legend.key.width = unit(1.5, "cm"),
-              legend.position = "right",
+              legend.position = "bottom",
               legend.margin = margin(c(0, 0, 0, 0)),
               legend.justification = c(0, 1),
               legend.title = element_text(size = 9),
@@ -247,12 +247,12 @@ generate_figures <- function() {
     # join plots -------------------------------------------------------------------
     
     elis_plot + probs_plot +
-        plot_layout(ncol = 1,
-                    guides = "collect") &
+        plot_layout(ncol = 1) &
         scale_x_continuous(breaks = seq(min(dataset$eli_df$age), 
                                         max(dataset$eli_df$age), 4)) &
         theme(panel.grid = element_blank(),
-              plot.background = element_rect(fill = "white", colour = NA))
+              plot.background = element_rect(fill = "white", 
+                                             colour = NA))
     
     ggsave("assets/img/diagram.png",
            width = 10,
