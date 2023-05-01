@@ -102,8 +102,8 @@ mcmc_pairs(posterior,
 #| message: false
 #| fig-width: 6
 #| fig-height: 3
-#| out-width: 50%
-#| out-height: 50%
+#| out-width: 80%
+#| out-height: 80%
 y_int <- as.integer(as.integer(responses$response))
 color_scheme_set(c(rep("grey60", 2), rep("black", 4)))
 
