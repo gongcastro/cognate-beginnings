@@ -10,6 +10,7 @@ fit_model <- function(name, ...) {
                chains = 4,
                init = 0.5,
                seed = 888,
+               threads = threading(2),
                backend = "cmdstanr",
                file = glue("results/fits/{name}.rds"),
                file_refit = "on_change",

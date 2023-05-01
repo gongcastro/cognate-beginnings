@@ -17,7 +17,7 @@ make <- function() {
 
 # remove targets products
 unmake <- function(keep_fits = TRUE) {
-    path <- "Results/fit.rds"
+    path <- "results/fit.rds"
     tar_destroy(ask = FALSE)
     
     if (!keep_fits) {
