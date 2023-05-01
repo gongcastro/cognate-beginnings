@@ -3,7 +3,6 @@ test_participants <- function(participants) {
         expect_true(all(
             colnames(participants) %in% c(
                 "id",
-                "id_bvq",
                 "time",
                 "time_stamp",
                 "list",
@@ -17,7 +16,7 @@ test_participants <- function(participants) {
     })
     
     test_that("participants variable classes are right", {
-        expect_type(participants$id, "integer")
+        expect_type(participants$id, "character")
         expect_type(participants$time, "integer")
         expect_type(participants$time_stamp, "double")
         expect_type(participants$list, "character")
