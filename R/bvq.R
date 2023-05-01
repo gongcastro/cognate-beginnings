@@ -2,9 +2,9 @@
 #' @param ... Arguments to be passed to \code{bvq_responses}
 #' @returns A named list of data frames containing questionnaire responses, participant data, and item data from BVQ
 get_bvq <- function(...) {
-    # get multilex participant data
+    # get bvq participant data
     p <- bvq_participants()
-    # get multilex questionnaire responses
+    # get bvq questionnaire responses
     r <- bvq_responses(p, ...)
     
     # merge participant data with questionnaire responses

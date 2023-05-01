@@ -30,7 +30,7 @@ get_participants <- function(bvq_data,
             between(doe_others, 0, 1)
         ) |>
         mutate(time = as.integer(time)) |> 
-        # see ?multilex::get_longitudinal
+        # see ?bvq::get_longitudinal
         get_longitudinal(longitudinal = longitudinal) |>
         mutate(id = as.integer(as.factor(id_bvq))) |>  # make ID shorter
         select(id, id_bvq, time, time_stamp, list = version,
