@@ -1,5 +1,5 @@
 source("renv/activate.R")
-source("R/utils.R")
+source("src/helpers.R")
 
 options(crayon.enabled = TRUE)
 

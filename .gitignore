@@ -29,3 +29,4 @@ index/index_files/
 
 /.quarto/
 _freeze/*
+/.luarc.json
