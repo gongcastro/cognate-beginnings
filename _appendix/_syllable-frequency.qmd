@@ -1,11 +1,14 @@
 
-````{r}
+```{r prepare-syllables}
+#| label: prepare-syllables
+#| echo: false
+#| warning: false
+#| message: false
 duplicated_te <- bvq_data$pool$te[duplicated(bvq_data$pool$te)]
 
 pool_tmp <- bvq_data$pool |>
     # drop items with missing observations in these variables
-    drop_na(sampa, wordbank_lemma) |>
-    mutate(xsampa = ipa(ipa)) |> 
+    drop_na(xsampa, wordbank_lemma) |>
     filter(n_lemmas == 1,
            # exclude items with more than two lemmas
            !is_multiword,
@@ -39,6 +42,9 @@ We define syllable frequency as the rate of appearance of individual syllables i
 ```{r items-table}
 #| label: tbl-items
 #| tbl-cap: Sample of items included in the BVQ questionnaire and their syllabified SAMPA transcriptions in Catalan and Spanish
+#| echo: false
+#| warning: false
+#| message: false
 items |> 
     distinct(te, item, language, meaning, xsampa, n_syll) |> 
     left_join(distinct(pool_tmp, te, language, item, label),
@@ -76,6 +82,9 @@ Most Catalan and Spanish words had two syllables, with Spanish words having thre
 #| apa-cap: Distribution of the number of syllables in Catalan and Spanish
 #| fig-width: 7
 #| fig-height: 3
+#| echo: false
+#| warning: false
+#| message: false
 pool_tmp |> 
     group_by(language) |> 
     add_count(language, name = "n_lang") |> 
@@ -106,6 +115,9 @@ We now present how syllable frequencies were calculated. Every exposure to a wor
 #| apa-cap: "Distribution of apositional syllable frequencies in Spanish and Catalan"
 #| fig-height: 3.5
 #| fig-width: 7
+#| echo: false
+#| warning: false
+#| message: false
 syll <- items |> 
     left_join(distinct(pool_tmp, te, childes_lemma),
               by = join_by(te)) |> 
@@ -147,6 +159,9 @@ syll |>
 #| fig-width: 8
 #| fig-height: 3
 #| out-width: 80%
+#| echo: false
+#| warning: false
+#| message: false
 syll |> 
     group_by(language) |> 
     top_n(20, freq_syll) |> 
@@ -194,6 +209,10 @@ u_{1_{i}} \\
 $$ {#eq-model-syllables}
 
 ```{r syllables-posterior}
+#| label: syllables-posterior
+#| echo: false
+#| warning: false
+#| message: false
 rope_interval <- c(lower = -0.5, upper = 0.5)
 # tidy predictor names
 str_repl <- c(
@@ -279,16 +298,16 @@ expand_grid(lv_std = scale(seq(0, 1, 0.1),
                            center = mean(syllables_data$lv),
                            scale = sd(syllables_data$lv))[, 1],
             n_syll_std = scale(seq(1, 4, 1),
-                           center = mean(syllables_data$n_syll),
-                           scale = sd(syllables_data$n_syll))[, 1]) |> 
+                               center = mean(syllables_data$n_syll),
+                               scale = sd(syllables_data$n_syll))[, 1]) |> 
     add_epred_draws(model_fit_syllables, ndraws = 50,
                     re_formula = NA) |> 
     mutate(lv_std = rescale_variable(lv_std,
                                      mean = mean(syllables_data$lv),
                                      sd = sd(syllables_data$lv)),
            n_syll_std = rescale_variable(n_syll_std,
-                                     mean = mean(syllables_data$n_syll),
-                                     sd = sd(syllables_data$n_syll)),
+                                         mean = mean(syllables_data$n_syll),
+                                         sd = sd(syllables_data$n_syll)),
            n_syll_std = as.factor(n_syll_std)) |> 
     ggplot(aes(lv_std, .epred, colour = n_syll_std)) +
     geom_point(data = filter(syllables_data, n_syll < 5),

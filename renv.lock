@@ -72,13 +72,6 @@
       "Repository": "CRAN",
       "Hash": "45f0398006e83a5b10b72a90663d8d8c"
     },
-    "RMariaDB": {
-      "Package": "RMariaDB",
-      "Version": "1.2.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "0c1f56f4e57463be9b13e32f62fafcc2"
-    },
     "RMySQL": {
       "Package": "RMySQL",
       "Version": "0.10.25",
@@ -106,13 +99,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "9d930f5e12e075d57965f46503a1f9b1"
-    },
-    "Rdpack": {
-      "Package": "Rdpack",
-      "Version": "2.4",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "0ddbe51591ab1d3e7362e0da3727c837"
     },
     "SnowballC": {
       "Package": "SnowballC",
@@ -1119,13 +1105,6 @@
       "Repository": "CRAN",
       "Hash": "6b0c222c5071efe0f3baf3dae9aa40e2"
     },
-    "plogr": {
-      "Package": "plogr",
-      "Version": "0.2.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "09eb987710984fc2905c7129c7d85e65"
-    },
     "plyr": {
       "Package": "plyr",
       "Version": "1.8.8",
@@ -1209,13 +1188,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "5e3c5dc0b071b21fa128676560dbe94d"
-    },
-    "rbibutils": {
-      "Package": "rbibutils",
-      "Version": "2.2.12",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "f81b59dc945117e30e5399ca60f43968"
     },
     "readr": {
       "Package": "readr",

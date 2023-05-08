@@ -62,9 +62,6 @@ options(mc.cores = 4,
         knitr.graphics.error = FALSE)
 
 list(
-    ## resolve namespace conflicts ---------------------------------------------
-    tar_target(namespace_conficts, resolve_conflicts()),
-    
     ## import data -------------------------------------------------------------
     tar_target(bvq_data_file, "data-raw/bvq.rds", format = "rds"),
     tar_target(bvq_data, readRDS(bvq_data_file)),
@@ -202,15 +199,15 @@ list(
     ## describe models ---------------------------------------------------------
     tar_target(
         posterior_draws,
-        get_posterior_draws(model_fit_3, data = responses)
+        get_posterior_draws(model_fit_4, data = responses)
     ),
     
     tar_target(posterior_draws_re,
-               get_posterior_draws_re(model_fit_3)),
+               get_posterior_draws_re(model_fit_4)),
     
     ## marginal effects --------------------------------------------------------
     tar_target(marginal_effects_epreds,
-               posterior_predictions(model = model_fit_3,
+               posterior_predictions(model = model_fit_4,
                                      responses, 
                                      age_std = scale(seq(7, 40),
                                                      mean(responses$age),
@@ -242,8 +239,10 @@ list(
     # posterior predictive checks
     tar_target(model_ppcs,
                {
-                   yrep_char <- posterior_predict(model_fit_3, ndraws = 50)
-                   sapply(data.frame(yrep_char, stringsAsFactors = TRUE), as.integer)
+                   yrep_char <- posterior_predict(model_fit_4, ndraws = 50)
+                   sapply(data.frame(yrep_char, 
+                                     stringsAsFactors = TRUE), 
+                          as.integer)
                }),
     
     # appendix -----------------------------------------------------------------
@@ -326,7 +325,7 @@ list(
     #     execute = TRUE,
     #     quiet = FALSE
     # ),
-    
+
     # render manuscript
     tar_quarto(manuscript,
                "manuscript.qmd",
