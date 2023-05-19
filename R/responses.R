@@ -18,10 +18,12 @@ get_responses <- function(bvq_data, items, participants) {
                    by = join_by(id)) |>
         select(id, time, code, language, item, response)
     
-    responses <- lst(select(items, -list),
-                     responses_tmp,
-                     participants) |>
-        reduce(inner_join) |>
+    responses <- items |> 
+        select(-list) |> 
+        inner_join(responses_tmp,
+                   by = join_by(language, item)) |> 
+        inner_join(participants,
+                   by = join_by(id, time)) |> 
         mutate(
             # code responses as factor
             response = factor(response,

@@ -13,7 +13,7 @@
 
 Do bilingual children acquire cognates earlier than non-cognates? We collected vocabulary data from 10-to-32 month old infants exposed to a second language in varying degrees, and modelled the probability of acquisition of translation equivalents conditional participants' age, their degree of exposure to the second language, and the phonological overlap between word-forms across languages.
 
-This repository hosts the code used to process and analyse the data, as well as the Rmarkdown files used to generate the preprint. The code and surveys used to collect and retrieve the data are hosted as a package in the [Multilex](github.org/gongcastro/multilex) repository. All other materials can be found in the [OSF](https://osf.io/hy984/) repository.
+This repository hosts the code used to process and analyse the data, as well as the Rmarkdown files used to generate the preprint. The code and surveys used to collect and retrieve the data are hosted as a package in the [bvq](github.org/gongcastro/bvq) repository. All other materials can be found in the [OSF](https://osf.io/hy984/) repository.
 
 
 ## Downloading this repository<a name="downloading"></a>
