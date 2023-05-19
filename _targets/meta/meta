@@ -1,69 +1,101 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|8ce9701dafe1e2af|||||||||||||||
-bvq_data|stem|e38d237cf8a2e247|1713fb13bcb0ffed|abbee844f3596b03|-1902070830||t19485.634776982s|45ce29ef240729da|1224226|rds|local|vector|||1.36||
-bvq_data_file|stem|2eeaa6c449fa1e44|48eaf072f2413071|ef46db3751d8e999|1011699987||t19485.6347390061s|d586f792a395948c|68|rds|local|vector|||0||
-childes|stem|fa18257a3b394bfe|257adfb4dcdab016|e862719ee8306882|-1780705379||t19485.6347387752s|386dd2639dc21aeb|565280|rds|local|vector|||59.71|package dplyr was built under R version 4.2.3. package ggplot2 was built under R version 4.2.3. package ipa was built under R version 4.2.3. package lubridate was built under R version 4.2.3. package readxl was built under R version 4.2.3. package rlang was built under R version 4.2.3. package tibble was built under R version 4.2.3. package tidyr was built under R version 4.2.3|
+.Random.seed|object|8cb74a985666df7a|||||||||||||||
+appendix|stem||b23cf492f87517c9|bc0edd7dc5ecf9d7|1554002692||t19495.7454727904s||0|file|local|vector|||21.05||System command quarto.exe failed
+bvq_data|stem|e38d237cf8a2e247|1713fb13bcb0ffed|abbee844f3596b03|-1902070830||t19495.74697025s|45ce29ef240729da|1224226|rds|local|vector|||1.89||
+bvq_data_file|stem|2eeaa6c449fa1e44|48eaf072f2413071|ef46db3751d8e999|1011699987||t19495.7333261519s|d586f792a395948c|68|rds|local|vector|||0||
+childes|stem|fa18257a3b394bfe|257adfb4dcdab016|e862719ee8306882|-1780705379||t19495.7333258165s|386dd2639dc21aeb|565280|rds|local|vector|||56.55||
 cut_age|function|032f28577fcd0b5c|||||||||||||||
 days_to_months|function|04bfa6e1e044ea0e|||||||||||||||
-fit_model|function|6d25cd5f705bb138|||||||||||||||
+fit_model|function|7bdf9c7f0a2e7e30|||||||||||||||
 flatten_columns|function|315e6f1e29563edc|||||||||||||||
 flatten_xsampa|function|7ce8e1985c8847cf|||||||||||||||
-function_paths|object|deeaa8b19b1d822c|||||||||||||||
-generate_figures|function|49e676cefd5acef4|||||||||||||||
+function_paths|object|8776389e8c8171dd|||||||||||||||
+generate_figures|function|436415ebbeafffcf|||||||||||||||
 generate_newdata|function|4d1be0d427365f71|||||||||||||||
 get_aoa|function|bf0f3b93ca8ee651|||||||||||||||
+get_aoa_data|function|3c723c07d118116e|||||||||||||||
+get_aoa_model_fit|function|f61525482b3bae94|||||||||||||||
+get_aoa_posterior|function|d5236eb0b078f422|||||||||||||||
+get_bvq|function|3ce26eea61d8b956|||||||||||||||
 get_childes_frequencies|function|df67cde1e6918e71|||||||||||||||
-get_items|function|a69b74c9fa2e89f6|||||||||||||||
+get_items|function|607bba7bd391ea3c|||||||||||||||
 get_log_lik|function|ad1040a21550bc1a|||||||||||||||
 get_loo|function|a0631c6424e32120|||||||||||||||
-get_participants|function|4ce88f304ab4d495|||||||||||||||
-get_posterior_draws|function|b806e43a9bb56371|||||||||||||||
-get_posterior_draws_re|function|3ed41d05ed6f4b35|||||||||||||||
-get_responses|function|030cfcfc4c2271b8|||||||||||||||
+get_model_ppc|function|123a86a325d5807b|||||||||||||||
+get_participants|function|6eab123641ae79a7|||||||||||||||
+get_posterior_draws|function|490d2e572a5e9b89|||||||||||||||
+get_posterior_draws_re|function|be233e7a8a8fa7d3|||||||||||||||
+get_posterior_summary|function|a293b743fef6450f|||||||||||||||
+get_responses|function|7c72e99249dca5b7|||||||||||||||
 get_syllable_data|function|ee800368d21533e0|||||||||||||||
-items|stem|02e41dc21548abba|49b6cd25c41a1b0f|555aee143b2b13e0|-986180865||t19485.63478183s|8a1a7c406d603fbb|26069|rds|local|vector|||0.28||
-items_test|stem|32af597cbdb2a163|762d2cbc9b05fe3c|740911248080b911|883923261||t19485.6348200253s|ac45463db19e2cbe|48|rds|local|vector|||0.5||
+get_var_dict|function|e108b33d00614e1e|||||||||||||||
+get_vars_dict|function|e108b33d00614e1e|||||||||||||||
+items|stem|02e41dc21548abba|49b6cd25c41a1b0f|545b0179307d06f4|-986180865||t19496.326862678s|8a1a7c406d603fbb|26069|rds|local|vector|||0.25||
+items_test|stem|32af597cbdb2a163|762d2cbc9b05fe3c|740911248080b911|883923261||t19495.7519382364s|ac45463db19e2cbe|48|rds|local|vector|||0.5||
 make|function|32845fc4a0ebb3eb|||||||||||||||
-manuscript|stem|61fadf8355bbc4f9|03adf362dc5672d7|d84d7cdd1c3c4b08|615889701|manuscript.pdf*manuscript.qmd|t19485.6992743824s|56c3d76ff7667ffe|7402880|file|local|vector|||139.45|package dplyr was built under R version 4.2.3. package ggplot2 was built under R version 4.2.3. package ipa was built under R version 4.2.3. package lubridate was built under R version 4.2.3. package readxl was built under R version 4.2.3. package rlang was built under R version 4.2.3. package tibble was built under R version 4.2.3. package tidyr was built under R version 4.2.3|
-marginal_effects_epreds|stem|fab4c02b315f8b63|42cb0d1522d83d78|3b8c22381188d012|2132376814||t19485.6422539036s|54ac59aee11c03ba|240562|rds|local|vector|||2.3||
-model_fit_0|stem|ae491c4ce9229552|1aa51c3a12cbfb20|4f2876c0a8afe7bc|1971951902||t19485.6417331091s|723d0b950d8d4415|71081283|rds|local|vector|||1.96||
-model_fit_1|stem|6dab48ec5bbee539|08f73d8acbffd5b0|9545a22c7d0948ab|1740635531||t19485.6418141582s|10b8148040e162b7|89368249|rds|local|vector|||2.64||
-model_fit_2|stem|a8654fabae384a28|f597abccd0f93d41|7138a775cc321053|209045216||t19485.6419069559s|60e23c07382ba551|99514649|rds|local|vector|||3.14||
-model_fit_3|stem|6f78926652da4c07|98e490b3d6599079|4735fad3b05902d6|440164973||t19485.6419950583s|188745fa81f4843c|110008702|rds|local|vector|||2.56||
-model_fit_4|stem|6b7287f2126fc90e|1bba8383445d00c5|b5743de4fad71df9|821530599||t19485.6416511521s|0d0d7a46bfba290c|131414019|rds|local|vector|||3.3||
-model_fit_4_doe|stem|c5cbeb9cb1eb20bd|305b27f8dacee7c7|6f7ed165cfe88165|-1894463347||t19485.6415427368s|96e635481c52ffcf|149403168|rds|local|vector|||5.78||
-model_fit_4_prior|stem|53f4d22e8c0aecd2|19eeef75ab1f1ce9|09fc6f1c3509ac57|535305375||t19485.6444359642s|d6ae7f217fc7f1db|124877171|rds|local|vector|||3.21||
-model_fit_syllables|stem|96ca373d50342608|432568149ce35c40|9acc5fa6c1844787|-1600143829||t19485.6420125409s|63906fac87998314|16802514|rds|local|vector|||0.41||
-model_log_liks|stem|f7a252f4a2aea333|ea0ff1b88fcebe9b|904db0ff58e143f0|847987435||t19485.6496256515s|aeba72cee79daa12|3538334960|rds|local|vector|||309.88||
-model_loos|stem|b8470a634740fc04|3d50a5b64241ec5f|66d5f590f41a4f2a|1809489316||t19485.6557433691s|dcb615257b35bbce|33542155|rds|local|vector|||484.36|Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.|
-model_neffs|stem|6655cea4c81c9ad6|493fdc4617faf696|d14607c0a3a1cfce|-2087403071||t19485.650115391s|fe05732ab13da2ad|213068|rds|local|vector|||0.03||
-model_ppcs|stem|09039624d9cb638c|d4e8f3e289b6c586|1b4c3ded563b3b66|1213183795||t19485.6443342048s|0cd3a7547371eeac|2012746|rds|local|vector|||133.21||
-model_prior|stem|56d01ce6ad70137f|6ccf985bdd0bca35|8596a76cdeb9adbf|-1420164522||t19485.6337565855s|7e50109c4a0b197a|346|rds|local|vector|||0.03||
-model_prior_doe|stem|cdc2c2b656166f1a|bbee0f8f9c0eaf76|8596a76cdeb9adbf|-338428838||t19485.6337560083s|ef79ded412b140f0|349|rds|local|vector|||2.98|package dplyr was built under R version 4.2.3. package ggplot2 was built under R version 4.2.3. package ipa was built under R version 4.2.3. package lubridate was built under R version 4.2.3. package readxl was built under R version 4.2.3. package rlang was built under R version 4.2.3. package tibble was built under R version 4.2.3. package tidyr was built under R version 4.2.3|
-model_rhats|stem|9b1d91d8c62e8a5a|cb919fd1d69dca19|713f2c7609f54e18|192492602||t19485.6501144446s|05e4eddedc97e648|195520|rds|local|vector|||39.2||
+manuscript|stem||42a3a96cf00efa1b|d8ecefd51b75a203|615889701||t19495.7334625507s||0|file|local|vector|||31.58||System command quarto.exe failed
+marginal_effects_epreds|stem|2a86303fbe46d0f1|e135790619784d9b|1a8611aa6f0c691c|2132376814||t19496.3269403124s|d1cf246a09441026|240534|rds|local|vector|||2.53||
+model_fit|stem||610f70134eb7d0da|ad5c39e64c3d4fa5|-1024817056||t19496.3874536757s||0|rds|local|vector|||1.97||Family gaussian requires numeric responses.
+model_fit_0|stem|ad5c0b3ad05add5b|bf5c76137f67c5e3|7d98804069debd26|1971951902||t19495.7521042687s|8f7652947b7b3e4b|69943097|rds|local|vector|||2.03||
+model_fit_0_prior|stem|1b6d494d0939e308|a6bd4de2e4486391|76b10d1f1afbae39|-780186540||t19495.7559453825s|e1520748081fab2e|68953495|rds|local|vector|||87.77||
+model_fit_1|stem|8de7791ca6d160eb|6a7307f0ca5af89e|7d98804069debd26|1740635531||t19495.7521725225s|52a8c4019eba41b1|80034528|rds|local|vector|||2.19||
+model_fit_2|stem|56775620571e64a5|f1f1f5d6766232b8|7d98804069debd26|209045216||t19495.7520269042s|475a89ca8c63845c|90489613|rds|local|vector|||3.89||
+model_fit_syllables|stem|96ca373d50342608|432568149ce35c40|b75e94858b3e4128|-1600143829||t19495.7528709948s||16802514|rds|local|vector|||27.54||unused argument threading  .x4
+model_formula|stem|3b6e1650f89c4b98|eeb2009d5be4ca49|db2572525e3c8d9d|308494096||t19496.3891222594s|d4be1280d0d2bfa6|1596|rds|local|vector|||0.02||
+model_formulas|stem|3dc1c6b6e8d8eabb|99ffc3808355203a|bd0d16cbdbc4780d|-291946610||t19495.7454138546s|e05b7352afea05e1|1995|rds|local|vector|||0.03||
+model_log_liks|stem|6f7188bd6ff64d0d|626368e019d89bc8|74cf4fed5aa4eacd|847987435||t19495.7594721208s|eb018c6f86bce9b2|2134182219|rds|local|vector|||223.72||
+model_loos|stem|8ee2d317e00ae5a3|3d50a5b64241ec5f|241f88f778049df8|1809489316||t19496.3391455851s|f2a6e7faa46f4c6b|20189049|rds|local|vector|||282.32|Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.. Some Pareto k diagnostic values are slightly high. See helpparetokdiagnostic for details.. Relative effective sample sizes r_eff argument not specified.For models fit with MCMC, the reported PSIS effective sample sizes and MCSE estimates will be overoptimistic.. loo.cores is deprecated, please use mc.cores or pass cores explicitly.|
+model_neffs|stem|171782d1e436a79b|a8ac074efd05b199|8bc7c109093c0832|-2087403071||t19495.7596703592s|017d46e095cc5ebc|104049|rds|local|vector|||0.03||
+model_ppcs|stem|2e9d45079058190e|27b6434c91ec87a7|8256f52d49de93d9|1213183795||t19495.7548902669s|8be9e4b677a6d475|2020330|rds|local|vector|||132.25||
+model_prior|stem|8b007f78d7cf8d97|e02009e62e881874|8596a76cdeb9adbf|-1420164522||t19495.7326703627s|1e85e50b3bd5846b|284|rds|local|vector|||0.02||
+model_rhats|stem|3811e140af3c5d72|c6d56d50d53e055c|e01a4b8582332d95|192492602||t19495.7596696332s||95488|rds|local|vector|||0||object nodel_fit not found
+model_vars_dict|stem||ce12ceedc9e71d66|0b28fb779c4c8a7f|-702081807||t19496.386882269s||0|rds|local|vector|||0||argument responses is missing, with no default
 months_to_years|function|f02f03cafdc688ca|||||||||||||||
-participants|stem|8b4eaccb86526fb6|faa1dd696f8b6b59|5ca46c77d2d7a51d|392525641||t19485.6347783671s|00da3ee7f7486cab|6567|rds|local|vector|||0.09||
-participants_test|stem|32af597cbdb2a163|ffc69402e3973190|ed954bbf302b82ba|-717703539||t19485.6347940654s|ac45463db19e2cbe|48|rds|local|vector|||1.05||
-posterior_draws|stem|959f626c007731e2|66d0e2ab6b38d3f2|4deacd1135e1cce1|-1530540741||t19485.6424376556s|a47e6363833b73e8|289426|rds|local|vector|||15.8||
-posterior_draws_doe|stem|736ad86cc0d38a24|20c0c704c4f9d8bb|1dcd0e36b7757666|1361510468||t19485.6422266944s|aaae9c7bf11ea5c5|24221|rds|local|vector|||18.43||
-posterior_draws_re|stem|c6d83910ca82a8a3|654da3a611d32b8f|f77dfe7dddcde05c|1383172958||t19485.6427768826s|695119925edefc15|135392206|rds|local|vector|||19.64|gather_ was deprecated in tidyr 1.2.0.ℹ Please use gather instead.ℹ The deprecated feature was likely used in the tidybayes package.  Please report the issue at httpsgithub.commjskaytidybayesissuesnew.. Detected an unexpected manytomany relationship between x and y.ℹ Row 12001 of x matches multiple rows in y.ℹ Row 8001 of y matches multiple rows in x.ℹ If a manytomany relationship is expected, set relationship   manytomany to silence this warning.|
-posterior_predictions|function|bfb9badbdabc8014|||||||||||||||
-posterior_predictions_re|function|4fa3a3674d62696b|||||||||||||||
+participants|stem|8b4eaccb86526fb6|faa1dd696f8b6b59|8a67bfb9347b6bcf|392525641||t19496.3268592893s|00da3ee7f7486cab|6567|rds|local|vector|||0.09||
+participants_test|stem|32af597cbdb2a163|ffc69402e3973190|ed954bbf302b82ba|-717703539||t19495.7518821683s|ac45463db19e2cbe|48|rds|local|vector|||1.03||
+posterior_draws|stem|d151c8438d97ff3a|e9b463f78e39776f|eb499f7a804133ca|-1530540741||t19496.327069306s||205316|rds|local|vector|||1.16||ℹ In argument .variable_name  as.characterfactor.variable, levels   namesvar_dict, labels  var_dict.ℹ In group 1 .variable  b_Intercept1.Caused by error in factor argument var_dict is missing, with no default
+posterior_draws_re|stem|2c076789ceda61b1|e74014f3114b3daf|d0c048007867eb96|1383172958||t19496.3273548025s|fb4fe5c9318dc4b3|115354118|rds|local|vector|||16.5|gather_ was deprecated in tidyr 1.2.0.ℹ Please use gather instead.ℹ The deprecated feature was likely used in the tidybayes package.  Please report the issue at httpsgithub.commjskaytidybayesissuesnew.. Detected an unexpected manytomany relationship between x and y.ℹ Row 8001 of x matches multiple rows in y.ℹ Row 8001 of y matches multiple rows in x.ℹ If a manytomany relationship is expected, set relationship   manytomany to silence this warning.|
+posterior_predictions|function|ae69ff896cdb61dc|||||||||||||||
+posterior_predictions_re|function|dda4e45d6de8ee9d|||||||||||||||
 prop_adj|function|46e207be81f63a6a|||||||||||||||
 prop_adj_ci|function|e94b05f73a7c2a8d|||||||||||||||
 prop_adj_se|function|5a38f93826250f66|||||||||||||||
 remove_nul|function|5ca46e3aaa553081|||||||||||||||
 rescale_variable|function|c7cc266d522398dd|||||||||||||||
-resolve_conflicts|function|b12cf1e416e886a2|||||||||||||||
-responses|stem|34aa789e23b47d47|d6c1f45abce97916|530baca079551552|403517661||t19485.6348136652s|e711656660d2ce66|1319138|rds|local|vector|||1.44||
-responses_test|stem|32af597cbdb2a163|c526232cbe04f108|e195ef2cbdff6ece|-1505889607||t19485.6416733743s|ac45463db19e2cbe|48|rds|local|vector|||1.5||
-save_files|function|ddfdac55b8935d49|||||||||||||||
+resolve_conflicts|function|70f1f0f8ad974ace|||||||||||||||
+responses|stem|34aa789e23b47d47|d6c1f45abce97916|7b1410a8deb40fe8|403517661||t19496.3296529464s|e711656660d2ce66|1319138|rds|local|vector|||2.05||
+responses_test|stem|32af597cbdb2a163|c526232cbe04f108|e195ef2cbdff6ece|-1505889607||t19495.7520462953s|ac45463db19e2cbe|48|rds|local|vector|||1.32||
+save_files|function|f31552f827c1b583|||||||||||||||
 seq_range|function|785383eae343c3e3|||||||||||||||
 syllabify_xsampa|function|b21330241de1eeb8|||||||||||||||
-syllables_data|stem|923bd0b8be18b82a|7bd1e86b6d8e8a7e|e13d3421be9de75a|-594601804||t19485.6348140231s|8e22787ce7606b4a|15358|rds|local|vector|||0||
+syllables_data|stem|923bd0b8be18b82a|7bd1e86b6d8e8a7e|e13d3421be9de75a|-594601804||t19495.7519321797s|8e22787ce7606b4a|15358|rds|local|vector|||0.02||
 test_items|function|9e2ae8fb60bfde9f|||||||||||||||
 test_participants|function|a556be36c8846591|||||||||||||||
 test_paths|object|f5d5bf166174a7c2|||||||||||||||
 test_responses|function|b42f12e0cfc99d2c|||||||||||||||
-unmake|function|b985b3f022ca29dd|||||||||||||||
+unmake|function|2767e02b0fb0eaf2|||||||||||||||
 welcome_message|function|28143d09eb1f2f2d|||||||||||||||
+generate_newdata|function|4d1be0d427365f71
+fit_model|function|6f489d09969ffdba
+flatten_columns|function|315e6f1e29563edc
+syllabify_xsampa|function|b21330241de1eeb8
+test_items|function|9e2ae8fb60bfde9f
+get_syllable_data|function|ee800368d21533e0
+get_vars_dict|function|e108b33d00614e1e
+test_participants|function|a556be36c8846591
+.Random.seed|object|aca77bc49b774f9c
+get_posterior_summary|function|a293b743fef6450f
+resolve_conflicts|function|70f1f0f8ad974ace
+test_responses|function|b42f12e0cfc99d2c
+flatten_xsampa|function|7ce8e1985c8847cf
+get_childes_frequencies|function|df67cde1e6918e71
+get_model_ppc|function|123a86a325d5807b
+save_files|function|f31552f827c1b583
+posterior_predictions_re|function|dda4e45d6de8ee9d
+get_posterior_draws|function|490d2e572a5e9b89
+get_posterior_draws_re|function|be233e7a8a8fa7d3
+get_responses|function|7c72e99249dca5b7
+get_participants|function|6eab123641ae79a7
+posterior_predictions|function|ae69ff896cdb61dc
+get_items|function|607bba7bd391ea3c
+model_fit_syllables|stem|96662a29fb6198e1|432568149ce35c40|263fdb95b65ef801|-1600143829||t19496.3950199735s|425fe33a0b6fa8dd|16795001|rds|local|vector|||49.61||

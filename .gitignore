@@ -13,7 +13,7 @@
 !assets/*.docx
 
 _targets/*
-
+.json
 data/**/*.rds
 data/**/*.csv
 data/**/*.parquet

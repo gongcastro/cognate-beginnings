@@ -85,9 +85,8 @@ functions {
                             vector r_1_4, vector r_1_5, vector r_1_6,
                             data array[] int J_2, data vector Z_2_1,
                             data vector Z_2_2, data vector Z_2_3,
-                            data vector Z_2_4, data vector Z_2_5,
-                            vector r_2_1, vector r_2_2, vector r_2_3,
-                            vector r_2_4, vector r_2_5) {
+                            data vector Z_2_4, vector r_2_1, vector r_2_2,
+                            vector r_2_3, vector r_2_4) {
     real ptarget = 0;
     int N = end - start + 1;
     // initialize linear predictor term
@@ -100,8 +99,7 @@ functions {
                + r_1_3[J_1[nn]] * Z_1_3[nn] + r_1_4[J_1[nn]] * Z_1_4[nn]
                + r_1_5[J_1[nn]] * Z_1_5[nn] + r_1_6[J_1[nn]] * Z_1_6[nn]
                + r_2_1[J_2[nn]] * Z_2_1[nn] + r_2_2[J_2[nn]] * Z_2_2[nn]
-               + r_2_3[J_2[nn]] * Z_2_3[nn] + r_2_4[J_2[nn]] * Z_2_4[nn]
-               + r_2_5[J_2[nn]] * Z_2_5[nn];
+               + r_2_3[J_2[nn]] * Z_2_3[nn] + r_2_4[J_2[nn]] * Z_2_4[nn];
     }
     for (n in 1 : N) {
       int nn = n + start - 1;
@@ -138,7 +136,6 @@ data {
   vector[N] Z_2_2;
   vector[N] Z_2_3;
   vector[N] Z_2_4;
-  vector[N] Z_2_5;
   int<lower=1> NC_2; // number of group-level correlations
   int prior_only; // should the likelihood be ignored?
 }
@@ -178,7 +175,6 @@ transformed parameters {
   vector[N_2] r_2_2;
   vector[N_2] r_2_3;
   vector[N_2] r_2_4;
-  vector[N_2] r_2_5;
   real lprior = 0; // prior contributions to the log posterior
   // compute actual group-level effects
   r_1 = scale_r_cor(z_1, sd_1, L_1);
@@ -194,16 +190,11 @@ transformed parameters {
   r_2_2 = r_2[ : , 2];
   r_2_3 = r_2[ : , 3];
   r_2_4 = r_2[ : , 4];
-  r_2_5 = r_2[ : , 5];
-  lprior += normal_lpdf(b[1] | 1, 0.25);
-  lprior += normal_lpdf(b[2] | 0, 0.25);
-  lprior += normal_lpdf(b[3] | 0, 0.25);
-  lprior += normal_lpdf(b[4] | 0, 0.25);
-  lprior += normal_lpdf(b[5] | 0, 0.25);
-  lprior += normal_lpdf(Intercept | -0.25, 0.1);
-  lprior += normal_lpdf(sd_1 | 1, 0.1) - 6 * normal_lccdf(0 | 1, 0.1);
+  lprior += normal_lpdf(b | 0, 1);
+  lprior += normal_lpdf(Intercept | -0.25, 0.5);
+  lprior += normal_lpdf(sd_1 | 1, 0.25) - 6 * normal_lccdf(0 | 1, 0.25);
   lprior += lkj_corr_cholesky_lpdf(L_1 | 2);
-  lprior += normal_lpdf(sd_2 | 1, 0.1) - 5 * normal_lccdf(0 | 1, 0.1);
+  lprior += normal_lpdf(sd_2 | 1, 0.25) - 4 * normal_lccdf(0 | 1, 0.25);
   lprior += lkj_corr_cholesky_lpdf(L_2 | 2);
 }
 model {
@@ -212,8 +203,8 @@ model {
     target += reduce_sum(partial_log_lik_lpmf, seq, grainsize, Y, nthres, Xc,
                          b, Intercept, disc, J_1, Z_1_1, Z_1_2, Z_1_3, Z_1_4,
                          Z_1_5, Z_1_6, r_1_1, r_1_2, r_1_3, r_1_4, r_1_5,
-                         r_1_6, J_2, Z_2_1, Z_2_2, Z_2_3, Z_2_4, Z_2_5,
-                         r_2_1, r_2_2, r_2_3, r_2_4, r_2_5);
+                         r_1_6, J_2, Z_2_1, Z_2_2, Z_2_3, Z_2_4, r_2_1,
+                         r_2_2, r_2_3, r_2_4);
   }
   // priors including constants
   target += lprior;
@@ -230,15 +221,11 @@ generated quantities {
   corr_matrix[M_2] Cor_2 = multiply_lower_tri_self_transpose(L_2);
   vector<lower=-1, upper=1>[NC_2] cor_2;
   // additionally sample draws from priors
-  real prior_b__1 = normal_rng(1, 0.25);
-  real prior_b__2 = normal_rng(0, 0.25);
-  real prior_b__3 = normal_rng(0, 0.25);
-  real prior_b__4 = normal_rng(0, 0.25);
-  real prior_b__5 = normal_rng(0, 0.25);
-  real prior_Intercept = normal_rng(-0.25, 0.1);
-  real prior_sd_1 = normal_rng(1, 0.1);
+  real prior_b = normal_rng(0, 1);
+  real prior_Intercept = normal_rng(-0.25, 0.5);
+  real prior_sd_1 = normal_rng(1, 0.25);
   real prior_cor_1 = lkj_corr_rng(M_1, 2)[1, 2];
-  real prior_sd_2 = normal_rng(1, 0.1);
+  real prior_sd_2 = normal_rng(1, 0.25);
   real prior_cor_2 = lkj_corr_rng(M_2, 2)[1, 2];
   // extract upper diagonal of correlation matrix
   for (k in 1 : M_1) {
@@ -254,10 +241,10 @@ generated quantities {
   }
   // use rejection sampling for truncated priors
   while (prior_sd_1 < 0) {
-    prior_sd_1 = normal_rng(1, 0.1);
+    prior_sd_1 = normal_rng(1, 0.25);
   }
   while (prior_sd_2 < 0) {
-    prior_sd_2 = normal_rng(1, 0.1);
+    prior_sd_2 = normal_rng(1, 0.25);
   }
 }
 
