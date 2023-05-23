@@ -1,4 +1,4 @@
-# run the targets workflow
+#' Run the targets workflow as a RStudio job using [jobs::job()]
 make <- function() {
     job::job({
         targets::tar_make()
@@ -15,7 +15,8 @@ make <- function() {
     }
 }
 
-# remove targets products
+#' Remove targets products using
+#' 
 unmake <- function(keep_fits = TRUE) {
     path <- "results/fit.rds"
     tar_destroy(ask = FALSE)
@@ -31,7 +32,8 @@ unmake <- function(keep_fits = TRUE) {
     if (interactive()) cli_alert_success("Removed project outputs!")
 }
 
-
+#' Print welcome message in console
+#' 
 welcome_message <- function() {
     if (interactive()) {
         id <- cli_status("")
@@ -66,4 +68,3 @@ welcome_message <- function() {
         if (interactive()) cli_status_clear(id)
     }
 }
-

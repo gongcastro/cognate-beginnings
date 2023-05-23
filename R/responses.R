@@ -50,7 +50,9 @@ get_responses <- function(bvq_data, items, participants) {
         arrange(id, te, language)
     
     # export data
-    save_files(responses, folder = "data")
+    save_files(responses,
+               formats = "csv",
+               folder = "data")
     
     return(responses)
     

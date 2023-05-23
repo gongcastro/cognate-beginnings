@@ -1,8 +1,7 @@
-if (!targets::tar_active() && interactive()) {
+if (interactive()) {
+    
     source("renv/activate.R")
-    invisible({
-        lapply(list.files("src", pattern = ".R$", full.names = TRUE), source)
-    })
+    
     options(crayon.enabled = TRUE)
     
     suppressWarnings({
@@ -10,8 +9,11 @@ if (!targets::tar_active() && interactive()) {
         library(cli)
     })
     
-    welcome_message()
+    invisible({
+        src_files <- list.files("src", pattern = ".R$", full.names = TRUE)
+        lapply(src_files, source)
+    })
     
-    resolve_conflicts()
+    welcome_message()
 }
 

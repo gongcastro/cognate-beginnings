@@ -1,4 +1,4 @@
-We used Stan [@carpenter2017stan] as the probabilistic language behind the estimation of our Bayesian models in this study, with `brms` as its R interface [@burkner2017brms]. This language implements the Markov Chain Monte-Carlo (MCMC) algorithm to explore the posterior distribution of the model. Broadly, this algorithm is used to iteratively sample the joint sampling space of the parameters to be estimated in the model, and compute, for each value sampled, its likelihood under some probability distribution previously defined. We run `r dim(model_fit_3$fit)[2]` MCMC chains, each `r dim(model_fit_3$fit)[1]` iterations long each. The correct performance of this algorithm is critical to the quality of the statistical evidence to which the outcomes of the model lead.
+We used Stan [@carpenter2017stan] as the probabilistic language behind the estimation of our Bayesian models in this study, with `brms` as its R interface [@burkner2017brms]. This language implements the Markov Chain Monte-Carlo (MCMC) algorithm to explore the posterior distribution of the model. Broadly, this algorithm is used to iteratively sample the joint sampling space of the parameters to be estimated in the model, and compute, for each value sampled, its likelihood under some probability distribution previously defined. We run `r dim(model_fit$fit)[2]` MCMC chains, each `r dim(model_fit$fit)[1]` iterations long each. The correct performance of this algorithm is critical to the quality of the statistical evidence to which the outcomes of the model lead.
 
 One way to diagnose the behaviour of MCMC is to inspect whether the different MCMC chains (if more than one) have converged to a similar region of the posterior. The Gelman-Rubin diagnostic [$\hat{R}$ or R-hat @gelman1992inference] provides a measure of chain convergence by comparing the variance within each chain *versus* the variance between each chain. Both are expected to be identical when chains have perfectly converged, so that $\hat{R} = 1$. Values lower than 1.01 are recommended, while values higher than 1.05 indicate that chains might have trouble converging and therefore the estimated parameters must be taken with caution. @tbl-rhats-neffs (A) shows the distribution of $\hat{R}$ values for the coefficients of the fixed effect of our models, which we used for statistical inference. Most values are lower than 1.01, and never higher than 1.05, which provides evidence of successful MCMC convergence.
 
@@ -6,41 +6,29 @@ Another diagnostic of good MCMC converge is the ratio of effective sample size t
 
 ```{r tbl-rhats-neffs}
 #| label: tbl-rhats-neffs
-#| tbl-cap: "Gelman-Rubin (R-hat) convergence diagnostic of the MCMC chains in the Bayesian models."
+#| tbl-cap: "MCMC convergence diagnostic of all parameters in the model"
 #| echo: false
 #| message: false
 #| warning: false
 #| fig-height: 6
 #| fig-width: 9
 #| out-width: 100%
-map_df(model_rhats, bind_rows, .id = "model") |> 
-    mutate(model = paste0("Model ", str_extract(model, "[0-9]"))) |> 
-    pivot_longer(-model, 
-                 names_to = ".variable",
-                 values_to = ".rhat") |>
-    drop_na() |> 
+model_convergence |> 
     ggplot(aes(.rhat)) +
-    facet_wrap(~model, nrow = 1) +
     geom_vline(xintercept = 1.01, linetype = "dashed") +
     geom_histogram(binwidth = 0.001, colour = "white", fill = "grey60") +
     labs(x = "Gelman Rubin diagnostic (R-hat)",
          y = "MCMC samples",
          title = "Gelman-Rubin (R-hat) diagnostic") +
     
-    map_df(model_neffs, bind_rows, .id = "model") |> 
-    mutate(model = paste0("Model ", str_extract(model, "[0-9]"))) |> 
-    pivot_longer(-model, 
-                 names_to = ".variable",
-                 values_to = ".rhat") |>
-    # filter(str_detect(.variable, "b_|sd_")) |> 
-    drop_na() |> 
-    ggplot(aes(.rhat)) +
-    facet_wrap(~model, nrow = 1) +
+    model_convergence |> 
+    ggplot(aes(.neff)) +
     geom_vline(xintercept = 1.01, linetype = "dashed") +
     geom_histogram(binwidth = 0.1, colour = "white", fill = "grey60") +
-    labs(x = "Gelman Rubin diagnostic (R-hat)",
+    labs(x = "Effective sample size",
          y = "MCMC samples",
          title = "Ratio of effective sample size") +
+
     plot_layout(ncol = 1) &
     plot_annotation(tag_levels = "A") &
     theme(legend.position = "none",
@@ -62,6 +50,7 @@ map_df(model_rhats, bind_rows, .id = "model") |>
 #| warning: false
 #| message: false
 color_scheme_set(rep("grey60", 6))
+
 titles <- c("Comprehension",
             "Production",
             "Age",
@@ -70,9 +59,11 @@ titles <- c("Comprehension",
             "Cognateness",
             "Age × Exposure",
             "Age × Cognateness",
-            "Exposure × Cognateness")
-posterior <- as.array(model_fit_3)
-np <- nuts_params(model_fit_3) 
+            "Exposure × Cognateness",
+            "Age × Exposure × Cognateness")
+
+posterior <- as.array(model_fit)
+np <- nuts_params(model_fit) 
 mcmc_pairs(posterior,
            np = np, 
            pars = c("b_Intercept[1]",
@@ -82,7 +73,8 @@ mcmc_pairs(posterior,
                     "b_exposure_std",
                     "b_lv_std",
                     "b_age_std:exposure_std",
-                    "b_exposure_std:lv_std"),
+                    "b_exposure_std:lv_std",
+                    "b_age_std:exposure_std:lv_std"),
            draws = c(1, 0),
            grid_args = list(titles = titles),
            off_diag_args = list(size = 0.5,

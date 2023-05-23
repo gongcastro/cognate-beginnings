@@ -1,3 +1,51 @@
+```{r sample-sizes}
+#| label: sample-sizes
+#| echo: false
+#| message: false
+#| warning: false
+#| include: false
+tar_load(c(responses, bvq_data, ))
+n_obs <- nrow(responses)
+
+sum_obs <- responses |>
+    mutate(te = factor(te)) |>
+    count(te) |>
+    summarise(across(n, lst(median, min, max), 
+                     .names = "{.fn}"))
+
+# attrition
+n_items <- bvq_data$pool
+
+n_items_nouns <- n_items |> 
+    dplyr::filter(class=="Noun") 
+
+n_items_freq <- n_items_nouns |> 
+    left_join(childes,
+              by = c("childes_lemma" = "token")) |> 
+    drop_na(freq_zipf, wordbank_lemma)
+
+n_items_lemma <- n_items_freq |> 
+    dplyr::filter(n_lemmas == 1)
+
+n_items_multi <- n_items_lemma |> 
+    dplyr::filter(!is_multiword) |> 
+    dplyr::filter(include, !is.na(wordbank_lemma)) |> 
+    drop_na(xsampa) |> 
+    distinct(te, language)
+
+n_items_duplicated <- n_items_multi |> 
+    add_count(te, name = "n_te") |>
+    dplyr::filter(n_te == 2)
+
+n_items_final <- n_items_duplicated |> 
+    count(language) |> 
+    group_split(language) |> 
+    set_names(c("Catalan", "Spanish")) |>
+    map_int("n")
+
+n_te <- length(unique(responses$te))
+```
+
 ## Word exposure index  {.unnumbered}
 
 Lexical frequencies were extracted from the English corpora of the [CHILDES](https://childes.talkbank.org/) database [@macwhinney2000childes; @sanchez2019childes]. Using the corresponding lexical frequencies from the Catalan and Spanish corpora was not possible due to the low number of Catalan participants and tokens available in those languages. Available words in the English corpora were mapped to their Catalan and Spanish translations [see @fourtassi2020growth for a similar approach], and transformed to Zipf scores [@vanheuven2014subtlexuk; @zipf1949human]. Responses to words with missing lexical frequencies were excluded from analyses of the total number of items. Participant degree of exposure to the words' language were calculated as the percentage of exposure to the language, as reported by caretakers in the language profile section of the questionnaire. For example, for a participant with 90% exposure to Catalan, and 10% to Spanish, the DoE of the Catalan word *taula* would be 90%, and the DoE for the Spanish word *mesa* would be 10%.
@@ -18,7 +66,7 @@ Our study capitalises in phonology, therefore we operationalised *cognateness* a
 
 A way to achieve this is to use phonological transcriptions of the word forms. Phonological transcriptions are symbolic, visual representations of the sounds in speech that capture some minimal  set of its features following some standard. The International Phonetic Alphabet (IPA) is one instance of such standards, providing a set of symbols that correspond to specific phonemes, as defined by their position across a series of dimensions. Using IPA transcriptions of word forms, one can use the same similarity/distance metric as in the case of orthographic word-forms. This method has been successfully used to measure the pairwise similarity between phonological word-forms from the  same language [e.g., @fourtassi2020growth] and across languages [@heeringa2004measuring; @floccia2018methods], and also between orthographic word-forms [@schepens2012distributions].
 
-Multiple algorithms have been created to compute the distance between two strings of characters. The Levenshtein distance being one of them. The this algorithm calculates the minimum number of edit operations (additions, deletions, and substitutions) that one string must go through to become identical to the other string [@levenshtein1966binary] (see @eq-levenshtein). For instance, /kaza/ (*house*, in Catalan), would need to go through one substitution to become identical to its translation equivalent in Spanish /kasa/ (/z/ is replaced by /s/). Therefore, the Levenshtein distance between /kaza/ and /kasa/ is one. For an easier handling of non-ASCII characters (fairly prevalent in Catalan and Spanish, e.g., á, ü, ñ), we used phonological transcriptions in X-SAMPA format , as opposed to IPA, for its computer-friendly set of symbols [@wells1995computer].
+Multiple algorithms have been created to compute the distance between two strings of characters. The Levenshtein distance being one of them. The this algorithm calculates the minimum number of edit operations (additions, deletions, and substitutions) that one string must go through to become identical to the other string [@levenshtein1966binary] (see @eq-levenshtein). For instance, /\textipa{"ka.za}/ (*house*, in Catalan), would need to go through one substitution to become identical to its translation equivalent in Spanish /\textipa{"ka.sa}/ (/z/ is replaced by /s/). Therefore, the Levenshtein distance between /\textipa{"ka.za}/ and /\textipa{"ka.sa}/ is one. For an easier handling of non-ASCII characters (fairly prevalent in Catalan and Spanish, e.g., á, ü, ñ), we used phonological transcriptions in X-SAMPA format, as opposed to IPA, for its computer-friendly set of symbols [@wells1995computer].
 
 $$
 \text{lev}(x, y) =  
