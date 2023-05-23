@@ -12,7 +12,7 @@ get_participants <- function(bvq_data,
                              other_threshold = 0.1) {
     
     participants <- bvq_data$logs |>
-        filter(completed,
+        dplyr::filter(completed,
             # get only short versions of the questionnaire
             str_detect(version, "Lockdown|Short"),
             # get only data from complete questionnaire responses
@@ -33,7 +33,9 @@ get_participants <- function(bvq_data,
     arrange(id)
     
     # export data
-    save_files(participants, folder = "data")
+    save_files(participants,
+               formats = "csv",
+               folder = "data")
     
     return(participants)
 }

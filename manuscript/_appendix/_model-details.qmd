@@ -95,10 +95,10 @@ nd <- expand.grid(n_phon_std = 0,
                   exposure_std = 0,
                   lv_std = 0)
 
-m <- add_epred_draws(nd, 
-                     model_fit_4_prior,
-                     ndraws = NULL, 
-                     re_formula = NA) |> 
+prior_epreds <- add_epred_draws(nd, 
+                                model_fit_prior,
+                                ndraws = 50, 
+                                re_formula = NA) |> 
     filter(.category != "No") |> 
     pivot_wider(names_from = ".category", values_from = ".epred") |> 
     mutate(Understands = Understands + `Understands and Says`) |> 
@@ -106,20 +106,18 @@ m <- add_epred_draws(nd,
                  names_to = ".category",
                  values_to = ".epred") |> 
     mutate(.category = factor(.category,
-                              levels = c("Understands and Says",
-                                         "Understands"),
-                              labels = c("Production\n(Understands and Says)",
-                                         "Comprehension\n(Understands)")))
+                              levels = c("Understands",
+                                         "Understands and Says"),
+                              labels = c("Comprehension\n(Understands)",
+                                         "Production\n(Understands and Says)")))
 
-m |> 
+prior_epreds |> 
     ggplot(aes(x = age_std, y = .epred)) +
     facet_wrap(~.category) +
-    stat_lineribbon(size = 0.75, 
-                    colour = NA,
-                    .width = c(0.95, 0.89, 0.67, 0.5)) +
-    stat_summary(fun = "mean", 
-                 geom = "line",
-                 linewidth = 0.75) +
+    geom_line(linewidth = 3/4,
+              alpha = 1/2,
+              aes(group = .draw),
+              colour = "grey50") + 
     scale_x_continuous(breaks = scale(seq(10, 36, 4), 
                                       mean(responses$age), 
                                       sd(responses$age))[, 1],

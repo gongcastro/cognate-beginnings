@@ -1,32 +1,34 @@
 suppressPackageStartupMessages({
+    # workflows and project
     library(targets)
     library(tarchetypes)
-    library(conflicted)
     library(cli)
-    library(brms)
+    # data handling, cleaning, and testing
     library(tidyverse)
     library(janitor)
     library(glue)
+    library(testthat)
+    # data collection
     library(childesr)
     library(bvq)
-    library(ipa)
-    library(gt)
     library(stringdist)
+    library(ipa)
+    # modelling
+    library(brms)
     library(tidybayes)
-    library(bayestestR)
-    library(testthat)
-    library(tidytext)
     library(marginaleffects)
+    library(bayestestR)
     library(bayesplot)
+    # communication and visualisation
+    library(tidytext)
+    library(gt)
+    library(ggtext)
     library(patchwork)
     library(magick)
-    library(ggtext)
     library(scales)
-    library(arrow)
 })
 
 # load R functions -------------------------------------------------------------
-
 
 invisible({
     lapply(
@@ -40,7 +42,11 @@ invisible({
 })
 
 # define global options --------------------------------------------------------
-options(mc.cores = parallel::detectCores(),
+
+options(repos = c("https://mc-stan.org/r-packages/",
+                  "https://gongcastro.r-universe.dev", 
+                  "https://cloud.r-project.org"),
+        mc.cores = parallel::detectCores(),
         brms.backend = "cmdstanr",
         tidyverse.quiet = TRUE,
         knitr.duplicate.label = "allow",
@@ -49,6 +55,7 @@ options(mc.cores = parallel::detectCores(),
 
 list(
     ## import data -------------------------------------------------------------
+    
     tar_target(bvq_data_file, "data-raw/bvq.rds", format = "rds"),
     tar_target(bvq_data, readRDS(bvq_data_file)),
     
@@ -76,8 +83,7 @@ list(
     
     # fit models ---------------------------------------------------------------
     
-    # model priors: these priors were set so that they generate data similar to
-    # what we expect based on Wordbank data (see manuscript and lab notes)
+    # model prior
     tar_target(
         model_prior,
         c(prior(normal(-0.25, 0.5), class = "Intercept"),
@@ -120,19 +126,23 @@ list(
                          sample_prior = "only")),
     
     ## describe models ---------------------------------------------------------
+    
     tar_target(model_vars_dict, get_vars_dict(responses)),
     
-    tar_target(posterior_draws,
+    # get posterior draws for population-level effects
+    tar_target(model_draws,
                get_posterior_draws(model_fit,
                                    data = responses,
                                    model_vars_dict)),
     
-    tar_target(posterior_summary,
+    # get summary of posterior draws for population-level effects
+    tar_target(model_summary,
                get_posterior_summary(model_fit, 
                                      data = responses,
                                      model_vars_dict)),
     
-    tar_target(posterior_draws_re,
+    # get posterior draws for group-level effects
+    tar_target(model_draws_re,
                get_posterior_draws_re(model_fit)),
     
     ## marginal effects --------------------------------------------------------
@@ -148,15 +158,11 @@ list(
                                                     sd(responses$lv)),
                                      n_phon_std = 0)),
     
-    # R-hat (aka. Gelman-Rubin statistic)
-    tar_target(model_rhats, rhat(model_fit)),
-    
-    # effective sample size
-    tar_target(model_neffs, neff_ratio(model_fit)),
-    
+    # convergence diagnostics (rhat and n_eff)
+    tar_target(model_convergence, get_model_convergence(model_fit)),
     
     # posterior predictive checks
-    tar_target(model_ppcs, get_ppc(model_fit, responses)),
+    tar_target(model_ppcs, get_model_ppc(model_fit, responses)),
     
     # get age-of-acquisition ---------------------------------------------------
     # 
@@ -188,40 +194,40 @@ list(
     # appendix -----------------------------------------------------------------
     
     # fit model with frequency and DoE as separate predictors instead of exposure
-    # tar_target(model_doe,
-    #            fit_model(name = "fit_doe",
-    #                      formula = bf(
-    #                          response ~ age_std + doe_std * lv_std + n_phon_std + freq_std +
-    #                              (1 + age_std + doe_std * lv_std + n_phon_std + freq_std | id) +
-    #                              (1 + age_std + doe_std + n_phon_std + freq_std | te),
-    #                          family = cumulative(link = "logit")),
-    #                      data = responses,
-    #                      prior = model_prior,
-    #                      sample_prior = "yes")),
+    tar_target(model_doe,
+               fit_model(name = "fit_doe",
+                         formula = bf(
+                             response ~ age_std + doe_std * lv_std + n_phon_std + freq_std +
+                                 (1 + age_std + doe_std * lv_std + n_phon_std + freq_std | id) +
+                                 (1 + age_std + doe_std + n_phon_std + freq_std | te),
+                             family = cumulative(link = "logit")),
+                         data = responses,
+                         prior = model_prior,
+                         sample_prior = "yes")),
     
-    # tar_target(
-    #     posterior_draws_doe,
-    #     {
-    #         # tidy predictor names
-    #         str_repl <- c(
-    #             "b_Intercept[1]" = "Comprehension and Production",
-    #             "b_Intercept[2]" = "Comprehension",
-    #             "b_age_std" = glue("Age (+1 SD, {round(sd(responses$age), 2)}, months)"),
-    #             "b_n_phon_std" = glue("Phonemes (+1 SD, {round(sd(responses$n_phon), 2)} phonemes)"),
-    #             "b_doe_std" = glue("DoE (+1 SD, {round(sd(responses$doe_std), 2)})"),
-    #             "b_freq_std" = glue("Frequency (+1 SD, {round(sd(responses$freq_std), 2)})"),
-    #             "b_lv_std" = glue("Cognateness (+1 SD, {percent(sd(responses$lv))})"),
-    #             "b_doe_std:lv_std" = "Exposure \u00d7 Cognateness"
-    #         )
-    #         
-    #         get_posterior_draws(model_doe,
-    #                             data = responses)$summary |> 
-    #             mutate(.variable_name = factor(.variable,
-    #                                            levels = names(str_repl),
-    #                                            labels = str_repl,
-    #                                            ordered = TRUE) |>
-    #                        as.character())
-    #     }),
+    tar_target(
+        posterior_draws_doe,
+        {
+            # tidy predictor names
+            str_repl <- c(
+                "b_Intercept[1]" = "Comprehension and Production",
+                "b_Intercept[2]" = "Comprehension",
+                "b_age_std" = glue("Age (+1 SD, {round(sd(responses$age), 2)}, months)"),
+                "b_n_phon_std" = glue("Phonemes (+1 SD, {round(sd(responses$n_phon), 2)} phonemes)"),
+                "b_doe_std" = glue("DoE (+1 SD, {round(sd(responses$doe_std), 2)})"),
+                "b_freq_std" = glue("Frequency (+1 SD, {round(sd(responses$freq_std), 2)})"),
+                "b_lv_std" = glue("Cognateness (+1 SD, {percent(sd(responses$lv))})"),
+                "b_doe_std:lv_std" = "Exposure \u00d7 Cognateness"
+            )
+            
+            get_posterior_summary(model_doe,
+                                  data = responses) |>
+                mutate(.variable_name = factor(.variable,
+                                               levels = names(str_repl),
+                                               labels = str_repl,
+                                               ordered = TRUE) |>
+                           as.character())
+        }),
     
     tar_target(syllables_data,
                get_syllable_data(items)),
@@ -255,11 +261,11 @@ list(
                execute = TRUE,
                cache = FALSE,
                quiet = FALSE
-    )
+    ),
     
-    # tar_quarto(appendix,
-    #            "manuscript/appendix.qmd",
-    #            execute = TRUE,
-    #            cache = FALSE,
-    #            quiet = FALSE)
+    tar_quarto(appendix,
+               "manuscript/appendix.qmd",
+               execute = TRUE,
+               cache = FALSE,
+               quiet = FALSE)
 )

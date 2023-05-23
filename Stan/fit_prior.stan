@@ -1,4 +1,4 @@
-// generated with brms 2.19.0
+// generated with brms 2.18.0
 functions {
   /* compute correlated group-level effects
    * Args:
@@ -81,9 +81,11 @@ functions {
                             data vector Z_1_1, data vector Z_1_2,
                             data vector Z_1_3, data vector Z_1_4,
                             data vector Z_1_5, data vector Z_1_6,
-                            data vector Z_1_7, vector r_1_1, vector r_1_2,
+                            data vector Z_1_7, data vector Z_1_8,
+                            data vector Z_1_9, vector r_1_1, vector r_1_2,
                             vector r_1_3, vector r_1_4, vector r_1_5,
-                            vector r_1_6, vector r_1_7, data array[] int J_2,
+                            vector r_1_6, vector r_1_7, vector r_1_8,
+                            vector r_1_9, data array[] int J_2,
                             data vector Z_2_1, data vector Z_2_2,
                             data vector Z_2_3, data vector Z_2_4,
                             data vector Z_2_5, vector r_2_1, vector r_2_2,
@@ -99,7 +101,8 @@ functions {
       mu[n] += r_1_1[J_1[nn]] * Z_1_1[nn] + r_1_2[J_1[nn]] * Z_1_2[nn]
                + r_1_3[J_1[nn]] * Z_1_3[nn] + r_1_4[J_1[nn]] * Z_1_4[nn]
                + r_1_5[J_1[nn]] * Z_1_5[nn] + r_1_6[J_1[nn]] * Z_1_6[nn]
-               + r_1_7[J_1[nn]] * Z_1_7[nn] + r_2_1[J_2[nn]] * Z_2_1[nn]
+               + r_1_7[J_1[nn]] * Z_1_7[nn] + r_1_8[J_1[nn]] * Z_1_8[nn]
+               + r_1_9[J_1[nn]] * Z_1_9[nn] + r_2_1[J_2[nn]] * Z_2_1[nn]
                + r_2_2[J_2[nn]] * Z_2_2[nn] + r_2_3[J_2[nn]] * Z_2_3[nn]
                + r_2_4[J_2[nn]] * Z_2_4[nn] + r_2_5[J_2[nn]] * Z_2_5[nn];
     }
@@ -129,6 +132,8 @@ data {
   vector[N] Z_1_5;
   vector[N] Z_1_6;
   vector[N] Z_1_7;
+  vector[N] Z_1_8;
+  vector[N] Z_1_9;
   int<lower=1> NC_1; // number of group-level correlations
   // data for group-level effects of ID 2
   int<lower=1> N_2; // number of grouping levels
@@ -174,6 +179,8 @@ transformed parameters {
   vector[N_1] r_1_5;
   vector[N_1] r_1_6;
   vector[N_1] r_1_7;
+  vector[N_1] r_1_8;
+  vector[N_1] r_1_9;
   matrix[N_2, M_2] r_2; // actual group-level effects
   // using vectors speeds up indexing in loops
   vector[N_2] r_2_1;
@@ -191,6 +198,8 @@ transformed parameters {
   r_1_5 = r_1[ : , 5];
   r_1_6 = r_1[ : , 6];
   r_1_7 = r_1[ : , 7];
+  r_1_8 = r_1[ : , 8];
+  r_1_9 = r_1[ : , 9];
   // compute actual group-level effects
   r_2 = scale_r_cor(z_2, sd_2, L_2);
   r_2_1 = r_2[ : , 1];
@@ -200,7 +209,7 @@ transformed parameters {
   r_2_5 = r_2[ : , 5];
   lprior += normal_lpdf(b | 0, 1);
   lprior += normal_lpdf(Intercept | -0.25, 0.5);
-  lprior += normal_lpdf(sd_1 | 1, 0.25) - 7 * normal_lccdf(0 | 1, 0.25);
+  lprior += normal_lpdf(sd_1 | 1, 0.25) - 9 * normal_lccdf(0 | 1, 0.25);
   lprior += lkj_corr_cholesky_lpdf(L_1 | 2);
   lprior += normal_lpdf(sd_2 | 1, 0.25) - 5 * normal_lccdf(0 | 1, 0.25);
   lprior += lkj_corr_cholesky_lpdf(L_2 | 2);
@@ -210,9 +219,10 @@ model {
   if (!prior_only) {
     target += reduce_sum(partial_log_lik_lpmf, seq, grainsize, Y, nthres, Xc,
                          b, Intercept, disc, J_1, Z_1_1, Z_1_2, Z_1_3, Z_1_4,
-                         Z_1_5, Z_1_6, Z_1_7, r_1_1, r_1_2, r_1_3, r_1_4,
-                         r_1_5, r_1_6, r_1_7, J_2, Z_2_1, Z_2_2, Z_2_3,
-                         Z_2_4, Z_2_5, r_2_1, r_2_2, r_2_3, r_2_4, r_2_5);
+                         Z_1_5, Z_1_6, Z_1_7, Z_1_8, Z_1_9, r_1_1, r_1_2,
+                         r_1_3, r_1_4, r_1_5, r_1_6, r_1_7, r_1_8, r_1_9,
+                         J_2, Z_2_1, Z_2_2, Z_2_3, Z_2_4, Z_2_5, r_2_1,
+                         r_2_2, r_2_3, r_2_4, r_2_5);
   }
   // priors including constants
   target += lprior;
@@ -228,13 +238,6 @@ generated quantities {
   // compute group-level correlations
   corr_matrix[M_2] Cor_2 = multiply_lower_tri_self_transpose(L_2);
   vector<lower=-1, upper=1>[NC_2] cor_2;
-  // additionally sample draws from priors
-  real prior_b = normal_rng(0, 1);
-  real prior_Intercept = normal_rng(-0.25, 0.5);
-  real prior_sd_1 = normal_rng(1, 0.25);
-  real prior_cor_1 = lkj_corr_rng(M_1, 2)[1, 2];
-  real prior_sd_2 = normal_rng(1, 0.25);
-  real prior_cor_2 = lkj_corr_rng(M_2, 2)[1, 2];
   // extract upper diagonal of correlation matrix
   for (k in 1 : M_1) {
     for (j in 1 : (k - 1)) {
@@ -246,13 +249,6 @@ generated quantities {
     for (j in 1 : (k - 1)) {
       cor_2[choose(k - 1, 2) + j] = Cor_2[j, k];
     }
-  }
-  // use rejection sampling for truncated priors
-  while (prior_sd_1 < 0) {
-    prior_sd_1 = normal_rng(1, 0.25);
-  }
-  while (prior_sd_2 < 0) {
-    prior_sd_2 = normal_rng(1, 0.25);
   }
 }
 

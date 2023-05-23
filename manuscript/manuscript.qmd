@@ -122,8 +122,7 @@ tar_config_set(store = here::here('_targets'),
 tar_load_globals()
 
 tar_load(c(bvq_data, childes, items, participants, responses))
-tar_load(c(starts_with("model_"), model_loos))
-tar_load(c(posterior_draws, marginal_effects_epreds))
+tar_load(c(model_fit, model_summary, model_epreds, model_convergence))
 
 # process objects
 items <- bvq_data$pool  |>  
@@ -189,7 +188,7 @@ We suggest that the cognateness effect proposed by Floccia et al. and Mitchell e
 
 Consider the example of the Catalan-Spanish cognate translation equivalent *gat*-*gato* [cat] (whose word-forms share three phonemes), and of the non-cognate translation equivalent *gos*-*perro* [dog] whose word-forms only share one phoneme. When the child has sufficient lexical knowledge of *gat*, and therefore there is some form-referent association in place, future presentations of the similar-sounding translation *gato* in the presence of the same reference should lead to an increased likelihood of acquisition. In the case of a non-cognate translation equivalent, such facilitation would be unlikely. For instance, even if the child has already acquired the word *gos*, hearing its dissimilar Spanish translation *perro* would hardly lead to an increased probability of acquisition. In line with this account, only the later-acquired form of the translation equivalent would benefit from its cognate status. Given that children are more likely to acquire words from languages to which they are more often exposed to [@david2008individual; @cattani2014how; @thordardottir2006bilingual; @hoff2012dual], the acquisition of words in the language of lower exposure should, on average, be more susceptible to the effect of cognateness. For instance, if the previous child is exposed 80% of the time to English, and 20% of the time to Spanish, words in Spanish (especially low-frequency ones) would show a cognateness facilitation effect, with an earlier age-of-acquisition for cognates than for non-cognates.
 
-@fig-hypothesis provides a graphic, theoretical illustration of this account. We assume the case of a Catalan-Spanish bilingual child who is exposed 65% of the time to Catalan, and 35% of the time to Spanish. On the top panels, we illustrate the cumulative sum of learning instances that a child accumulates across ages for the Catalan word-form (/\textipa{gat}/ or /\textipa{gos}/) and its Spanish translation (/\textipa{"pe.ro}/ or /\textipa{"ga.to}/). We assume an arbitrary, theoretical threshold for the learning instances at which the child is considered to have acquired a word (solid grey line). Points and triangles show the age-of-acquisition at which the amount of learning instances reaches the threshold. We show the predicted age-of-acquisition under two hypothesis: (1) a cognateness facilitation effect that lowers the acquisition threshold after one of the word-forms (in this case Catalan /\textipa{gat}/) has been acquired, and (2) no cognateness facilitation, for which the acquisition of the second word-form occurs unconditionally of the acquisition of the first. On the bottom, we show the predicted probability of acquisition for the Catalan and Spanish words under each hypothesis, as it would be expected to observe in a vocabulary questionnaire like the one in the present study. We assume that such probability starts at 0% at birth, reaches 50% (and grows the fastest) at the age-of-acquisition, and reaches 100% at some points in later ages.
+@fig-hypotheses provides a graphic, theoretical illustration of this account. We assume the case of a Catalan-Spanish bilingual child who is exposed 65% of the time to Catalan, and 35% of the time to Spanish. On the top panels, we illustrate the cumulative sum of learning instances that a child accumulates across ages for the Catalan word-form (/\textipa{gat}/ or /\textipa{gos}/) and its Spanish translation (/\textipa{"pe.ro}/ or /\textipa{"ga.to}/). We assume an arbitrary, theoretical threshold for the learning instances at which the child is considered to have acquired a word (solid grey line). Points and triangles show the age-of-acquisition at which the amount of learning instances reaches the threshold. We show the predicted age-of-acquisition under two hypothesis: (1) a cognateness facilitation effect that lowers the acquisition threshold after one of the word-forms (in this case Catalan /\textipa{gat}/) has been acquired, and (2) no cognateness facilitation, for which the acquisition of the second word-form occurs unconditionally of the acquisition of the first. On the bottom, we show the predicted probability of acquisition for the Catalan and Spanish words under each hypothesis, as it would be expected to observe in a vocabulary questionnaire like the one in the present study. We assume that such probability starts at 0% at birth, reaches 50% (and grows the fastest) at the age-of-acquisition, and reaches 100% at some points in later ages.
 
 ```{r fig-hypotheses}
 #| label: fig-hypotheses
@@ -293,7 +292,9 @@ items |>
 
 ```
 
-For each word included in the vocabulary checklists, we asked parents to report whether their child was able to understand it, understand *and* say it, or did not understand or say it (checked out by default). Given the large number of words in the vocabulary checklists, we created four different subsets of the complete list of items. Each subset contained a random but representative sub-sample of the items from the complete list. Semantic/functional categories with less than 16 items---thus resulting in less than four items after dividing it in four lists---were not divided in the short version of the questionnaire: all of their items were included in the four lists. Items that were part of the trial lists of some ongoing experiments in the lab were also included in all versions. The resulting reduced vocabulary checklists contained between `r min(n_items_version$catalan)` and  `r max(n_items_version$catalan)` Catalan words, and between `r min(n_items_version$spanish)` and  `r max(n_items_version$spanish)` Spanish words. Participants were randomly allocated into one of the four subsets. Each response to the questionnaire provided data for a minimum of `r min(n_items_version$catalan, n_items_version$spanish)` and a maximum of `r max(n_items_version$catalan, n_items_version$spanish)` translation equivalents. 
+For each word included in the vocabulary checklists, we asked parents to report whether their child was able to understand it, understand *and* say it, or did not understand or say it (checked out by default). Given the large number of words in the vocabulary checklists, we created four different subsets of the complete list of items. Each subset contained a random but representative sub-sample of the items from the complete list. Semantic/functional categories with less than 16 items---thus resulting in less than four items after dividing it in four lists---were not divided in the short version of the questionnaire: all of their items were included in the four lists. Items that were part of the trial lists of some ongoing experiments in the lab were also included in all versions. The resulting reduced vocabulary checklists contained between `r min(n_items_version$catalan)` and  `r max(n_items_version$catalan)` Catalan words, and between `r min(n_items_version$spanish)` and  `r max(n_items_version$spanish)` Spanish words. Participants were randomly allocated into one of the four subsets. Each response to the questionnaire provided data for a minimum of `r min(n_items_version$catalan, n_items_version$spanish)` and a maximum of `r max(n_items_version$catalan, n_items_version$spanish)` translation equivalents.
+
+For each word included in the questionnaire, we manually generated a broad phonological transcription in X-SAMPA format. Catalan word-forms were transcribed to Central Catalan phonology, and Spanish translations were transcribed to Castilian Spanish phonology. For each translation equivalent, we calculated the phonological similarity between the Catalan and the Spanish word-form using the same Levenshtein similarity measure used in @floccia2018introduction.
 
 ## Participants {#sec-participants}
 
@@ -310,19 +311,21 @@ n_participants <- responses |>
     pull(n) |>
     table()
 
-diff_responses <- responses |>
-    distinct(id, age) |>
-    left_join(distinct(participants, id, time_stamp, age),
-              by = c("id", "age")) |> 
-    group_by(id) |> 
-    arrange(id, time_stamp) |> 
-    mutate(diff_lag = time_stamp-dplyr::lag(time_stamp, default = NA)) |> 
-    summarise(diff_min = min(diff_lag, na.rm = TRUE),
-              diff_max = max(diff_lag, na.rm = TRUE),
-              .groups = "drop") |> 
-    filter(!(diff_min %in% c(-Inf, Inf))) |>
-    summarise(diff_min = min(diff_min, na.rm = TRUE),
-              diff_max = max(diff_max, na.rm = TRUE))
+suppressWarnings({
+    diff_responses <- responses |>
+        distinct(id, age) |>
+        left_join(distinct(participants, id, time_stamp, age),
+                  by = c("id", "age")) |> 
+        group_by(id) |> 
+        arrange(id, time_stamp) |> 
+        mutate(diff_lag = time_stamp-dplyr::lag(time_stamp, default = NA)) |> 
+        summarise(diff_min = min(diff_lag, na.rm = TRUE),
+                  diff_max = max(diff_lag, na.rm = TRUE),
+                  .groups = "drop") |> 
+        dplyr::filter(!(diff_min %in% c(-Inf, Inf))) |>
+        summarise(diff_min = min(diff_min, na.rm = TRUE),
+                  diff_max = max(diff_max, na.rm = TRUE))
+})
 
 n_responses <- nrow(distinct(responses, id, age))
 
@@ -372,14 +375,9 @@ participants |>
     arrange(desc(doe_catalan)) |>
     pivot_wider(names_from = age, values_from = n) |>
     gt() |>
-    summary_rows(
-        columns = 2:7,
-        fns = list("Total" = ~ sum(., na.rm = TRUE)),
-        formatter = fmt_integer
-    ) |>
     sub_missing(everything(), everything(), missing_text = "--") |>
     cols_label(doe_catalan = "Catalan exposure") |>
-    tab_spanner("Age (months)", 2:8) |>
+    tab_spanner("Age (months)", 2:7) |>
     tab_style(cell_text(align = "left"),
               list(cells_body(doe_catalan),
                    cells_column_labels(doe_catalan)))
@@ -408,7 +406,7 @@ sum_obs <- responses |>
 n_items <- bvq_data$pool
 
 n_items_nouns <- n_items |> 
-    filter(class=="Noun") 
+    dplyr::filter(class=="Noun") 
 
 n_items_freq <- n_items_nouns |> 
     left_join(childes,
@@ -416,17 +414,17 @@ n_items_freq <- n_items_nouns |>
     drop_na(freq_zipf, wordbank_lemma)
 
 n_items_lemma <- n_items_freq |> 
-    filter(n_lemmas == 1)
+    dplyr::filter(n_lemmas == 1)
 
 n_items_multi <- n_items_lemma |> 
-    filter(!is_multiword) |> 
-    filter(include, !is.na(wordbank_lemma)) |> 
+    dplyr::filter(!is_multiword) |> 
+    dplyr::filter(include, !is.na(wordbank_lemma)) |> 
     drop_na(xsampa) |> 
     distinct(te, language)
 
 n_items_duplicated <- n_items_multi |> 
     add_count(te, name = "n_te") |>
-    filter(n_te == 2)
+    dplyr::filter(n_te == 2)
 
 n_items_final <- n_items_duplicated |> 
     count(language) |> 
@@ -447,88 +445,51 @@ r_version <- glue(r_info$R.version$major,
 
 From the responses to the `r format(nrow(n_items), big.mark = ",")` items included in the questionnaire, we restricted the analyses to responses to nouns (`r nrow(n_items)-nrow(n_items_nouns)` items corresponding to other grammatical classes were excluded) [@fourtassi2020growth]. We then excluded items with missing lexical frequency scores (*n* = `r nrow(n_items_nouns)-nrow(n_items_freq)`), items that included more than one lemma (e.g., *mono/mico* [monkey], *n* = `r nrow(n_items_freq)-nrow(n_items_lemma)`), multi-word items or phrases (e.g., *barrita de cereales* [cereal bar], *n* = `r nrow(n_items_lemma)-nrow(n_items_multi)`). Finally, we removed items without a translation in the other language (*n* = `r nrow(n_items_multi)-nrow(n_items_duplicated)`). This resulted in a final list of `r sum(n_items_final)` items, corresponding to words `r n_items_final["Catalan"]` Catalan words and their `r n_items_final["Spanish"]` Spanish translations (`r n_te` translation equivalents). After collecting participants' responses, the final dataset consisted of `r format(n_obs, big.mark = ",")` observations, each corresponding to a single response of one participant to one item. Each translation equivalent received a median of `r round(sum_obs$median)` responses (*Min* = `r round(sum_obs$min)`, *Max* = `r round(sum_obs$max)`) from participants, both languages pooled together. 
 
-We modelled the probability of participants answering each response category (*No* < *Understands* < *Understands and Says*) using a Bayesian, mixed-effects ordinal regression model (`r dim(model_fit_0$fit)[2]` sampling chains with `r format(dim(model_fit_0$fit)[1], big.mark = ",")` iterations each). This model allowed us to estimate both item and participant word-acquisition trajectories, as a function of different fixed effects from $\text{Age}$ (number of months elapsed between participants' birth date and questionnaire completion), $\text{Length}$ (number of phonemes in the X-SAMPA phonological transcription of the word-form), $\text{Exposure}$ (composite measure of lexical frequency and language degree of exposure), and $\text{Cognateness}$ (a measure of cognateness, defined as the phonological similarity between translation equivalents). Phonological transcriptions were manually generated. Catalan word-forms were transcribed to central Catalan phonology, and Spanish translations were transcribed to  Predictors were standardised before entering the model by subtracting the mean of the predictor from each value and dividing the result by the standard deviation of the predictor. Participant- and item-level random intercepts and slopes were included when appropriate, according to the structure of the data [@barr2013random]. We specified a weakly informative prior around the parameters of the model (see Appendix C for details).
+We modelled the probability of participants answering each response category (*No* < *Understands* < *Understands and Says*) using a Bayesian, mixed-effects ordinal regression model. This model allowed us to estimate both item and participant word-acquisition trajectories, while estimating the effect of our variables of interest. We added $\text{Age}$ (number of months elapsed between participants' birth date and questionnaire completion), $\text{Length}$ (number of phonemes in the X-SAMPA phonological transcription of the word-form), $\text{Exposure}$ (composite measure of lexical frequency and language degree of exposure), and $\text{Cognateness}$ (a measure of cognateness, defined as the phonological similarity between translation equivalents) as population-level effects, together with their two- and three-way interactions. Predictors were standardised before entering the model by subtracting the mean of the predictor from each value and dividing the result by the standard deviation of the predictor. Participant-level and item-level random intercepts and slopes were included where appropriate, according to the structure of the data [@barr2013random; see @eq-linear]. We specified a weakly informative prior around the parameters of the model (see Appendix C for details). 
 
 $$
 \begin{aligned}
-&\textbf{Response}~k~\textbf{to word}~i~ \textbf{by participant}~j \\
+&\textbf{Response}~(k)~\textbf{to word}~i~ \textbf{by participant}~j \\
 \text{Response}_{ij} &\sim \text{Cumulative logit}(\theta_{k_{ij}}), \\ &\text{where}~k \in \{\text{No, Understands, Understands and Says}\}\\
 &\textbf{Distribution parameters} \\
-\theta_{k_{ij}} &= (\beta_{0_{k}} + u_{0_{k_{i}}} + w_{0_{k_{j}}}) + (\beta_{1} + u_{1_{i}} + w_{1_{j}}) \cdot \text{Age}_{i} + \\
-& (\beta_{2} + u_{2_{i}} + w_{2_{j}}) \cdot \text{Length}_{ij} + (\beta_{3} + u_{3_{i}} + w_{3_{j}}) \cdot \text{Exposure}_{ij} + & \\
-& (\beta_{4} + u_{4_{i}}) \cdot \text{Cognateness}_{i} + (\beta_{5} + u_{5_{i}}) \cdot (\text{Exposure}_{ij} \times \text{Cognateness}_{i}) & \\
-u_{0-5_{i}} &\sim \mathcal{N}(0, \sigma_{u_{0-8_{i}}}); ~w_{0-3_{j}} \sim \mathcal{N}(0, \sigma_{w_{0-3_{j}}}) \\
+\theta_{k_{ij}} &= (\beta_{0_{k}} + u_{0_{i_{k}}} + w_{0_{j_{k}}}) + (\beta_{1} + u_{1_{i}} + w_{1_{j}}) \cdot \text{Age}_{i} + \\
+&(\beta_{2} + u_{2_{i}} + w_{2_{j}}) \cdot \text{Length}_{ij} + 
+(\beta_{3} + u_{3_{i}} + w_{3_{j}}) \cdot \text{Exposure}_{ij} + & \\
+& (\beta_{4} + u_{4_{i}}) \cdot \text{Cognateness}_{ij} + (\beta_{5} + u_{5_{i}} + w_{3_{j}}) \cdot (\text{Age}_{i} \times \text{Exposure}_{ij}) + & \\
+& (\beta_{6} + u_{6_{i}}) \cdot (\text{Age}_{i} \times \text{Cognateness}_{ij}) + & \\
+& (\beta_{7} + u_{7_{i}}) \cdot (\text{Exposure}_{ij} \times \text{Cognateness}_{ij}) & \\
+& (\beta_{8} + u_{8_{i}}) \cdot (\text{Age}_{i} \times \text{Exposure}_{ij} \times \text{Cognateness}_{ij}) \\
 &\textbf{Prior} \\
 \beta_{0_{k}} &\sim \mathcal{N}(-0.25, 0.5); ~\beta_{1-5} \sim \mathcal{N}(0, 1) \\
-\sigma_{u_{0-5}, w_{0-3}} &\sim \mathcal{N_{+}}(1, 0.25); ~\rho_{u_{0-8}, w_{0-3}} \sim \text{LKJcorr}(2)
+\sigma_{u_{0-8}, w_{0-3}} &\sim \mathcal{N_{+}}(1, 0.25); ~\rho_{u_{0-8}, w_{0-3}} \sim \text{LKJcorr}(2)
 \end{aligned}
-$$
+$$ {#eq-linear}
 
-We built a base model $\mathcal{M}_{0}$ that only included the intercept and the main effects of $\text{Age}$, $\text{Length}$, and $\text{Exposure}$ as predictors, and compared it against increasingly more complex models. $\mathcal{M}_{1}$ extended the base model by adding the main effect of $\text{Cognateness}$, and $\mathcal{M}_{2}$ added the two-way interaction $\text{Exposure} \times \text{Cognateness}$. We compared the predictive performance of the models using Bayesian leave-one-out cross-validation [LOO-CV, @vehtari2017practical]^[Due to computational constraints, we performed LOO-CV based on a random sub-sample of `r format(dim(model_log_liks$model_fit_0)[1], big.mark = ",")` samples of the posterior distribution of the fixed effects [@magnusson2020leaveoneout]]. LOO-CV involves computing the likelihood of each data point, given a model  fitted excluding such data point. The likelihoods generated by the model for each of the data points are summarised together in a measure of predictive performance: the expected log-predicted density (ELPD). This measure penalises the complexity of the model ELPD. ELPD values closer to zero indicate better predictive accuracy. We compared the ELPD of each model, and selected for interpretation the one showing the best performance (see Appendix C for more details about the models).
+We assessed the practical relevance of the estimated regression coefficients of the model model following @kruschke2018bayesian. First, we specified a region of practical equivalence (ROPE) from `r rope_interval["lower"]` to +`r rope_interval["upper"]`, in the probability scale. This region indicates the range of values that we considered equivalent to zero. The degree of overlap between the posterior distribution of a regression coefficient with the  can be interpreted as support for the true parameter of the coefficient being zero or equivalent. We then computed the 95% highest density interval (HDI) of the posterior distribution of each regression coefficient. This interval contains the true value of this coefficient with 95% probability, given the data. Finally, we calculated the proportion of posterior samples in the 95% HDI that fell into the ROPE, which indicates the probability that the true value of the regression coefficient falls into the ROPE, and should therefore be considered equivalent to zero. For example, a 90% overlap between the HDI of a coefficient's posterior distribution and the  indicates that, given our data, there is a 90% probability that the true value of the coefficient falls within the ROPE, and is therefore equivalent to zero.
 
-We assessed the practical relevance of the estimated regression coefficients of the selected model following @kruschke2018bayesian. First, we specified a region of practical equivalence (ROPE) from `r rope_interval["lower"]` to +`r rope_interval["upper"]`, in the probability scale. This region indicates the range of values that we considered equivalent to zero. The degree of overlap between the posterior distribution of a regression coefficient with the  can be interpreted as support for the true parameter of the coefficient being zero or equivalent. We then computed the 95% highest density interval (HDI) of the posterior distribution of each regression coefficient. This interval contains the true value of this coefficient with 95% probability, given the data. Finally, we calculated the proportion of posterior samples in the 95% HDI that fell into the ROPE, which indicates the probability that the true value of the regression coefficient falls into the ROPE, and should therefore be considered equivalent to zero. For example, a 90% overlap between the HDI of a coefficient's posterior distribution and the  indicates that, given our data, there is a 90% probability that the true value of the coefficient falls within the ROPE, and is therefore equivalent to zero.
-
-Data processing and visualisation was done in R [@rcoreteam2013language, version `r r_version`] using the Tidyverse family of packages [@wickham2019welcome]. Bayesian modelling was done using the `brms` [@burkner2017brms; @carpenter2017stan], `loo` [@vehtari2022loo], `tidybayes` [@kay2021tidybayes] and `marginaleffects` [@arel-bundock2022marginaleffects] R packages.
+Data processing and visualisation was done in R [@rcoreteam2013language, version `r r_version`] using the Tidyverse family of packages [@wickham2019welcome]. We implemented the model using was done using the `brms` [@burkner2017brms], a R interface to the Stan probabilistic language [@carpenter2017stan]. We ran `r nchains(model_fit)` MCMC  chains with `r format(niterations(model_fit), big.mark = ",")` iterations each and an additional `r format(niterations(model_fit), big.mark = ",")` warm-up iterations per chain. Model posterior draws and predictions were handled using the `tidybayes` [@kay2021tidybayes] and `marginaleffects` [@arel-bundock2022marginaleffects] R packages.
 
 # Results {#sec-results}
 
 ```{r results-values}
 #| label: results-values
 #| echo: false
-rhats_df <- map_df(model_rhats, bind_rows, .id = "model") |> 
-    mutate(model = paste0("Model ", str_extract(model, "[0-9]"))) |> 
-    pivot_longer(-model, 
-                 names_to = ".variable",
-                 values_to = ".rhat") |>
-    filter(str_detect(.variable, "b_|sd_")) |> 
+rhats_df <- model_convergence |> 
+    dplyr::filter(str_detect(.variable, "b_|sd_")) |> 
     drop_na() 
 
-loo_diff <- loo_compare(model_loos)[, 1]
-loo_diff_se <- loo_compare(model_loos)[, 2]
-
-post_draws_list <- posterior_draws$summary |> 
+post_draws_list <- model_summary |> 
     mutate(across(.median:.lower,
                   \(x) ifelse(grepl("Intercept", .type),
                               plogis(x), x/4))) |> 
-    split(posterior_draws$summary$.variable)
+    split(model_summary$.variable)
 ```
 
-All models showed adequate convergence diagnostics and little evidence of multicollinearity between predictors (see Appendix D for details). $\mathcal{M}_{2}$, which included the $\text{Exposure} \times \text{Cognateness}$ two-way interaction, showed the best predictive performance with a difference in expected log-predicted density (ELPD) compared to the second best-performing model ($\mathcal{M}_{1}$) of `r round(loo_diff[2], 2)` $\pm$ `r round(loo_diff_se[2], 2)`. $\mathcal{M_1}$ performed substantially better than $\mathcal{M_0}$, with a difference of `r round(loo_diff[3], 2)` $\pm$ `r round(loo_diff_se[3], 2)` This points to the effect of $\text{Cognateness}$ being strongly modulated by $\text{Exposure}$, and that this interaction remains relatively stable across ages.
-
-```{r tbl-results-loos}
-#| label: tbl-loos
-#| echo: false
-#| message: false
-#| warning: false
-#| eval: true
-#| tbl-cap: "Bayesian leave-one-out cross validation (LOO-CV)."
-#| tbl-note: "ELPD (*SD*): expected log-predictive density and standard error. Diff. (*SD*): diference in ELPD between each model and the model with the best predictive accuracy (Model 3) and standard error of the difference. Pareto-k estimates of all models were acceptable (k < 0.5)."
-model_loos |>
-    loo_compare() |>
-    as.data.frame() |>
-    rownames_to_column("model") |>
-    mutate(model = paste0("Model ", str_remove(model, "model_fit_"))) |>
-    select(model, elpd_loo, se_elpd_loo, elpd_diff, se_diff) |> 
-    gt(rowname_col = "model") |>
-    fmt_number(2:5, decimals = 2, sep_mark = ",") |>
-    cols_merge(c(elpd_loo, se_elpd_loo), pattern = "{1} ({2})") |> 
-    cols_merge(c(elpd_diff, se_diff), pattern = "{1} ({2})") |> 
-    cols_label(
-        model = "Model",
-        elpd_loo = "ELPD (SD)",
-        elpd_diff = "Diff. (SD)"
-    ) |>
-    tab_style(cell_text(weight = "bold", style = "italic"),
-              cells_column_labels()) |>
-    tab_style(cell_text(align = "left"),
-              cells_title(groups = "subtitle"))
-```
-
-@tbl-coefs shows the summary of the posterior distribution of the fixed regression coefficients of $\mathcal{M}_{2}$, and their degree of overlap with the ROPE. For interpretability, we report the estimated regression coefficients transformed to the probability scale. The resulting values correspond to the maximum difference in probability of acquisition (*Comprehension* or *Comprehension and Production*) that corresponds to a one standard deviation change in each predictor^[The logit and probability scales relate non-linearly. This means that one logit difference is not necessarily translated to a unique value in the probability scale. For example, the probability of acquisition of a given word might increase in 5% when age increases from 22 to 23 months, the probability of acquisition of the same word might only increase in 0.2% when age increases from 30 to 32 months. The linear growth of the probability of acquisition differs along the logistic curve, and therefore deciding the age point at which to report the estimates of the regression coefficients in the probability scale is not trivial. Following @gelman2020regression, we report the maximum value of such coefficient, which corresponds to the linear growth (i.e. derivative) of the logistic curve at the age at which most participants were acquiring a given word. This value can be approximated by dividing the coefficient in the logit scale by four: $\hat{\beta_j}/4$, where $\hat{\beta_j}$ is the estimated mean of the posterior distribution of coefficient $j$.].
+All parameters in the model showed adequate MCMC convergence diagnostics and little evidence of multicollinearity (see Appendix D for details). @tbl-coefs shows the summary of the posterior distribution of the fixed regression coefficients, and their degree of overlap with the ROPE. For interpretability, we report the estimated regression coefficients transformed to the probability scale. The resulting values correspond to the maximum difference in probability of acquisition (*Comprehension* or *Comprehension and Production*) that corresponds to a one standard deviation change in each predictor^[The logit and probability scales relate non-linearly. This means that one logit difference is not necessarily translated to a unique value in the probability scale. For example, the probability of acquisition of a given word might increase in 5% when age increases from 22 to 23 months, the probability of acquisition of the same word might only increase in 0.2% when age increases from 31 to 32 months. The linear growth of the probability of acquisition differs along the logistic curve, and therefore deciding the age point at which to report the estimates of the regression coefficients in the probability scale is not trivial. Following @gelman2020regression, we report the maximum value of such coefficient, which corresponds to the linear growth (i.e. derivative) of the logistic curve at the age at which most participants were acquiring a given word. This value can be approximated by dividing the coefficient in the logit scale by four: $\hat{\beta_j}/4$, where $\hat{\beta_j}$ is the estimated mean of the posterior distribution of coefficient $j$.].
 
 ```{r tbl-coefs}
 #| label: tbl-coefs
-#| tbl-cap: "Posterior distribution of regression coefficients Model 3."
+#| tbl-cap: "Posterior distribution of regression coefficients."
 #| tbl-note: "Median: median of the posterior distribution in the probability scale. 95\\% HDI: 95\\% highest density interval of the distribution; narrowest range of values that contains 95\\% of the distribution, and therefore is 95\\% likely to contain the true value, given the data. On top of each distribution, we indicate the proportion of posterior samples in the 95\\% HDI that fall into the region of practical equivalence (ROPE). This proportion indicates the probability of the true value of the coefficient being equivalent to zero. Lower values indicate that the true value is unlikely to be zero of equivalent to zero."
 #| echo: false
 #| message: false
@@ -537,7 +498,7 @@ model_loos |>
 # summarise posterior draws
 intercept_label <- "Intercepts (at 22 months)"
 
-posterior_draws$summary |>
+model_summary |>
     select(.variable_name, .median, .lower, .upper, .rope_overlap, .type) |>
     mutate(across(.median:.upper,
                   \(x) ifelse(.type==intercept_label, plogis(x), x/4))) |> 
@@ -578,13 +539,11 @@ The posterior distribution of the main effect of cognateness excluded the ROPE c
 #| fig-height: 4.5
 #| out-width: 100%
 #| eval: true
-#| fig-cap: "Posterior marginal effects of Model 3. Thin lines correspond to 50 mean predictions. Thicker lines indicate the median of those predictions. Different colours indicate different levels of cognateness (phonological similarity). Predictions are presented separately for different degrees of word exposure index: little exposure to the word, mean exposure, and high exposure. Predictions for Comprehension are show on top and predictions for Comprehension and Production are shown on the bottom. In-sample predictions lie inside the grey rectangles."
+#| fig-cap: "Posterior marginal effects. Thin lines correspond to 50 mean predictions. Thicker lines indicate the median of those predictions. Different colours indicate different levels of cognateness (phonological similarity). Predictions are presented separately for different degrees of word exposure index: little exposure to the word, mean exposure, and high exposure. Predictions for Comprehension are show on top and predictions for Comprehension and Production are shown on the bottom. In-sample predictions lie inside the grey rectangles."
 clrs_reorder <- c("#58508d", "#003f5c", "#122A36", "#ffa600", "#ff6361", "#bc5090")
 
-marginal_effects_epreds |> 
-    mutate(age = rescale_variable(age_std, 
-                                  mean(responses$age), 
-                                  sd(responses$age)),
+model_epreds |> 
+    mutate(age = (age_std * sd(responses$age)) + mean(responses$age),
            exposure = factor(exposure_std,
                              levels = unique(exposure_std),
                              labels = c("Low exposure (-1 SD)",
@@ -666,15 +625,15 @@ lv_distr <- items |>
 E_e <- bvq_data$pool |>
     mutate(item = gsub("cat_|spa_", "", item),
            xsampa = gsub("\\.", "", xsampa)) |>
-    filter(te %in% items$te, 
-           item %in% items$item) |>
+    dplyr::filter(te %in% items$te, 
+                  item %in% items$item) |>
     select(te, language, xsampa) |> 
     pivot_wider(names_from = language,
                 values_from = xsampa, 
                 id_cols = te,
                 names_repair = janitor::make_clean_names) |>
-    filter(grepl("E", catalan), 
-           grepl("e", spanish)) |>
+    dplyr::filter(grepl("E", catalan), 
+                  grepl("e", spanish)) |>
     left_join(distinct(items, te, lv),
               by = "te")
 ```
@@ -685,7 +644,7 @@ This investigation is particularly relevant in the light of two previous finding
 
 Following the rationale of accumulator models, we suggest that parallel activation increases the rate at which bilingual children encounter learning instances for cognate words, but not for non-cognate words. We hypothesised that when a bilingual child is exposed to a word-form in presence of its referent, they activate not only its corresponding lexical representation, but also the lexical representation of its translation. This cross-language activation occurs at the phonological level, and the amount of co-activation that spreads from the spoken word to its translation is proportional to the amount of phonological similarity between both word-forms. Cognates would receive more activation from their translation than non-cognates, leading children to accumulate learning instances with cognate words at a faster rate than with non-cognate words. As a result, lexical representations of cognate words would consolidate at earlier ages than those of non-cognate words.
 
-Consider a Catalan-Spanish bilingual child who is exposed to the Catalan word-form /\textipa{"gat}/ in the presence of a cat. This represents a learning instance, in which the child has the opportunity to strengthen the association between the word-form and its referent. Because the Spanish translation of this word (/\textipa{"ga.to}/) is phonologically very similar to the Catalan form (both word-forms share `r format(stringdist::stringsim("gat", "gato"), nsmall = 2)` Levenshtein similarity), it might receive some degree of co-activation. Both members of the translation pair would be activated to some extent in the presence of their common referent, and therefore the child would accumulate a learning instance with both word-forms. The case of the non-cognate translation equivalent for *dog* (/\textipa{"gOs}/-/\textipa{"pe.ro}/,  sharing `r format(stringdist::stringsim("gOs", "pero"), nsmall = 2)` Levenshtein similarity), would be different. Since both words hardly share any phonological similarity, a bilingual child would only accumulate learning instances for the word they encounter in speech, but not for the other. For instance, hearing /\textipa{"gOs}/ would be unlikely to activate /\textipa{"pe.ro}/ through phonology. Each word would accumulate learning instances independently, without any cross-language facilitation taking place.
+Consider a Catalan-Spanish bilingual child who is exposed to the Catalan word-form /\textipa{"gat}/ in the presence of a cat. This represents a learning instance, in which the child has the opportunity to strengthen the association between the word-form and its referent. Because the Spanish translation of this word (/\textipa{"ga.to}/) is phonologically very similar to the Catalan form (both word-forms share `r format(stringdist::stringsim("gat", "gato"), nsmall = 2)` Levenshtein similarity), it might receive some degree of co-activation. Both members of the translation pair would be activated to some extent in the presence of their common referent, and therefore the child would accumulate a learning instance with both word-forms. The case of the non-cognate translation equivalent for *dog* (/\textipa{"gOs}/-/\textipa{"pe.ro}/, sharing `r format(stringdist::stringsim("gOs", "pero"), nsmall = 2)` Levenshtein similarity), would be different. Since both words hardly share any phonological similarity, a bilingual child would only accumulate learning instances for the word they encounter in speech, but not for the other. For instance, hearing /\textipa{"gOs}/ would be unlikely to activate /\textipa{"pe.ro}/ through phonology. Each word would accumulate learning instances independently, without any cross-language facilitation taking place.
 
 This account of bilingual lexical acquisition addresses a critical subject in bilingualism research: do bilingual infants accumulate learning experiences in both languages independently, or does exposure to one language impact the acquisition trajectory of the other language? In the context of lexical acquisition, the former scenario predicts that every learning instance for a given word-form contributes to the consolidation of the representation of such word in the lexicon, while the consolidation of its translation remains unaffected by such experience. In the latter scenario, a learning instance to the same word-form would contribute not only to the consolidation of the representation of such word, but also, to some extent, to the consolidation of its translation. Our findings provide strong support for an account of bilingual vocabulary growth in which the experience and learning outcomes accumulated by the child in one language impact those in the other language. Such a facilitatory cross-language mechanism might be an important piece in the puzzle of bilingual language acquisition. In particular, it may shed some light on why bilingual infants do not show relevant delays in language acquisition milestones compared to their monolingual peers, while receiving a lower quantity of speech input in each of their languages. Our results provide some insights into this issue: infants benefitted more strongly from the cognateness facilitation effect when acquiring words from the language of lower exposure than in the language of higher exposure.
 

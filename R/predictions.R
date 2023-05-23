@@ -2,9 +2,13 @@
 #'
 #' @param model A brmsfit object
 #' @param data Data with which the model was fist, containing the original variables
-#' @param group Group for which posterior predictions will be generated. If `NULL` (default), posterior predictions will be generated for fixed effect. If `"te"`, predictions will be generated for translation equivalents. If `"id"`, predictions will be generated for participants.
+#' @param group Group for which posterior predictions will be generated:
+#' * `NULL` (default): posterior predictions will be generated for fixed effect.
+#' * `"te"`: posterior predictions will be generated for translation equivalents.
+#' * `"id"`: posterior predictions will be generated for participants.
 #' @param levels If group is `"te"` or `"id"`, specific levels (translation equivalents or participants) can be specified. If NULL (default), posterior predictions are generated for all levels of the grouping variable.
 #' @inheritParams marginaleffects::datagrid
+#' 
 generate_newdata <- function(model,
                              data,
                              group = NULL,
@@ -67,7 +71,7 @@ posterior_predictions <- function(model, data, ...) {
         posteriordraws() |> # so that each draw gets a row
         as_tibble() |>
         clean_names() |> 
-        filter(group != "No") |> 
+        dplyr::filter(group != "No") |> 
         pivot_wider(id_cols = any_of(c("drawid", colnames(newdata))),
                     names_from = group,
                     values_from = draw) |>
@@ -81,7 +85,9 @@ posterior_predictions <- function(model, data, ...) {
                .value = draw)
     
     # save predictions as Parquet file
-    save_files(predictions, folder = "results/predictions")
+    save_files(predictions, 
+               formats = "csv",
+               folder = "results/predictions")
     
     return(predictions)
 }
@@ -121,14 +127,19 @@ posterior_predictions_re <- function(model, data, group, ...) {
     if (group == "te") {
         predictions_te <- preds
         # export results
-        save_files(predictions_te, folder = "results/predictions")
+        save_files(predictions_te, 
+                   formats = "csv",
+                   folder = "results/predictions")
         predictions_re <- predictions_te
     }
     
     if (group == "id") {
         predictions_id <- preds
         # export results
-        save_files(predictions_id, folder = "results/predictions")
+        save_files(predictions_id,
+                   formats = "csv",
+                   folder = "results/predictions")
+        
         predictions_re <- predictions_id
     }
     

@@ -1,11 +1,12 @@
 #' Get CHILDES lexical frequencies
 #'
-#' @param collection CHILDES corpora from where to fetch transcriptions. Takes "Eng-NA" (North American English by default). See \href{https://childes.talkbank.org/access/}{CHILDES Index to corpora} to see options
-#' @param age_range Numeric vector of lenght two indicating the minimum and maximum age range of interest for which to comoute lexical frequencies in the CHILDES corpora. Frequencies will be summarised across this age range using the mean
-#' @paran ... Additional arguments passed to \code{childesr::get_types}
+#' @param collection CHILDES corpora from where to fetch transcriptions. Takes "Eng-NA" (North American English by default). See [CHILDES Index to corpora](https://childes.talkbank.org/access/) to see options
+#' @param age_range Numeric vector of lenght two indicating the minimum and maximum age range of interest for which to compute lexical frequencies in the CHILDES corpora. Frequencies will be summarised across this age range using the mean
+#' @paran ... Additional arguments passed to [childesr::get_types()]
 get_childes_frequencies <- function(collection = "Eng-NA",
                                     age_range = c(10, 36),
-                                    ...) {
+                                    ...)
+    {
     
     suppressMessages({
         
@@ -59,21 +60,19 @@ get_childes_frequencies <- function(collection = "Eng-NA",
                 age_bin = as.integer(floor(age_months / 6) * 6),
                 token = tolower(gloss)
             ) |>
-            group_by(age_bin, token, target_child_id, transcript_id) |>
             summarise(
                 transcript_count = sum(count),
                 transcript_num_tokens = sum(num_tokens),
-                .groups = "drop"
+                .by = c(age_bin, token, target_child_id, transcript_id)
             ) |>
-            filter(between(age_bin,
+            dplyr::filter(between(age_bin,
                            age_range[1],
                            age_range[2])) |>
-            group_by(token) |>
             summarise(
                 freq_count = mean(transcript_count),
                 total_count = mean(transcript_num_tokens),
                 n_children = length(unique(target_child_id)),
-                .groups = "drop"
+                .by = token
             ) |>
             mutate(
                 freq_million = freq_count / total_count * 1e6,
@@ -91,11 +90,15 @@ get_childes_frequencies <- function(collection = "Eng-NA",
 }
 
 #' Get item data
+#' 
+#' Levenshtein similarityties are computed using the [stringdist::stringsim()] function (see ?[stringdist::`stringdist-package`]).
 #'
 #' @param bvq_data A named list resulting from calling [get_bvq()]
 #' @param childes A data frame with lexical frequencies extracted from CHILDES, as returned by the [get_childes_frequencies()]
 #' @param class A character vector indicating the word classes to be included in the resulting dataset. Takes `"Adjective"`, `"Noun"` and/or `"Verb"` as values.
-get_items <- function(bvq_data, childes, class = "Noun") {
+#' 
+get_items <- function(bvq_data, childes, class = "Noun") 
+    {
     
     classes_available <- c("Noun", "Verb", "Adjective")
     
@@ -111,7 +114,7 @@ get_items <- function(bvq_data, childes, class = "Noun") {
     pool_tmp <- bvq_data$pool |>
         # drop items with missing observations in these variables
         drop_na(xsampa, wordbank_lemma) |>
-        filter(n_lemmas == 1,
+        dplyr::filter(n_lemmas == 1,
                # exclude items with more than two lemmas
                !is_multiword,
                # exclude multi-word items
@@ -121,7 +124,7 @@ get_items <- function(bvq_data, childes, class = "Noun") {
                # get only translation equivalents with at least one item in each language
                class %in% classes) |> 
         add_count(te, name = "n_te") |> # get only items with one translation in each language
-        filter(n_te == 2) |>
+        dplyr::filter(n_te == 2) |>
         distinct(language, te, .keep_all = TRUE) |> 
         mutate(xsampa_flat = flatten_xsampa(xsampa),
                syll = syllabify_xsampa(xsampa),
@@ -142,7 +145,7 @@ get_items <- function(bvq_data, childes, class = "Noun") {
         summarise(freq_syll_sum = sum(freq_syll),
                   .by = c(te, n_syll, language))
     
-    # compute normalised Levenshtein distance (see ?stringdist::`stringdist-package`)
+    # compute normalised Levenshtein distance.
     # number of edit operations needed to make two strings identical
     # when applied to phonological transcriptions, it provides an approximation of phonological similarity between two word-forms
     lv_similarities <- pool_tmp |>
@@ -178,12 +181,13 @@ get_items <- function(bvq_data, childes, class = "Noun") {
 
 #' Get CHILDES lexical frequencies
 #'
-#' @param collection CHILDES corpora from where to fetch transcriptions. Takes "Eng-NA" (North American English by default). See \href{https://childes.talkbank.org/access/}{CHILDES Index to corpora} to see options
-#' @param age_range Numeric vector of lenght two indicating the minimum and maximum age range of interest for which to comoute lexical frequencies in the CHILDES corpora. Frequencies will be summarised across this age range using the mean
-#' @paran ... Additional arguments passed to \code{childesr::get_types}
+#' @param collection CHILDES corpora from where to fetch transcriptions. Takes "Eng-NA" (North American English by default). See [CHILDES Index to corpora(https://childes.talkbank.org/access/) to see options
+#' @param age_range Numeric vector of lenght two indicating the minimum and maximum age range of interest for which to compute lexical frequencies in the CHILDES corpora. Frequencies will be summarised across this age range using the mean
+#' @paran ... Additional arguments passed to [childesr::get_types()]
 get_childes_frequencies <- function(collection = "Eng-NA",
                                     age_range = c(10, 36),
-                                    ...) {
+                                    ...) 
+    {
     
     suppressMessages({
         
@@ -237,7 +241,7 @@ get_childes_frequencies <- function(collection = "Eng-NA",
             summarise(transcript_count = sum(count),
                       transcript_num_tokens = sum(num_tokens),
                       .groups = "drop") |>
-            filter(between(age_bin,
+            dplyr::filter(between(age_bin,
                            age_range[1],
                            age_range[2])) |>
             group_by(token) |>
@@ -259,12 +263,6 @@ get_childes_frequencies <- function(collection = "Eng-NA",
 }
 
 
-flatten_xsampa <- function(x) {
-    str_rm <- c("\\.", "\\\\", ",", "/", "?", "'", '"')
-    str <- gsub(paste0(str_rm, collapse = "|"), "", x)
-    str <- gsub("\\{", "\\\\{", str)
-    return(str)
-}
 
 syllabify_xsampa <- function(x, .sep = c("\\.", "\\\"")) {
     syll <- strsplit(x, split = paste0(.sep, collapse = "|"))
