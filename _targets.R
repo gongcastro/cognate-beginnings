@@ -276,13 +276,12 @@ list(
                "manuscript/appendix.qmd",
                execute = TRUE,
                cache = FALSE,
-               quiet = FALSE)
+               quiet = FALSE),
+    
+    tar_target(clean_repo,
+               invisible({
+                   file_path <- here::here("_targets.yaml")
+                   if (file.exists(file_path)) file.remove(file_path)
+               }))
     
 )
-
-# clean repository ---------------------------------------------------------
-invisible({
-    file_path <- here::here("_targets.yaml")
-    if (file.exists(file_path)) file.remove(file_path)
-})
-
