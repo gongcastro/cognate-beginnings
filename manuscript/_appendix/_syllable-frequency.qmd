@@ -28,7 +28,7 @@ pool_tmp <- bvq_data$pool |>
            item = str_remove(item, "cat_|spa_")) 
 
 items <- items |> 
-    mutate(xsampa = ipa(ipa)) |> 
+    mutate(xsampa = ipa::ipa(ipa)) |> 
     mutate(syll = strsplit(xsampa, 
                            split = paste0(.sep = c("\\.", "\\\""), 
                                           collapse = "|")),
@@ -52,7 +52,7 @@ items |>
     pivot_wider(names_from = language,
                 values_from = c(item, label, xsampa, n_syll),
                 id_cols = c(te, meaning),
-                names_repair = make_clean_names,
+                names_repair = janitor::make_clean_names,
                 values_fn = first) |> 
     sample_n(15) |> 
     gt() |> 
@@ -92,7 +92,7 @@ pool_tmp |>
     ggplot(aes(n_syll, n)) +
     facet_wrap(~ language) +
     geom_col(colour = "white", fill = "grey70") +
-    geom_text(aes(label = percent(prop)),
+    geom_text(aes(label = scales::percent(prop)),
               size = 3,
               position = position_nudge(y = 15),
               colour = "black") +
@@ -163,7 +163,7 @@ syll |>
 syll |> 
     group_by(language) |> 
     top_n(20, freq_syll) |> 
-    ggplot(aes(reorder_within(syll, desc(freq_syll), language),
+    ggplot(aes(tidytext::reorder_within(syll, desc(freq_syll), language),
                freq_syll)) +
     facet_wrap(~ language,
                scales = "free_x",
@@ -174,7 +174,7 @@ syll |>
          y = "Relative frequency\n(counts per million)",
          colour = "Language",
          fill = "Language") +
-    scale_x_reordered() +
+    tidytext::scale_x_reordered() +
     scale_y_continuous(labels = \(x) format(x, big.mark = ",")) +
     theme(legend.position = "none",
           axis.title.x = element_blank(),
@@ -215,23 +215,23 @@ rope_interval <- c(lower = -0.5, upper = 0.5)
 # tidy predictor names
 str_repl <- c(
     "b_Intercept" = "Intercept",
-    "b_n_syll_std" = glue("Syllables (+1 SD, {round(sd(syllables_data$n_syll), 3)})"),
-    "b_lv_std" = glue("Cognateness (+1 SD, {percent(sd(syllables_data$lv), accuracy = 0.01)})")
+    "b_n_syll_std" = glue::glue("Syllables (+1 SD, {round(sd(syllables_data$n_syll), 3)})"),
+    "b_lv_std" = glue::glue("Cognateness (+1 SD, {round(sd(syllables_data$lv), 2)})")
 )
 
 post_syllables <- model_fit_syllables |>
-    describe_posterior(test = "rope",
-                       rope_range = rope_interval,
-                       ci_method = "HDI") |>
+    bayestestR::describe_posterior(test = "rope",
+                                    rope_range = rope_interval,
+                                    ci_method = "HDI") |>
     as_tibble() |>
-    clean_names() |>
+    janitor::clean_names() |>
     mutate(.variable_name = factor(
         parameter,
         levels = names(str_repl),
         labels = str_repl) |>
             as.character(),
-        parameter = ifelse(str_detect(parameter, "Intercept"),
-                           str_remove_all(parameter, "Intercept \\(|\\)"),
+        parameter = ifelse(grepl("Intercept", parameter),
+                           stringr::str_remove_all(parameter, "Intercept \\(|\\)"),
                            parameter)) |>
     select(.variable = parameter,
            .variable_name,
@@ -281,11 +281,11 @@ post_syllables |>
               cells_row_groups())
 ```
 
-@tbl-syll-marginal shows the median posterior-predicted syllabic frequencies for words with one to four syllables, for the whole range of cognateness values. Overall, cognate words' syllabic frequency is equivalent to that of non-cognates. This suggests that the cognate facilitation effect in word acquisition reported in the present study is not the result from an association between cognateness and higher syllabic frequencies.
+@fig-syll-marginal shows the median posterior-predicted syllabic frequencies for words with one to four syllables, for the whole range of cognateness values. Overall, cognate words' syllabic frequency is equivalent to that of non-cognates. This suggests that the cognate facilitation effect in word acquisition reported in the present study is not the result from an association between cognateness and higher syllabic frequencies.
 
-```{r tbl-syll-marginal}
-#| label: tbl-syll-marginal
-#| tbl-cap: "Posterior-predictions of the syllabic frequency model. Thicker lines indicate the median of the posterior predictions, and thinner lines indicate individual posterior predictions."
+```{r fig-syll-marginal}
+#| label: fig-syll-marginal
+#| fig-cap: "Posterior-predictions of the syllabic frequency model. Thicker lines indicate the median of the posterior predictions, and thinner lines indicate individual posterior predictions."
 #| fig-width: 7
 #| fig-height: 5
 #| out-width: 80%
@@ -300,27 +300,26 @@ expand_grid(lv_std = scale(seq(0, 1, 0.1),
                                scale = sd(syllables_data$n_syll))[, 1]) |> 
     add_epred_draws(model_fit_syllables, ndraws = 50,
                     re_formula = NA) |> 
-    mutate(lv_std = rescale_variable(lv_std,
-                                     mean = mean(syllables_data$lv),
-                                     sd = sd(syllables_data$lv)),
-           n_syll_std = rescale_variable(n_syll_std,
-                                         mean = mean(syllables_data$n_syll),
-                                         sd = sd(syllables_data$n_syll)),
-           n_syll_std = as.factor(n_syll_std)) |> 
-    ggplot(aes(lv_std, .epred, colour = n_syll_std)) +
+    mutate(
+        lv_std = (lv_std * sd(syllables_data$lv)) + mean(syllables_data$lv),
+        n_syll_std = (n_syll_std * sd(syllables_data$n_syll)) + mean(syllables_data$n_syll),
+        n_syll_std = as.factor(n_syll_std)) |> 
+    ggplot(aes(lv_std, .epred, 
+               colour = n_syll_std)) +
     geom_point(data = filter(syllables_data, n_syll < 5),
                aes(x = lv,
                    y = freq_syll,
-                   colour = as.factor(n_syll)),
-               shape = 1,
-               stroke = 1,
-               alpha = 1/2) +
+                   colour = as.factor(n_syll),
+                   shape = as.factor(n_syll)),
+               alpha = 1/2) + 
     geom_line(aes(group = interaction(.draw, n_syll_std)),
               alpha = 1/10) +
     labs(x = "Cognateness (Levenshtein similarity)",
          y = "Syllabic frequency",
+         shape = "Number of syllables",
          colour = "Number of syllables") +
-    scale_color_manual(values = clrs) +
+    scale_colour_grey(start = 0, end = 0.7) +
     scale_y_continuous(n.breaks = 8) +
-    theme(panel.grid = element_blank())
+    theme(panel.grid = element_blank(),
+          legend.position = "top")
 ```

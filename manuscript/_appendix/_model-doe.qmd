@@ -7,11 +7,11 @@
 #| message: false
 #| warning: false
 #| out-width: 100%
-#| fig-height: 3
-#| fig-width: 12
+#| fig-height: 4
+#| fig-width: 7
 # summarise posterior draws
-bind_rows("Exposure model" = posterior_draws$summary,
-          "DoE-Frequency model" = posterior_draws_doe,
+bind_rows("Exposure model" = model_summary,
+          "DoE-Frequency model" = posterior_doe_summary,
           .id = "model") |> 
     mutate(
         across(c(.median, .lower, .upper),
@@ -25,21 +25,27 @@ bind_rows("Exposure model" = posterior_draws$summary,
         )) |>
     filter(.type == "Slopes") |> 
     ggplot(aes(.median, .variable_name,
-               xmin = .lower, xmax = .upper)) +
-    facet_wrap(~model, scales = "free") +
+               xmin = .lower, xmax = .upper,
+               colour = model,
+               shape = model)) +
     annotate(geom = "rect",
              ymin = -Inf,
              ymax = Inf,
              xmin = -0.1/4,
              xmax = +0.1/4,
-             fill = "grey70") +
-    geom_errorbar(linewidth = 1, width = 0.25) +
-    geom_point(size = 2.5) +
+             fill = "grey90") +
+    geom_vline(xintercept = 0, 
+               linetype = "dashed",
+               linewidth = 3/4) +
+    geom_errorbar(linewidth = 3/4, 
+                  position = position_dodge(width = 0.5),
+                  width = 0.2) +
+    geom_point(size = 2,
+               position = position_dodge(width = 0.5)) +
     labs(x = "Median and 95% HDI of the posterior distribution",
          y = "Predictor",
          colour = "Model") +
-    scale_x_continuous(labels = percent) +
-    scale_colour_manual(values = clrs[c(1, 4)]) +
+    scale_colour_grey(start = 0, end = 0.6) +
     theme(legend.position = "none",
           axis.title.y = element_blank(),
           panel.grid.major.y = element_blank())

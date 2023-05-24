@@ -83,13 +83,14 @@ $$ {#eq-prior}
 where: $\rho_{u_{0-8}}$ and $\rho_{w_{0-3}}$ indicate the correlation parameters between the by-participant and by-TE adjustments, respectively, $\sigma_{u_{0-8}}^2$ and $\sigma_{w_{0-3}}^2$ indicate the variance of the by-participant and by-TE variance of the adjustments, respectively, and $\mathcal{N}$ indicates a normal distribution, $\mathcal{N}_{+}$ indicates a truncated normal distribution with only positive values, and $LKJcorr$ indicates a [LKJ correlation distribution](https://mc-stan.org/docs/2_22/functions-reference/lkj-correlation.html) [@lewandowski2009generating].
 
 ```{r apafg}
-#| label: apafg-prior-mean
+#| label: fig-prior-mean
 #| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
-#| fig-height: 5
-#| apa-cap: "Expected prior-predicted mean."
+#| fig-height: 3
+#| out-width: 90%
+#| fig-cap: "Expected prior-predicted mean."
 nd <- expand.grid(n_phon_std = 0,
                   age_std = (10:36-mean(responses$age))/(sd(responses$age)),
                   exposure_std = 0,
@@ -113,22 +114,19 @@ prior_epreds <- add_epred_draws(nd,
 
 prior_epreds |> 
     ggplot(aes(x = age_std, y = .epred)) +
-    facet_wrap(~.category) +
+    facet_wrap(~ .category) +
     geom_line(linewidth = 3/4,
               alpha = 1/2,
               aes(group = .draw),
               colour = "grey50") + 
-    scale_x_continuous(breaks = scale(seq(10, 36, 4), 
-                                      mean(responses$age), 
-                                      sd(responses$age))[, 1],
-                       labels = seq(10, 36, 4)) +
-    scale_fill_manual(values = rev(clrs), 
-                      labels = c("95%", "89%", "67%", "50%")) +
     labs(x = "Age (months)", 
          y = "Probability of acquisition",
          colour = "Credible interval", 
          fill = "Credible interval") +
-    scale_y_continuous(labels = percent, limits = c(0, 1)) +
+    scale_x_continuous(breaks = scale(seq(10, 36, 4), 
+                                      mean(responses$age), 
+                                      sd(responses$age))[, 1],
+                       labels = seq(10, 36, 4)) +
     theme(legend.position = "top",
           axis.ticks.x = element_line(colour = "black"),
           panel.grid = element_blank())

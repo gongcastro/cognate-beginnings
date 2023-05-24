@@ -1,8 +1,15 @@
 ---
+title: "Appendix"
 csl: "../assets/apa7.csl"
 bibliography: "../assets/references.bib"
 link-citations: true
 editor: source
+
+fig-align: center
+fig-dpi: 800
+echo: false
+warning: false
+message: false
 
 format:
   pdf:
@@ -10,28 +17,19 @@ format:
     papersize: letter
     fontsize: 12pt
     linestretch: 1.5
-    date-format: full
-    template-partials:
-    - partials/title.tex
-    - partials/before-body.tex
-    include-in-header: include-in-header.tex
-    header-includes: \usepackage{tipa}
+    header-includes:
+    - \usepackage{tipa}
     geometry:
     - top=1in
     - bottom=1in
     - left=1in
     - right=1in
     colorlinks: true
-    linkcolor: DarkSlateBlue
-    urlcolor: DarkSlateBlue
-    citecolor: DarkSlateBlue
+    linkcolor: DodgerBlue
+    urlcolor: DodgerBlue
+    citecolor: DodgerBlue
     link-citations: true
-    biblio-title: References
     biblio-config: false
-    cite-method: biblatex
-    biblatex-chicago: false
-    biblio-style: apa
-    biblatexoptions: backend=biber
     block-headings: false
     indent: true
 ---
@@ -43,16 +41,24 @@ format:
 #| warning: false
 # load objects -----------------------------------------------------------------
 
-library(targets)
+library(patchwork)
+library(gt)
+library(ggplot2)
 
-tar_config_set(store = here::here('_targets'),
-               script = here::here('_targets.R'))
+targets::tar_config_set(store = here::here("_targets"),
+                        script = here::here("_targets.R"))
 
-tar_load_globals()
+targets::tar_load_globals()
 
-tar_load(c(bvq_data, childes, items, participants, responses))
-tar_load(c(starts_with("model_"), model_loos))
-tar_load(c(posterior_draws, marginal_effects_epreds))
+targets::tar_load(c(bvq_data, childes, items, 
+                    participants, responses))
+
+targets::tar_load(c(model_fit, model_summary, model_epreds,
+                    model_convergence, model_fit_prior, 
+                    model_ppcs, posterior_doe_summary,
+                    posterior_doe_draws))
+
+targets::tar_load(c(syllables_data, model_fit_syllables, post_syllables))
 
 # process objects
 items <- bvq_data$pool  |>  
@@ -62,61 +68,54 @@ items <- bvq_data$pool  |>
 
 # set ggplot theme and colour palette ------------------------------------------
 
-clrs <- c("#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600")
+my_theme <- function() {
+    theme_ggdist() +
+        theme(panel.grid = element_line(colour = "grey",
+                                        linetype = "dotted"),
+              axis.line = element_line(colour = "black"),
+              text = element_text(size = 12, colour = "black"),
+              axis.text = element_text(colour = "black"))
+}
 
-color_scheme_set(rep(clrs[1], 6))
+theme_set(my_theme())
 
-my_theme <- theme_minimal() +
-    theme(panel.grid = element_line(colour = "grey",
-                                    linetype = "dotted"),
-          axis.line = element_line(colour = "black"),
-          text = element_text(size = 12, colour = "black"),
-          axis.text = element_text(colour = "black"))
-
-theme_set(my_theme)
-
-bayesplot_theme_set(my_theme)
+bayesplot::bayesplot_theme_set(my_theme + theme(panel.grid = element_blank()))
 
 set.seed(888)
 
-options(ggplot2.ordinal.fill = clrs,
-        ggplot2.ordinal.colour = clrs,
-        ggplot2.discrete.fill = clrs,
-        ggplot2.discrete.colour = clrs,
-        ggplot2.continuous.fill = scale_color_gradient,
-        ggplot2.continuous.colour = scale_color_gradient,
-        knitr.graphics.error = FALSE) 
+options(knitr.graphics.error = FALSE)
 ```
 
 
-# Appendix A: model predictors {.appendix .unnumbered}
+## Appendix A: model predictors {.appendix .unnumbered}
 
 {{< include _appendix/_model-predictors.qmd >}}
 
 {{< pagebreak >}}
 
-# Appendix B: model details {.appendix .unnumbered}
+## Appendix B: model details {.appendix .unnumbered}
 
 {{< include _appendix/_model-details.qmd >}}
 
 {{< pagebreak >}}
 
-# Appendix C: convergence diagnostics {.appendix .unnumbered}
+## Appendix C: convergence diagnostics {.appendix .unnumbered}
 
 {{< include _appendix/_model-diagnostics.qmd >}}
 
 {{< pagebreak >}}
 
 
-# Appendix D: frequency and language exposure as separate predictors {.appendix .unnumbered}
+## Appendix D: frequency and language exposure as separate predictors {.appendix .unnumbered}
 
 {{< include _appendix/_model-doe.qmd >}}
 
 {{< pagebreak >}}
 
-# Appendix E: frequency and language exposure as separate predictors {.appendix .unnumbered}
+## Appendix E: frequency and language exposure as separate predictors {.appendix .unnumbered}
 
 {{< include _appendix/_syllable-frequency.qmd >}}
 
 {{< pagebreak >}}
 
+## References
