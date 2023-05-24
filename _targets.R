@@ -188,7 +188,6 @@ list(
                 family = cumulative(link = "logit")),
             data = responses,
             prior = model_prior,
-            file_refit = "never",
             sample_prior = "yes"
         )
     ),

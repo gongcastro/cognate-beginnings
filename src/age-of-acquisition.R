@@ -1,6 +1,5 @@
 get_aoa_data <- function(responses) 
 {
-    
     aoa_data <- responses |>
         select(id, age, age_std, te, item, response, exposure_std) |>
         mutate(comprehension = response != "No",
