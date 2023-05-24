@@ -12,9 +12,10 @@ get_participants <- function(bvq_data,
                              other_threshold = 0.1) {
     
     participants <- bvq_data$logs |>
-        dplyr::filter(completed,
+        dplyr::filter(
+            completed,
             # get only short versions of the questionnaire
-            str_detect(version, "Lockdown|Short"),
+            grepl("Lockdown|Short", version),
             # get only data from complete questionnaire responses
             # rlang::.env makes sure we use the objects provided in the arguments
             # of the function, and not variables in the piped data frame
@@ -24,13 +25,14 @@ get_participants <- function(bvq_data,
             # make sure that degrees of exposure are between 0 and 1
             between(doe_spanish, 0, 1),
             between(doe_catalan, 0, 1),
-            between(doe_others, 0, 1)) |>
+            between(doe_others, 0, 1)
+        ) |>
         mutate(time = as.integer(time)) |> 
         # see ?bvq::get_longitudinal
-        get_longitudinal(longitudinal = longitudinal) |>
+        bvq::get_longitudinal(longitudinal = longitudinal) |>
         select(id, time, time_stamp = date_finished, list = version,
                age, lp, doe_catalan, doe_spanish, edu_parent) |> 
-    arrange(id)
+        arrange(id)
     
     # export data
     save_files(participants,

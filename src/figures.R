@@ -55,29 +55,6 @@ generate_aoa <- function(eli, threshold = 50) {
     return(aoa)
 }
 
-
-
-
-# # set options ------------------------------------------------------------------
-clrs <- c("#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600")
-
-# options(ggplot2.ordinal.fill = clrs,
-#         ggplot2.ordinal.colour = clrs,
-#         ggplot2.discrete.fill = clrs,
-#         ggplot2.discrete.colour = clrs,
-#         ggplot2.continuous.fill = scale_color_gradient,
-#         ggplot2.continuous.colour = scale_color_gradient)
-
-set.seed(888)
-
-theme_set(theme_ggdist())
-
-
-
-# word-referent association plot -----------------------------------------------
-
-
-
 # cumulative learning instances plot -------------------------------------------
 
 generate_figure <- function(...) {
@@ -128,7 +105,7 @@ generate_figure <- function(...) {
               legend.title = element_text(size = 9),
               legend.text= element_text(size = 8),
               strip.background = element_rect(fill = "grey90", colour = "grey90"),
-              strip.text = element_markdown(),
+              strip.text = ggtext::element_markdown(),
               panel.grid = element_blank(),
               panel.grid.major.y = element_line(colour = "grey",
                                                 linetype = "dotted"),
@@ -148,32 +125,3 @@ generate_figure <- function(...) {
     return(plot)
     
 }
-
-generate_figure(conditions = c("**Cognate (75% similarity)** <span style='color:#ff6361'>Catalan: /'gat/</span>, <span style='color:#003f5c'>Spanish: /'ga.to/</span>",
-                               "**Non-cognate (0% similarity)** <span style='color:#ff6361'>Catalan: /'gos/</span>, <span style='color:#003f5c'>Spanish: /'pe.ro/</span>"),
-                items = c("gat /gat/", "gato /gato/",
-                          "gos /gos/", "perro /ˈpe.ro/"),
-                age = seq(10, 40, length.out = 100),
-                l1_doe = 0.55) +
-    
-    generate_figure(conditions = c("**Cognate (75% similarity)** <span style='color:#ff6361'>Catalan: /'gat/</span>, <span style='color:#003f5c'>Spanish: /'ga.to/</span>",
-                                   "**Non-cognate (0% similarity)** <span style='color:#ff6361'>Catalan: /'gos/</span>, <span style='color:#003f5c'>Spanish: /'pe.ro/</span>"),
-                    items = c("gat /gat/", "gato /gato/",
-                              "gos /gos/", "perro /ˈpe.ro/"),
-                    age = seq(10, 40, length.out = 100),
-                    l1_doe = 0.75) +
-    
-    plot_layout(ncol = 1, guides = "keep") &
-    scale_linetype_manual(values = c("solid", "dashed"),
-                          labels = c("Parallel activation",
-                                     "No parallel activation")) &
-    scale_shape_manual(values = c(18, 16),
-                       labels = c("Parallel activation",
-                                  "No parallel activation")) &
-    scale_colour_manual(values = clrs[c(1, 4)]) &
-    theme(legend.position = "top")
-
-ggsave("assets/img/diagram.png",
-       width = 8.5,
-       height = 6.25,
-       dpi = 800)

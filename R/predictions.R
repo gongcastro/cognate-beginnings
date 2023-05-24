@@ -1,7 +1,9 @@
 #' Generate dataset with posterior predictions from a brmsfit model
 #'
 #' @param model A brmsfit object
+#' 
 #' @param data Data with which the model was fist, containing the original variables
+#' 
 #' @param group Group for which posterior predictions will be generated:
 #' * `NULL` (default): posterior predictions will be generated for fixed effect.
 #' * `"te"`: posterior predictions will be generated for translation equivalents.
@@ -17,7 +19,7 @@ generate_newdata <- function(model,
     # some checks
     if (!is.null(group)) {
         if (!(group %in% c("te", "id")) | length(group) > 1) {
-            cli_abort("group must be one of 'te' or 'id")
+            cli::cli_abort("group must be one of 'te' or 'id")
         }
     }
     
@@ -26,24 +28,32 @@ generate_newdata <- function(model,
         levels_in_data <- levels %in% data[[group]]
         if (!all(levels_in_data)) {
             missing_levels <- paste0(levels[!levels_in_data], collapse = ", ")
-            cli_abort("Level {missing_levels} in {.field {group}} is missing")
+            cli::cli_abort("Level {missing_levels} in {.field {group}} is missing")
         }
     }
     
     # data frame with prediction combinations
     if (is.null(group)) {
-        nd <- datagrid(model = model, te = NA, id = NA, ...)
+        nd <- marginaleffects::datagrid(model = model, te = NA, id = NA, ...)
     } else {
         # expand predictor levels in data frame to generate predictions
         if (group == "te") {
             # if group is "te", generate predictions for each level of `te`
-            nd <- datagrid(model = model, te = levels, id = NA, ...) |>
+            nd <- marginaleffects::datagrid(
+                model = model, 
+                te = levels, 
+                id = NA, 
+                ...) |>
                 select(-lv_std) |>
                 left_join(distinct(data, te, lv_std))
         }
         if (group == "id") {
             # expand predictor levels in data frame to generate predictions
-            nd <- datagrid(model = model, id = levels, te = NA, ...) |>
+            nd <- marginaleffects::datagrid(
+                model = model, 
+                id = levels,
+                te = NA, ...
+            ) |>
                 select(-age_std) |>
                 left_join(distinct(data, id, age_std))
         }
@@ -63,14 +73,16 @@ posterior_predictions <- function(model, data, ...) {
     newdata <- generate_newdata(model, data, ...)
     
     # use marginaleffects to get posterior means
-    predictions <- predictions(model,
-                               newdata = newdata,
-                               re_formula = NA,
-                               vcov = FALSE,
-                               ndraws = 50) |>
-        posteriordraws() |> # so that each draw gets a row
+    predictions <- marginaleffects::predictions(
+        model,
+        newdata = newdata,
+        re_formula = NA,
+        vcov = FALSE,
+        ndraws = 50
+    ) |>
+        marginaleffects::posteriordraws() |> # so that each draw gets a row
         as_tibble() |>
-        clean_names() |> 
+        janitor::clean_names() |> 
         dplyr::filter(group != "No") |> 
         pivot_wider(id_cols = any_of(c("drawid", colnames(newdata))),
                     names_from = group,
@@ -100,20 +112,22 @@ posterior_predictions <- function(model, data, ...) {
 #' @param ... Additional arguments passed to [marginaleffects::predictions()]
 posterior_predictions_re <- function(model, data, group, ...) {
     if (!(group %in% c("id", "te"))) {
-        cli_abort("group must be 'id' or 'te'")
+        cli::cli_abort("group must be 'id' or 'te'")
     }
     # generate data for predictions
     newdata <- generate_newdata(model, data, group, ...)
     
     # use marginaleffects to get posterior means
-    preds <- predictions(model,
-                         newdata = newdata,
-                         re_formula = as.formula(paste0("~1|", group)),
-                         vcov = FALSE,
-                         ndraws = 1000) |>
-        posteriordraws() |> # so that each draw gets a row
+    preds <- marginaleffects::predictions(
+        model,
+        newdata = newdata,
+        re_formula = as.formula(paste0("~1|", group)),
+        vcov = FALSE,
+        ndraws = 1000
+    ) |>
+        marginaleffects::posteriordraws() |> # so that each draw gets a row
         as_tibble() |>
-        clean_names() |>
+        janitor::clean_names() |>
         filter(group != "No") |>
         pivot_wider(id_cols = c(drawid, age_std, lv_std, exposure_std, te, id),
                     names_from = group,

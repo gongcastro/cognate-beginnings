@@ -1,5 +1,5 @@
 #' Get BVQ data
-#' @param ... Arguments to be passed to \code{bvq_responses}
+#' @param ... Arguments to be passed to [bvq::bvq_responses()]
 #' @returns A named list of data frames containing questionnaire responses, participant data, and item data from BVQ
 get_bvq <- function(...) {
     # get bvq participant data

@@ -1,12 +1,12 @@
 #' Get CHILDES lexical frequencies
 #'
 #' @param collection CHILDES corpora from where to fetch transcriptions. Takes "Eng-NA" (North American English by default). See [CHILDES Index to corpora](https://childes.talkbank.org/access/) to see options
-#' @param age_range Numeric vector of lenght two indicating the minimum and maximum age range of interest for which to compute lexical frequencies in the CHILDES corpora. Frequencies will be summarised across this age range using the mean
+#' @param age_range Numeric vector of length two indicating the minimum and maximum age range of interest for which to compute lexical frequencies in the CHILDES corpora. Frequencies will be summarised across this age range using the mean
 #' @paran ... Additional arguments passed to [childesr::get_types()]
 get_childes_frequencies <- function(collection = "Eng-NA",
                                     age_range = c(10, 36),
                                     ...)
-    {
+{
     
     suppressMessages({
         
@@ -27,7 +27,7 @@ get_childes_frequencies <- function(collection = "Eng-NA",
             "Student"
         )
         
-        counts <- get_types(collection = collection, role = roles, ...)
+        counts <- childesr::get_types(collection = collection, role = roles, ...)
         
         speaker_ids <- distinct(counts,
                                 collection_id,
@@ -37,7 +37,7 @@ get_childes_frequencies <- function(collection = "Eng-NA",
         
         speakers <- speaker_ids |>
             left_join(
-                get_speaker_statistics(collection = collection),
+                childesr::get_speaker_statistics(collection = collection),
                 by = c("collection_id",
                        "corpus_id", 
                        "speaker_id", 
@@ -66,18 +66,14 @@ get_childes_frequencies <- function(collection = "Eng-NA",
                 .by = c(age_bin, token, target_child_id, transcript_id)
             ) |>
             dplyr::filter(between(age_bin,
-                           age_range[1],
-                           age_range[2])) |>
-            summarise(
-                freq_count = mean(transcript_count),
-                total_count = mean(transcript_num_tokens),
-                n_children = length(unique(target_child_id)),
-                .by = token
-            ) |>
-            mutate(
-                freq_million = freq_count / total_count * 1e6,
-                freq_zipf = log10(freq_million) + 3
-            ) |>
+                                  age_range[1],
+                                  age_range[2])) |>
+            summarise(freq_count = mean(transcript_count),
+                      total_count = mean(transcript_num_tokens),
+                      n_children = length(unique(target_child_id)),
+                      .by = token) |>
+            mutate(freq_million = freq_count / total_count * 1e6,
+                   freq_zipf = log10(freq_million) + 3) |>
             relocate(token,
                      n_children,
                      freq_count,
@@ -98,7 +94,7 @@ get_childes_frequencies <- function(collection = "Eng-NA",
 #' @param class A character vector indicating the word classes to be included in the resulting dataset. Takes `"Adjective"`, `"Noun"` and/or `"Verb"` as values.
 #' 
 get_items <- function(bvq_data, childes, class = "Noun") 
-    {
+{
     
     classes_available <- c("Noun", "Verb", "Adjective")
     
@@ -115,21 +111,21 @@ get_items <- function(bvq_data, childes, class = "Noun")
         # drop items with missing observations in these variables
         drop_na(xsampa, wordbank_lemma) |>
         dplyr::filter(n_lemmas == 1,
-               # exclude items with more than two lemmas
-               !is_multiword,
-               # exclude multi-word items
-               include,
-               # exclude problematic items (e.g., multi-word items)
-               te %in% duplicated_te,
-               # get only translation equivalents with at least one item in each language
-               class %in% classes) |> 
+                      # exclude items with more than two lemmas
+                      !is_multiword,
+                      # exclude multi-word items
+                      include,
+                      # exclude problematic items (e.g., multi-word items)
+                      te %in% duplicated_te,
+                      # get only translation equivalents with at least one item in each language
+                      class %in% classes) |> 
         add_count(te, name = "n_te") |> # get only items with one translation in each language
         dplyr::filter(n_te == 2) |>
         distinct(language, te, .keep_all = TRUE) |> 
-        mutate(xsampa_flat = flatten_xsampa(xsampa),
-               syll = syllabify_xsampa(xsampa),
+        mutate(xsampa_flat = bvq::flatten_xsampa(xsampa),
+               syll = bvq::syllabify_xsampa(xsampa),
                n_syll = map_int(syll, length),
-               item = str_remove(item, "cat_|spa_")) 
+               item = gsub("cat_|spa_", "", item)) 
     
     syll_freq <- pool_tmp |> 
         left_join(childes, by = c("childes_lemma" = "token")) |> 
@@ -152,9 +148,9 @@ get_items <- function(bvq_data, childes, class = "Noun")
         pivot_wider(id_cols = te,
                     names_from = language,
                     values_from = xsampa_flat,
-                    names_repair = make_clean_names) |>
+                    names_repair = janitor::make_clean_names) |>
         # make sure strings are coded as UTF-8 before computing LVs
-        mutate(lv = stringsim(catalan, spanish)) |>
+        mutate(lv = stringdist::stringsim(catalan, spanish)) |>
         distinct(te, lv)
     
     # merge datasets
@@ -163,18 +159,18 @@ get_items <- function(bvq_data, childes, class = "Noun")
         left_join(lv_similarities,
                   by = join_by(te)) |> # add LVs
         left_join(childes, by = c("childes_lemma" = "token")) |> 
-        left_join(syllables,by = join_by(language, te, n_syll)) |> 
+        left_join(syllables, by = join_by(language, te, n_syll)) |> 
         drop_na(lv, list, wordbank_lemma, freq_zipf) |>
         mutate(n_phon = nchar(xsampa_flat),
-               item = str_remove(item, "cat_|spa_"),
-               ipa = xsampa(xsampa)) |>
+               item = gsub("cat_|spa_", "", item),
+               ipa = ipa::xsampa(xsampa)) |>
         select(te, meaning = wordbank_lemma, language, item, ipa,
                xsampa, lv, n_phon, n_syll, syll, freq = freq_zipf, 
                freq_syll = freq_syll_sum, list) |>
         arrange(te)
     
     # export to data folder
-    save_files(items, folder = "data")
+    save_files(items, folder = "data", formats = "csv")
     
     return(items)
 }
@@ -187,7 +183,7 @@ get_items <- function(bvq_data, childes, class = "Noun")
 get_childes_frequencies <- function(collection = "Eng-NA",
                                     age_range = c(10, 36),
                                     ...) 
-    {
+{
     
     suppressMessages({
         
@@ -206,7 +202,9 @@ get_childes_frequencies <- function(collection = "Eng-NA",
                    "Teacher",
                    "Student")
         
-        counts <- get_types(collection = collection, role = roles, ...)
+        counts <- childesr::get_types(collection = collection, 
+                                      role = roles, 
+                                      ...)
         
         speaker_ids <- distinct(counts,
                                 collection_id,
@@ -216,7 +214,7 @@ get_childes_frequencies <- function(collection = "Eng-NA",
         
         speakers <- speaker_ids |>
             left_join(
-                get_speaker_statistics(collection = collection),
+                childesr::get_speaker_statistics(collection = collection),
                 by = c("collection_id",
                        "corpus_id", 
                        "speaker_id", 
@@ -237,18 +235,16 @@ get_childes_frequencies <- function(collection = "Eng-NA",
                    age_months = target_child_age,
                    age_bin = as.integer(floor(age_months / 6) * 6),
                    token = tolower(gloss)) |>
-            group_by(age_bin, token, target_child_id, transcript_id) |>
             summarise(transcript_count = sum(count),
                       transcript_num_tokens = sum(num_tokens),
-                      .groups = "drop") |>
+                      .by = c(age_bin, token, target_child_id, transcript_id)) |>
             dplyr::filter(between(age_bin,
-                           age_range[1],
-                           age_range[2])) |>
-            group_by(token) |>
+                                  age_range[1],
+                                  age_range[2])) |>
             summarise(freq_count = mean(transcript_count),
                       total_count = mean(transcript_num_tokens),
                       n_children = length(unique(target_child_id)),
-                      .groups = "drop") |>
+                      .by = token) |>
             mutate(freq_million = freq_count / total_count * 1e6,
                    freq_zipf = log10(freq_million) + 3) |>
             relocate(token,
@@ -262,14 +258,8 @@ get_childes_frequencies <- function(collection = "Eng-NA",
     return(childes)
 }
 
-
-
-syllabify_xsampa <- function(x, .sep = c("\\.", "\\\"")) {
-    syll <- strsplit(x, split = paste0(.sep, collapse = "|"))
-    syll <- lapply(syll, function(x) x[x != ""]) 
-    return(syll)
-}
-
+#' Create a data frame with the syllable frequency information of the items
+#' 
 get_syllable_data <- function(items) {
     items |> 
         select(te, item, lv, n_syll, freq_syll) |> 

@@ -1,24 +1,14 @@
 # Trajectories [[report](https://gongcastro.github.io/trajectories)]
 
 ## Table of Contents
-1. [What this repository is about](#introduction)
-2. [Downloading this repository](#downloading)
-3. [Reproducing this repository](#reproducing)<br>
-        3.1. [Installing package dependencies with {renv}](#packages)<br>
-        3.2. [Running the code with {targets}](#running)<br>
-        3.3. [Repository structure](#structure)<br>
+1. [Downloading this repository](#downloading)
+2. [Reproducing this repository](#reproducing)<br>
+        2.1. [Installing package dependencies with {renv}](#packages)<br>
+        2.2. [Running the code with {targets}](#running)<br>
+        2.3. [Repository structure](#structure)<br>
 
 
-## What this repository is about<a name="introduction"></a>
-
-Do bilingual children acquire cognates earlier than non-cognates? We collected vocabulary data from 10-to-32 month old infants exposed to a second language in varying degrees, and modelled the probability of acquisition of translation equivalents conditional participants' age, their degree of exposure to the second language, and the phonological overlap between word-forms across languages.
-
-This repository hosts the code used to process and analyse the data, as well as the Rmarkdown files used to generate the preprint. The code and surveys used to collect and retrieve the data are hosted as a package in the [bvq](github.org/gongcastro/bvq) repository. All other materials can be found in the [OSF](https://osf.io/hy984/) repository.
-
-
-## Downloading this repository<a name="downloading"></a>
-
-*NOTE*: We recommend using RStudio (as opposed to base R, the Command Prompt/console, or any other IDE). 
+## Download this repository <a name="downloading"></a>
 
 1) Download and install [Git](https://git-scm.com/downloads) with default settings.
 2) Clone this repository locally. You can do this in two ways:
@@ -29,26 +19,26 @@ This repository hosts the code used to process and analyse the data, as well as 
 git clone https://github.com/gongcastro/trajectories.git
 ```
 
-If the repository is private at the time you try to clone it, you may have to enter your GitHub credentials)
-
 * Clicking the green button "Code" in this page (upper-right corner), clicking "Download ZIP", and unzipping the downloaded repository.
 
-## Reproducing this repository with {renv}<a name="reproducing"></a>
 
-### Installing package dependencies with {targets}<a name="packages"></a>
+## Installing package dependencies with {renv}
 
 The code in this repository needs some packages to run, many of which might not have been already installed in your local machine. Instead of having to install them yourself one by one or updating already installed ones (which might change how they behave, possibly breaking some of your code in other projects) this repository uses the R package [{renv}](https://rstudio.github.io/renv/articles/renv.html) to deal with package libraries. You can just install `renv` by running `install.packages("renv")` and then run `renv::restore()` in your console. This command will install all necessary packages in the appropriate version (listed in the file `renv.lock` in a self-contained R package library. This process will not affect the packages that you had already installed in your machine. 
 
 In case the installation of any package is giving you trouble, we recommend installing it globally in your machine in a different R session and then trying `renv::restore(rebuild = TRUE)`.
 
-### Running the code with {targets}<a name="running"></a>
+## Running the code with {targets}
 
-This repository's workflow is based on [{targets}](https://books.ropensci.org/targets/). This means that code chunks and functions are run in the appropriate order according to their dependencies. Code chunks are organised as *targets*, as defined in the `_targets.R` file. Sometimes targets operate with the outcomes of other targets. For instance, one target might run a function that takes the outcome of a different target as argument. {targets} makes sure that when we run the repository code, lower-level targets have been defined before higher-level targets. You can visually explore this repository's targets and its dependency structure by running `targets::tar_visnetwork()`.
+This repository's workflow is based on [{targets}](https://books.ropensci.org/targets/). This means that the code is run in the appropriate order according to its internal dependencies.
 
-To run the code and generate the outputs of interest, run `make()` in your console. This function (defined in [utils.R](R/utils.R)) is a wrapper that invokes `targets::tar_make()` in the *jobs* tab in your RStudio session thanks to the {jobs} package. The code will run automatically while your R console will remain free for you to run code on it. You can stop the job at any point.
+The code is organised as *targets*, defined in the `_targets.R` file. Sometimes targets operate with the outcomes of other targets. For instance, one target might run a function that takes the outcome of a different target as argument. {targets} makes sure that the functions and objects needed to run each target have already been previously defined. You can visually explore this repository's targets and its dependency structure by running `targets::tar_visnetwork()`.
+
+To run the code and generate the outputs of interest, run `make()` in your console. This function (defined in [utils.R](R/utils.R)) is a wrapper that invokes `targets::tar_make()` in the *jobs* tab in your RStudio session thanks to the {jobs} package. The code will run automatically while your R console will remain free for you to run code on it. You can stop the job at any point. If you are running R outside RStudio, we recommend you use the `targets::tar_make()` command.
 
 You can explore the contents of the executed targets by running `tar_load_all()` (also defined in [utils.R](R/utils.R)), which is another wrapper function that calls `targets::tar_load()` on all defined targets to load them into your workspace. Mind that this process might take some time (~10 seconds) as brmsfit objects (Bayesian models) are heavy. Make sure that your RAM has equal or higher capacity than 
-## Repository structure<a name="structure"></a>
+
+## Repository structure
 
 This repository is organised as follows:
 

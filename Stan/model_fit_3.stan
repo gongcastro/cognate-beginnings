@@ -59,56 +59,6 @@ functions {
                                     array[] int j) {
     return ordered_logistic_lpmf(y | mu, thres[j[1] : j[2]]);
   }
-  /* integer sequence of values
-   * Args:
-   *   start: starting integer
-   *   end: ending integer
-   * Returns:
-   *   an integer sequence from start to end
-   */
-  array[] int sequence(int start, int end) {
-    array[end - start + 1] int seq;
-    for (n in 1 : num_elements(seq)) {
-      seq[n] = n + start - 1;
-    }
-    return seq;
-  }
-  // compute partial sums of the log-likelihood
-  real partial_log_lik_lpmf(array[] int seq, int start, int end,
-                            data array[] int Y, data int nthres,
-                            data matrix Xc, vector b, vector Intercept,
-                            real disc, data array[] int J_1,
-                            data vector Z_1_1, data vector Z_1_2,
-                            data vector Z_1_3, data vector Z_1_4,
-                            data vector Z_1_5, data vector Z_1_6,
-                            data vector Z_1_7, vector r_1_1, vector r_1_2,
-                            vector r_1_3, vector r_1_4, vector r_1_5,
-                            vector r_1_6, vector r_1_7, data array[] int J_2,
-                            data vector Z_2_1, data vector Z_2_2,
-                            data vector Z_2_3, data vector Z_2_4,
-                            data vector Z_2_5, vector r_2_1, vector r_2_2,
-                            vector r_2_3, vector r_2_4, vector r_2_5) {
-    real ptarget = 0;
-    int N = end - start + 1;
-    // initialize linear predictor term
-    vector[N] mu = rep_vector(0.0, N);
-    mu += Xc[start : end] * b;
-    for (n in 1 : N) {
-      // add more terms to the linear predictor
-      int nn = n + start - 1;
-      mu[n] += r_1_1[J_1[nn]] * Z_1_1[nn] + r_1_2[J_1[nn]] * Z_1_2[nn]
-               + r_1_3[J_1[nn]] * Z_1_3[nn] + r_1_4[J_1[nn]] * Z_1_4[nn]
-               + r_1_5[J_1[nn]] * Z_1_5[nn] + r_1_6[J_1[nn]] * Z_1_6[nn]
-               + r_1_7[J_1[nn]] * Z_1_7[nn] + r_2_1[J_2[nn]] * Z_2_1[nn]
-               + r_2_2[J_2[nn]] * Z_2_2[nn] + r_2_3[J_2[nn]] * Z_2_3[nn]
-               + r_2_4[J_2[nn]] * Z_2_4[nn] + r_2_5[J_2[nn]] * Z_2_5[nn];
-    }
-    for (n in 1 : N) {
-      int nn = n + start - 1;
-      ptarget += ordered_logistic_lpmf(Y[nn] | mu[n], Intercept);
-    }
-    return ptarget;
-  }
 }
 data {
   int<lower=1> N; // total number of observations
@@ -116,7 +66,6 @@ data {
   int<lower=2> nthres; // number of thresholds
   int<lower=1> K; // number of population-level effects
   matrix[N, K] X; // population-level design matrix
-  int grainsize; // grainsize for threading
   // data for group-level effects of ID 1
   int<lower=1> N_1; // number of grouping levels
   int<lower=1> M_1; // number of coefficients per level
@@ -147,7 +96,6 @@ transformed data {
   int Kc = K;
   matrix[N, Kc] Xc; // centered version of X
   vector[Kc] means_X; // column means of X before centering
-  array[N] int seq = sequence(1, N);
   for (i in 1 : K) {
     means_X[i] = mean(X[ : , i]);
     Xc[ : , i] = X[ : , i] - means_X[i];
@@ -198,21 +146,36 @@ transformed parameters {
   r_2_3 = r_2[ : , 3];
   r_2_4 = r_2[ : , 4];
   r_2_5 = r_2[ : , 5];
-  lprior += normal_lpdf(b | 0, 1);
-  lprior += normal_lpdf(Intercept | -0.25, 0.5);
-  lprior += normal_lpdf(sd_1 | 1, 0.25) - 7 * normal_lccdf(0 | 1, 0.25);
+  lprior += normal_lpdf(b[1] | 1, 0.25);
+  lprior += normal_lpdf(b[2] | 0, 0.25);
+  lprior += normal_lpdf(b[3] | 0, 0.25);
+  lprior += normal_lpdf(b[4] | 0, 0.25);
+  lprior += normal_lpdf(b[5] | 0, 0.25);
+  lprior += normal_lpdf(b[6] | 0, 0.25);
+  lprior += normal_lpdf(Intercept | -0.25, 0.1);
+  lprior += normal_lpdf(sd_1 | 1, 0.1) - 7 * normal_lccdf(0 | 1, 0.1);
   lprior += lkj_corr_cholesky_lpdf(L_1 | 2);
-  lprior += normal_lpdf(sd_2 | 1, 0.25) - 5 * normal_lccdf(0 | 1, 0.25);
+  lprior += normal_lpdf(sd_2 | 1, 0.1) - 5 * normal_lccdf(0 | 1, 0.1);
   lprior += lkj_corr_cholesky_lpdf(L_2 | 2);
 }
 model {
   // likelihood including constants
   if (!prior_only) {
-    target += reduce_sum(partial_log_lik_lpmf, seq, grainsize, Y, nthres, Xc,
-                         b, Intercept, disc, J_1, Z_1_1, Z_1_2, Z_1_3, Z_1_4,
-                         Z_1_5, Z_1_6, Z_1_7, r_1_1, r_1_2, r_1_3, r_1_4,
-                         r_1_5, r_1_6, r_1_7, J_2, Z_2_1, Z_2_2, Z_2_3,
-                         Z_2_4, Z_2_5, r_2_1, r_2_2, r_2_3, r_2_4, r_2_5);
+    // initialize linear predictor term
+    vector[N] mu = rep_vector(0.0, N);
+    mu += Xc * b;
+    for (n in 1 : N) {
+      // add more terms to the linear predictor
+      mu[n] += r_1_1[J_1[n]] * Z_1_1[n] + r_1_2[J_1[n]] * Z_1_2[n]
+               + r_1_3[J_1[n]] * Z_1_3[n] + r_1_4[J_1[n]] * Z_1_4[n]
+               + r_1_5[J_1[n]] * Z_1_5[n] + r_1_6[J_1[n]] * Z_1_6[n]
+               + r_1_7[J_1[n]] * Z_1_7[n] + r_2_1[J_2[n]] * Z_2_1[n]
+               + r_2_2[J_2[n]] * Z_2_2[n] + r_2_3[J_2[n]] * Z_2_3[n]
+               + r_2_4[J_2[n]] * Z_2_4[n] + r_2_5[J_2[n]] * Z_2_5[n];
+    }
+    for (n in 1 : N) {
+      target += ordered_logistic_lpmf(Y[n] | mu[n], Intercept);
+    }
   }
   // priors including constants
   target += lprior;
@@ -229,11 +192,16 @@ generated quantities {
   corr_matrix[M_2] Cor_2 = multiply_lower_tri_self_transpose(L_2);
   vector<lower=-1, upper=1>[NC_2] cor_2;
   // additionally sample draws from priors
-  real prior_b = normal_rng(0, 1);
-  real prior_Intercept = normal_rng(-0.25, 0.5);
-  real prior_sd_1 = normal_rng(1, 0.25);
+  real prior_b__1 = normal_rng(1, 0.25);
+  real prior_b__2 = normal_rng(0, 0.25);
+  real prior_b__3 = normal_rng(0, 0.25);
+  real prior_b__4 = normal_rng(0, 0.25);
+  real prior_b__5 = normal_rng(0, 0.25);
+  real prior_b__6 = normal_rng(0, 0.25);
+  real prior_Intercept = normal_rng(-0.25, 0.1);
+  real prior_sd_1 = normal_rng(1, 0.1);
   real prior_cor_1 = lkj_corr_rng(M_1, 2)[1, 2];
-  real prior_sd_2 = normal_rng(1, 0.25);
+  real prior_sd_2 = normal_rng(1, 0.1);
   real prior_cor_2 = lkj_corr_rng(M_2, 2)[1, 2];
   // extract upper diagonal of correlation matrix
   for (k in 1 : M_1) {
@@ -249,10 +217,10 @@ generated quantities {
   }
   // use rejection sampling for truncated priors
   while (prior_sd_1 < 0) {
-    prior_sd_1 = normal_rng(1, 0.25);
+    prior_sd_1 = normal_rng(1, 0.1);
   }
   while (prior_sd_2 < 0) {
-    prior_sd_2 = normal_rng(1, 0.25);
+    prior_sd_2 = normal_rng(1, 0.1);
   }
 }
 
