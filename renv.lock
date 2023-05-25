@@ -288,6 +288,14 @@
         "insight"
       ]
     },
+    "beeswarm": {
+      "Package": "beeswarm",
+      "Version": "0.4.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "0f4e9d8caa6feaa7e409ae6c30f2ca66",
+      "Requirements": []
+    },
     "bigD": {
       "Package": "bigD",
       "Version": "0.2.0",
