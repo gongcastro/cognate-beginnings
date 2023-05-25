@@ -1,4 +1,4 @@
-# Trajectories [[report](https://gongcastro.github.io/trajectories)]
+# cognate-beginnings [[report](https://gongcastro.github.io/cognate-beginnings)]
 
 ## Table of Contents
 1. [Downloading this repository](#downloading)
