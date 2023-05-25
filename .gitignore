@@ -11,6 +11,7 @@
 **/*.pdf
 **/*.docx
 !assets/*.docx
+_targets.yaml
 
 _targets/*
 .json
@@ -33,3 +34,4 @@ _freeze/*
 
 manuscript/.quarto*
 manuscript/*.pdf
+
