@@ -5,7 +5,7 @@ make <- function() {
         job::export("none")  # return nothing
     },
     import = NULL,
-    title = "Trajectories")
+    title = "cognate-beginnings")
     
     to_delete <- c("manuscript/QTDublinIrish.otf")
     for(i in to_delete) {
@@ -37,7 +37,7 @@ unmake <- function(keep_fits = TRUE) {
 welcome_message <- function() {
     id <- cli_status("")
     cli({
-        cli_h1("trajectories")
+        cli_h1("cognate-beginnings")
         cli_text("This project works with the {.pkg renv} and 
                      {.pkg targets} R packages.")
         cli_text()
@@ -59,8 +59,8 @@ welcome_message <- function() {
                  "Restart the R session",  
                  "Run {.code tar_make()}"))
         cli_h2("Repository info")
-        cli_ul(c("Lab notes: {.url gongcastro.github.io/trajectories}",
-                 "URL: {.url https://github.com/gongcastro/trajectories}",
+        cli_ul(c("Lab notes: {.url gongcastro.github.io/cognate-beginnings}",
+                 "URL: {.url https://github.com/gongcastro/cognate-beginnings}",
                  "OSF: {.url https://osf.io/hy984/}"
         ))
     })
