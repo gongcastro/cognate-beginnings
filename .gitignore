@@ -8,7 +8,6 @@
 
 **/*.pptx
 **/*.log
-**/*.pdf
 **/*.docx
 !assets/*.docx
 _targets.yaml

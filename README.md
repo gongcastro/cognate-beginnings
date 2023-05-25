@@ -1,44 +1,54 @@
 # cognate-beginnings [[report](https://gongcastro.github.io/cognate-beginnings)]
 
 ## Table of Contents
-1. [Downloading this repository](#downloading)
-2. [Reproducing this repository](#reproducing)<br>
-2.1. [Installing package dependencies with {renv}](#packages)<br>
-2.2. [Running the code with {targets}](#running)<br>
-2.3. [Repository structure](#structure)<br>
 
+0. Downloading this repository
+1. Installing package dependencies with {renv}
+2. Running the code with {targets}
+3. Repository structure and files
 
-## Download this repository <a name="downloading"></a>
+## 0. Download this repository :arrow_down:
 
-1) Download and install [Git](https://git-scm.com/downloads) with default settings.
-2) Clone this repository locally. You can do this in two ways:
+### 0.a Git terminal
 
-* Using your Command Prompt/console, navigate to the folder you want to download the repository into, and run:
+Download and install [Git](https://git-scm.com/downloads) with default settings and clone this repository locally running the following command in your console:
 
-```console
+```bash
 git clone https://github.com/gongcastro/cognate-beginnings.git
 ```
 
-* Clicking the green button "Code" in this page (upper-right corner), clicking "Download ZIP", and unzipping the downloaded repository.
+### 0.b GitHub releases
 
+Download the last [release](https://github.com/gongcastro/cognate-beginnings/releases) of the repository.
 
-## Installing package dependencies with {renv}
+### 0.c Direct download
 
-The code in this repository needs some packages to run, many of which might not have been already installed in your local machine. Instead of having to install them yourself one by one or updating already installed ones (which might change how they behave, possibly breaking some of your code in other projects) this repository uses the R package [{renv}](https://rstudio.github.io/renv/articles/renv.html) to deal with package libraries. You can just install `renv` by running `install.packages("renv")` and then run `renv::restore()` in your console. This command will install all necessary packages in the appropriate version (listed in the file `renv.lock` in a self-contained R package library. This process will not affect the packages that you had already installed in your machine. 
+Or clicking the green button "Code" in this page (upper-right corner), clicking "Download ZIP", and unzipping the downloaded repository.
 
-In case the installation of any package is giving you trouble, we recommend installing it globally in your machine in a different R session and then trying `renv::restore(rebuild = TRUE)`.
+## 1. Install package dependencies with renv :package:
 
-## Running the code with {targets}
+Open the downloaded repository folder and click on the [cognate-beginnings.Rproj](cognate-beginnings.Rproj) to open an RStudio session (recommended) or just open an R session and set the working directory to the downloaded folder. Once open run:
 
-This repository's workflow is based on [{targets}](https://books.ropensci.org/targets/). This means that the code is run in the appropriate order according to its internal dependencies.
+```{r}
+install.packages("renv") # in case you need to install renv
+renv::restore()
+```
 
-The code is organised as *targets*, defined in the `_targets.R` file. Sometimes targets operate with the outcomes of other targets. For instance, one target might run a function that takes the outcome of a different target as argument. {targets} makes sure that the functions and objects needed to run each target have already been previously defined. You can visually explore this repository's targets and its dependency structure by running `targets::tar_visnetwork()`.
+> :bulb: **What does this step do?** The code in this repository needs some packages to run, many of which might not have been already installed in your local machine. Instead of having to install them yourself one by one or updating already installed ones (which might change how they behave, possibly breaking some of your code in other projects) this repository uses the R package [renv](https://rstudio.github.io/renv/articles/renv.html) to deal with package libraries. The command `renv::restore()` will install all necessary packages in the appropriate version (listed in the file [renv.lock](renv.lock) in a self-contained R package library. This process will not affect the packages that you had already installed in your machine. Although renv facilitates the reproducibility of the repository, it is not guaranteed that things will work perfectly. If you encounter trouble installing the packages using renv, try installing them individually, or contact the authors of this repository if you need further assistance. :smile:
 
-To run the code and generate the outputs of interest, run `make()` in your console. This function (defined in [utils.R](R/utils.R)) is a wrapper that invokes `targets::tar_make()` in the *jobs* tab in your RStudio session thanks to the {jobs} package. The code will run automatically while your R console will remain free for you to run code on it. You can stop the job at any point. If you are running R outside RStudio, we recommend you use the `targets::tar_make()` command.
+## 2. Running the code with targets :rocket:
 
-You can explore the contents of the executed targets by running `tar_load_all()` (also defined in [utils.R](R/utils.R)), which is another wrapper function that calls `targets::tar_load()` on all defined targets to load them into your workspace. Mind that this process might take some time (~10 seconds) as brmsfit objects (Bayesian models) are heavy. Make sure that your RAM has equal or higher capacity than 
+Once the package dependencies have been solved with renv, run the following command:
 
-## Repository structure and files
+```{r}
+targets::tar_make()
+```
+
+Mind that this process might take some time. Refitting the brms models might take very long (days even, depending on your set-up). If you want to skip this step, download the "results" folder in the [Open Science Framework repository](https://osf.io/hy984/) and replace it in the repository.
+
+> :bulb: **What does this step do?** This repository's workflow is based on [targets](https://books.ropensci.org/targets/). This means that the code is run in the appropriate order according to its internal dependencies. The code is organised as *targets*, defined in the `_targets.R` file. Sometimes targets operate with the outcomes of other targets. For instance, one target might run a function that takes the outcome of a different target as argument. {targets} makes sure that the functions and objects needed to run each target have already been previously defined. You can visually explore this repository's targets and its dependency structure by running `targets::tar_visnetwork()`. You can explore the contents of the executed targets by running `targets::tar_load_everything()`, which will load all defined targets into your workspace.
+
+## 3. Repository structure and files :open_file_folder:
 
 This repository is organised as follows:
 
