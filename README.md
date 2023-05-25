@@ -9,7 +9,9 @@
 
 ## 0. Download this repository :arrow_down:
 
-### 0.a Git terminal
+First, you will need to download this repository to your local machine. We suggest three different ways.
+
+### a) Git terminal
 
 Download and install [Git](https://git-scm.com/downloads) with default settings and clone this repository locally running the following command in your console:
 
@@ -17,13 +19,20 @@ Download and install [Git](https://git-scm.com/downloads) with default settings 
 git clone https://github.com/gongcastro/cognate-beginnings.git
 ```
 
-### 0.b GitHub releases
+### b) GitHub releases
 
 Download the last [release](https://github.com/gongcastro/cognate-beginnings/releases) of the repository.
 
-### 0.c Direct download
+### 0) Direct download
 
 Or clicking the green button "Code" in this page (upper-right corner), clicking "Download ZIP", and unzipping the downloaded repository.
+
+## 1. Install software dependencies
+
+Here's a list of programs that you might need to install in your machine to make the project work:
+
+* [Quarto](https://quarto.org/docs/get-started/): we use this software to generate the manuscript and lab notes. We recommend installing version 1.3.340 or higher, although previous version might work as well.
+* [cmdstan](https://mc-stan.org/users/interfaces/cmdstan): we use the CmdStan backend in brms to fit our Bayesian models. We recommend installing CmdStan using its R interface [CmdStanR](https://mc-stan.org/cmdstanr/), following the [*Getting started with CmdStanR*](https://mc-stan.org/cmdstanr/articles/cmdstanr.html) vignette. You can also install it following the [CmdStan installation guide](https://mc-stan.org/users/interfaces/), and then letting CmdStanR know the path to the folder using `cmdstanr::set_cmdstan_path()`.
 
 ## 1. Install package dependencies with renv :package:
 
