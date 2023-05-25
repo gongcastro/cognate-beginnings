@@ -53,6 +53,9 @@ bibliography: "../assets/references.bib"
 link-citations: true
 editor: source
 
+code-fold: true
+warning: false
+
 format:
   html: default
 
@@ -65,7 +68,6 @@ fig-dpi: 1000
 
 ```{r setup}
 #| label: setup
-#| echo: false
 #| message: false
 #| warning: false
 # load objects -----------------------------------------------------------------
@@ -135,7 +137,6 @@ Data and materials are available at [OSF](https://osf.io/hy984/), and code is av
 
 ```{r}
 #| label: questionnaire
-#| echo: false
 #| message: false
 #| warning: false
 data("pool", package = "bvq")
@@ -154,7 +155,6 @@ For each word in the vocabulary checklists, we asked parents to report whether t
 
 ```{r}
 #| label: fig-participants-time
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
@@ -209,6 +209,7 @@ Number of months elapsed between participants' birth date and questionnaire comp
 ```{r}
 #| label: fig-participants-age
 #| fig-width: 7
+#| fig-height: 3
 #| fig-cap: "Distribution of participants' ages"
 participants %>% 
     mutate(age = floor(age)) %>% 
@@ -232,9 +233,8 @@ participants %>%
 
 Participant degree of exposure to the words' language ($DoE$): percentage of exposure to the language the word belonged to. For example, for a participant with 90% exposure to Catalan, and 10% to Spanish, the DoE of the Catalan word *taula* would be 90%, and the DoE for the Spanish word *mesa* would be 10%.
 
-```{r apatb-participants}
+```{r fig-participants}
 #| label: tab-participants
-#| echo: false
 #| message: false
 #| warning: false
 #| tbl-cap: "Participant sample size by age and degree of exposure to Catalan. Information about language degree of exposure (DoE) was provided by families before filling the questionnaire. In this table, a 100\\% indicates that the participant was exclusively exposed to Catalan, and never to Spanish. A 0\\% indicates that the participant was not exposed to Catalan ever, and most of the time to Spanish. A 50\\% indicates that the participant was exposed to Catalan and Spanish approximately half of the time each. The 100\\%, 0\\%, and 50\\% would be traditionaly classified as Catalan monolingual, Spanish monolingual, and Catalan-Spanish bilingual, respectively. For illustration purposes this table, DoEs were binned into 25\\%-wide bins, and ages (in months) binned into 4 month-wide bins. Hyphens indicate that no participants from that specific combination of age and DoE filled the questionnaire."
@@ -384,7 +384,6 @@ Word lexical frequency ($Frequency$): lexical frequency of the word in its corre
 
 ```{r}
 #| label: fig-items-freq
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 6
@@ -417,7 +416,6 @@ Word length ($Length$), computed as the number of phonemes in the phonological t
 
 ```{r}
 #| label: fig-items-nphon
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
@@ -450,7 +448,6 @@ Phonological similarity between translation equivalents was computed as the norm
 
 ```{r}
 #| label: fig-items-lv
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 9
@@ -480,7 +477,6 @@ items %>%
 
 ```{r}
 #| label: fig-items-frequency-phonemes
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 8
@@ -518,7 +514,6 @@ items %>%
 
 ```{r}
 #| label: fig-items-frequency-lv
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
@@ -550,7 +545,6 @@ items %>%
 
 ```{r}
 #| label: fig-items-nphon-lv
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
@@ -814,7 +808,6 @@ where:
 
 ```{r fig_prior-mean}
 #| label: fig-prior-mean
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
@@ -867,7 +860,6 @@ prior_epreds |>
 
 ```{r}
 #| label: fig-prior-predictions
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
@@ -1061,7 +1053,6 @@ responses %>%
 #| label: tbl-coefs
 #| tbl-cap: "Posterior distribution of regression coefficients."
 #| tbl-note: "Median: median of the posterior distribution in the probability scale. 95\\% HDI: 95\\% highest density interval of the distribution; narrowest range of values that contains 95\\% of the distribution, and therefore is 95\\% likely to contain the true value, given the data. On top of each distribution, we indicate the proportion of posterior samples in the 95\\% HDI that fall into the region of practical equivalence (ROPE). This proportion indicates the probability of the true value of the coefficient being equivalent to zero. Lower values indicate that the true value is unlikely to be zero of equivalent to zero."
-#| echo: false
 #| message: false
 #| warning: false
 #| out-width: 80%
@@ -1168,9 +1159,9 @@ model_draws %>%
 
 
 ## Marginal effects
+
 ```{r fig-marginal}
 #| label: fig-marginal
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
@@ -1371,7 +1362,6 @@ re_id %>%
 
 ```{r}
 #| label: fig-results-random-id-age
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
@@ -1409,7 +1399,6 @@ re_age %>%
 
 ```{r}
 #| label: fig-results-random-id-nphon
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
@@ -1449,7 +1438,6 @@ re_n_phon %>%
 
 ```{r}
 #| label: fig-results-random-id-exposure
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
@@ -1488,7 +1476,6 @@ re_freq %>%
 
 ```{r}
 #| label: fig-results-random-id-lv
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
@@ -1526,7 +1513,6 @@ re_lv %>%
 
 ```{r}
 # | label: fig-results-random-id-exposure-lv
-# | echo: true
 # | message: false
 # | warning: false
 # | fig-width: 7
@@ -1564,7 +1550,6 @@ re_lv %>%
 
 ```{r}
 #| label: fig-results-random-id-age-doe
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
@@ -1602,7 +1587,6 @@ re_age_exposure %>%
 
 ```{r}
 #| label: fig-results-random-id-age-lv
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
@@ -1640,7 +1624,6 @@ re_age_lv %>%
 
 ```{r}
 #| label: fig-results-random-id-age-exposure-lv
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
@@ -1687,7 +1670,6 @@ re_age_exposure_lv %>%
 
 ```{r}
 #| label: fig-results-random-te
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
@@ -1750,7 +1732,6 @@ re_te %>%
 
 ```{r}
 #| label: fig-results-random-te-age
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
@@ -1786,7 +1767,6 @@ re_age %>%
 
 ```{r}
 #| label: fig-results-random-te-nphon
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
@@ -1822,7 +1802,6 @@ re_n_phon %>%
 
 ```{r}
 #| label: fig-results-random-te-exposure
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
@@ -1858,7 +1837,6 @@ re_doe %>%
 
 ```{r}
 #| label: fig-results-random-te-age-exposure
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 7
@@ -1899,7 +1877,6 @@ re_age_doe %>%
 
 ```{r}
 #| label: fig-diagnostics-traceplots
-#| echo: false
 #| message: false
 #| warning: false
 #| fig-width: 12
@@ -1928,16 +1905,15 @@ gather_draws(model_fit, `b_.*`, `sd_te__.*`, regex = TRUE) %>%
 
 
 
-### Momdel convergence
+### Model convergence
 
 ```{r fig-rhats-neffs}
 #| label: fig-rhats-neffs
 #| fig-cap: "MCMC convergence diagnostic of all parameters in the model. A: distribution of the Gelman-Rubin (R-hat) scores. B: distribution of the ratio of effective sa"
-#| echo: false
 #| message: false
 #| warning: false
-#| fig-height: 3
-#| fig-width: 6
+#| fig-height: 4
+#| fig-width: 7
 #| out-width: 100%
 model_convergence |> 
     ggplot(aes(.rhat)) +
@@ -1964,5 +1940,5 @@ model_convergence |>
 ## Session info
 
 ```{r}
-sessioninfo::session_info()
+sessionInfo()
 ```
