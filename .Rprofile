@@ -1,8 +1,8 @@
 source("renv/activate.R")
 
 options(crayon.enabled = TRUE,
-        repos = c("https://cloud.r-project.org",
-                  "https://gongcastro.r-universe.dev"))
+        repos = c(CRAN = "https://cloud.r-project.org",
+                  bvq = "https://gongcastro.r-universe.dev"))
 
 if (interactive()) {
     
