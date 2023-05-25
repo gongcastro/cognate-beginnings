@@ -149,31 +149,6 @@ list(
     # posterior predictive checks
     tar_target(model_ppcs, get_model_ppc(model_fit, responses)),
     
-    # get age-of-acquisition ---------------------------------------------------
-    
-    # tar_target(aoa_data, get_aoa_data(responses)),
-    # 
-    # tar_target(aoa_model_prior,
-    #            model_prior <- c(
-    #                prior(normal(0, 5), nlpar = "mid", coef = "Intercept"),
-    #                prior(normal(0, 5), nlpar = "mid", class = "b"),
-    #                prior(normal(0, 1), nlpar = "scale", coef = "Intercept"),
-    #                prior(exponential(6), nlpar = "scale", class = "sd"),
-    #                prior(lkj(8), class = "cor")
-    #            )),
-    # 
-    # tar_target(aoa_model_fit_comprehension,
-    #            get_aoa_model_fit(aoa_data, type = "comprehension")),
-    # 
-    # tar_target(aoa_model_fit_production,
-    #            get_aoa_model_fit(aoa_data, type = "production")),
-    # 
-    # tar_target(aoa_model_posterior_comprehension,
-    #            get_aoa_model_posterior(aoa_model_fit_comprehension, aoa_data)),
-    # 
-    # tar_target(aoa_model_posterior_production,
-    #            get_aoa_model_posterior(aoa_model_fit_production, aoa_data)),
-    
     # appendix -----------------------------------------------------------------
     
     # fit model with frequency and DoE as separate predictors instead of exposure
@@ -256,14 +231,14 @@ list(
     ),
     
     # render report ------------------------------------------------------------
-    # tar_quarto(
-    #     report,
-    #     "docs/index.qmd",
-    #     execute = TRUE,
-    #     quiet = FALSE
-    # ),
-    # 
-    #     # render manuscript
+    tar_quarto(
+        report,
+        "docs/index.qmd",
+        execute = TRUE,
+        quiet = FALSE
+    ),
+    
+    # render manuscript
     tar_quarto(manuscript,
                "manuscript/manuscript.qmd",
                execute = TRUE,
