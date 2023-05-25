@@ -82,7 +82,7 @@ $$ {#eq-prior}
 
 where: $\rho_{u_{0-8}}$ and $\rho_{w_{0-3}}$ indicate the correlation parameters between the by-participant and by-TE adjustments, respectively, $\sigma_{u_{0-8}}^2$ and $\sigma_{w_{0-3}}^2$ indicate the variance of the by-participant and by-TE variance of the adjustments, respectively, and $\mathcal{N}$ indicates a normal distribution, $\mathcal{N}_{+}$ indicates a truncated normal distribution with only positive values, and $LKJcorr$ indicates a [LKJ correlation distribution](https://mc-stan.org/docs/2_22/functions-reference/lkj-correlation.html) [@lewandowski2009generating].
 
-```{r apafg}
+```{r fig-prior-mean}
 #| label: fig-prior-mean
 #| echo: false
 #| message: false

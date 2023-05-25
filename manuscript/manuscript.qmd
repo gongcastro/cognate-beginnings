@@ -53,15 +53,6 @@ link-citations: true
 editor: source
 
 format:
-  docx:
-    reference-doc: "templates/reference.docx"
-    knitr:
-      opts_chunk:
-        dev: "png"
-        dev-args:
-          - "cairo-png"
-        dpi: 300
-        out.width: "80%"
   pdf:
     papersize: letter
     fontsize: 12pt
@@ -163,7 +154,7 @@ options(ggplot2.ordinal.fill = clrs,
 
 The foundations of word learning are in place early in age. From six months of age, infants start directing their gaze to some objects when hearing their labels, according to both experimental data [@jusczyk1995infants; @tincoff1999beginnings; @bergelson2012months; @bergelson2015early] and parental vocabulary reports [e.g., @fenson2007macarthurbates; @samuelson2021precision]. During the last half of the second year of life, new word-forms are acquired at an increasingly fast rate [@goldfield1990early; @fenson1994variability; @mayor2011statistical; @bloom2002how; @bergelson2020comprehension]. Such early stages of lexical acquisition are characterised by substantial heterogeneity across different populations of language learners, reflected for instance on (the variability of) quantitative indices of lexical development, like vocabulary size [i.e., vocabulary size, @fenson1994variability; @frank2021variability]. Despite this variability, trajectories of early vocabulary growth seem quite stable across languages. @tardif2008baby collected data about the first ten words acquired by 10-- to 16--month-old infants living in the United States, Hong Kong, and Beijing. Since birth, these infants had been learning English, Cantonese, and Mandarin, respectively. The authors found a common pattern across the three groups: their first ten words referred to roughly the same concepts, namely relatives/caregivers (*daddy*, *mommy*), social routines (*bye*, *uh-oh*) or animal sounds (*woof-woof*). These results were later extended by @frank2021variability to a more diverse set of languages, and found that such cross-language commonalities are stronger at earlier stages of lexical acquisition.
 
-Most research on early word acquisition relies extensively on data from monolingual children, and is oblivious to the fact that a substantial proportion of the world population acquires more than one language from early ages [@grosjean2021extent]. Previous research on bilingual vocabulary acquisition pointed to bilingual toddlers knowing, on average, less words in each of their languages than their monolinguals peers, and also to both groups knowing a similar amount of words when the bilinguals' two languages are taken into account. @hoff2012dual found that English-Spanish bilingual toddlers in South Florida (United States) knew less words in English than monolinguals did. Both groups knew a similar total amount of words when both English and Spanish vocabularies were counted together, which substantiates the importance of collecting data on both languages when assessing bilinguals' communicative development. Other studies have provided converging evidence that bilinguals know a similar or even larger number of words than monolinguals when the two languages are aggregated [@oller2002language; @pearson1994patterns; @pearson1993lexical; @patterson2004comparing; @patterson2004bilingual; @smithson2014bilingualism; @petitto2001bilingual; @gonzalez-barrero2020bilinguala]. These studies rely on bilingual samples whose languages are relatively distant in typology: English is a Germanic language, while Spanish is a Romance language, and both languages differ substantially at the grammatical and the phonological level. Little is known about vocabulary acquisition in bilinguals learning a pair of typologically closer languages (e.g., when both are Romance languages).
+Most research on early word acquisition relies extensively on data from monolingual children, and is oblivious to the fact that a substantial proportion of the world population acquires more than one language from early ages [@grosjean2021extent]. Previous research on bilingual vocabulary acquisition pointed to bilingual toddlers knowing, on average, less words in each of their languages than their monolinguals peers, and also to both groups knowing a similar amount of words when the bilinguals' two languages are taken into account. @hoff2012dual found that English-Spanish bilingual toddlers in South Florida (United States) knew less words in English than monolinguals did. Both groups knew a similar total amount of words when both English and Spanish vocabularies were counted together, which substantiates the importance of collecting data on both languages when assessing bilinguals' communicative development. Other studies have provided converging evidence that bilinguals know a similar or even larger number of words than monolinguals when the two languages are aggregated [@oller2002language; @pearson1994patterns; @pearson1993lexical; @patterson2004comparing; @patterson2004bilingual; @smithson2014bilingualism; @petitto2001bilingual; @gonzalez-barrero2020bilingual]. These studies rely on bilingual samples whose languages are relatively distant in typology: English is a Germanic language, while Spanish is a Romance language, and both languages differ substantially at the grammatical and the phonological level. Little is known about vocabulary acquisition in bilinguals learning a pair of typologically closer languages (e.g., when both are Romance languages).
 
 One way typological distance may impact bilingual trajectories of language acquisition is the presence (or absence) of *cognates* in their linguistic input. Quite often, bilingual children encounter more than one label for the same referent: one in each language. For instance, an English-Spanish bilingual might hear both *dog* and *perro* in the presence of a dog We will refer to such cross-language synonyms as *translation equivalents*.^[Throughout the present study, we will make the assumption that bilinguals form a common semantic representations for each translation equivalent (e.g., the concept 'dog' is shared for the English and Spanish words *dog* and *perro*). The referential contexts in which bilingual children hear (and learn) both labels may not be identical. For instance, the English word *finger* refers to eight parts of the body (excluding thumbs and toes), whereas its Spanish translation *dedos* refers to twenty body parts (fingers, thumbs, and toes). These discrepancies are reflected, for instance, in adults' performance in lexical decision tasks [@chaouch-orozco2023are]. The fact that some translation pairs share more semantic features than others does not, however, inform whether bilinguals form common or separate semantic representations for translation equivalents. What English speakers understand for 'fingers' might not be identical to what Spanish speakers understand for 'dedos'. But when an English speaker learns Spanish, it seems implausible that they would form a separate semantic representation for what 'dedo' conveys at the conceptual level, compared to the possibility that they associate the new label to the semantic representation they already had formed for 'fingers'. Therefore, the lack of complete semantic alignment is not necessarily an argument against the existence of common semantic representations for translation equivalents. For simplicity, and in line with previous (formal and verbal) models of bilingual lexical processing [e.g., @shook2013bilingual; @dijkstra2019multilink; @dijkstra1998bia; @kroll2010revised], we assume common semantic representations for translation pairs.].
 
@@ -185,9 +176,9 @@ More recently, @mitchell2022cognates addressed this issue providing a more fine 
 
 In the present investigation we approach the cognate facilitation on word learning by extending the conceptual framework of accumulator models of language acquisition to the bilingual case. Accumulator models formalise the widespread assumption that a child's vocabulary growth rate is a function of mainly---but not exclusively---the number of learning instances that a child has accrued with a particular word [see @kachergis2022standard for review]. A learning instance of a word consists, for example, in hearing such word-form (*flower*) in the presence of its referent (a flower). We devise word acquisition as a continuous process in which a child accumulates experience with a given word-form and its referential context until the number of cumulative learning instances meets some theoretical threshold. After this, we consider the lexical representation of the word as *consolidated*, which leads to a non-linear increase in the probability of caregivers reporting such word as acquired in a vocabulary checklist like the one in the present study. As infants receive linguistic input, they also accumulate opportunities to learn words until a threshold is crossed, an the word can be considered to be acquired. The rate at which monolingual children encounter learning instances with some word-form is strongly determined by age: as time passes children are exposed to a larger amount of linguistic input, and therefore accumulate more learning experiences with all words.
 
-Not all words occur in the linguistic input with identical frequency, so children accumulate experience with some word-forms at faster rates than with other word-forms. This results in frequent words being acquired earlier in age than less frequent words [e.g., @ambridge2015ubiquity; @goodman2008doesa; @braginsky2019consistency; @swingley2018quantitative; @hansen2017what; @verhagen2022determinants]. For this reason, lexical frequency plays a central role in most models of lexical growth, especially in the case of accumulator models [@hidaka2013computational; @mollica2017how]. Following this account, words with high lexical frequency like 'flower' [`r format(floor(childes[childes$token=="flower",]$freq_million), big.mark = ",")` times per million words in the CHILDES corpus, @macwhinney2000childes] are predicted to be acquired earlier in age than words with low lexical frequency such as 'taxi' (`r format(floor(childes[childes$token=="taxi",]$freq_million), big.mark = ",")` times per million words).
+Not all words occur in the linguistic input with identical frequency, so children accumulate experience with some word-forms at faster rates than with other word-forms. This results in frequent words being acquired earlier in age than less frequent words [e.g., @ambridge2015ubiquity; @goodman2008does; @braginsky2019consistency; @swingley2018quantitative; @hansen2017what; @verhagen2022determinants]. For this reason, lexical frequency plays a central role in most models of lexical growth, especially in the case of accumulator models [@hidaka2013computational; @mollica2017how]. Following this account, words with high lexical frequency like 'flower' [`r format(floor(childes[childes$token=="flower",]$freq_million), big.mark = ",")` times per million words in the CHILDES corpus, @macwhinney2000childes] are predicted to be acquired earlier in age than words with low lexical frequency such as 'taxi' (`r format(floor(childes[childes$token=="taxi",]$freq_million), big.mark = ",")` times per million words).
 
-We argue that previous accounts on vocabulary growth based on accumulator models are a convenient framework to study bilingual vocabulary growth. Bilinguals share fundamentally similar learning mechanisms with their monolinguals peers. Developmental divergences between both groups can be understood as the result of the the negotiation between such mechanisms and the particular demands of a dual language input [e.g., @werker2005primir; @curtin2011bilinguala]. One of such divergences is the fact that bilinguals' frequency of exposure to a word-form is mediated by their degree of exposure to their languages. Assuming that bilinguals and monolinguals are exposed to an equivalent amount of linguistic input, a Spanish-English bilingual who is exposed to Spanish 80% of the time and to English 20% of the time would need more time to accumulate the same experience with 'flower' and 'taxi' than an English monolingual (who listens 100% of the time to English) would need.
+We argue that previous accounts on vocabulary growth based on accumulator models are a convenient framework to study bilingual vocabulary growth. Bilinguals share fundamentally similar learning mechanisms with their monolinguals peers. Developmental divergences between both groups can be understood as the result of the the negotiation between such mechanisms and the particular demands of a dual language input [e.g., @werker2005primir; @curtin2011bilingual]. One of such divergences is the fact that bilinguals' frequency of exposure to a word-form is mediated by their degree of exposure to their languages. Assuming that bilinguals and monolinguals are exposed to an equivalent amount of linguistic input, a Spanish-English bilingual who is exposed to Spanish 80% of the time and to English 20% of the time would need more time to accumulate the same experience with 'flower' and 'taxi' than an English monolingual (who listens 100% of the time to English) would need.
 
 In the present study, we incorporate this feature of the bilingual linguistic input to an account of the cognateness effect on word acquisition. We suggest that when a bilingual child is exposed to a given word, they not only activate its corresponding lexical representation, but also that of its translation equivalent. This co-activation is proportional to the form similarity between both word-forms. When this parallel activation is in place, each exposure to one of the word-forms may count as a learning instance for both members of the translation equivalent, in a degree determined by their cognateness. Cognate translation equivalents, for which stronger co-activation is expected, accumulate learning instances faster than non-cognates, for which weaker or no co-activation is expected. Finally,  when the child has accumulator some threshold number of learning instances with any of these word-forms, its lexical representation reaches some degree of consolidation that leads to a non-linear change in the child's observed learning outputs, like the probability of such word being reported as "acquired" by caregivers, or by stronger naming effects in experimental tasks using the Visual World Paradigm [e.g., @swingley2002recognition]. Because , lexical representations of cognate words accumulate learning instances faster than those of non-cognate words, the former would consolidate earlier in age.
 
@@ -199,26 +190,191 @@ Consider the example of the Catalan-Spanish cognate translation equivalent /\tex
 ```{r fig-hypotheses}
 #| label: fig-hypotheses
 #| fig-cap: "Schematic representation of the hypothesised cognate facilitation effect on word acquisition."
-#| echo: FALSE
+#| fig-width: 8
+#| fig-height: 7
 #| out-width: 100%
-#| fig-width: 6
-#| fig-height: 5
-knitr::include_graphics(normalizePath("assets/img/diagram.png"))
+#| out-height: 100%
+#| echo: false
+#| fig-align: center
+threshold <- 300
+
+# no parallel activation
+eli_df <- generate_eli(
+    threshold = threshold,
+    age = seq(1, 50, length.out = 100),
+    freq_month = 50,
+    freq_beta = 1,
+    l1_doe = 0.60,
+    parallel_beta = 0,
+    conditions = c(
+        glue::glue("**Cognate**: /<i style='color:{clrs[1]}'>ˈgat</i>-<i style='color:{clrs[4]}'>ˈga.to</i>/ [cat]"),
+        glue::glue("**Non-cognate**: /<i style='color:{clrs[1]}'>ˈgos</i>-<i style='color:{clrs[4]}'>ˈpe.ro</i>/ [dog]")
+    )
+) |>
+    filter(hypothesis=="H0") |> 
+    mutate(language = ifelse(language=="L1", "Catalan form", "Spanish form"))
+
+aoa_df <- generate_aoa(eli_df, threshold = threshold) |>
+    mutate(across(aoa, lst(min, max)), .by = c(te, language)) |>
+    filter(hypothesis=="H0")
+# 
+# img <- c(cat = "images/diagram_cat.png",
+#          dog = "images/diagram_dog.png") |>
+#     map(magick::image_read) |>
+#     map(\(x) magick::image_ggplot(x, interpolate = FALSE))
+
+plot_h0 <- eli_df |>
+    ggplot(aes(age, eli,
+               colour = language)) +
+    facet_grid(~ te) +
+    geom_segment(data = aoa_df,
+                 aes(x = aoa,
+                     xend = aoa,
+                     y = 0,
+                     yend = threshold),
+                 linewidth = 3/4) +
+    geom_hline(yintercept = aoa_df$threshold,
+               linewidth = 3/4,
+               colour = "grey80") +
+    annotate(geom = "label",
+             label = glue::glue("Threshold: {threshold}"),
+             label.r = unit(0, "lines"),
+             label.size = 0,
+             fill = "grey80",
+             x = 0,
+             y = threshold,
+             hjust = 0) +
+    geom_line(linewidth = 1) +
+    geom_label(data = aoa_df,
+               aes(x = aoa,
+                   y = threshold,
+                   label = round(aoa, 2),
+                   fill = language),
+               size = 3,
+               label.r = unit(0, "lines"),
+               label.size = 0,
+               colour = "white",
+               na.rm = TRUE,
+               show.legend = FALSE
+    ) +
+    labs(x = "Age (months)",
+         y = "Cumulative\nlearning instances",
+         colour = "",
+         shape = "Hypothesis",
+         fill = "",
+         title = "H0: no parallel activation",
+         linetype = "Hypothesis") +
+    scale_x_continuous(breaks = seq(min(eli_df$age),
+                                    max(eli_df$age), 4)) +
+    scale_colour_manual(values = clrs[c(1, 4)]) +
+    theme(legend.position = "bottom",
+          legend.key.width = unit(1.5, "cm"),
+          legend.margin = margin(c(0, 0, 0, 0)),
+          legend.justification = c(0, 1),
+          legend.title = element_text(size = 9),
+          legend.text= element_text(size = 8))
+
+# with parallel activation
+eli_df <- generate_eli(
+    threshold = threshold,
+    age = seq(0, 50, by = 1),
+    l1_doe = 0.60,
+    freq_month = 50,
+    freq_beta = 1,
+    conditions = c(
+        glue::glue("**Cognate**: /<i style='color:{clrs[1]}'>ˈgat</i>-<i style='color:{clrs[4]}'>ˈga.to</i>/ [cat]"),
+        glue::glue("**Non-cognate**: /<i style='color:{clrs[1]}'>ˈgos</i>-<i style='color:{clrs[4]}'>ˈpe.ro</i>/ [dog]")
+    )
+) |>
+    filter(hypothesis=="H1") |> 
+    mutate(language = ifelse(language=="L1", "Catalan form", "Spanish form"))
+
+aoa_df <- generate_aoa(eli_df, threshold = 250) |>
+    mutate(across(aoa, lst(min, max)), .by = c(te, language)) |>
+    filter(hypothesis=="H1")
+
+plot_h1 <- eli_df |>
+    ggplot(aes(age, eli,
+               colour = language)) +
+    facet_grid(~ te) +
+    geom_segment(data = aoa_df,
+                 aes(x = aoa,
+                     xend = aoa,
+                     y = 0,
+                     yend = threshold),
+                 linewidth = 3/4) +
+    geom_hline(yintercept = aoa_df$threshold,
+               linewidth = 3/4,
+               colour = "grey80") +
+    annotate(geom = "label",
+             label = glue::glue("Threshold: {threshold}"),
+             label.r = unit(0, "lines"),
+             label.size = 0,
+             fill = "grey80",
+             x = 0,
+             y = threshold,
+             hjust = 0) +
+    geom_line(linewidth = 1) +
+    geom_label(data = aoa_df,
+               aes(x = aoa,
+                   y = threshold,
+                   label = round(aoa, 2),
+                   fill = language),
+               size = 3,
+               label.r = unit(0, "lines"),
+               label.size = 0,
+               colour = "white",
+               na.rm = TRUE,
+               show.legend = FALSE
+    ) +
+    labs(x = "Age (months)",
+         y = "Cumulative\nlearning instances",
+         colour = "",
+         shape = "Hypothesis",
+         fill = "",
+         title = "H1: parallel activation",
+         linetype = "Hypothesis") +
+    scale_colour_manual(values = clrs[c(1, 4)]) +
+    scale_x_continuous(breaks = seq(min(eli_df$age),
+                                    max(eli_df$age), 4)) +
+    theme(legend.position = "none")
+
+
+plot_h0 + plot_h1 +
+    plot_layout(ncol = 1, guides = "collect") &
+    plot_annotation(tag_levels = "A") +
+    scale_colour_manual(values = clrs[c(1, 4)]) &
+    scale_fill_manual(values = clrs[c(1, 4)]) &
+    scale_y_continuous(labels = function(x) format(x, big.mark = ",")) &
+    guides(colour = guide_legend(override.aes = list(linewidth = 2))) &
+    theme_ggdist() &
+    theme(legend.position = "top", 
+          legend.text = element_text(size = 10),
+          legend.key.width = unit(2, "cm"),
+                    legend.key.height = unit(0.5, "cm"),
+          strip.background = element_rect(fill = "grey90", colour = "grey90"),
+          strip.text = ggtext::element_markdown(size = 10),
+          panel.grid.major.y = element_line(colour = "grey",
+                                            linetype = "dotted"),
+          plot.background = element_rect(fill = "white",
+                                         colour = NA))
+
+
 ```
 
 This hypothesis provides a convenient account for the results in Floccia et al. The size of the effect of linguistic similarity on vocabulary size that Floccia et al. reported was larger in the additional language (language of lower exposure) vocabulary than in English vocabulary (language of higher exposure). Most participants in their sample were English-dominant, meaning that their relative amount of exposure to English was larger than in the additional language. Therefore, participants may have on average learned the English word-form of translation equivalents earlier than the word-form in the additional language. Because of children's imbalance in exposure to words in English and in the additional language, the acquisition of English words by English-dominant participants might then benefit less frequently from their cognate status (the other word-form is unlikely to be available yet), while the acquisition of words in the additional language would benefit more frequently from their phonological similarity with the (more likely available) English translation.
 
 We tested the hypothesis that the cognate effect on word acquisition is conditional to a child's exposure rate to the word, which would support the hypothesis that cognateness plays a role in the acquisition of a word *only* once its translation has been already acquired. We collected vocabulary data on production and comprehension from a large sample of bilingual Catalan-Spanish children using an online vocabulary checklist designed for the present study. Participants were aged `r min(floor(participants$age))` to `r max(floor(participants$age))` months, and were exposed to Catalan and/or Spanish to varying degrees. We adopted a Bayesian explanatory item response theory  [IRT, see @kachergis2022standard for a similar approach] approach to model the probability of a given participant being reported to *understand* or *understand and say* each word-form in the checklist, conditional to participants age and rate of exposure to the word-form, and the cognate status of the word-form, while adjusting for the the number of phonemes in the word-form (an indicator of word acquisition difficulty).
 
-To operationalise participants' exposure rate to a word-form, we used a composite measure that captures the lexical frequency of the word-form (an approximation of how often a participant is exposed to it), and child's amount of exposure to the language such word belongs to. This measure was calculated by multiplying the word-form's lexical frequency with participant's degree of exposure to the language the word belongs to. Lexical frequencies were extracted from the CHILDES corpora [@macwhinney2000childes; @sanchez2019childesdb] (see Appendix A for more details). Participants' degree of exposure were reported by caregivers in a language exposure questionnaire they filled before the vocabulary checklist. Caregivers provided a proportion of the time the child was estimated to listen to any language they were spoken to regularly (described in the methods section). The resulting measure is a exposure-weighted lexical frequency measure, which was included in analyses as a proxy of how often bilingual participants were exposed to each word-form.
+To operationalise participants' exposure rate to a word-form, we used a composite measure that captures the lexical frequency of the word-form (an approximation of how often a participant is exposed to it), and child's amount of exposure to the language such word belongs to. This measure was calculated by multiplying the word-form's Zipf-transformed lexical frequency to participant's degree of exposure to the language the word belongs to. Lexical frequencies were extracted from the CHILDES corpora [@macwhinney2000childes; @sanchez2019childesdb] (see Appendix A for more details). Participants' degree of exposure were reported by caregivers in a language exposure questionnaire they filled before the vocabulary checklist. Caregivers provided a proportion of the time the child was estimated to listen to any language they were spoken to regularly (described in the methods section). The resulting measure is a exposure-weighted lexical frequency measure, which was included in analyses as a proxy of how often bilingual participants were exposed to each word-form.
 
 *Cognateness* was defined as a continuous measure of phonological similarity between translation equivalents. We quantified the phonological similarity between each pair of Catalan-Spanish word-forms by computing the inverse of the normalised Levenshtein distance between their X-XSAMPA phonetic transcriptions [@levenshtein1966binary; @wells1995computercoding]. This score is computed by counting the number of insertions, deletions and replacements needed by both transcriptions to become identical, dividing the resulting value by the length of the longest transcription, and finally subtracting this value from one. This results in a proportion that indicates how much the two phonetic transcriptions of the translation equivalent are similar to each other, ranging from zero (no similarity at all) to one (both transcriptions are identical) [see @floccia2018introduction; @fourtassi2020growth; @laing2022phonological for similar approaches]. For instance, this measure of phonological similarity returns 0% for *ocell* /`uceL`/ and *pájaro* /`paxa4o`/, Catalan and Spanish for 'bird', and returns 50% for *lluna* /`Lun5`/ and *luna* /`luna`/, Catalan and Spanish for 'moon' (see Appendix A for more details).
 
-Finally, we included word length as a nuance predictor in our analyses, motivated by previous studies reporting a strong association between word length and vocabulary size estimates [e.g., @braginsky2019consistency; @jones2019children]. Sorter word-forms like /\textipa{sO\textltilde}/ (Catalan for *sun*) are generally simpler to encode as phonological representations in the lexicon than longer word-forms like /\textipa{ku.ku"DRi\textltilde}/ (Catalan for *crocodile*), and are therefore more likely to be participant a child's vocabulary.
+Finally, we included word length (numbwe of phonemes) as a nuance predictor in our analyses, motivated by previous studies reporting a strong association between word length and vocabulary size estimates [e.g., @braginsky2019consistency; @jones2019children]. Shorter word-forms like /\textipa{sO\textltilde}/ (Catalan for *sun*) are generally simpler to encode as phonological representations in the lexicon than longer word-forms like /\textipa{ku.ku"DRi\textltilde}/ (Catalan for *crocodile*), and are therefore more likely to be participant a child's vocabulary.
 
 # Methods {#sec-methods}
 
-All materials, data, and reproducible code can be found at the OSF ([https://osf.io/hy984/](https://osf.io/hy984/)) and GitHub ([https://github.com/gongcastro/trajectories](https://github.com/gongcastro/trajectories)) repositories. This study was conducted according to guidelines laid down in the Declaration of Helsinki, and was approved by the Drug Research Ethical Committee (CEIm) of the IMIM Parc de Salut Mar, reference 2020/9080/I.
+All materials, data, and reproducible code can be found at the OSF ([https://osf.io/hy984/](https://osf.io/hy984/)) and GitHub ([https://github.com/gongcastro/cognate-beginnings](https://github.com/gongcastro/cognate-beginnings)) repositories. This study was conducted according to guidelines laid down in the Declaration of Helsinki, and was approved by the Drug Research Ethical Committee (CEIm) of the IMIM Parc de Salut Mar, reference 2020/9080/I.
 
 
 ## Questionnaire {#sec-questionnaire}
@@ -453,7 +609,7 @@ r_version <- glue::glue(r_info$R.version$major,
 
 From the responses to the `r format(nrow(n_items), big.mark = ",")` items included in the questionnaire, we restricted the analyses to responses to nouns (`r nrow(n_items)-nrow(n_items_nouns)` items corresponding to other grammatical classes were excluded) [@fourtassi2020growth]. We then excluded items with missing lexical frequency scores (*n* = `r nrow(n_items_nouns)-nrow(n_items_freq)`), items that included more than one lemma (e.g., *mono/mico* [monkey], *n* = `r nrow(n_items_freq)-nrow(n_items_lemma)`), multi-word items or phrases (e.g., *barrita de cereales* [cereal bar], *n* = `r nrow(n_items_lemma)-nrow(n_items_multi)`). Finally, we removed items without a translation in the other language (*n* = `r nrow(n_items_multi)-nrow(n_items_duplicated)`). This resulted in a final list of `r sum(n_items_final)` items, corresponding to words `r n_items_final["Catalan"]` Catalan words and their `r n_items_final["Spanish"]` Spanish translations (`r n_te` translation equivalents). After collecting participants' responses, the final dataset consisted of `r format(n_obs, big.mark = ",")` observations, each corresponding to a single response of one participant to one item. Each translation equivalent received a median of `r round(sum_obs$median)` responses (*Min* = `r round(sum_obs$min)`, *Max* = `r round(sum_obs$max)`) from participants, both languages pooled together. 
 
-We modelled the probability of participants answering each response category (*No* < *Understands* < *Understands and Says*) using a Bayesian, mixed-effects ordinal regression model. This model allowed us to estimate both item and participant word-acquisition trajectories, while estimating the effect of our variables of interest. We added $\text{Age}$ (number of months elapsed between participants' birth date and questionnaire completion), $\text{Length}$ (number of phonemes in the X-SAMPA phonological transcription of the word-form), $\text{Exposure}$ (composite measure of lexical frequency and language degree of exposure), and $\text{Cognateness}$ (a measure of cognateness, defined as the phonological similarity between translation equivalents) as population-level effects, together with their two- and three-way interactions. Predictors were standardised before entering the model by subtracting the mean of the predictor from each value and dividing the result by the standard deviation of the predictor. Participant-level and item-level random intercepts and slopes were included where appropriate, according to the structure of the data [see @eq-linear, @barr2013random]. We specified a weakly informative prior around the parameters of the model (see Appendix C for details). 
+We modelled the probability of participants answering each response category (*No* < *Understands* < *Understands and Says*) using a Bayesian, mixed-effects ordinal regression model. This model allowed us to estimate both item and participant word-acquisition trajectories, while estimating the effect of our variables of interest. We added *Age* (number of months elapsed between participants' birth date and questionnaire completion), *Length* (number of phonemes in the X-SAMPA phonological transcription of the word-form), *Exposure* (composite measure of Zipf-transformed lexical frequency and language degree of exposure), and *Cognateness* (a measure of cognateness, defined as the phonological similarity between translation equivalents) as population-level effects, together with their two- and three-way interactions. Predictors were standardised before entering the model by subtracting the mean of the predictor from each value and dividing the result by the standard deviation of the predictor. Participant-level and item-level random intercepts and slopes were included where appropriate, according to the structure of the data [see @eq-linear, @barr2013random]. We specified a weakly informative prior around the parameters of the model (see Appendix C for details). 
 
 $$
 \begin{aligned}
@@ -660,8 +816,7 @@ We suggest that this asymmetry is the result of children' unbalanced exposure to
 
 This mechanism might be extended to provide a plausible explanation for the language similarity facilitation reported by Floccia et al. The authors observed a facilitation in the additional (non-English) language: children learning two typologically close languages knew more words in the additional language than those learning two typologically more distant languages. In their sample, the additional language was consistently also the lower-exposure language for most children, while English was the higher-exposure language. Given that words in English were more likely to be acquired first, higher phonological overlap for words in the language of lower exposure (especially those of lower lexical frequency) would facilitate vocabulary growth for languages sharing more cognates with English.
 
-It might be argued that our results reflect the fact that cognates are represented in the initial bilingual lexicon as the *same* lexical entry. Because cognates correspond to similar sounding word-forms in equivalent referential contexts (e.g., hearing /\textipa{"gat}/ and /\textipa{"ga.to}/ in the presence of a cat), it is possible that they classify both are as acceptable variations of the same word, therefore treating them as a single lexical item. This would lead to a faster increase in cumulative learning instances, and to earlier ages of acquisition for cognate translation equivalents (for which listening to each word-form contributes to the acquisition of its shared representation), compared to non-cognates (for which listening to each word-form contributes to the acquisition of a separate representation). This mechanism could potentially explain the earlier age-of-acquisition effect of cognates found in the present study, without the need of parallel activation playing any relevant role. Previous work points in a different direction: bilingual toddlers show monolingual-level sensitivity slight phonetic changes in a word-form, according to their performance in word recognition tasks [@swingley200511montholds; @ramon-casas2017minimalpair; @swingley2000spoken; @tamasi2017pupillometry; @mani2011does; @bailey2002phonological; @wewalaarachchi2017vowels; @ramon-casas2010are; @ramon-casas2009vowel], and word learning [@ramon-casas2017minimalpair; @mattock2010first; @havy2016phonetic]. Overall, there is compelling evidence that bilingual toddlers form distinct lexical representations for even near-identical cognates.
-
+It might be argued that our results reflect the fact that cognate translation equivalents are represented in the initial bilingual lexicon as the *same* lexical entry. Because cognates correspond to similar sounding word-forms in equivalent referential contexts (e.g., hearing /\textipa{"gat}/ and /\textipa{"ga.to}/ in the presence of a cat), it is possible that they classify both are as acceptable variations of the same word, therefore treating them as a single lexical item. This would lead to a faster increase in cumulative learning instances, and to earlier ages of acquisition for cognate translation equivalents (for which listening to each word-form contributes to the acquisition of its shared representation), compared to non-cognates (for which listening to each word-form contributes to the acquisition of a separate representation). This mechanism could potentially explain the earlier age-of-acquisition effect of cognates found in the present study, without the need of parallel activation playing any relevant role. @mitchell2022cognates discuss this possibility as a possible explanation of the cognate facilitation effect, in which bilinguals only need to map one word-form to the referent in the case of cognates, while mapping two distinct word-forms in the case of non-cognates. Previous work on mispronunciation perception and minimal pair learning points in a different direction. Bilingual toddlers show monolingual-level sensitivity slight phonetic changes in a word-form, according to their performance in word recognition tasks [@swingley200511montholds; @ramon-casas2017minimalpair; @swingley2000spoken; @tamasi2017pupillometry; @mani2011does; @bailey2002phonological; @wewalaarachchi2017vowels; @ramon-casas2010are; @ramon-casas2009vowel]. These fine abilities to differentiate between similar-sounding word-forms are reflected in word learning, as bilinguals seem to be able to map minimal pairs to distinct referents [@ramon-casas2017minimalpair; @mattock2010first; @havy2016phonetic]. Overall, it seems that bilinguals consider small differences in the phonological forms of words as relevant at the lexical level. We argue that this shows evidence that bilingual toddlers likely form distinct lexical representations for even near-identical cognates.
 
 Our study shares similar methodological limitations with previous work using vocabulary reports provided by caregivers. Such reports can be subject to measurement error induced by caregivers who may sometimes overestimate or underestimate participants' true probability of acquisition of words [e.g., @houston-price2007discrepancy]. For instance, although in the present study caregivers were explicitly instructed *not* to rely on their responses to Catalan words when responding to Spanish (and vice versa), it is possible that some caregivers assumed---at least to some extent---that because the child knew a word in one language, the child should also know the word in the other language. This bias would especially affect similar-sounding words, i.e., cognates. Production estimates may be more prompt to such biases, in part because of the slower pace at which their articulatory abilities develop, compared to their word recognition abilities. For instance, even at 47 months of age, few (typically developing) English monolinguals reach 100% intelligibility scores in word production, as rated by English native adults [@hustad2020development; @hustad2021speech]. This gap between comprehension and production is even larger in the less dominant language of bilingual children [@giguere2022bilingual]. For this reason, caregivers may be more uncertain about what words can be counted as *acquired* in this modality. Despite these potential biases, vocabulary checklist filled by parents show strong evidence of concurrent validity with other estimates of vocabulary size or lexical processing [@killing2008move; @feldman2005concurrent; @gillen2021tapping; but see @houston-price2007discrepancy].
 
