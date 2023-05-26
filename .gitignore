@@ -32,5 +32,4 @@ _freeze/*
 /.luarc.json
 
 manuscript/.quarto*
-manuscript/*.pdf
 

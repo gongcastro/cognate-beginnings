@@ -27,9 +27,9 @@ invisible({
 
 # define global options --------------------------------------------------------
 
-options(repos = c("https://mc-stan.org/r-packages/",
-                  "https://gongcastro.r-universe.dev", 
-                  "https://cloud.r-project.org"),
+options(repos = c(Stan = "https://mc-stan.org/r-packages/",
+                  gongcastro = "https://gongcastro.r-universe.dev", 
+                  CRAN = "https://cloud.r-project.org"),
         mc.cores = parallel::detectCores(),
         brms.backend = "cmdstanr",
         brms.file_refit = "on_change",
