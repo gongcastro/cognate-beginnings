@@ -7,8 +7,13 @@ options(crayon.enabled = TRUE,
 if (interactive()) {
     
     suppressWarnings({
-        library(targets)
-        library(cli)
+        inst_pkgs <- installed.packages()
+        if (!all(c("targets", "cli") %in% inst_pkgs)) {
+            message("Packages cli and targets must be installed.\nPlease, install them and restart your R session or run `renv::restore()`")
+        } else {
+            library(cli)
+            library(targets)
+        }
     })
     
     invisible({
