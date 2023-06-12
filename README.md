@@ -20,9 +20,9 @@ git clone https://github.com/gongcastro/cognate-beginnings.git
 
 > :bulb: You don't need to run this command from the Git console. Just open Command Prompt or Power Shell in Windows (just make sure that Git is included in your [PATH variables](https://www.delftstack.com/howto/git/add-git-to-path-on-windows/), which should be already done after the recommended Git installation), Terminal in MacOS, or command line in Linux and run this command.
 
-b) GitHub releases: download the latest [release](https://github.com/gongcastro/cognate-beginnings/releases) of the repository.
+b) **GitHub releases**: download the latest [release](https://github.com/gongcastro/cognate-beginnings/releases) of the repository.
 
-c) Direct download: click the green button "Code" in this page (upper-right corner), click "Download ZIP", and unzipping the downloaded repository.
+c) **Direct download**: click the [green button](https://github.com/gongcastro/cognate-beginnings/archive/refs/heads/main.zip) "Code" in this page (upper-right corner), click "Download ZIP", and unzipping the downloaded repository.
 
 ## 1. Install software dependencies :computer:
 
