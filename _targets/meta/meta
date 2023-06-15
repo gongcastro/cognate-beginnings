@@ -1,6 +1,6 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|19fbcaa43a63e573|||||||||||||||
-appendix|stem|125dff169266a380|03978442963c4368|33f34b0872d79ae8|1554002692|manuscript/appendix.pdf*manuscript/appendix.qmd|t19508.6527572201s|a5ed8d808096f811|456573|file|local|vector|||64.07||
+.Random.seed|object|721cf8d6394598cf|||||||||||||||
+appendix|stem|bc140a8b9c431e8f|6e6632fbc52e8d3b|33f34b0872d79ae8|1554002692|manuscript/appendix.pdf*manuscript/appendix.qmd|t19523.7271014864s|c01c415203485b20|456842|file|local|vector|||88.65||
 bvq_data|stem|e38d237cf8a2e247|1713fb13bcb0ffed|abbee844f3596b03|-1902070830||t19502.6801432217s|45ce29ef240729da|1224226|rds|local|vector|||1.36||
 bvq_data_file|stem|2eeaa6c449fa1e44|48eaf072f2413071|ef46db3751d8e999|1011699987||t19502.6800805936s|d586f792a395948c|68|rds|local|vector|||0.02||
 childes|stem|637fa6be8f7bc26f|257adfb4dcdab016|55115efc18bbf37d|-1780705379||t19502.6800802932s|a003be010e86b4f4|534735|rds|local|vector|||53.49||
@@ -23,7 +23,7 @@ get_syllable_data|function|ee800368d21533e0|||||||||||||||
 get_vars_dict|function|223a0f1f81457962|||||||||||||||
 items|stem|02e41dc21548abba|49b6cd25c41a1b0f|3fb09f37b7fe43fc|-986180865||t19502.6801512401s|8a1a7c406d603fbb|26069|rds|local|vector|||0.22||
 items_test|stem|32af597cbdb2a163|762d2cbc9b05fe3c|740911248080b911|883923261||t19502.6802635148s|ac45463db19e2cbe|48|rds|local|vector|||0.48||
-manuscript|stem|7a1c45c651b11879|d51bfc7761ca25cd|87a3c731430c1b8e|615889701|manuscript/manuscript.docx*manuscript/manuscript.pdf*manuscript/manuscript.qmd|t19509.3169603835s|7a01814959943c48|845956|file|local|vector|||113.03||
+manuscript|stem|8b32c7185a23b430|f985cf6401a9f219|87a3c731430c1b8e|615889701|manuscript/manuscript.docx*manuscript/manuscript.pdf*manuscript/manuscript.qmd|t19523.7260460833s|33e9587a38f686fe|649975|file|local|vector|||111.89||
 model_convergence|stem|ca2f52d5efb4f3c0|68cbac5a8705de12|1dbed150bd190dfa|1264401096||t19502.6935434432s|40173b4f8b5e89ec|124886|rds|local|vector|||35.08||
 model_doe|stem|fe0be16727e80eb3|451d52066e22a370|214ebe7b4068ad69|1345599899||t19502.6923040386s|d5d4ae490d3f3d5e|109834714|rds|local|vector|||3.87||
 model_draws|stem|17e7bffd5b3fcfa0|5ed56054fe238dda|feb3a6d76e118407|-665592718||t19502.6980753151s|bd7ad2082925337a|273283|rds|local|vector|||0.95||
@@ -43,7 +43,7 @@ posterior_doe_draws|stem|b751c241222d27a7|73593b2d52828141|9dc9c625bcd7a360|-728
 posterior_doe_summary|stem|1f0393df77359f71|06e8c5133c288b89|eba5e523847a2abb|1252589896||t19502.6928759433s|39eeffab9dd49f98|18050|rds|local|vector|||12.27||
 posterior_predictions|function|9565a9ea6df0cea8|||||||||||||||
 posterior_predictions_re|function|4b37fdfc971712ca|||||||||||||||
-report|stem|a2544cbbe5b8b181|8426fee6f5bac2c5|882a90a4d7f39864|-237041703|docs/index.html*docs/index.qmd|t19508.6595704538s|72a34b14d600bef0|464902|file|local|vector|||588.61||
+report|stem|a2544cbbe5b8b181|83949303439638f3|882a90a4d7f39864|-237041703|docs/index.html*docs/index.qmd|t19508.6595704538s||464902|file|local|vector|||559.61||33m39m System command quarto.exe failed
 responses|stem|34aa789e23b47d47|d6c1f45abce97916|178057d6bb9d3951|403517661||t19502.6802545526s|e711656660d2ce66|1319138|rds|local|vector|||5.39||
 responses_test|stem|32af597cbdb2a163|c526232cbe04f108|e195ef2cbdff6ece|-1505889607||t19502.6924829275s|ac45463db19e2cbe|48|rds|local|vector|||1.06||
 save_files|function|dd79763baf326cae|||||||||||||||

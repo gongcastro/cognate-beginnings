@@ -8,7 +8,11 @@ suppressPackageStartupMessages({
         library(testthat)
         # modelling
         library(brms)
+        library(cmdstanr)
         library(tidybayes)
+        # reporting
+        library(quarto)
+        library(gt)
     })
 })
 
