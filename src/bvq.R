@@ -52,7 +52,7 @@ get_bvq <- function(...) {
             edu_parent
         )
     
-    pool <- bvqdev::pool |>
+    pool <- bvq::pool |>
         mutate(sampa_flat = flatten_sampa(sampa))
     
     # get list of all relevant datasets

@@ -2,12 +2,13 @@ source("renv/activate.R")
 
 options(crayon.enabled = TRUE,
         repos = c(CRAN = "https://cloud.r-project.org",
-                  bvq = "https://gongcastro.r-universe.dev"))
+                  gon = "https://gongcastro.r-universe.dev",
+                  stan = "https://mc-stan.org/r-packages/"))
 
 if (interactive()) {
     
     suppressWarnings({
-        inst_pkgs <- installed.packages()
+        inst_pkgs <- utils::installed.packages()
         if (!all(c("targets", "cli") %in% inst_pkgs)) {
             message("Packages cli and targets must be installed.\nPlease, install them and restart your R session or run `renv::restore()`")
         } else {
