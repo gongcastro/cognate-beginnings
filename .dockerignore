@@ -2,3 +2,4 @@
 Dockerfile
 .Rproj.user
 _targets.yaml
+renv/library/
