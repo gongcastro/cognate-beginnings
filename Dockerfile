@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y libgmp3-dev
 RUN apt-get update && apt-get install -y build-essential gfortran gcc g++ make
 RUN apt-get update && apt-get install -y libssl-dev
 RUN apt-get update && apt-get install -y ssh-askpass ssh-askpass-gnome
-RUN apt-get update && apt-get install -y --no-install-recommends libmariadbclient-dev
+RUN apt-get update && apt-get install -y --no-install-recommends default-libmariadbclient-dev
 
 
 # copy the whole directory to /rstudio (working directory in Posit Cloud)
