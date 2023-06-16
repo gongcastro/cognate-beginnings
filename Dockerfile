@@ -8,13 +8,25 @@ LABEL "about" = "A Docker container for the cognate-begininings study" \
 
 # add C++ dependencies
 USER root
-RUN apt-get update && apt-get install -y libxml2-dev libglpk-dev libgmp3-dev
-RUN apt-get update && apt-get install -y build-essential gfortran gcc g++ make
-RUN apt-get update && apt-get install -y libssl-dev libzmq3-dev libpng-dev libsodium-dev
-RUN apt-get update && apt-get install -y ssh-askpass ssh-askpass-gnome
-RUN apt-get update && apt-get install -y --no-install-recommends default-libmysqlclient-dev libmagick++-dev libharfbuzz-dev libfribidi-dev
-
-
+RUN apt-get update && \
+    apt-get install -y libxml2-dev \
+    libglpk-dev \
+    libgmp3-dev \
+    build-essential \
+    gfortran \
+    gcc \
+    g++ \
+    make\
+    libssl-dev \
+    libzmq3-dev \
+    libpng-dev \
+    libsodium-dev \
+    ssh-askpass \
+    ssh-askpass-gnome \
+    default-libmysqlclient-dev \
+    libmagick++-dev \
+    libharfbuzz-dev \
+    libfribidi-dev
 
 # copy the whole directory to /rstudio (working directory in Posit Cloud)
 COPY . '/home/rstudio/'
@@ -23,7 +35,8 @@ COPY . '/home/rstudio/'
 # set repos
 RUN Rscript -e 'options(repos = c(CRAN = "https://cloud.r-project.org",\
     gongcastro = "https://gongcastro.r-universe.dev",\
-    stan = "https://mc-stan.org/r-packages/"))'
+    stan = "https://mc-stan.org/r-packages/"),\
+    renv.cache.linkable = TRUE)'
 
 # install cli
 RUN Rscript -e 'install.packages("cli")'
@@ -36,7 +49,6 @@ RUN Rscript -e 'install.packages("targets")'
 
 # install renv
 RUN Rscript -e 'install.packages("renv")'
-
 ENV RENV_PATHS_LIBRARY renv/library
 RUN cd /home/rstudio/ && Rscript -e 'renv::activate(); renv::restore()'
 
