@@ -1,6 +1,8 @@
 .Renviron
 Dockerfile
-.Rproj.user
+.Rproj.user/
 _targets.yaml
-renv/library/
-.vscode
+.vscode/
+.github/
+.gitignore
+renv/library
