@@ -10,7 +10,7 @@ LABEL "about" = "A Docker container for the cognate-begininings study" \
 USER root
 RUN apt-get update && apt-get install -y libxml2-dev libglpk-dev libgmp3-dev
 RUN apt-get update && apt-get install -y build-essential gfortran gcc g++ make
-RUN apt-get update && apt-get install -y libssl-dev libzmq3-dev libpng12-devel libsodium-dev
+RUN apt-get update && apt-get install -y libssl-dev libzmq3-dev libpng12-dev libpng12-0 libsodium-dev
 RUN apt-get update && apt-get install -y ssh-askpass ssh-askpass-gnome
 RUN apt-get update && apt-get install -y --no-install-recommends default-libmysqlclient-dev
 
