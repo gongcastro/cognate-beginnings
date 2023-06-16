@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y libssl-dev
 RUN apt-get update && apt-get install -y ssh-askpass ssh-askpass-gnome
 RUN apt-get update && apt-get install -y --no-install-recommends default-libmysqlclient-dev
 RUN apt-get update && apt-get install -y libsodium-dev
+RUN apt-get update && apt-get install -y libzmq3-dev
 
 
 
