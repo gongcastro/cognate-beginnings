@@ -8,13 +8,14 @@ LABEL "about" = "A Docker container for the cognate-begininings study" \
 
 # add C++ dependencies
 USER root
-RUN apt update && apt-get install -y libxml2-dev
-RUN apt update && apt-get install -y libglpk-dev
-RUN apt update && apt-get install -y libgmp3-dev
-RUN apt update && apt-get install -y build-essential gfortran gcc g++ make
-RUN apt update && apt-get install -y libssl-dev
-RUN apt update && apt-get install -y ssh-askpass ssh-askpass-gnome
-RUN apt-get install -y mariadb-server
+RUN apt-get update && apt-get install -y libxml2-dev
+RUN apt-get update && apt-get install -y libglpk-dev
+RUN apt-get update && apt-get install -y libgmp3-dev
+RUN apt-get update && apt-get install -y build-essential gfortran gcc g++ make
+RUN apt-get update && apt-get install -y libssl-dev
+RUN apt-get update && apt-get install -y ssh-askpass ssh-askpass-gnome
+RUN apt-get update && apt-get install -y --no-install-recommends libmariadbclient-dev
+
 
 # copy the whole directory to /rstudio (working directory in Posit Cloud)
 COPY . '/home/rstudio/'
@@ -37,6 +38,7 @@ RUN Rscript -e 'install.packages("targets")'
 # install renv
 RUN Rscript -e 'install.packages("renv")'
 
+ENV RENV_PATHS_LIBRARY renv/library
 RUN cd /home/rstudio/ && Rscript -e 'renv::activate(); renv::restore()'
 
 # expose RStudio IDE on this port
