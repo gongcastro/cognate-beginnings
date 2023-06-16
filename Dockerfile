@@ -1,4 +1,5 @@
-FROM rocker/rstudio:4.2
+FROM rocker/rstudio:4.2.2
+
 LABEL "about" = "A Docker container for the cognate-begininings study" \
     "author" = "Gonzalo Garcia-Castro <gongarciacastro@gmail.com>"\
     "github" = "https://github.com/gongcastro/cognate-beginnings" \
@@ -18,6 +19,7 @@ RUN apt-get install -y mariadb-server
 # copy the whole directory to /rstudio (working directory in Posit Cloud)
 COPY . '/home/rstudio/'
 
+
 # set repos
 RUN Rscript -e 'options(repos = c(CRAN = "https://cloud.r-project.org",\
     gongcastro = "https://gongcastro.r-universe.dev",\
@@ -35,7 +37,7 @@ RUN Rscript -e 'install.packages("targets")'
 # install renv
 RUN Rscript -e 'install.packages("renv")'
 
-RUN R -e 'renv::restore()'
+RUN cd /home/rstudio/ && Rscript -e 'renv::activate(); renv::restore()'
 
 # expose RStudio IDE on this port
 # http://localhost:8787
