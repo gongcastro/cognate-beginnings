@@ -33,10 +33,12 @@ COPY . '/home/rstudio/'
 
 
 # set repos
-RUN Rscript -e 'options(repos = c(CRAN = "https://cloud.r-project.org",\
+RUN Rscript -e 'options( \
+    repos = c(CRAN = "https://cloud.r-project.org",\
     gongcastro = "https://gongcastro.r-universe.dev",\
     stan = "https://mc-stan.org/r-packages/"),\
-    renv.cache.linkable = TRUE)'
+    renv.cache.linkable = TRUE, \
+    renv.config.cache.symlinks = TRUE)'
 
 # install cli
 RUN Rscript -e 'install.packages("cli")'
@@ -50,7 +52,7 @@ RUN Rscript -e 'install.packages("targets")'
 # install renv
 RUN Rscript -e 'install.packages("renv")'
 ENV RENV_PATHS_LIBRARY renv/library
-RUN cd /home/rstudio/ && Rscript -e 'renv::activate(); renv::restore()'
+RUN cd /home/rstudio/ && Rscript -e 'renv::activate(); renv::restore();'
 
 # expose RStudio IDE on this port
 # http://localhost:8787
