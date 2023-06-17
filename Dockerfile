@@ -52,7 +52,7 @@ RUN Rscript -e 'install.packages("targets")'
 # install and configure renv
 RUN mkdir /renv-cache
 ENV RENV_PATHS_CACHE /renv-cache
-COPY renv/library/R-4.2/x86_64-w64-mingw32/. ${RENV_PATHS_CACHE}
+COPY ./renv/library/R-4.2/x86_64-w64-mingw32/. ${RENV_PATHS_CACHE}
 RUN Rscript -e 'install.packages("renv")'
 RUN cd /home/rstudio/ && Rscript -e 'renv::init(bare = TRUE, force = TRUE); options(renv.config.cache.symlinks = TRUE, renv.cache.linkable = TRUE); renv::restore(prompt = FALSE, library=renv:::renv_libpaths_system(), lockfile = "renv.lock")'
 
