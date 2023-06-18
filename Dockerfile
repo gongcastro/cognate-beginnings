@@ -45,8 +45,9 @@ RUN Rscript -e 'install.packages("remotes")'
 RUN Rscript -e 'install.packages("targets")'
 
 # install and configure renv
+WORKDIR /home/rstudio
 RUN Rscript -e 'remotes::install_github("rstudio/renv@0.15.4")'
-RUN R -e "renv::restore()"
+RUN R -e 'renv::restore()''
 
 # expose RStudio IDE on this port
 # http://localhost:8787
