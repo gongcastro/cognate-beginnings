@@ -45,15 +45,8 @@ RUN Rscript -e 'install.packages("remotes")'
 RUN Rscript -e 'install.packages("targets")'
 
 # install and configure renv
-ENV RENV_PATHS_ROOT=/home/rstudio/renv
-ENV RENV_PATHS_LIBRARY=/home/rstudio/renv/library
-RUN echo "" >> ${R_HOME}/etc/.Renviron
-RUN echo "RENV_PATHS_ROOT=${RENV_PATHS_ROOT}" >> $/home/rstudio/.Renviron
-RUN echo "RENV_PATHS_LIBRARY=${RENV_PATHS_LIBRARY}" >> /home/rstudio/.Renviron
-
 RUN Rscript -e 'remotes::install_github("rstudio/renv@0.15.4")'
-COPY renv ./renv/
-RUN R -e "renv::restore(lockfile='/home/rstudio/renv.lock', library='/home/rstudio/renv/library/R-4.0/x86_64-pc-linux-gnu')"
+RUN R -e "renv::restore()"
 
 # expose RStudio IDE on this port
 # http://localhost:8787
