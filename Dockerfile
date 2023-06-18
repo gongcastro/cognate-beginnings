@@ -40,19 +40,15 @@ RUN Rscript -e 'options( \
     renv.cache.linkable = TRUE, \
     renv.config.cache.symlinks = TRUE)'
 
-# install cli
+# install basic R dependencies
 RUN Rscript -e 'install.packages("cli")'
-
-# install remotes
 RUN Rscript -e 'install.packages("remotes")'
-
-# install targets
 RUN Rscript -e 'install.packages("targets")'
 
 # install and configure renv
 RUN Rscript -e 'remotes::install_github("rstudio/renv@0.15.4")'
 ENV RENV_PATHS_LIBRARY renv/library
-RUN Rscript -e 'renv::restore(prompt = FALSE)'
+RUN Rscript -e 'renv::activate(); renv::restore(prompt = FALSE)'
 
 # expose RStudio IDE on this port
 # http://localhost:8787
