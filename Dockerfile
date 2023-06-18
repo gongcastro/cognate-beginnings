@@ -7,7 +7,7 @@ LABEL "about" = "A Docker container for the cognate-begininings study" \
     "source"="https://github.com/gongcastro/cognate-beginnings/blob/main/Dockerfile"
 
 # add C++ dependencies
-USER root
+USER rstudio
 RUN apt-get update && \
     apt-get install -y libxml2-dev \
     libglpk-dev \
