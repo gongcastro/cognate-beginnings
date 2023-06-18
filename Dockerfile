@@ -26,7 +26,8 @@ RUN apt-get update && \
     default-libmysqlclient-dev \
     libmagick++-dev \
     libharfbuzz-dev \
-    libfribidi-dev
+    libfribidi-dev \
+    libicu-dev
 
 # copy the whole directory to /rstudio (working directory in Posit Cloud)
 COPY . '/home/rstudio/'
@@ -36,9 +37,7 @@ COPY . '/home/rstudio/'
 RUN Rscript -e 'options( \
     repos = c(CRAN = "https://cloud.r-project.org",\
     gongcastro = "https://gongcastro.r-universe.dev",\
-    stan = "https://mc-stan.org/r-packages/"),\
-    renv.cache.linkable = TRUE, \
-    renv.config.cache.symlinks = TRUE)'
+    stan = "https://mc-stan.org/r-packages/"))'
 
 # install basic R dependencies
 RUN Rscript -e 'install.packages("cli")'
@@ -46,8 +45,15 @@ RUN Rscript -e 'install.packages("remotes")'
 RUN Rscript -e 'install.packages("targets")'
 
 # install and configure renv
+ENV RENV_PATHS_ROOT=/home/rstudio/renv
+ENV RENV_PATHS_LIBRARY=/home/rstudio/renv/library
+RUN echo "" >> ${R_HOME}/etc/.Renviron
+RUN echo "RENV_PATHS_ROOT=${RENV_PATHS_ROOT}" >> $/home/rstudio/.Renviron
+RUN echo "RENV_PATHS_LIBRARY=${RENV_PATHS_LIBRARY}" >> /home/rstudio/.Renviron
+
 RUN Rscript -e 'remotes::install_github("rstudio/renv@0.15.4")'
-RUN Rscript --vanilla -e 'renv::restore(prompt = FALSE)'
+COPY renv ./renv/
+RUN R -e "renv::restore(lockfile='/home/rstudio/renv.lock', library='/home/rstudio/renv/library/R-4.0/x86_64-pc-linux-gnu')"
 
 # expose RStudio IDE on this port
 # http://localhost:8787
