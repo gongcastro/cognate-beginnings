@@ -1,6 +1,7 @@
 .Renviron
-Dockerfile
 .Rproj.user/
+.Rprofile
+Dockerfile
 _targets.yaml
 .vscode/
 .github/
