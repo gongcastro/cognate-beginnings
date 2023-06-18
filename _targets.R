@@ -10,9 +10,11 @@ suppressPackageStartupMessages({
         library(brms)
         library(cmdstanr)
         library(tidybayes)
+        library(collapse)
         # reporting
         library(quarto)
         library(gt)
+        library(beeswarm)
     })
 })
 
@@ -138,7 +140,8 @@ list(
     tar_target(model_epreds,
                posterior_predictions(model = model_fit,
                                      responses, 
-                                     age_std = scale(seq(7, 40),
+                                     ndraws = 100,
+                                     age_std = scale(seq(7, 40, length.out = 100),
                                                      mean(responses$age),
                                                      sd(responses$age)),
                                      exposure_std = c(-1, 0, 1),
