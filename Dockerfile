@@ -29,7 +29,6 @@ RUN apt-get update && \
     libicu-dev
 
 # copy the whole directory to /rstudio (working directory in Posit Cloud)
-USER rstudio
 COPY . '/home/rstudio/'
 
 # install basic R dependencies
