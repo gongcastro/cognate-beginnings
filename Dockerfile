@@ -50,8 +50,7 @@ RUN Rscript -e 'install.packages("remotes")'
 RUN Rscript -e 'install.packages("targets")'
 
 # install and configure renv
-ENV RENV_VERSION 0.15.4
-RUN Rscript -e 'remotes::install_github("rstudio/renv@${RENV_VERSION}")'
+RUN Rscript -e 'remotes::install_github("rstudio/renv@0.15.4")'
 ENV RENV_PATHS_LIBRARY renv/library
 RUN Rscript -e 'renv::restore(prompt = FALSE)'
 
