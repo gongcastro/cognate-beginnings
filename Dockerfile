@@ -31,7 +31,6 @@ RUN apt-get update && \
 # copy the whole directory to /rstudio (working directory in Posit Cloud)
 USER rstudio
 COPY . '/home/rstudio/'
-WORKDIR /home/rstudio/
 
 # install basic R dependencies
 RUN Rscript -e 'install.packages("cli")'
