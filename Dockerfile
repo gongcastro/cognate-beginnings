@@ -51,9 +51,9 @@ RUN Rscript -e 'install.packages("targets")'
 
 # install and configure renv
 ENV RENV_VERSION 0.15.4
-RUN R -e "remotes::install_github('rstudio/renv@${RENV_VERSION}')"
+RUN R -e 'remotes::install_github("rstudio/renv@${RENV_VERSION}")'
 ENV RENV_PATHS_LIBRARY renv/library
-RUN R -e 'renv::restore(prompt = FALSE, lockfile = "renv.lock")'
+RUN R -e 'renv::restore(prompt = FALSE)'
 
 # expose RStudio IDE on this port
 # http://localhost:8787
