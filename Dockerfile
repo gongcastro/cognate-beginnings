@@ -7,7 +7,6 @@ LABEL "about" = "A Docker container for the cognate-begininings study" \
     "source"="https://github.com/gongcastro/cognate-beginnings/blob/main/Dockerfile"
 
 # add C++ dependencies
-USER rstudio
 RUN apt-get update && \
     apt-get install -y libxml2-dev \
     libglpk-dev \
@@ -30,6 +29,7 @@ RUN apt-get update && \
     libicu-dev
 
 # copy the whole directory to /rstudio (working directory in Posit Cloud)
+USER rstudio
 COPY . '/home/rstudio/'
 WORKDIR /home/rstudio
 
