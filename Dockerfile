@@ -31,7 +31,7 @@ RUN apt-get update && \
 
 # copy the whole directory to /rstudio (working directory in Posit Cloud)
 COPY . '/home/rstudio/'
-
+WORKDIR /home/rstudio
 
 # set repos
 RUN Rscript -e 'options( \
@@ -45,7 +45,6 @@ RUN Rscript -e 'install.packages("remotes")'
 RUN Rscript -e 'install.packages("targets")'
 
 # install and configure renv
-WORKDIR /home/rstudio
 RUN Rscript -e 'remotes::install_github("rstudio/renv@0.15.4")'
 RUN R -e 'renv::restore()''
 
