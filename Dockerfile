@@ -33,12 +33,6 @@ RUN apt-get update && \
 COPY . '/home/rstudio/'
 WORKDIR /home/rstudio
 
-# set repos
-RUN Rscript -e 'options( \
-    repos = c(CRAN = "https://cloud.r-project.org",\
-    gongcastro = "https://gongcastro.r-universe.dev",\
-    stan = "https://mc-stan.org/r-packages/"))'
-
 # install basic R dependencies
 RUN Rscript -e 'install.packages("cli")'
 RUN Rscript -e 'install.packages("remotes")'
@@ -46,7 +40,7 @@ RUN Rscript -e 'install.packages("targets")'
 
 # install and configure renv
 RUN Rscript -e 'remotes::install_github("rstudio/renv@0.15.4")'
-RUN R -e 'renv::restore()''
+RUN Rscript -e 'renv::restore()''
 
 # expose RStudio IDE on this port
 # http://localhost:8787
