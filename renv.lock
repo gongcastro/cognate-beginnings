@@ -7,7 +7,7 @@
         "URL": "https://cloud.r-project.org"
       },
       {
-        "Name": "bvq",
+        "Name": "gon",
         "URL": "https://gongcastro.r-universe.dev"
       },
       {
@@ -291,6 +291,22 @@
         "datawizard",
         "insight"
       ]
+    },
+    "beeswarm": {
+      "Package": "beeswarm",
+      "Version": "0.4.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "0f4e9d8caa6feaa7e409ae6c30f2ca66",
+      "Requirements": []
+    },
+    "bigD": {
+      "Package": "bigD",
+      "Version": "0.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "93637e906f3fe962413912c956eb44db",
+      "Requirements": []
     },
     "bit": {
       "Package": "bit",
@@ -591,6 +607,16 @@
       "Repository": "CRAN",
       "Hash": "c089a619a7fae175d149d89164f8c7d8",
       "Requirements": []
+    },
+    "collapse": {
+      "Package": "collapse",
+      "Version": "1.9.6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "a3786192601b0e69c491c805dadebd5d",
+      "Requirements": [
+        "Rcpp"
+      ]
     },
     "colorspace": {
       "Package": "colorspace",
@@ -1169,27 +1195,31 @@
     },
     "gt": {
       "Package": "gt",
-      "Version": "0.5.0",
+      "Version": "0.9.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f2640b730afa504e9a62755041b598c3",
+      "Hash": "d55233a737e43e44987724e57dfec302",
       "Requirements": [
         "base64enc",
+        "bigD",
         "bitops",
-        "checkmate",
+        "cli",
         "commonmark",
         "dplyr",
         "fs",
-        "ggplot2",
         "glue",
         "htmltools",
+        "htmlwidgets",
+        "juicyjuice",
         "magrittr",
+        "markdown",
+        "reactable",
         "rlang",
         "sass",
         "scales",
-        "stringr",
         "tibble",
-        "tidyselect"
+        "tidyselect",
+        "xml2"
       ]
     },
     "gtable": {
@@ -1452,6 +1482,16 @@
       "Repository": "CRAN",
       "Hash": "3ee4d9899e4db3e976fc82b98d24a31a",
       "Requirements": []
+    },
+    "juicyjuice": {
+      "Package": "juicyjuice",
+      "Version": "0.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3bcd11943da509341838da9399e18bce",
+      "Requirements": [
+        "V8"
+      ]
     },
     "keyring": {
       "Package": "keyring",
@@ -1738,6 +1778,14 @@
         "askpass"
       ]
     },
+    "packrat": {
+      "Package": "packrat",
+      "Version": "0.9.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "481428983c19a7c443f7ea1beff0a2de",
+      "Requirements": []
+    },
     "parallelly": {
       "Package": "parallelly",
       "Version": "1.36.0",
@@ -1938,6 +1986,22 @@
         "vctrs"
       ]
     },
+    "quarto": {
+      "Package": "quarto",
+      "Version": "1.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "298a252816cabed120391c955aced484",
+      "Requirements": [
+        "jsonlite",
+        "later",
+        "processx",
+        "rmarkdown",
+        "rsconnect",
+        "rstudioapi",
+        "yaml"
+      ]
+    },
     "ragg": {
       "Package": "ragg",
       "Version": "1.2.5",
@@ -1956,6 +2020,30 @@
       "Repository": "CRAN",
       "Hash": "5e3c5dc0b071b21fa128676560dbe94d",
       "Requirements": []
+    },
+    "reactR": {
+      "Package": "reactR",
+      "Version": "0.4.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "75389c8091eb14ee21c6bc87a88b3809",
+      "Requirements": [
+        "htmltools"
+      ]
+    },
+    "reactable": {
+      "Package": "reactable",
+      "Version": "0.4.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "6069eb2a6597963eae0605c1875ff14c",
+      "Requirements": [
+        "digest",
+        "htmltools",
+        "htmlwidgets",
+        "jsonlite",
+        "reactR"
+      ]
     },
     "readr": {
       "Package": "readr",
@@ -2093,6 +2181,22 @@
       "Repository": "CRAN",
       "Hash": "1de7ab598047a87bba48434ba35d497d",
       "Requirements": []
+    },
+    "rsconnect": {
+      "Package": "rsconnect",
+      "Version": "0.8.29",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "fe178fc15af80952f546aafedf655b36",
+      "Requirements": [
+        "curl",
+        "digest",
+        "jsonlite",
+        "openssl",
+        "packrat",
+        "rstudioapi",
+        "yaml"
+      ]
     },
     "rstan": {
       "Package": "rstan",
