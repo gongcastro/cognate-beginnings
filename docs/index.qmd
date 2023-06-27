@@ -36,7 +36,7 @@ author:
         city: Madrid
         region: Spain
         postal-code: "28049"
-  - name: Núria Sebastian-Galles
+  - name: Nuria Sebastian-Galles
     orcid: 0000-0001-6938-2498
     affiliations: 
       - ref: cbc
@@ -60,7 +60,7 @@ format:
   html: default
 
 abstract: |
-    Language non-selectivity is prominent feature of bilingual lexical processing. An instance of such non-selectivity is embodied by cognateness, which recent studies have suggested to facilitate vocabulary acquisition in bilingual toddlers, who show larger vocabulary sizes when their languages share many cognates, and to be acquired at earlier ages than non-cognates. The specific mechanisms behind such facilitation are unclear. We present an account of early bilingual vocabulary growth in which cognateness interacts with lexical frequency and language exposure to facilitate the word acquisition. We evaluated this model against vocabulary data from 436 Catalan-Spanish bilinguals toddlers. We used Bayesian Explanatory Item Response Models to estimate participants’ probability of acquisition of 604 words, conditional to the cognate status and lexical frequency of the word-form, and the age and degree of exposure to each language of the toddler. We found cognateness facilitation effect only in low-frequency words. Overall, our findings support an interactive account of bilingual vocabulary acquisition in which the lexical representations in one language interact with the acquisition of words in the other language.
+    Language non-selectivity is prominent feature of the bilingual lexicon. An instance of such non-selectivity is embodied by cognateness, which recent studies have suggested to facilitate vocabulary acquisition in bilingual toddlers, who show larger vocabulary sizes when their languages share many cognates, and to be acquired at earlier ages than non-cognates. The specific mechanisms behind such facilitation are unclear. We present an account of early bilingual vocabulary growth in which cognateness interacts with lexical frequency and language exposure to facilitate the word acquisition. We evaluated this model against vocabulary data from 436 Catalan-Spanish bilinguals toddlers. We used Bayesian Explanatory Item Response Models to estimate participants’ probability of acquisition of 604 words, conditional to the cognate status and lexical frequency of the word-form, and the age and degree of exposure to each language of the toddler. We found cognateness facilitation effect only in low-frequency words. Overall, our findings support an interactive account of bilingual vocabulary acquisition in which the lexical representations in one language interact with the acquisition of words in the other language.
 
 fig-dpi: 1000
 
@@ -127,29 +127,10 @@ options(ggplot2.ordinal.fill = clrs,
 ```
 
 
-# Methods
-
 ::: {.callout-tip}
 Data and materials are available at [OSF](https://osf.io/hy984/), and code is available at [GitHub](https://github.com/gongcastro/trajectories).
 :::
 
-## Questionnaires
-
-```{r}
-#| label: questionnaire
-#| message: false
-#| warning: false
-data("pool", package = "bvq")
-n_categories <- distinct(pool, semantic_category) %>% nrow()
-n_items <- length(unique(pool$item))
-n_item_language <- count(pool, language) %>% 
-    pull(n) %>%
-    set_names(c("catalan", "spanish"))
-```
-
-The questionnaire was implemented on-line using the formR platform [@arslan2020formr], and was structured in three blocks: a (1) language questionnaire, a (2) demographic survey, and a (3) Catalan and a Spanish vocabulary checklists. Vocabulary checklists followed a similar structure as the Oxford Communicative Developmental Inventory [@hamilton2000infant] and consisted of two lists of words: one in Catalan and one in Spanish. The Catalan inventory contained `r n_item_language["catalan"]` items and the Spanish inventory contained `r n_item_language["spanish"]` items. Items in one language were translation equivalents of the items in the other language (e.g., whenever *gos* \[dog\] was included in the Catalan inventory, the word *perro* was included in the Spanish inventory), roughly following a one-to-one mapping. When there were two acceptable translation equivalents for a given word, we included both in separate items (e.g., Catalan *acabar* \[*to finish*\] and Spanish *acabar* and *terminar*), or merged them into a single items (e.g., Spanish *mono* \[*monkey*\] and Catalan *mono/mico*. We included items from a diverse sample of `r n_categories` semantic/functional categories (see Appendix 1). For the analyses included in this study, we excluded items from the adverbs, auxiliary words, connectives, interjections and games and routines categories, so that only data from content words (nouns, adjectives, and verbs) were used.
-
-For each word in the vocabulary checklists, we asked parents to report whether their child was able to understand it, understand *and* say it, or did not understand or say it (checked out by default). Some families filled a long version of the vocabulary checklists (800 translation equivalents; 800 items in Catalan, 800 items in Spanish), while others filled a shorter version (\~400 translation equivalents, \~400 items in Catalan, \~400 items in Spanish). These last families were randomly assigned to one of four different subsets of the complete list of items. These lists were designed so that each contained a representative subsample of the items from the complete list. Semantic/functional categories with less than 16 items were not divided in the short version of the questionnaire to preserve a minimum of four items per list for each category: all of their items were included in the four lists. Another subset of items that were part of the trial lists of some experiments in the lab were also included in all versions. Table 2 in Appendix 1 shows the distribution of items across questionnaire versions. We excluded from the analysis multi-word items (e.g., *barrita de cereales* \[cereal bar\]) and items that included more than one word-form (e.g., *mono / mico*). Table 3 shows the classification of items in cognates and non-cognates and their lexical frequency scores across the four lists of the inventories.
 
 ## Participants
 
@@ -379,7 +360,7 @@ items %>%
 
 ### Lexical frequency
 
-Word lexical frequency ($Frequency$): lexical frequency of the word in its corresponding language, expressed as Zipf scores [@van2014subtlex; @zipf1949human]. This variable ranges from 0 to 7, and follows and approximates a normal distribution, with most values in a corpus ranging from 3 to 5 points. Lexical frequencies were extracted from the English corpora of the [CHILDES](https://childes.talkbank.org/) database using the [{childesr}](https://langcog.github.io/childes-db-website/) R package. Available words in the corpora were then mapped to their Catalan and Spanish translations. Therefore, the Catalan and Spanish word-forms of the same translation equivalent had the same value for lexical frequency. Responses to words with missing lexical frequencies were excluded from analyses of the total number of items). 
+Word lexical frequency ($Frequency$): lexical frequency of the word in its corresponding language, expressed as Zipf scores [@van2014subtlex; @zipf1949human]. Lexical frequencies were extracted from the English corpora of the [CHILDES](https://childes.talkbank.org/) database using the [`childesr`](https://langcog.github.io/childes-db-website/) R package. Available words in the corpora were then mapped to their Catalan and Spanish translations. Responses to words with missing lexical frequencies were excluded from analyses.
 
 
 ```{r}
