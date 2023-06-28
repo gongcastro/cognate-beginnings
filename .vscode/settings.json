@@ -1,3 +1,9 @@
 {
-    "r.lsp.promptToInstall": false
+    "r.lsp.promptToInstall": false,
+    "shellLauncher.shells.windows": [
+        {
+            "shell": "C:/Program Files/PowerShell/7-preview/pwsh.exe",
+            "label": "PowerShell 7.4.0"
+        }
+    ]
 }

@@ -105,7 +105,6 @@ pool_tmp |>
 ```
 
 
-
 We now present how syllable frequencies were calculated. Every exposure to a word-form also counts as a exposure to each of the syllables that make up such word. Every time a child hears the word *casa* [house], they are exposed to the syllables *ca* and *sa*. Syllables that appear embedded in words with higher lexical frequency will also be more frequent. To compute the relative frequency of each syllable in Catalan and Spanish (i.e., how many times the syllables appears in every million words in Catalan or Spanish speech), we summed the relative lexical frequency in CHILDES of every word that contains such syllable in the corresponding language. @fig-syll-freq shows the distribution of frequencies across syllables in Catalan and Spanish. In the log10 scale, syllable frequencies in Catalan and Spanish followed a slightly asymmetric distribution, with most syllables scoring around 1,000 counts per million, and a longer tail to the right of the distribution.
 
 ```{r fig-syll-freq}
@@ -149,41 +148,7 @@ syll |>
           legend.position = "none")
 ```
 
-@fig-top-syll-freq shows the top twenty most frequent syllables in Spanish. In both languages, most of the most frequent syllables followed a consonant-vowel (CV) structured. In Catalan, the most common nucleus in the most frequent syllables was /\textschwa/ (most likely due to vowel reduction in unstressed syllables), followed by /u/. In Spanish, the most common nucleus in the most frequent syllables were /a/ and /o/.
-
-```{r fig-top-syll-freq}
-#| label: fig-top-syll-freq
-#| fig-cap: "Top 20 most frequent syllables"
-#| fig-width: 8
-#| fig-height: 3
-#| out-width: 80%
-#| echo: false
-#| warning: false
-#| message: false
-syll |> 
-    group_by(language) |> 
-    top_n(20, freq_syll) |> 
-    ggplot(aes(tidytext::reorder_within(syll, desc(freq_syll), language),
-               freq_syll)) +
-    facet_wrap(~ language,
-               scales = "free_x",
-               ncol = 1) +
-    geom_col(colour = "white",
-             fill = "grey70") +
-    labs(x = "Syllable",
-         y = "Relative frequency\n(counts per million)",
-         colour = "Language",
-         fill = "Language") +
-    tidytext::scale_x_reordered() +
-    scale_y_continuous(labels = \(x) format(x, big.mark = ",")) +
-    theme(legend.position = "none",
-          axis.title.x = element_blank(),
-          axis.text.x = element_text(size = 10),
-          panel.grid = element_blank())
-```
-
-
-To estimate the association between word-level syllabic frequency and cognateness while controlling for the number of syllables in the word, as words are expected to necessarily increase the syllabic frequency of the word), we fit a multilevel, Bayesian linear regression model with syllabic frequency (the sum of the syllabic frequency of the syllables in a word) as response variable, and the main effect of the number of syllables ($Syllables$) and $Cognateness$ (Levenshtein similarity between a word and its translation equivalent) as predictors. We added translation equivalent-level random effects for the intercept and the main effect of $Syllables$ (some translation pairs had a different number of syllables in each language). We used a Gaussian distribution to model syllabic frequency scores after standardising this variable and the predictors. We used a weakly informative prior for all parameters involved in the model (see @eq-model-syllables for a formal equation of this model and its prior).
+To estimate the association between word-level syllabic frequency and cognateness, while controlling for the number of syllables in the word, as words are expected to necessarily increase the syllabic frequency of the word), we fit a multilevel, Bayesian linear regression model with syllabic frequency (the sum of the syllabic frequency of the syllables in a word) as response variable, and the main effect of the number of syllables ($Syllables$) and $Cognateness$ (Levenshtein similarity between a word and its translation equivalent) as predictors. We added translation equivalent-level random effects for the intercept and the main effect of $Syllables$ (some translation pairs had a different number of syllables in each language). We used a Gaussian distribution to model syllabic frequency scores after standardising this variable and the predictors. We used a weakly informative prior for all parameters involved in the model (see @eq-model-syllables for a formal equation of this model and its prior).
 
 $$
 \begin{aligned}

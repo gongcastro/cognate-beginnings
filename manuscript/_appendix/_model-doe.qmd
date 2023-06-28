@@ -1,3 +1,4 @@
+A a robustness check, we fit a model similar to the one described in the main manuscript, but including lexical frequency and language degree of exposure as separate predictors, instead of the composite measure *Exposure*. Language degree of exposure (*DoE*) was included in interaction with *Age* and *Cognateness*, while lexical frequency (*Frequency*) was included as a main effect.
 
 ```{r fig-coefs-doe}
 #| label: fig-coefs-doe
