@@ -87,35 +87,16 @@ options(knitr.graphics.error = FALSE)
 ```
 
 
-## Appendix A: model predictors {.appendix .unnumbered}
-
-{{< include _appendix/_model-predictors.qmd >}}
-
-{{< pagebreak >}}
-
-## Appendix B: model details {.appendix .unnumbered}
-
-{{< include _appendix/_model-details.qmd >}}
-
-{{< pagebreak >}}
-
-## Appendix C: convergence diagnostics {.appendix .unnumbered}
-
-{{< include _appendix/_model-diagnostics.qmd >}}
-
-{{< pagebreak >}}
 
 
-## Appendix D: frequency and language exposure as separate predictors {.appendix .unnumbered}
+## Appendix A: frequency and language exposure as separate predictors {.appendix .unnumbered}
 
 {{< include _appendix/_model-doe.qmd >}}
 
 {{< pagebreak >}}
 
-## Appendix E: frequency and language exposure as separate predictors {.appendix .unnumbered}
+## Appendix B: frequency and language exposure as separate predictors {.appendix .unnumbered}
 
 {{< include _appendix/_syllable-frequency.qmd >}}
 
 {{< pagebreak >}}
-
-## References
