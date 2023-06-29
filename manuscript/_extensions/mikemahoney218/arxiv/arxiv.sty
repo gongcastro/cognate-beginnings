@@ -213,14 +213,15 @@
     \vskip 0.1in
     \def\And{%
       \end{tabular}\hfil\linebreak[0]\hfil%
-      \begin{tabular}[t]{c}\bf\rule{\z@}{24\p@}\ignorespaces%
+      \renewcommand{\arraystretch}{0.1}
+      \begin{tabular}[t]{c}\bf\rule{\z@}{12\p@}\ignorespaces%
     }
     \def\AND{%
-      \end{tabular}\hfil\linebreak[4]\hfil%
-      \begin{tabular}[t]{c}\bf\rule{\z@}{24\p@}\ignorespaces%
+      \end{tabular}\hfil\linebreak[0]\hfil%
+      \begin{tabular}[t]{c}\bf\rule{\z@}{12\p@}\ignorespaces%
     }
-    \begin{tabular}[t]{c}\bf\rule{\z@}{24\p@}\@author\end{tabular}%
-  \vskip 0.4in \@minus 0.1in \center{\today}   \vskip 0.2in
+    \begin{tabular}[t]{c}\bf\rule{\z@}{12\p@}\@author\end{tabular}%
+  \vskip 0.1in \@minus 0.1in \center{\today}   \vskip 0.2in
   }
 }
 
@@ -228,7 +229,6 @@
 \newcommand{\ftype@noticebox}{8}
 \newcommand{\@notice}{%
   % give a bit of extra room back to authors on first page
-  \enlargethispage{2\baselineskip}%
   \@float{noticebox}[b]%
     \footnotesize\@noticestring%
   \end@float%

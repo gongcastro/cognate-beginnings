@@ -48,7 +48,7 @@ lang: en
 
 format:
   arxiv-pdf:
-    keep-tex: true  
+    keep-tex: false  
     linenumbers: true
     doublespacing: true
     runninghead: "Cognate beginnings to bilingual lexical acquistion"
@@ -59,6 +59,8 @@ format:
 abstract: |
     Bilingual infants show equivalent developmental trajectories of lexical acquisition compared to their monolingual peers. This is remarkable, given the increased complexity of their linguistic input. Recent studies suggested that bilingual vocabulary growth is boosted by the number of cognates shared by the pair of languages being learned, and that this facilitation effect is driven by a stronger parallel activation of cognates during linguistic exposure, compared to non-cognates. The mechanisms behind this facilitation are still unclear. In this study, we capitalise on accumulator models of language acquisition to propose an account of bilingual lexical acquisition in which parallel activation increases the rate at which children accumulate learning instances for words in both languages, even in fully monolingual situations. Under this hypothesis, we predicted a stronger cognate facilitation for words to which children were exposed less frequently (low-exposure words), as they are co-activated by their translation more often than high-exposure words do. We developed an extensive online vocabulary checklist, the Barcelona Vocabulary questionnaire (BVQ) to collect vocabulary data from 366 Catalan-Spanish bilingual toddlers aged 12 to 32 months. We then used Bayesian explanatory item response theory to model the acquisition trajectories of 302 Catalan/Spanish translation equivalents. We found an interaction between exposure and cognateness, which pointed to cognateness facilitating the aquisition of low-exposure words, but not of mean exposure or high-exposure words. Overall, our findings suggest that cognateness plays a key role in bilingual lexical acquisition, and provides evidence for a frequency-mediated facilitation effect driven by parallel activation.
 
+thanks: |
+    The authors declare no conflicts of interest with regard to the funding source of this study. This research was supported by grants from the Spanish Ministerio de Ciencia, Innovación y Universidades (PGC2018-101831-B-I00 and PRE2019-088165), and the Catalan Government [ICREA (Catalan Institution for Research and Advanced Studies) Academia 2019 award]. Gonzalo Garcia-Castro was supported by a fellowship of the Spanish Ministerio de Ciencia, Innovación y Universidades (FPI 2019). We are grateful to Chiara Santolin, Ege E. Özer, Alicia Franco-Martínez, Cristina Rodríguez-Prada, and the rest of the Speech Acquisition and Perception research group for their helpful feedback. We thank Xavier Mayoral, Silvia Blanch, and Cristina Cuadrado for their technical support, and Cristina Dominguez and Katia Pistrin for their efforts in recruiting infants. We also thank all families and infants who participated in the experiments.
 fig-dpi: 1000
 ---
 
@@ -104,9 +106,7 @@ theme_set(my_theme)
 set.seed(888)
 ```
 
-# Introduction[^author-note]
-
-[^author-note]: The authors declare no conflicts of interest with regard to the funding source of this study. This research was supported by grants from the Spanish Ministerio de Ciencia, Innovación y Universidades (PGC2018-101831-B-I00 and PRE2019-088165), and the Catalan Government [ICREA (Catalan Institution for Research and Advanced Studies) Academia 2019 award]. Gonzalo Garcia-Castro was supported by a fellowship of the Spanish Ministerio de Ciencia, Innovación y Universidades (FPI 2019). We are grateful to Chiara Santolin, Ege E. Özer, Alicia Franco-Martínez, Cristina Rodríguez-Prada, and the rest of the Speech Acquisition and Perception research group for their helpful feedback. We thank Xavier Mayoral, Silvia Blanch, and Cristina Cuadrado for their technical support, and Cristina Dominguez and Katia Pistrin for their efforts in recruiting infants. We also thank all families and infants who participated in the experiments.
+# Introduction
 
 The foundations of word learning are in place early in age. At six months, infants start directing their gaze to some objects when hearing their labels [@tincoff1999beginnings; @bergelson2012months; @bergelson2015early], and shortly after caregivers start reporting some words as acquired by their infant in vocabulary checklists [e.g., @fenson2007macarthurbates; @samuelson2021precision]. Most research on early word acquisition relies extensively on data from monolingual children, and is oblivious to the fact that a substantial proportion of the world population acquires more than one language from early ages [@grosjean2021extent]. Previous work on bilingual vocabulary acquisition pointed to bilingual toddlers knowing, on average, less words in each of their languages than their monolinguals peers, and to both groups knowing a similar number of words---if not more words---when the bilinguals’ two languages are pooled together. @hoff2012dual found that English-Spanish bilingual toddlers in South Florida (United States) knew less words in English than monolinguals did, but both groups knew a similar total amount of words when both English and Spanish vocabularies were counted together. Other studies have provided converging evidence that bilinguals know a similar or even larger number of words than monolinguals when the two languages are aggregated [@oller2002language; @pearson1994patterns; @pearson1993lexical; @patterson2004comparing; @patterson2004bilingual; @smithson2014bilingualism; @petitto2001bilingual; @gonzalez-barrero2020bilingual]. A more detailed analysis of the words in bilinguals’ lexicon show some interesting patterns. 
 
@@ -412,7 +412,6 @@ Data processing and visualisation was done in R [@rcoreteam2013language, version
 
 # Results {#sec-results}
 
-\renewcommand{\arraystretch}{1.25}
 
 ```{r results-values}
 #| label: results-values
