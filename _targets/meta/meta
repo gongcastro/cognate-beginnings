@@ -1,6 +1,6 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|5a3c2887af69365e|||||||||||||||
-appendix|stem|2d92f2bae5ec2e2a|03978442963c4368|15a19929cd16962f|1554002692|manuscript/appendix.pdf*manuscript/appendix.qmd|t19536.528605339s|98ba4d96b35164f5|80316|file|local|vector|||22.04||
+.Random.seed|object|c18dc49f9cfadaf2|||||||||||||||
+appendix|stem|044bbc3f1d4fbdc3|03978442963c4368|15a19929cd16962f|1554002692|appendix_files*manuscript/appendix.pdf*manuscript/appendix.qmd|t19541.5020993611s|8bf393868872ec92|101046|file|local|vector|||22.45||
 bvq_data|stem|e38d237cf8a2e247|1713fb13bcb0ffed|abbee844f3596b03|-1902070830||t19503.3681866821s|45ce29ef240729da|1224226|rds|local|vector|||1.36||
 bvq_data_file|stem|2eeaa6c449fa1e44|48eaf072f2413071|ef46db3751d8e999|1011699987||t19503.3681487726s|d586f792a395948c|68|rds|local|vector|||0.02||
 childes|stem|637fa6be8f7bc26f|257adfb4dcdab016|55115efc18bbf37d|-1780705379||t19503.3681484841s|a003be010e86b4f4|534735|rds|local|vector|||53.49||
@@ -23,7 +23,7 @@ get_syllable_data|function|ee800368d21533e0|||||||||||||||
 get_vars_dict|function|223a0f1f81457962|||||||||||||||
 items|stem|02e41dc21548abba|49b6cd25c41a1b0f|3fb09f37b7fe43fc|-986180865||t19503.3681928958s|8a1a7c406d603fbb|26069|rds|local|vector|||0.22||
 items_test|stem|32af597cbdb2a163|762d2cbc9b05fe3c|740911248080b911|883923261||t19503.3682750499s|ac45463db19e2cbe|48|rds|local|vector|||0.48||
-manuscript|stem|af0292186dd5c0ff|20befeb365fccb67|478799a8661832a6|615889701|manuscript/manuscript.pdf*manuscript/manuscript.qmd|t19537.6798662395s|eb48fdb309d76f91|805783|file|local|vector|||23.29||
+manuscript|stem|6c52c2324b27b27f|20befeb365fccb67|478799a8661832a6|615889701|manuscript/manuscript.pdf*manuscript_files*manuscript/manuscript.qmd|t19541.501821749s|c8909c7c2af3a542|955515|file|local|vector|||20.97||
 model_convergence|stem|ca2f52d5efb4f3c0|68cbac5a8705de12|1dbed150bd190dfa|1264401096||t19503.3691811349s|40173b4f8b5e89ec|124886|rds|local|vector|||35.08||
 model_doe|stem|fe0be16727e80eb3|451d52066e22a370|214ebe7b4068ad69|1345599899||t19503.3683754421s|d5d4ae490d3f3d5e|109834714|rds|local|vector|||3.87||
 model_draws|stem|17e7bffd5b3fcfa0|5ed56054fe238dda|feb3a6d76e118407|-665592718||t19503.3717866188s|bd7ad2082925337a|273283|rds|local|vector|||0.95||

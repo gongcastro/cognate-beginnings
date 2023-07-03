@@ -37,7 +37,7 @@ items <- items |>
            item = str_remove(item, "cat_|spa_"))
 ```
 
-We define syllable frequency as the rate of appearance of individual syllables in the word-forms included in the Barcelona Vocabulary Questionnaire (BVQ). Each item corresponds to a Catalan or Spanish word, and has an associated phonological transcription in X-SAMPA format. These transcriptions are syllabified. Some examples:
+We define syllable frequency as the rate of appearance of individual syllables in the word-forms included in the Barcelona Vocabulary Questionnaire (BVQ) [@garcia-castro2023bvq]. Each item corresponds to a Catalan or Spanish word, and has an associated phonological transcription in X-SAMPA format [@wells1995computercoding]. These transcriptions are syllabified. Some examples:
 
 ```{r tbl-items-table}
 #| label: tbl-syll-items
@@ -73,7 +73,7 @@ items |>
 ```
 
 
-Most Catalan and Spanish words had two syllables, with Spanish words having three and four syllables more often than Catalan words. Less than 1% of the words included in the analyses presented in the main body of the manuscripts had five syllables. No words had more than five syllables (see @fig-syll-number). We extracted lexical frequencies from the English corpora in the CHILDES database. Using the Catalan and Spanish corpora was not possible due to the low number of children and tokens included in the corpora.
+Most Catalan and Spanish words had two syllables, with Spanish words having three and four syllables more often than Catalan words. Less than 1% of the words included in the analyses presented in the main body of the manuscripts had five syllables. No words had more than five syllables (see @fig-syll-number). We extracted lexical frequencies from the English corpora in the CHILDES database [@macwhinney2000childes; sanchez2019childesdb]. Using the Catalan and Spanish corpora was not possible due to the low number of children and tokens included in the corpora.
 
 ```{r fig-syll-number}
 #| label: fig-syll-number
@@ -148,7 +148,7 @@ syll |>
           legend.position = "none")
 ```
 
-To estimate the association between word-level syllabic frequency and cognateness, while controlling for the number of syllables in the word, as words are expected to necessarily increase the syllabic frequency of the word), we fit a multilevel, Bayesian linear regression model with syllabic frequency (the sum of the syllabic frequency of the syllables in a word) as response variable, and the main effect of the number of syllables ($Syllables$) and $Cognateness$ (Levenshtein similarity between a word and its translation equivalent) as predictors. We added translation equivalent-level random effects for the intercept and the main effect of $Syllables$ (some translation pairs had a different number of syllables in each language). We used a Gaussian distribution to model syllabic frequency scores after standardising this variable and the predictors. We used a weakly informative prior for all parameters involved in the model (see @eq-model-syllables for a formal equation of this model and its prior).
+To estimate the association between word-level syllabic frequency and cognateness, while controlling for the number of syllables in the word, as words are expected to necessarily increase the syllabic frequency of the word), we fit a multilevel, Bayesian linear regression model with syllabic frequency (the sum of the syllabic frequency of the syllables in a word) as response variable, and the main effect of the number of syllables ($Syllables$) and $Cognateness$ [Levenshtein similarity between a word and its translation equivalent, @levenshtein1966binary] as predictors. We added translation equivalent-level random effects for the intercept and the main effect of $Syllables$ (some translation pairs had a different number of syllables in each language). We used a Gaussian distribution to model syllabic frequency scores after standardising this variable and the predictors. We used a weakly informative prior for all parameters involved in the model (see @eq-model-syllables for a formal equation of this model and its prior). We conducted statistical inference by evaluating the proportion of the 95% highest density interval (HDI) of the posterior posterior distribution of each coefficient that fell into the region of practical equivalence [ROPE, see the main manuscript for a more detailed explanation, @kruschke2018bayesian].
 
 $$
 \begin{aligned}
@@ -186,8 +186,8 @@ str_repl <- c(
 
 post_syllables <- model_fit_syllables |>
     bayestestR::describe_posterior(test = "rope",
-                                    rope_range = rope_interval,
-                                    ci_method = "HDI") |>
+                                   rope_range = rope_interval,
+                                   ci_method = "HDI") |>
     as_tibble() |>
     janitor::clean_names() |>
     mutate(.variable_name = factor(
@@ -221,29 +221,45 @@ We fit this model running `r dim(model_fit_syllables$fit)[2]` sampling chains wi
 #| message: false
 #| warning: false
 # summarise posterior draws
-post_syllables |> 
+tbl_data <- post_syllables |>
     select(.variable_name, .median, .lower, .upper, .rope_overlap) |>
-    gt(rowname_col = ".variable_name") |>
-    fmt_percent(.rope_overlap, decimals = 2) |> 
-    fmt_number(c(.median:.upper), decimals = 2) |>
-    cols_merge(c(.lower, .upper),
-               pattern = "[{1}, {2}]") |>
-    cols_label(
-        .variable_name = "Parameter",
-        .median = "Median",
-        .lower = md("95% HDI"),
-        .rope_overlap = md("ROPE prob.")
-    ) |>
-    tab_style(cell_text(weight = "bold"),
-              cells_column_labels(columns = 1:5)) |>
-    tab_style(cell_text(align = "left"),
-              cells_title(groups = "subtitle")) |> 
-    tab_style(cell_text(size = "small"), 
-              list(cells_body(),
-                   cells_row_groups(),
-                   cells_stub())) |> 
-    tab_style(cell_text(style = "italic"),
-              cells_row_groups())
+    mutate(
+        .variable_name = gsub("×", '$\\\\times$', .variable_name),
+        .hdi = paste0("[", round(.lower, 3),
+                      ", ", round(.upper, 3), "]"),
+        .rope_overlap = sub("^(-?)0.", "\\1.",
+                            sprintf("%.3f", .rope_overlap))) |> 
+    select(.variable_name, .median, .lower, .upper, .hdi, .rope_overlap) 
+
+tbl_data |> 
+    mutate(viz = "") |> 
+    select(-c(.lower, .upper)) |> 
+    knitr::kable(
+        format = "latex", 
+        escape = FALSE,
+        col.names = c("",
+                      "$\\beta$",
+                      "95\\% HDI",
+                      "$p(\\text{ROPE})$",
+                      ""),
+        digits = 3,
+        booktabs = TRUE,
+        align = "lclrc",
+        linesep = ""
+    ) |> 
+    kableExtra::kable_styling() |> 
+    kableExtra::column_spec(
+        5,
+        background = "#f2f2f2",
+        image = kableExtra::spec_pointrange(
+            x = tbl_data$.median, 
+            xmin = tbl_data$.lower, 
+            xmax = tbl_data$.upper, 
+            vline = 0,
+            xaxt = "n",
+            col = "#000000",
+            res = 200)
+    )
 ```
 
 @fig-syll-marginal shows the median posterior-predicted syllabic frequencies for words with one to four syllables, for the whole range of cognateness values. Overall, cognate words' syllabic frequency is equivalent to that of non-cognates. This suggests that the cognate facilitation effect in word acquisition reported in the present study is not the result from an association between cognateness and higher syllabic frequencies.
@@ -263,27 +279,33 @@ expand_grid(lv_std = scale(seq(0, 1, 0.1),
             n_syll_std = scale(seq(1, 4, 1),
                                center = mean(syllables_data$n_syll),
                                scale = sd(syllables_data$n_syll))[, 1]) |> 
-    add_epred_draws(model_fit_syllables, ndraws = 50,
-                    re_formula = NA) |> 
+    add_epred_draws(model_fit_syllables,
+                    re_formula = NA) |>
+    median_hdci() |> 
     mutate(
         lv_std = (lv_std * sd(syllables_data$lv)) + mean(syllables_data$lv),
         n_syll_std = (n_syll_std * sd(syllables_data$n_syll)) + mean(syllables_data$n_syll),
         n_syll_std = as.factor(n_syll_std)) |> 
     ggplot(aes(lv_std, .epred, 
-               colour = n_syll_std)) +
-    geom_point(data = filter(syllables_data, n_syll < 5),
+               shape = n_syll_std)) +
+    geom_point(data = filter(syllables_data, n_syll < 5) |> 
+                   mutate(n_syll_std = as.factor(n_syll)),
                aes(x = lv,
                    y = freq_syll,
-                   colour = as.factor(n_syll),
-                   shape = as.factor(n_syll)),
-               alpha = 1/2) + 
-    geom_line(aes(group = interaction(.draw, n_syll_std)),
-              alpha = 1/10) +
+                   shape = n_syll_std),
+               alpha = 1/2) +
+    # geom_ribbon(aes(ymin = .lower,
+    #                 ymax = .upper),
+    #             alpha = 1/2,
+    #             colour = NA,
+    #             show.legend = FALSE) +
+    geom_line(aes(linetype = n_syll_std),
+              linewidth = 0.5) +
     labs(x = "Cognateness (Levenshtein similarity)",
          y = "Syllabic frequency",
+         linetype = "Number of syllables",
          shape = "Number of syllables",
          colour = "Number of syllables") +
-    scale_colour_grey(start = 0, end = 0.7) +
     scale_y_continuous(n.breaks = 8) +
     theme(panel.grid = element_blank(),
           legend.position = "top")

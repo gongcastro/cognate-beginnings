@@ -100,3 +100,5 @@ options(knitr.graphics.error = FALSE)
 {{< include _appendix/_syllable-frequency.qmd >}}
 
 {{< pagebreak >}}
+
+## References
