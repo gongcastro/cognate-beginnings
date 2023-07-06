@@ -1,19 +1,15 @@
-As a robustness check, we fit a model similar to the one described in the main manuscript, but including lexical frequency and language degree of exposure as separate predictors, instead of the composite measure *Exposure*. Language degree of exposure (*DoE*) was included in interaction with *Age* and *Cognateness*, while lexical frequency (*Frequency*) was included as a main effect.
+As a robustness check, we fit a model similar to the one described in the main manuscript, but including lexical frequency and language degree of exposure as separate predictors, instead of the composite measure *Exposure*. Language degree of exposure (*DoE*) was included in interaction with *Age* and *Cognateness*, while lexical frequency (*Frequency*) was included as a main effect. @tbl-coefs-doe shows a comparison between the posterior distribution of the regression coefficients of both models. Overall, results are equivalent. 
 
-```{r fig-coefs-doe}
-#| label: fig-coefs-doe
-#| fig-cap: "Posterior distribution of regression coefficients of the model including the *Exposure* composite predictor, and of the model including lexical frequency and degree of exposure (DoE) separately. Dots and error bars indicate the median and 95% HDI of the posterior distribution of each coefficient. Coefficients of the *Exposure* model are indicated in grey with triangles. Coefficients of the *Frequency + DoE* model are indicated in black with circless. The region of practical equivalence (ROPE) around zero is indicated with a grey area and a grey line."
-#| fig-note: ""
+```{r tbl-coefs-doe}
+#| label: tbl-coefs-doe
+#| fig-cap: "Posterior distribution of regression coefficients of the model including the *Exposure* composite predictor, and of the model including lexical frequency (*Frequency*) and degree of exposure (*DoE*) separately. Median: median of the posterior distribution in the probability scale. 95\\% HDI: 95\\% highest density interval of the distribution. p(ROPE): overlap between the 95\\% HDI and the ROPE, indicating the posterior probability that the true value of the coefficient is equivalent to zero. In the right column, we show a graphical representation of the median and 95% HDI of each coefficient, with a reference dotted line indicating the location of zero."
 #| echo: false
 #| message: false
 #| warning: false
-#| out-width: 100%
-#| fig-height: 4
-#| fig-width: 7
 # summarise posterior draws
-bind_rows("Exposure model" = model_summary,
-          "DoE-Frequency model" = posterior_doe_summary,
-          .id = "model") |> 
+tbl_data <- bind_rows("Exposure model" = model_summary,
+                      "DoE-Frequency model" = posterior_doe_summary,
+                      .id = ".model") |> 
     mutate(
         across(c(.median, .lower, .upper),
                function(x) {
@@ -25,31 +21,37 @@ bind_rows("Exposure model" = model_summary,
                }
         )) |>
     filter(.type == "Slopes") |> 
-    ggplot(aes(.median, .variable_name,
-               xmin = .lower, xmax = .upper,
-               colour = model,
-               shape = model)) +
-    annotate(geom = "rect",
-             ymin = -Inf,
-             ymax = Inf,
-             xmin = -0.1/4,
-             xmax = +0.1/4,
-             fill = "grey90") +
-    geom_vline(xintercept = 0, 
-               linetype = "dashed",
-               linewidth = 3/4,
-               colour = "grey") +
-    geom_errorbar(linewidth = 3/4, 
-                  position = position_dodge(width = 0.5),
-                  width = 0.3) +
-    geom_point(size = 2.5,
-               position = position_dodge(width = 0.5)) +
-    labs(x = "Median and 95% HDI of the posterior distribution",
-         y = "Predictor",
-         colour = "Model") +
-    scale_colour_grey(start = 0, end = 0.6) +
-    theme(legend.position = "none",
-          axis.title.y = element_blank(),
-          panel.grid.major.y = element_blank())
+    select(.model, .variable_name, .median, .lower, .upper, .rope_overlap) |> 
+    mutate(
+        across(.median:.upper, plogis),
+        .variable_name = gsub("×", '$\\\\times$', .variable_name),
+        .hdi = paste0("[", round(.lower, 3),
+                      ", ", round(.upper, 3), "]"),
+        .rope_overlap = sub("^(-?)0.", "\\1.",
+                            sprintf("%.3f", .rope_overlap))) |> 
+    select(.variable_name, .median, .lower, .upper, .hdi, .rope_overlap) 
+
+tbl_data |> 
+    mutate(viz = "") |> 
+    select(-c(.lower, .upper)) |> 
+    knitr::kable(
+        format = "latex", 
+        escape = FALSE,
+        col.names = c("",
+                      "$\\beta$",
+                      "95\\% HDI",
+                      "$p(\\text{ROPE})$",
+                      ""),
+        digits = 3,
+        booktabs = TRUE,
+        align = "lclr",
+        linesep = ""
+    ) |> 
+    kableExtra::pack_rows("Model: Exposure",
+                          start_row = 1,
+                          end_row = 8) |> 
+    kableExtra::pack_rows("Model: Frequency & DoE",
+                          start_row = 9,
+                          end_row = 17)
 ```
 

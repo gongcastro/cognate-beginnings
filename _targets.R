@@ -13,7 +13,8 @@ suppressPackageStartupMessages({
         library(collapse)
         # reporting
         library(quarto)
-        library(gt)
+        library(knitr)
+        library(kableExtra)
         library(beeswarm)
     })
 })
@@ -164,9 +165,9 @@ list(
         fit_model(
             name = "fit_doe",
             formula = bf(
-                response ~ age_std + doe_std * lv_std + n_phon_std + freq_std +
-                    (1 + age_std + doe_std * lv_std + n_phon_std + freq_std | id) +
-                    (1 + age_std + doe_std + n_phon_std + freq_std | te),
+                response ~ age_std * doe_std * lv_std + n_phon_std + freq_std +
+                    (1 + age_std * doe_std * lv_std + n_phon_std + freq_std | id) +
+                    (1 + age_std * doe_std + n_phon_std + freq_std | te),
                 family = cumulative(link = "logit")),
             data = responses,
             prior = model_prior,
@@ -185,13 +186,13 @@ list(
                     "b_Intercept[2]" = "Comprehension",
                     "b_age_std" = glue::glue("Age (+1 SD, {round(sd(responses$age), 2)}, months)"),
                     "b_n_phon_std" = glue::glue("Phonemes (+1 SD, {round(sd(responses$n_phon), 2)} phonemes)"),
-                    "b_doe_std" = glue::glue("DoE (+1 SD, {round(sd(responses$doe), 2)})"),
                     "b_freq_std" = glue::glue("Frequency (+1 SD, {round(sd(responses$freq), 2)})"),
+                    "b_doe_std" = glue::glue("DoE (+1 SD, {round(sd(responses$doe), 2)})"),
                     "b_lv_std" = glue::glue("Cognateness (+1 SD, {round(sd(responses$lv), 2)})"),
-                    "b_age_std:doe_std" = "Age \u00d7 Exposure",
-                    "b_doe_std:lv_std" = "Exposure \u00d7 Cognateness",
+                    "b_age_std:doe_std" = "Age \u00d7 DoE",
+                    "b_doe_std:lv_std" = "DoE \u00d7 Cognateness",
                     "b_age_std:lv_std" = "Age \u00d7 Cognateness",
-                    "b_age_std:doe_std:lv_std" = "Age \u00d7 Exposure \u00d7 Cognateness"
+                    "b_age_std:doe_std:lv_std" = "Age \u00d7 DoE \u00d7 Cognateness"
                 )
             )
         }),
@@ -238,26 +239,12 @@ list(
     ),
     
     # render report ------------------------------------------------------------
-    tar_quarto(
-        report,
-        "docs/index.qmd",
-        execute = TRUE,
-        quiet = FALSE
-    ),
+    tar_quarto(website, "docs/index.qmd", cache = FALSE, quiet = FALSE),
     
     # render manuscript
-    tar_quarto(manuscript,
-               "manuscript/manuscript.qmd",
-               execute = TRUE,
-               cache = FALSE,
-               quiet = FALSE
-    ),
+    tar_quarto(manuscript, "manuscript/manuscript.qmd", quiet = FALSE, cache = FALSE),
     
-    tar_quarto(appendix,
-               "manuscript/appendix.qmd",
-               execute = TRUE,
-               cache = FALSE,
-               quiet = FALSE),
+    tar_quarto(appendix, "manuscript/appendix.qmd", quiet = FALSE, cache = FALSE),
     
     tar_target(clean_repo,
                invisible({
