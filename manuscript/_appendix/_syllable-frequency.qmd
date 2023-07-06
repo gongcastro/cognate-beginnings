@@ -45,7 +45,7 @@ We define syllable frequency as the rate of appearance of individual syllables i
 #| echo: false
 #| warning: false
 #| message: false
-items |> 
+tbl_data <- items |> 
     distinct(te, item, language, meaning, xsampa, n_syll) |> 
     left_join(distinct(pool_tmp, te, language, item, label),
               by = join_by(te, item, language)) |> 
@@ -55,25 +55,22 @@ items |>
                 names_repair = janitor::make_clean_names,
                 values_fn = first) |> 
     sample_n(15) |> 
-    gt() |> 
-    cols_hide(c(te, item_catalan, item_spanish)) |> 
-    tab_spanner("Catalan", matches("catalan")) |> 
-    tab_spanner("Spanish", matches("spanish")) |> 
-    cols_label(meaning = "Translation",
-               label_catalan = "Item",
-               xsampa_catalan = "X-SAMPA",
-               n_syll_catalan = "Syllables",
-               label_spanish = "Item",
-               xsampa_spanish = "X-SAMPA",
-               n_syll_spanish = "Syllables") |> 
-    tab_style(cell_text(weight = "bold"),
-              cells_column_spanners()) |> 
-    tab_style(cell_text(style = "italic"),
-              cells_column_labels())
+    select(-c(te, item_catalan, item_spanish)) |> 
+    relocate(meaning, matches("catalan"), matches("spanish"))
+
+col_names <- c("Translation", "Item", "X-SAMPA", "Syllables",
+               "Item", "X-SAMPA", "Syllables")
+
+tbl_data |> 
+    kable(format = "latex", 
+          digits = 3,
+          booktabs = TRUE,
+          col.names = col_names, 
+          align = "lllcllc") 
 ```
 
 
-Most Catalan and Spanish words had two syllables, with Spanish words having three and four syllables more often than Catalan words. Less than 1% of the words included in the analyses presented in the main body of the manuscripts had five syllables. No words had more than five syllables (see @fig-syll-number). We extracted lexical frequencies from the English corpora in the CHILDES database [@macwhinney2000childes; sanchez2019childesdb]. Using the Catalan and Spanish corpora was not possible due to the low number of children and tokens included in the corpora.
+Most Catalan and Spanish words had two syllables, with Spanish words having three and four syllables more often than Catalan words. Less than 1% of the words included in the analyses presented in the main body of the manuscripts had five syllables. No words had more than five syllables (see @fig-syll-number). We extracted lexical frequencies from the English corpora in the CHILDES database [@macwhinney2000childes; @sanchez2019childesdb]. Using the Catalan and Spanish corpora was not possible due to the low number of children and tokens included in the corpora.
 
 ```{r fig-syll-number}
 #| label: fig-syll-number

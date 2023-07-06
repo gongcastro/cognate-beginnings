@@ -81,13 +81,17 @@ functions {
                             data vector Z_1_1, data vector Z_1_2,
                             data vector Z_1_3, data vector Z_1_4,
                             data vector Z_1_5, data vector Z_1_6,
-                            data vector Z_1_7, vector r_1_1, vector r_1_2,
-                            vector r_1_3, vector r_1_4, vector r_1_5,
-                            vector r_1_6, vector r_1_7, data array[] int J_2,
+                            data vector Z_1_7, data vector Z_1_8,
+                            data vector Z_1_9, data vector Z_1_10,
+                            vector r_1_1, vector r_1_2, vector r_1_3,
+                            vector r_1_4, vector r_1_5, vector r_1_6,
+                            vector r_1_7, vector r_1_8, vector r_1_9,
+                            vector r_1_10, data array[] int J_2,
                             data vector Z_2_1, data vector Z_2_2,
                             data vector Z_2_3, data vector Z_2_4,
-                            data vector Z_2_5, vector r_2_1, vector r_2_2,
-                            vector r_2_3, vector r_2_4, vector r_2_5) {
+                            data vector Z_2_5, data vector Z_2_6,
+                            vector r_2_1, vector r_2_2, vector r_2_3,
+                            vector r_2_4, vector r_2_5, vector r_2_6) {
     real ptarget = 0;
     int N = end - start + 1;
     // initialize linear predictor term
@@ -99,9 +103,11 @@ functions {
       mu[n] += r_1_1[J_1[nn]] * Z_1_1[nn] + r_1_2[J_1[nn]] * Z_1_2[nn]
                + r_1_3[J_1[nn]] * Z_1_3[nn] + r_1_4[J_1[nn]] * Z_1_4[nn]
                + r_1_5[J_1[nn]] * Z_1_5[nn] + r_1_6[J_1[nn]] * Z_1_6[nn]
-               + r_1_7[J_1[nn]] * Z_1_7[nn] + r_2_1[J_2[nn]] * Z_2_1[nn]
-               + r_2_2[J_2[nn]] * Z_2_2[nn] + r_2_3[J_2[nn]] * Z_2_3[nn]
-               + r_2_4[J_2[nn]] * Z_2_4[nn] + r_2_5[J_2[nn]] * Z_2_5[nn];
+               + r_1_7[J_1[nn]] * Z_1_7[nn] + r_1_8[J_1[nn]] * Z_1_8[nn]
+               + r_1_9[J_1[nn]] * Z_1_9[nn] + r_1_10[J_1[nn]] * Z_1_10[nn]
+               + r_2_1[J_2[nn]] * Z_2_1[nn] + r_2_2[J_2[nn]] * Z_2_2[nn]
+               + r_2_3[J_2[nn]] * Z_2_3[nn] + r_2_4[J_2[nn]] * Z_2_4[nn]
+               + r_2_5[J_2[nn]] * Z_2_5[nn] + r_2_6[J_2[nn]] * Z_2_6[nn];
     }
     for (n in 1 : N) {
       int nn = n + start - 1;
@@ -129,6 +135,9 @@ data {
   vector[N] Z_1_5;
   vector[N] Z_1_6;
   vector[N] Z_1_7;
+  vector[N] Z_1_8;
+  vector[N] Z_1_9;
+  vector[N] Z_1_10;
   int<lower=1> NC_1; // number of group-level correlations
   // data for group-level effects of ID 2
   int<lower=1> N_2; // number of grouping levels
@@ -140,6 +149,7 @@ data {
   vector[N] Z_2_3;
   vector[N] Z_2_4;
   vector[N] Z_2_5;
+  vector[N] Z_2_6;
   int<lower=1> NC_2; // number of group-level correlations
   int prior_only; // should the likelihood be ignored?
 }
@@ -174,6 +184,9 @@ transformed parameters {
   vector[N_1] r_1_5;
   vector[N_1] r_1_6;
   vector[N_1] r_1_7;
+  vector[N_1] r_1_8;
+  vector[N_1] r_1_9;
+  vector[N_1] r_1_10;
   matrix[N_2, M_2] r_2; // actual group-level effects
   // using vectors speeds up indexing in loops
   vector[N_2] r_2_1;
@@ -181,6 +194,7 @@ transformed parameters {
   vector[N_2] r_2_3;
   vector[N_2] r_2_4;
   vector[N_2] r_2_5;
+  vector[N_2] r_2_6;
   real lprior = 0; // prior contributions to the log posterior
   // compute actual group-level effects
   r_1 = scale_r_cor(z_1, sd_1, L_1);
@@ -191,6 +205,9 @@ transformed parameters {
   r_1_5 = r_1[ : , 5];
   r_1_6 = r_1[ : , 6];
   r_1_7 = r_1[ : , 7];
+  r_1_8 = r_1[ : , 8];
+  r_1_9 = r_1[ : , 9];
+  r_1_10 = r_1[ : , 10];
   // compute actual group-level effects
   r_2 = scale_r_cor(z_2, sd_2, L_2);
   r_2_1 = r_2[ : , 1];
@@ -198,11 +215,12 @@ transformed parameters {
   r_2_3 = r_2[ : , 3];
   r_2_4 = r_2[ : , 4];
   r_2_5 = r_2[ : , 5];
+  r_2_6 = r_2[ : , 6];
   lprior += normal_lpdf(b | 0, 1);
   lprior += normal_lpdf(Intercept | -0.25, 0.5);
-  lprior += normal_lpdf(sd_1 | 1, 0.25) - 7 * normal_lccdf(0 | 1, 0.25);
+  lprior += normal_lpdf(sd_1 | 1, 0.25) - 10 * normal_lccdf(0 | 1, 0.25);
   lprior += lkj_corr_cholesky_lpdf(L_1 | 2);
-  lprior += normal_lpdf(sd_2 | 1, 0.25) - 5 * normal_lccdf(0 | 1, 0.25);
+  lprior += normal_lpdf(sd_2 | 1, 0.25) - 6 * normal_lccdf(0 | 1, 0.25);
   lprior += lkj_corr_cholesky_lpdf(L_2 | 2);
 }
 model {
@@ -210,9 +228,11 @@ model {
   if (!prior_only) {
     target += reduce_sum(partial_log_lik_lpmf, seq, grainsize, Y, nthres, Xc,
                          b, Intercept, disc, J_1, Z_1_1, Z_1_2, Z_1_3, Z_1_4,
-                         Z_1_5, Z_1_6, Z_1_7, r_1_1, r_1_2, r_1_3, r_1_4,
-                         r_1_5, r_1_6, r_1_7, J_2, Z_2_1, Z_2_2, Z_2_3,
-                         Z_2_4, Z_2_5, r_2_1, r_2_2, r_2_3, r_2_4, r_2_5);
+                         Z_1_5, Z_1_6, Z_1_7, Z_1_8, Z_1_9, Z_1_10, r_1_1,
+                         r_1_2, r_1_3, r_1_4, r_1_5, r_1_6, r_1_7, r_1_8,
+                         r_1_9, r_1_10, J_2, Z_2_1, Z_2_2, Z_2_3, Z_2_4,
+                         Z_2_5, Z_2_6, r_2_1, r_2_2, r_2_3, r_2_4, r_2_5,
+                         r_2_6);
   }
   // priors including constants
   target += lprior;

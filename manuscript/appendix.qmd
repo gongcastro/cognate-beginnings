@@ -1,5 +1,4 @@
 ---
-title: "Appendix"
 csl: "../assets/apa7.csl"
 bibliography: "../assets/references.bib"
 link-citations: true
@@ -12,26 +11,15 @@ warning: false
 message: false
 
 format:
-  pdf:
-    documentclass: article
-    papersize: letter
-    fontsize: 12pt
-    linestretch: 1.5
-    header-includes:
-    - \usepackage{tipa}
-    geometry:
-    - top=1in
-    - bottom=1in
-    - left=1in
-    - right=1in
-    colorlinks: true
-    linkcolor: DodgerBlue
-    urlcolor: DodgerBlue
-    citecolor: DodgerBlue
-    link-citations: true
-    biblio-config: false
-    block-headings: false
-    indent: true
+  arxiv-pdf:
+    keep-tex: true  
+    linenumbers: true
+    doublespacing: false
+    runninghead: "Cognate beginnings to bilingual lexical acquistion (Appendix)"
+    include-in-header: 
+      text: |
+        \usepackage{tipa}
+        \usepackage{booktabs}
 ---
 
 ```{r setup}
@@ -40,9 +28,8 @@ format:
 #| message: false
 #| warning: false
 # load objects -----------------------------------------------------------------
-
-library(patchwork)
-library(gt)
+library(knitr)
+library(kableExtra)
 library(ggplot2)
 
 targets::tar_config_set(store = here::here("_targets"),
@@ -50,43 +37,22 @@ targets::tar_config_set(store = here::here("_targets"),
 
 targets::tar_load_globals()
 
-targets::tar_load(c(bvq_data, childes, items, 
+targets::tar_load(c(bvq_data, childes, items, model_summary,
                     participants, responses))
 
-targets::tar_load(c(model_fit, model_summary, model_epreds,
-                    model_convergence, model_fit_prior, 
-                    model_ppcs, posterior_doe_summary,
-                    posterior_doe_draws))
+targets::tar_load(c(posterior_doe_summary, posterior_doe_draws))
 
 targets::tar_load(c(syllables_data, model_fit_syllables, post_syllables))
 
-# process objects
-items <- bvq_data$pool  |>  
-    mutate(item = str_remove(item, "cat_|spa_")) |> 
-    select(item, language, semantic_category, class) |> 
-    right_join(items, by = c("item", "language"))
+my_theme <- theme_minimal() +
+    theme(panel.grid = element_line(colour = "grey",
+                                    linetype = "dotted"),
+          axis.line = element_line(colour = "black"),
+          text = element_text(size = 12, colour = "black"),
+          axis.text = element_text(colour = "black"))
 
-# set ggplot theme and colour palette ------------------------------------------
-
-my_theme <- function() {
-    theme_ggdist() +
-        theme(panel.grid = element_line(colour = "grey",
-                                        linetype = "dotted"),
-              axis.line = element_line(colour = "black"),
-              text = element_text(size = 12, colour = "black"),
-              axis.text = element_text(colour = "black"))
-}
-
-theme_set(my_theme())
-
-bayesplot::bayesplot_theme_set(my_theme + theme(panel.grid = element_blank()))
-
-set.seed(888)
-
-options(knitr.graphics.error = FALSE)
+theme_set(my_theme)
 ```
-
-
 
 
 ## Appendix A: frequency and language exposure as separate predictors {.appendix .unnumbered}
@@ -102,3 +68,4 @@ options(knitr.graphics.error = FALSE)
 {{< pagebreak >}}
 
 ## References
+

@@ -143,12 +143,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     
   </div>
   
-<div>
-  <div class="abstract">
-    <div class="abstract-title">Abstract</div>
-    <p>Language non-selectivity is prominent feature of the bilingual lexicon. An instance of such non-selectivity is embodied by cognateness, which recent studies have suggested to facilitate vocabulary acquisition in bilingual toddlers, who show larger vocabulary sizes when their languages share many cognates, and to be acquired at earlier ages than non-cognates. The specific mechanisms behind such facilitation are unclear. We present an account of early bilingual vocabulary growth in which cognateness interacts with lexical frequency and language exposure to facilitate the word acquisition. We evaluated this model against vocabulary data from 436 Catalan-Spanish bilinguals toddlers. We used Bayesian Explanatory Item Response Models to estimate participants’ probability of acquisition of 604 words, conditional to the cognate status and lexical frequency of the word-form, and the age and degree of exposure to each language of the toddler. We found cognateness facilitation effect only in low-frequency words. Overall, our findings support an interactive account of bilingual vocabulary acquisition in which the lexical representations in one language interact with the acquisition of words in the other language.</p>
-  </div>
-</div>
 
 </header>
 
@@ -156,59 +150,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load objects -----------------------------------------------------------------</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_config_set</span>(<span class="at">store =</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_targets"</span>),</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                        <span class="at">script =</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_targets.R"</span>))</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load_globals</span>()</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load</span>(<span class="fu">c</span>(bvq_data, childes, items, </span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                    participants, responses))</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load</span>(<span class="fu">c</span>(model_fit, model_summary, model_epreds,</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>                    model_convergence, model_fit_prior, </span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>                    model_ppcs, posterior_doe_summary,</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>                    model_draws, model_summary,</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>                    posterior_doe_draws))</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_load</span>(<span class="fu">c</span>(syllables_data, model_fit_syllables, post_syllables))</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># process objects</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>items <span class="ot">&lt;-</span> bvq_data<span class="sc">$</span>pool  <span class="sc">|&gt;</span>  </span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">item =</span> <span class="fu">str_remove</span>(item, <span class="st">"cat_|spa_"</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(item, language, semantic_category, class) <span class="sc">|&gt;</span> </span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">right_join</span>(items, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"item"</span>, <span class="st">"language"</span>))</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>rope_interval <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">lower =</span> <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">upper =</span> <span class="fl">0.1</span>)</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co"># set ggplot theme and colour palette ------------------------------------------</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>my_theme <span class="ot">&lt;-</span> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">panel.grid =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"grey"</span>,</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">linetype =</span> <span class="st">"dotted"</span>),</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"black"</span>),</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>          <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>, <span class="at">colour =</span> <span class="st">"black"</span>),</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"black"</span>))</span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(my_theme)</span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>bayesplot<span class="sc">::</span><span class="fu">bayesplot_theme_set</span>(my_theme <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">panel.grid =</span> <span class="fu">element_blank</span>()))</span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>clrs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"#003f5c"</span>, <span class="st">"#58508d"</span>, <span class="st">"#bc5090"</span>, <span class="st">"#ff6361"</span>, <span class="st">"#ffa600"</span>)</span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">888</span>)</span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">ggplot2.ordinal.fill =</span> clrs,</span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>        <span class="at">ggplot2.ordinal.colour =</span> clrs,</span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>        <span class="at">ggplot2.discrete.fill =</span> clrs,</span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>        <span class="at">ggplot2.discrete.colour =</span> clrs,</span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>        <span class="at">ggplot2.continuous.fill =</span> scale_color_gradient,</span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>        <span class="at">ggplot2.continuous.colour =</span> scale_color_gradient,</span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>        <span class="at">knitr.graphics.error =</span> <span class="cn">FALSE</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_config_set</span>(<span class="at">store =</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_targets"</span>),</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">script =</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_targets.R"</span>))</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>yaml_metadata <span class="ot">&lt;-</span> rmarkdown<span class="sc">::</span><span class="fu">yaml_front_matter</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"manuscript"</span>, <span class="st">"manuscript.qmd"</span>))</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>title <span class="ot">&lt;-</span> yaml_metadata<span class="sc">$</span>title</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>abstract <span class="ot">&lt;-</span> yaml_metadata<span class="sc">$</span>abstract</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>thanks <span class="ot">&lt;-</span> yaml_metadata<span class="sc">$</span>thanks</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -224,18 +172,130 @@ Tip
 <p>Data and materials are available at <a href="https://osf.io/hy984/">OSF</a>, and code is available at <a href="https://github.com/gongcastro/trajectories">GitHub</a>.</p>
 </div>
 </div>
-<section id="data" class="level1">
-<h1>Data</h1>
+<p>Bilingual infants show equivalent developmental trajectories of lexical acquisition compared to their monolingual peers. This is remarkable, given the increased complexity of their linguistic input. Recent studies suggested that bilingual vocabulary growth is boosted by the number of cognates shared by the pair of languages being learned, and that this facilitation effect is driven by a stronger parallel activation of cognates during linguistic exposure, compared to non-cognates. The mechanisms behind this facilitation are still unclear. In this study, we capitalise on accumulator models of language acquisition to propose an account of bilingual lexical acquisition in which parallel activation increases the rate at which children accumulate learning instances for words in both languages, even in fully monolingual situations. Under this hypothesis, we predicted a stronger cognate facilitation for words to which children were exposed less frequently (low-exposure words), as they are co-activated by their translation more often than high-exposure words do. We developed an extensive online vocabulary checklist, the Barcelona Vocabulary questionnaire (BVQ) to collect vocabulary data from 366 Catalan-Spanish bilingual toddlers aged 12 to 32 months. We then used Bayesian explanatory item response theory to model the acquisition trajectories of 302 Catalan/Spanish translation equivalents. We found an interaction between exposure and cognateness, which pointed to cognateness facilitating the aquisition of low-exposure words, but not of mean exposure or high-exposure words. Overall, our findings suggest that cognateness plays a key role in bilingual lexical acquisition, and provides evidence for a frequency-mediated facilitation effect driven by parallel activation.</p>
+<p>The authors declare no conflicts of interest with regard to the funding source of this study. GGC was supported by the a FPI 2020 research contract (PRE2019-088165) in a project funded by the Spanish Ministry of Science, Innovation, and Universities (PGC2018-101831-B-I00). DAV was supported by the European Union’s Horizon 2023 research and innovation program under Marie Skłodowska–Curie Grant (765556) and a postdoctoral fellowship from the Foundation for Science and Technology of Portugal (UIDB/00214/2020). NSG was supported by Academia 2019 award from the Catalan Institution for Research and Advanced Studies (ICREA). We are grateful to Chiara Santolin, Ege E. Özer, Alicia Franco-Martínez, Cristina Rodríguez-Prada, and the rest of the Speech Acquisition and Perception research group for their helpful feedback. We thank Xavier Mayoral, Silvia Blanch, and Cristina Cuadrado for their technical support, and Cristina Dominguez and Katia Pistrin for their efforts in recruiting infants. We also thank all families and infants who participated in the experiments.</p>
+<section id="links" class="level1">
+<h1>Links</h1>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://info.arxiv.org/brand/images/brand-logo-primary.jpg" height="100" class="figure-img"></p>
+<figcaption class="figure-caption">arXiv</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.datacc.org/wp-content/uploads/2020/03/osf.png" height="100" class="figure-img"></p>
+<figcaption class="figure-caption">OSF</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/2048px-Octicons-mark-github.svg.png" height="100" class="figure-img"></p>
+<figcaption class="figure-caption">GitHub</figcaption>
+</figure>
+</div>
 </section>
-<section id="outputs" class="level1">
-<h1>Outputs</h1>
+<section id="reproducing-this-repository" class="level1">
+<h1>Reproducing this repository</h1>
+<p>Follow these steps (see below for details):</p>
+<ol start="0" type="1">
+<li>Download this repository</li>
+<li>Install software dependencies</li>
+<li>Install package dependencies with renv</li>
+<li>Running the code with targets</li>
+<li>Repository structure and files</li>
+</ol>
+<section id="download-this-repository" class="level2">
+<h2 class="anchored" data-anchor-id="download-this-repository">0. Download this repository ⬇️</h2>
+<p>First, you will need to download this repository to your local machine. We suggest three different ways:</p>
+<ol type="a">
+<li><strong>Git terminal</strong>: download and install <a href="https://git-scm.com/downloads">Git</a> with default settings and clone this repository locally running the following command in your console:</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/gongcastro/cognate-beginnings.git</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<blockquote class="blockquote">
+<p>💡 You don’t need to run this command from the Git console. Just open Command Prompt or Power Shell in Windows (just make sure that Git is included in your <a href="https://www.delftstack.com/howto/git/add-git-to-path-on-windows/">PATH variables</a>, which should be already done after the recommended Git installation), Terminal in MacOS, or command line in Linux and run this command.</p>
+</blockquote>
+<ol start="2" type="a">
+<li><p><strong>GitHub releases</strong>: download the latest <a href="https://github.com/gongcastro/cognate-beginnings/releases">release</a> of the repository.</p></li>
+<li><p><strong>Direct download</strong>: click the <a href="https://github.com/gongcastro/cognate-beginnings/archive/refs/heads/main.zip">green button</a> “Code” in this page (upper-right corner), click “Download ZIP”, and unzipping the downloaded repository.</p></li>
+</ol>
+</section>
+<section id="install-software-dependencies" class="level2">
+<h2 class="anchored" data-anchor-id="install-software-dependencies">1. Install software dependencies 💻</h2>
+<p>Here’s a list of programs that you might need to install in your machine to make the project work:</p>
+<ul>
+<li><p><a href="https://www.r-project.org/">R</a> (4.2.2 or greater)</p></li>
+<li><p><a href="https://posit.co/download/rstudio-desktop/">RStudio</a>: although not strictly necessary, we encourage the use of Rstudio for reproducing the present project. We have not tested the reproducibility of the project in other IDEs.</p></li>
+<li><p><a href="https://quarto.org/docs/get-started/">Quarto</a> (1.3.340 or greater): we use this software to generate the manuscript and lab notes. We recommend installing version 1.3.340 or higher, although previous version might work as well.</p></li>
+<li><p><a href="https://cran.r-project.org/bin/windows/Rtools/">Rtools</a> (4.3 or greater).</p></li>
+<li><p><a href="https://mc-stan.org/users/interfaces/cmdstan">CmdStan</a> (2.31.0 or greater): we use the CmdStan backend in brms to fit our Bayesian models. We recommend installing CmdStan using its R interface <a href="https://mc-stan.org/cmdstanr/">CmdStanR</a> following the <a href="https://mc-stan.org/cmdstanr/articles/cmdstanr.html"><em>Getting started with CmdStanR</em></a> vignette. You can also install it following the <a href="https://mc-stan.org/users/interfaces/">CmdStan installation guide</a>, and then letting CmdStanR know the path to the folder using <code>cmdstanr::set_cmdstan_path()</code>.</p>
+<div>
+<blockquote class="blockquote">
+<p>💡 <strong>Installing CmdStan</strong> is sometimes inconvenient, and might require some time to set up, specially if it’s your first time doing so. Have patience and follow the CmdStan installation guide closely. If you encounter problems and just don’t have the time, you can download the models from the <a href="https://osf.io/hy984/">Open Science Framework repository</a> and skip the model-fitting steps.</p>
+</blockquote>
+</div></li>
+</ul>
+</section>
+<section id="install-package-dependencies-with-renv" class="level2">
+<h2 class="anchored" data-anchor-id="install-package-dependencies-with-renv">2. Install package dependencies with renv 📦</h2>
+<p>Open the downloaded repository folder and click on the <a href="cognate-beginnings.Rproj">cognate-beginnings.Rproj</a> to open an RStudio session (recommended) or just open an R session and set the working directory to the downloaded folder. Once open run:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"renv"</span>) <span class="co"># in case you need to install renv</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>renv<span class="sc">::</span><span class="fu">restore</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This might take a couple of minutes, depending on the number of packages that need installation or an update.</p>
+<blockquote class="blockquote">
+<p>💡 <strong>What does this step do?</strong> The code in this repository needs some packages to run, many of which might not have been already installed in your local machine. Instead of having to install them yourself one by one or updating already installed ones (which might change how they behave, possibly breaking some of your code in other projects) this repository uses the R package <a href="https://rstudio.github.io/renv/articles/renv.html">renv</a> to deal with package libraries. The command <code>renv::restore()</code> will install all necessary packages in the appropriate version (listed in the file <a href="renv.lock">renv.lock</a> in a self-contained R package library. This process will not affect the packages that you had already installed in your machine.</p>
+<p>💡 <strong>Something went wrong with renv. Now what?</strong> Although renv facilitates the reproducibility of the repository, it is not guaranteed that things will work perfectly. If you encounter trouble installing the packages using renv, try installing them individually using (<code>install.packages()</code> or <code>renv::install()</code>) and try fixing whatever issues arise (they might depend on your particular setup). Some packages are used by RStudio itself, and might refiuse to update them while you’re using RStudio. Try installing them from the R console outside of RStudio. Open an <a href="https://github.com/gongcastro/cognate-beginnings/issues">issue</a> on this repository if you need further assistance! We’ll get back to you ASAP. :smile:</p>
+</blockquote>
+</section>
+<section id="running-the-code-with-targets-rocket" class="level2">
+<h2 class="anchored" data-anchor-id="running-the-code-with-targets-rocket">3. Running the code with targets :rocket:</h2>
+<p>Once the package dependencies have been solved with renv, run the following command:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_make</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Mind that this process might take some time. Refitting the brms models might take very long (days even, depending on your set-up). If you want to skip this step, download the “results” folder in the <a href="https://osf.io/hy984/">Open Science Framework repository</a> and replace it in the repository.</p>
+<blockquote class="blockquote">
+<p>💡<strong>What does this step do?</strong> This repository’s workflow is based on <a href="https://books.ropensci.org/targets/">targets</a>. This means that the code is run in the appropriate order according to its internal dependencies. The code is organised as <em>targets</em>, defined in the <code>_targets.R</code> file. Sometimes targets operate with the outcomes of other targets. For instance, one target might run a function that takes the outcome of a different target as argument. {targets} makes sure that the functions and objects needed to run each target have already been previously defined. You can visually explore this repository’s targets and its dependency structure by running <code>targets::tar_visnetwork()</code>. You can explore the contents of the executed targets by running <code>targets::tar_load_everything()</code>, which will load all defined targets into your workspace.</p>
+</blockquote>
+</section>
+<section id="repository-structure-and-files" class="level2">
+<h2 class="anchored" data-anchor-id="repository-structure-and-files">4. Repository structure and files 📂</h2>
+<p>This repository is organised as follows:</p>
+<ul>
+<li><strong>data</strong>: processed data in CSV format
+<ul>
+<li><a href="data/items.csv">items.csv</a>: information about words included in the analyses</li>
+<li><a href="data/participants.csv">participants.csv</a>: information about participants</li>
+<li><a href="data/responses.csv">responses.csv</a>: participant responses to the items. The model was fit on this dataset.</li>
+</ul></li>
+<li><strong>data-raw</strong>: raw data from the <a href="https://gongcastro.github.io/bvq">Barcelona Vocabulary Questionnaire, BVQ</a>. This is a RDS file containing a list of data frames with all the information necessary to generate the datasets in the data/ directory.</li>
+<li><strong>docs</strong>: source code to generate the documentation site of the project (<a href="%5Bgongcastro.github.com/cognate-beginnings">cognate-beginnings</a>].</li>
+<li><strong>manuscript</strong>: Quarto document with the source code of the manuscript and appendix</li>
+<li><strong>R</strong>: R functions used in the targets to process and analyse the data.
+<ul>
+<li><a href="R/items.R">items.R</a>: to generate <code>items.csv</code></li>
+<li><a href="R/items.R">models.R</a>: to fit the Bayesian model and extract posterior draws</li>
+<li><a href="R/participants.R">participants.R</a>: to generate <code>participants.csv</code></li>
+<li><a href="R/predictions.R">predictions.R</a>: to generate posterior predictions from the model</li>
+<li><a href="R/utils..R">utils.R</a>: helper functions and wrappers used across the project</li>
+</ul></li>
+<li><strong>renv</strong>: internal settings to ensure reproducibility of the computing environment.</li>
+<li><strong>results</strong>: model outputs. You will need to run the code to generate the files that will be contained in this directoty.)
+<ul>
+<li>fits: RDS files with the brmsfit of the Bayesian models</li>
+<li>posterior: CSV files with the posterior draws of the population-level and group-level coefficients</li>
+<li>predictions: CSV files with the posterior predictions</li>
+</ul></li>
+<li><strong>src</strong>: R functions to make programming tasks easier, not needed to reproduce the project.</li>
+<li><strong>stan</strong>: Stan code of the models, as generated by <code>brms::stancode()</code>.</li>
+<li><strong>test</strong>: testthat scripts used to unit test the functions used across the project.</li>
+</ul>
+</section>
 </section>
 <section id="session-info" class="level1">
 <h1>Session info</h1>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>R version 4.2.2 (2022-10-31 ucrt)
@@ -254,52 +314,17 @@ locale:
 attached base packages:
 [1] stats     graphics  grDevices datasets  utils     methods   base     
 
-other attached packages:
- [1] beeswarm_0.4.0    quarto_1.2        collapse_1.9.5    tidybayes_3.0.4  
- [5] cmdstanr_0.5.3    brms_2.19.0       Rcpp_1.0.10       testthat_3.1.6   
- [9] lubridate_1.9.2   forcats_1.0.0     stringr_1.5.0     dplyr_1.1.2      
-[13] purrr_1.0.1       readr_2.1.4       tidyr_1.3.0       tibble_3.2.1     
-[17] tidyverse_2.0.0   tarchetypes_0.7.4 targets_1.0.0     ggplot2_3.4.2    
-[21] gt_0.9.0          patchwork_1.1.2  
-
 loaded via a namespace (and not attached):
-  [1] colorspace_2.1-0     ellipsis_0.3.2       rprojroot_2.0.3     
-  [4] markdown_1.7         base64enc_0.1-3      fs_1.6.2            
-  [7] rstudioapi_0.14      rstan_2.21.8         listenv_0.9.0       
- [10] furrr_0.3.1          farver_2.1.1         svUnit_1.0.6        
- [13] DT_0.28              fansi_1.0.4          mvtnorm_1.1-3       
- [16] xml2_1.3.4           bridgesampling_1.1-2 codetools_0.2-19    
- [19] knitr_1.42           shinythemes_1.2.0    bayesplot_1.10.0    
- [22] jsonlite_1.8.4       ggdist_3.3.0         shiny_1.7.4         
- [25] compiler_4.2.2       backports_1.4.1      Matrix_1.5-4.1      
- [28] fastmap_1.1.1        cli_3.6.1            later_1.3.1         
- [31] prettyunits_1.1.1    htmltools_0.5.5      tools_4.2.2         
- [34] igraph_1.4.2         coda_0.19-4          gtable_0.3.3        
- [37] glue_1.6.2           reshape2_1.4.4       posterior_1.4.1     
- [40] vctrs_0.6.2          nlme_3.1-162         crosstalk_1.2.0     
- [43] tensorA_0.36.2       xfun_0.39            globals_0.16.2      
- [46] ps_1.7.5             brio_1.1.3           timechange_0.2.0    
- [49] mime_0.12            miniUI_0.1.1.1       lifecycle_1.0.3     
- [52] renv_0.16.0          gtools_3.9.4         future_1.32.0       
- [55] zoo_1.8-12           scales_1.2.1         colourpicker_1.2.0  
- [58] hms_1.1.3            promises_1.2.0.1     Brobdingnag_1.2-9   
- [61] parallel_4.2.2       inline_0.3.19        shinystan_2.6.0     
- [64] yaml_2.3.7           gridExtra_2.3        StanHeaders_2.26.25 
- [67] loo_2.6.0            stringi_1.7.12       dygraphs_1.1.1.6    
- [70] checkmate_2.2.0      pkgbuild_1.4.0       rlang_1.1.1         
- [73] pkgconfig_2.0.3      matrixStats_0.63.0   distributional_0.3.2
- [76] evaluate_0.21        lattice_0.21-8       rstantools_2.3.1    
- [79] htmlwidgets_1.6.2    processx_3.8.1       tidyselect_1.2.0    
- [82] here_1.0.1           parallelly_1.35.0    plyr_1.8.8          
- [85] magrittr_2.0.3       R6_2.5.1             generics_0.1.3      
- [88] base64url_1.4        pillar_1.9.0         withr_2.5.0         
- [91] xts_0.13.1           abind_1.4-5          crayon_1.5.2        
- [94] arrayhelpers_1.1-0   utf8_1.2.3           tzdb_0.4.0          
- [97] rmarkdown_2.21       future.callr_0.8.1   grid_4.2.2          
-[100] data.table_1.14.8    callr_3.7.3          threejs_0.3.3       
-[103] digest_0.6.31        xtable_1.8-4         httpuv_1.6.11       
-[106] stats4_4.2.2         RcppParallel_5.1.7   munsell_0.5.0       
-[109] shinyjs_2.1.0       </code></pre>
+ [1] igraph_1.4.2      rstudioapi_0.14   knitr_1.42        magrittr_2.0.3   
+ [5] tidyselect_1.2.0  here_1.0.1        R6_2.5.1          rlang_1.1.1      
+ [9] fastmap_1.1.1     fansi_1.0.4       tools_4.2.2       targets_1.0.0    
+[13] data.table_1.14.8 xfun_0.39         utf8_1.2.3        cli_3.6.1        
+[17] withr_2.5.0       htmltools_0.5.5   rprojroot_2.0.3   base64url_1.4    
+[21] yaml_2.3.7        digest_0.6.31     lifecycle_1.0.3   tibble_3.2.1     
+[25] processx_3.8.1    callr_3.7.3       vctrs_0.6.2       htmlwidgets_1.6.2
+[29] ps_1.7.5          codetools_0.2-19  glue_1.6.2        evaluate_0.21    
+[33] rmarkdown_2.21    pillar_1.9.0      compiler_4.2.2    backports_1.4.1  
+[37] jsonlite_1.8.4    renv_0.16.0       pkgconfig_2.0.3  </code></pre>
 </div>
 </div>
 </section>

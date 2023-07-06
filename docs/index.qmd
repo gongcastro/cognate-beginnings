@@ -59,11 +59,7 @@ warning: false
 format:
   html: default
 
-abstract: |
-    Language non-selectivity is prominent feature of the bilingual lexicon. An instance of such non-selectivity is embodied by cognateness, which recent studies have suggested to facilitate vocabulary acquisition in bilingual toddlers, who show larger vocabulary sizes when their languages share many cognates, and to be acquired at earlier ages than non-cognates. The specific mechanisms behind such facilitation are unclear. We present an account of early bilingual vocabulary growth in which cognateness interacts with lexical frequency and language exposure to facilitate the word acquisition. We evaluated this model against vocabulary data from 436 Catalan-Spanish bilinguals toddlers. We used Bayesian Explanatory Item Response Models to estimate participants’ probability of acquisition of 604 words, conditional to the cognate status and lexical frequency of the word-form, and the age and degree of exposure to each language of the toddler. We found cognateness facilitation effect only in low-frequency words. Overall, our findings support an interactive account of bilingual vocabulary acquisition in which the lexical representations in one language interact with the acquisition of words in the other language.
-
 fig-dpi: 1000
-
 ---
 
 ```{r setup}
@@ -71,69 +67,40 @@ fig-dpi: 1000
 #| message: false
 #| warning: false
 # load objects -----------------------------------------------------------------
-
-library(patchwork)
-library(gt)
-library(ggplot2)
-
 targets::tar_config_set(store = here::here("_targets"),
                         script = here::here("_targets.R"))
 
-targets::tar_load_globals()
+yaml_metadata <- rmarkdown::yaml_front_matter(here::here("manuscript", "manuscript.qmd"))
+title <- yaml_metadata$title
+abstract <- yaml_metadata$abstract
+thanks <- yaml_metadata$thanks
 
-targets::tar_load(c(bvq_data, childes, items, 
-                    participants, responses))
-
-targets::tar_load(c(model_fit, model_summary, model_epreds,
-                    model_convergence, model_fit_prior, 
-                    model_ppcs, posterior_doe_summary,
-                    model_draws, model_summary,
-                    posterior_doe_draws))
-
-targets::tar_load(c(syllables_data, model_fit_syllables, post_syllables))
-
-# process objects
-items <- bvq_data$pool  |>  
-    mutate(item = str_remove(item, "cat_|spa_")) |> 
-    select(item, language, semantic_category, class) |> 
-    right_join(items, by = c("item", "language"))
-
-rope_interval <- c(lower = -0.1, upper = 0.1)
-
-# set ggplot theme and colour palette ------------------------------------------
-
-my_theme <- theme_minimal() +
-    theme(panel.grid = element_line(colour = "grey",
-                                    linetype = "dotted"),
-          axis.line = element_line(colour = "black"),
-          text = element_text(size = 12, colour = "black"),
-          axis.text = element_text(colour = "black"))
-
-theme_set(my_theme)
-
-bayesplot::bayesplot_theme_set(my_theme + theme(panel.grid = element_blank()))
-
-clrs <- c("#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600")
-
-set.seed(888)
-
-options(ggplot2.ordinal.fill = clrs,
-        ggplot2.ordinal.colour = clrs,
-        ggplot2.discrete.fill = clrs,
-        ggplot2.discrete.colour = clrs,
-        ggplot2.continuous.fill = scale_color_gradient,
-        ggplot2.continuous.colour = scale_color_gradient,
-        knitr.graphics.error = FALSE) 
 ```
 
-
-::: {.callout-tip}
-Data and materials are available at [OSF](https://osf.io/hy984/), and code is available at [GitHub](https://github.com/gongcastro/trajectories).
+::: callout-tip
+Data and materials are available at [OSF](https://osf.io/hy984/), and
+code is available at
+[GitHub](https://github.com/gongcastro/trajectories).
 :::
 
-# Data
+`r abstract`
 
-# Outputs
+`r thanks`
+
+# Links
+
+![arXiv](https://info.arxiv.org/brand/images/brand-logo-primary.jpg){height=100px}
+
+![OSF](https://www.datacc.org/wp-content/uploads/2020/03/osf.png){height=100px}
+
+![GitHub](https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/2048px-Octicons-mark-github.svg.png){height=100px}
+
+
+{{< include ../README.md >}}
+
+
+
+
 
 # Session info
 
