@@ -66,3 +66,26 @@ welcome_message <- function() {
     })
     cli_status_clear(id)
 }
+
+clean_repo <- function() {
+
+    # delete files
+    file.paths <- c("manuscript/orcidlink.sty",
+                      "manuscript/arxiv.sty",
+                      ".luarc.json",
+                      "_targets.yaml")
+    file.paths <- file.paths[file.exists(file.paths)]
+    if(length(file.paths) > 0) {
+        invisible(lapply(file.paths, file.remove))
+        cli::cli_progress_step("Deleting {.path {file.paths}} file{?s}")
+    }
+
+    # delete directories
+    dir.paths <- c("manuscript/manuscript_files/",
+                   "manuscript/appendix_files/")
+    dir.paths <- dir.paths[dir.exists(dir.paths)]
+    if (length(dir.paths) > 0) {
+        invisible(lapply(dir.paths, unlink, recursive = TRUE))
+        cli::cli_progress_step("Deleting {.path {dir.paths}} director{?y/ies}")
+    }
+}
