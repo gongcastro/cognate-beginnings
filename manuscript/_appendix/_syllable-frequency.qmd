@@ -202,7 +202,6 @@ tbl_data <- posterior_syllables_summary |>
     select(.variable_name, .value, .lower, .upper, .hdi, .rope) 
 
 tbl_data |> 
-    mutate(viz = "") |> 
     select(-c(.lower, .upper)) |> 
     knitr::kable(
         format = "latex", 

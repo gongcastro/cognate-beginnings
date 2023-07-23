@@ -67,3 +67,4 @@ editor: source
 lang: en
 freeze: true
 fig-dpi: 1000
+keep-tex: false
