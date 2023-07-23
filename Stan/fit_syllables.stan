@@ -12,46 +12,12 @@ functions {
     // r is stored in another dimension order than z
     return transpose(diag_pre_multiply(SD, L) * z);
   }
-  /* integer sequence of values
-   * Args:
-   *   start: starting integer
-   *   end: ending integer
-   * Returns:
-   *   an integer sequence from start to end
-   */
-  array[] int sequence(int start, int end) {
-    array[end - start + 1] int seq;
-    for (n in 1 : num_elements(seq)) {
-      seq[n] = n + start - 1;
-    }
-    return seq;
-  }
-  // compute partial sums of the log-likelihood
-  real partial_log_lik_lpmf(array[] int seq, int start, int end,
-                            data vector Y, data matrix Xc, vector b,
-                            real Intercept, real sigma, data array[] int J_1,
-                            data vector Z_1_1, data vector Z_1_2,
-                            vector r_1_1, vector r_1_2) {
-    real ptarget = 0;
-    int N = end - start + 1;
-    // initialize linear predictor term
-    vector[N] mu = rep_vector(0.0, N);
-    mu += Intercept;
-    for (n in 1 : N) {
-      // add more terms to the linear predictor
-      int nn = n + start - 1;
-      mu[n] += r_1_1[J_1[nn]] * Z_1_1[nn] + r_1_2[J_1[nn]] * Z_1_2[nn];
-    }
-    ptarget += normal_id_glm_lpdf(Y[start : end] | Xc[start : end], mu, b, sigma);
-    return ptarget;
-  }
 }
 data {
   int<lower=1> N; // total number of observations
   vector[N] Y; // response variable
   int<lower=1> K; // number of population-level effects
   matrix[N, K] X; // population-level design matrix
-  int grainsize; // grainsize for threading
   // data for group-level effects of ID 1
   int<lower=1> N_1; // number of grouping levels
   int<lower=1> M_1; // number of coefficients per level
@@ -66,7 +32,6 @@ transformed data {
   int Kc = K - 1;
   matrix[N, Kc] Xc; // centered version of X without an intercept
   vector[Kc] means_X; // column means of X before centering
-  array[N] int seq = sequence(1, N);
   for (i in 2 : K) {
     means_X[i - 1] = mean(X[ : , i]);
     Xc[ : , i - 1] = X[ : , i] - means_X[i - 1];
@@ -99,8 +64,14 @@ transformed parameters {
 model {
   // likelihood including constants
   if (!prior_only) {
-    target += reduce_sum(partial_log_lik_lpmf, seq, grainsize, Y, Xc, b,
-                         Intercept, sigma, J_1, Z_1_1, Z_1_2, r_1_1, r_1_2);
+    // initialize linear predictor term
+    vector[N] mu = rep_vector(0.0, N);
+    mu += Intercept;
+    for (n in 1 : N) {
+      // add more terms to the linear predictor
+      mu[n] += r_1_1[J_1[n]] * Z_1_1[n] + r_1_2[J_1[n]] * Z_1_2[n];
+    }
+    target += normal_id_glm_lpdf(Y | Xc, mu, b, sigma);
   }
   // priors including constants
   target += lprior;
