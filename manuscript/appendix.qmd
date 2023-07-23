@@ -10,10 +10,8 @@ echo: false
 warning: false
 message: false
 
-
 format:
   arxiv-pdf:
-    keep-tex: true  
     linenumbers: true
     doublespacing: false
     runninghead: "Cognate beginnings to bilingual lexical acquistion (Appendix)"
