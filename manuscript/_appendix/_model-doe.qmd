@@ -2,16 +2,17 @@ As a robustness check, we fit a model similar to the one described in the main m
 
 ```{r tbl-coefs-doe}
 #| label: tbl-coefs-doe
-#| fig-cap: "Posterior distribution of regression coefficients of the model including the *Exposure* composite predictor, and of the model including lexical frequency (*Frequency*) and degree of exposure (*DoE*) separately. Median: median of the posterior distribution in the probability scale. 95\\% HDI: 95\\% highest density interval of the distribution. p(ROPE): overlap between the 95\\% HDI and the ROPE, indicating the posterior probability that the true value of the coefficient is equivalent to zero. In the right column, we show a graphical representation of the median and 95% HDI of each coefficient, with a reference dotted line indicating the location of zero."
+#| tbl-cap: "Posterior distribution of regression coefficients of the model including the *Exposure* composite predictor, and of the model including lexical frequency (*Frequency*) and degree of exposure (*DoE*) separately. Median: median of the posterior distribution in the probability scale. 95\\% HDI: 95\\% highest density interval of the distribution. *p*(ROPE): overlap between the 95\\% HDI and the ROPE, indicating the posterior probability that the true value of the coefficient is equivalent to zero. In the right column, we show a graphical representation of the median and 95% HDI of each coefficient, with a reference dotted line indicating the location of zero."
 #| echo: false
 #| message: false
 #| warning: false
 # summarise posterior draws
-tbl_data <- bind_rows("Exposure model" = model_summary,
-                      "DoE-Frequency model" = posterior_doe_summary,
-                      .id = ".model") |> 
+tbl_data <- list("Exposure model" = model_summary,
+                 "DoE-Frequency model" = posterior_doe_summary) |> 
+    purrr::map_df(\(x) mutate(x, across(.variable_name, as.character)),
+                  .id = ".model") |> 
     mutate(
-        across(c(.median, .lower, .upper),
+        across(c(.value, .lower, .upper),
                function(x) {
                    ifelse(
                        .type=="Intercepts (at 22 months)",
@@ -20,16 +21,16 @@ tbl_data <- bind_rows("Exposure model" = model_summary,
                    )
                }
         )) |>
-    filter(.type == "Slopes") |> 
-    select(.model, .variable_name, .median, .lower, .upper, .rope_overlap) |> 
+    filter(.type=="Slopes") |> 
+    select(.model, .variable_name, .value, .lower, .upper, .rope) |> 
     mutate(
-        across(.median:.upper, plogis),
+        across(.value:.upper, plogis),
         .variable_name = gsub("×", '$\\\\times$', .variable_name),
         .hdi = paste0("[", round(.lower, 3),
                       ", ", round(.upper, 3), "]"),
-        .rope_overlap = sub("^(-?)0.", "\\1.",
-                            sprintf("%.3f", .rope_overlap))) |> 
-    select(.variable_name, .median, .lower, .upper, .hdi, .rope_overlap) 
+        .rope = sub("^(-?)0.", "\\1.",
+                    sprintf("%.3f", .rope))) |> 
+    select(.variable_name, .value, .lower, .upper, .hdi, .rope) 
 
 tbl_data |> 
     mutate(viz = "") |> 

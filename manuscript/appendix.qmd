@@ -1,6 +1,6 @@
 ---
-csl: "../assets/apa7.csl"
-bibliography: "../assets/references.bib"
+csl: "_assets/apa7.csl"
+bibliography: "_assets/references.bib"
 link-citations: true
 editor: source
 
@@ -9,6 +9,7 @@ fig-dpi: 800
 echo: false
 warning: false
 message: false
+
 
 format:
   arxiv-pdf:
@@ -42,7 +43,8 @@ targets::tar_load(c(bvq_data, childes, items, model_summary,
 
 targets::tar_load(c(posterior_doe_summary, posterior_doe_draws))
 
-targets::tar_load(c(syllables_data, model_fit_syllables, post_syllables))
+targets::tar_load(c(syllables_data, model_fit_syllables, post_syllables,
+                    posterior_syllables_summary))
 
 my_theme <- theme_minimal() +
     theme(panel.grid = element_line(colour = "grey",

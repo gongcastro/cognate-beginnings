@@ -11,21 +11,25 @@
 #' @param levels If group is `"te"` or `"id"`, specific levels (translation equivalents or participants) can be specified. If NULL (default), posterior predictions are generated for all levels of the grouping variable.
 #' @inheritParams marginaleffects::datagrid
 #' 
-generate_newdata <- function(model,
-                             data,
-                             group = NULL,
-                             levels = NULL,
-                             ...) {
-    # some checks
+generate_newdata <- function(model, group = NULL, levels = NULL, ...) {
+    
+    # validate data
+    is.data.provided <- length(list(...)) > 0
+    if (!is.data.provided) {
+        cli::cli_abort("Predictor values must be provided")
+    }
+    
+    # validate group variable names
+    grouping.vars <- names(brms::ranef(model))
     if (!is.null(group)) {
-        if (!(group %in% c("te", "id")) | length(group) > 1) {
-            cli::cli_abort("group must be one of 'te' or 'id")
+        if (!(group %in% grouping.vars) | length(group) > 1) {
+            cli::cli_abort("group must be one of {grouping.vars}")
         }
     }
     
     # make sure that all levels exist in the dataset
     if (!is.null(levels)) {
-        levels_in_data <- levels %in% data[[group]]
+        levels_in_data <- levels %in% model[["data"]][[group]]
         if (!all(levels_in_data)) {
             missing_levels <- paste0(levels[!levels_in_data], collapse = ", ")
             cli::cli_abort("Level {missing_levels} in {.field {group}} is missing")
@@ -34,26 +38,18 @@ generate_newdata <- function(model,
     
     # data frame with prediction combinations
     if (is.null(group)) {
-        nd <- marginaleffects::datagrid(model = model, te = NA, id = NA, ...)
+        nd <- expand_grid(te = NA, id = NA, ...)
     } else {
         # expand predictor levels in data frame to generate predictions
         if (group == "te") {
             # if group is "te", generate predictions for each level of `te`
-            nd <- marginaleffects::datagrid(
-                model = model, 
-                te = levels, 
-                id = NA, 
-                ...) |>
+            nd <- expand_grid(te = levels,  id = NA, ...) |>
                 select(-lv_std) |>
                 left_join(distinct(data, te, lv_std))
         }
         if (group == "id") {
             # expand predictor levels in data frame to generate predictions
-            nd <- marginaleffects::datagrid(
-                model = model, 
-                id = levels,
-                te = NA, ...
-            ) |>
+            nd <- expand_grid(id = levels, te = NA, ...) |>
                 select(-age_std) |>
                 left_join(distinct(data, id, age_std))
         }
@@ -70,31 +66,22 @@ generate_newdata <- function(model,
 #' @inheritParams marginaleffects::datagrid
 posterior_predictions <- function(model, data, ndraws = NULL, ...) {
     # generate data for predictions
-    newdata <- generate_newdata(model, data, ...)
+    newdata <- generate_newdata(model, ...)
     
     # use marginaleffects to get posterior means
-    predictions <- marginaleffects::predictions(
-        model,
-        newdata = newdata,
-        re_formula = NA,
-        vcov = FALSE,
-        ndraws = ndraws
-    ) |>
-        marginaleffects::posteriordraws() |> # so that each draw gets a row
-        as_tibble() |>
-        janitor::clean_names() |> 
-        dplyr::filter(group != "No") |> 
-        pivot_wider(id_cols = any_of(c("drawid", colnames(newdata))),
-                    names_from = group,
-                    values_from = draw) |>
+    predictions <- tidybayes::add_epred_draws(model,
+                                              newdata = newdata,
+                                              re_formula = NA,
+                                              ndraws = ndraws,
+                                              value = ".value") |> 
+        filter(.category!="No") |> 
+        pivot_wider(id_cols = any_of(c(".draw", colnames(newdata))),
+                    names_from = .category,
+                    values_from = .value) |> 
         mutate(`Understands` = `Understands and Says` + `Understands`) |>
         pivot_longer(c(`Understands`, `Understands and Says`),
-                     names_to = "group",
-                     values_to = "draw") |>
-        select(any_of(colnames(newdata)),
-               .category = group,
-               .draw = drawid,
-               .value = draw)
+                     names_to = ".category",
+                     values_to = ".value")
     
     # save predictions as Parquet file
     save_files(predictions, 
@@ -102,60 +89,4 @@ posterior_predictions <- function(model, data, ndraws = NULL, ...) {
                folder = "results/predictions")
     
     return(predictions)
-}
-
-#' Generate posterior predictions for fixed effects brmsfit model via [marginaleffects::predictions()]
-#'
-#' @param model A brmsfit object
-#' @param data Data with the desired combination of levels of the predictors for which to generate posterior predictions, as generated by \code{generate_newdata}
-#' @param group Group level for which posterior predictions are generated. Takes `"te"` or `"id"` as values.
-#' @param ... Additional arguments passed to [marginaleffects::predictions()]
-posterior_predictions_re <- function(model, data, group, ...) {
-    if (!(group %in% c("id", "te"))) {
-        cli::cli_abort("group must be 'id' or 'te'")
-    }
-    # generate data for predictions
-    newdata <- generate_newdata(model, data, group, ...)
-    
-    # use marginaleffects to get posterior means
-    preds <- marginaleffects::predictions(
-        model,
-        newdata = newdata,
-        re_formula = as.formula(paste0("~1|", group)),
-        vcov = FALSE,
-        ndraws = 1000
-    ) |>
-        marginaleffects::posteriordraws() |> # so that each draw gets a row
-        as_tibble() |>
-        janitor::clean_names() |>
-        filter(group != "No") |>
-        pivot_wider(id_cols = c(drawid, age_std, lv_std, exposure_std, te, id),
-                    names_from = group,
-                    values_from = draw) |>
-        mutate(`Understands` = `Understands and Says` + `Understands`) |>
-        pivot_longer(c(`Understands`, `Understands and Says`),
-                     names_to = "group",
-                     values_to = "draw") |>
-        mutate(age = age_std * sd(data$age) + mean(data$age))
-    
-    if (group == "te") {
-        predictions_te <- preds
-        # export results
-        save_files(predictions_te, 
-                   formats = "csv",
-                   folder = "results/predictions")
-        predictions_re <- predictions_te
-    }
-    
-    if (group == "id") {
-        predictions_id <- preds
-        # export results
-        save_files(predictions_id,
-                   formats = "csv",
-                   folder = "results/predictions")
-        
-        predictions_re <- predictions_id
-    }
-    
-    return(predictions_re)
 }

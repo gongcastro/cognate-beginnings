@@ -1,65 +1,4 @@
 ---
-title: "Cognate beginnings to bilingual lexical acquisition"
-subtitle: "Lab notes"
-short-title: "Cognate beginnings"
-author:
-  - name: Gonzalo Garcia-Castro
-    corresponding: true
-    orcid: 0000-0002-8553-4209
-    email: gonzalo.garciadecastro@upf.edu
-    affiliations:
-      - id: cbc
-        name: Universitat Pompeu Fabra
-        department: Center for Brain and Cognition
-        address: Ramon Trias Fargas 25-27
-        city: Barcelona
-        region: Spain
-        postal-code: "08005"
-  - name: Daniela S. Avila-Varela
-    orcid: 0000-0002-3518-8117
-    affiliations: 
-      - ref: cbc
-      - id: ul
-        name: Universidade de Lisboa
-        department: Facultade de Letras
-        address: Alameda da Universidade
-        city: Lisboa
-        region: Portugal
-        postal-code: "1600-214"
-  - name: Ignacio Castillejo
-    orcid: 0000-0001-7445-0416
-    affiliations: 
-      - id: uam 
-        name: Universidad Autónoma de Madrid
-        department: Departamento de Psicología
-        address: Iván Pavlov, 6
-        city: Madrid
-        region: Spain
-        postal-code: "28049"
-  - name: Nuria Sebastian-Galles
-    orcid: 0000-0001-6938-2498
-    affiliations: 
-      - ref: cbc
-date: "May 10th, 2023"
-code-repo: "Access the code, data, and analysis at <https://github.com/gongcastro/trajectories>"
-keywords:
-  - lexical acquisition
-  - vocabulary
-  - bilingualism
-  - item response theory
-  - bayesian
-csl: "../assets/apa7.csl"
-bibliography: "../assets/references.bib"
-link-citations: true
-editor: source
-
-code-fold: true
-warning: false
-
-format:
-  html: default
-
-fig-dpi: 1000
 ---
 
 ```{r setup}
@@ -70,11 +9,13 @@ fig-dpi: 1000
 targets::tar_config_set(store = here::here("_targets"),
                         script = here::here("_targets.R"))
 
-yaml_metadata <- rmarkdown::yaml_front_matter(here::here("manuscript", "manuscript.qmd"))
+yaml_metadata <- rmarkdown::yaml_front_matter(
+    here::here("manuscript", "manuscript.qmd")
+)
+
 title <- yaml_metadata$title
 abstract <- yaml_metadata$abstract
 thanks <- yaml_metadata$thanks
-
 ```
 
 ::: callout-tip
@@ -97,9 +38,6 @@ code is available at
 
 
 {{< include ../README.md >}}
-
-
-
 
 
 # Session info
