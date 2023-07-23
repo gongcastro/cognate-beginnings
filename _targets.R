@@ -4,12 +4,12 @@ suppressPackageStartupMessages({
         library(targets)
         library(tarchetypes)
         # data handling, cleaning, and testing
-        library(tidyverse)
+        library(dplyr)
+        library(tidyr)
         library(testthat)
         # modelling
         library(brms)
         library(cmdstanr)
-        library(tidybayes)
         library(collapse)
         # reporting
         library(quarto)
@@ -125,31 +125,30 @@ list(
     tar_target(model_draws,
                get_posterior_draws(model_fit,
                                    data = responses,
-                                   model_vars_dict)),
+                                   vars_dict = model_vars_dict)),
     
     # get summary of posterior draws for population-level effects
     tar_target(model_summary,
                get_posterior_summary(model_fit, 
                                      data = responses,
-                                     model_vars_dict)),
+                                     vars_dict = model_vars_dict)),
     
-    # get posterior draws for group-level effects
-    tar_target(model_draws_re,
-               get_posterior_draws_re(model_fit)),
     
     ## marginal effects --------------------------------------------------------
+    
     tar_target(model_epreds,
-               posterior_predictions(model = model_fit,
-                                     responses, 
-                                     ndraws = 100,
-                                     age_std = scale(seq(7, 40, length.out = 100),
-                                                     mean(responses$age),
-                                                     sd(responses$age)),
-                                     exposure_std = c(-1, 0, 1),
-                                     lv_std = scale(seq(0, 1, 0.5), 
-                                                    mean(responses$lv),
-                                                    sd(responses$lv)),
-                                     n_phon_std = 0)),
+               posterior_predictions(
+                   model = model_fit,
+                   responses, 
+                   age_std = scale(seq(7, 40, length.out = 100),
+                                   mean(responses$age),
+                                   sd(responses$age))[, 1],
+                   exposure_std = c(-1, 0, 1),
+                   lv_std = scale(seq(0, 1, 0.5), 
+                                  mean(responses$lv),
+                                  sd(responses$lv))[, 1],
+                   n_phon_std = 0)
+    ),
     
     # convergence diagnostics (rhat and n_eff)
     tar_target(model_convergence, get_model_convergence(model_fit)),
@@ -165,8 +164,10 @@ list(
         fit_model(
             name = "fit_doe",
             formula = bf(
-                response ~ age_std * doe_std * lv_std + n_phon_std + freq_std +
-                    (1 + age_std * doe_std * lv_std + n_phon_std + freq_std | id) +
+                response ~ age_std * doe_std * lv_std +
+                    n_phon_std + freq_std +
+                    (1 + age_std * doe_std * lv_std +
+                         n_phon_std + freq_std | id) +
                     (1 + age_std * doe_std + n_phon_std + freq_std | te),
                 family = cumulative(link = "logit")),
             data = responses,
@@ -175,76 +176,73 @@ list(
         )
     ),
     
+    tar_target(model_vars_dict_doe, get_vars_dict_doe(responses)),
+    
     tar_target(
         posterior_doe_summary,
-        {
-            get_posterior_summary(
-                model_doe,
-                data = responses,
-                var_dict = c(
-                    "b_Intercept[1]" = "Comprehension and Production",
-                    "b_Intercept[2]" = "Comprehension",
-                    "b_age_std" = glue::glue("Age (+1 SD, {round(sd(responses$age), 2)}, months)"),
-                    "b_n_phon_std" = glue::glue("Phonemes (+1 SD, {round(sd(responses$n_phon), 2)} phonemes)"),
-                    "b_freq_std" = glue::glue("Frequency (+1 SD, {round(sd(responses$freq), 2)})"),
-                    "b_doe_std" = glue::glue("DoE (+1 SD, {round(sd(responses$doe), 2)})"),
-                    "b_lv_std" = glue::glue("Cognateness (+1 SD, {round(sd(responses$lv), 2)})"),
-                    "b_age_std:doe_std" = "Age \u00d7 DoE",
-                    "b_doe_std:lv_std" = "DoE \u00d7 Cognateness",
-                    "b_age_std:lv_std" = "Age \u00d7 Cognateness",
-                    "b_age_std:doe_std:lv_std" = "Age \u00d7 DoE \u00d7 Cognateness"
-                )
-            )
-        }),
+        get_posterior_summary(
+            model_doe,
+            data = responses,
+            vars_dict = model_vars_dict_doe
+        )),
     
     tar_target(
         posterior_doe_draws,
-        {
-            get_posterior_draws(
-                model_doe,
-                data = responses,
-                var_dict = c(
-                    "b_Intercept[1]" = "Comprehension and Production",
-                    "b_Intercept[2]" = "Comprehension",
-                    "b_age_std" = glue::glue("Age (+1 SD, {round(sd(responses$age), 2)}, months)"),
-                    "b_n_phon_std" = glue::glue("Phonemes (+1 SD, {round(sd(responses$n_phon), 2)} phonemes)"),
-                    "b_doe_std" = glue::glue("DoE (+1 SD, {round(sd(responses$doe), 2)})"),
-                    "b_freq_std" = glue::glue("Frequency (+1 SD, {round(sd(responses$freq), 2)})"),
-                    "b_lv_std" = glue::glue("Cognateness (+1 SD, {round(sd(responses$lv), 2)})"),
-                    "b_age_std:doe_std" = "Age \u00d7 Exposure",
-                    "b_doe_std:lv_std" = "Exposure \u00d7 Cognateness",
-                    "b_age_std:lv_std" = "Age \u00d7 Cognateness",
-                    "b_age_std:doe_std:lv_std" = "Age \u00d7 Exposure \u00d7 Cognateness"
-                )
-            )
-        }),
+        get_posterior_draws(
+            model_doe,
+            data = responses,
+            vars_dict = model_vars_dict_doe
+        )),
     
     tar_target(syllables_data, get_syllable_data(items)),
     
     tar_target(model_fit_syllables,
-               {
-                   fit_model(
-                       name = "fit_syllables",
-                       formula = freq_syll ~ n_syll_std + lv_std + 
-                           (1 + n_syll_std | te),
-                       prior = c(prior(normal(0, 10), class = "Intercept"),
-                                 prior(normal(0, 10), class = "b"),
-                                 prior(exponential(3), class = "sigma"),
-                                 prior(exponential(3), class = "sd"),
-                                 prior(lkj(3), class = "cor")),
-                       data = syllables_data,
-                       sample_prior = "yes"
-                   )
-               }
+               fit_model(
+                   name = "fit_syllables",
+                   formula = freq_syll ~ n_syll_std + lv_std + 
+                       (1 + n_syll_std | te),
+                   prior = c(prior(normal(0, 10), class = "Intercept"),
+                             prior(normal(0, 10), class = "b"),
+                             prior(exponential(3), class = "sigma"),
+                             prior(exponential(3), class = "sd"),
+                             prior(lkj(3), class = "cor")),
+                   data = syllables_data,
+                   sample_prior = "yes"
+               )
     ),
     
+    tar_target(
+        posterior_syllables_summary,
+        get_posterior_summary(
+            model_fit_syllables,
+            data = syllables_data,
+            vars_dict = c(
+                "b_Intercept" = "Intercept",
+                "b_n_syll_std" = glue::glue(
+                    "Syllables (+1 SD, {round(sd(syllables_data$n_syll), 3)})"
+                ),
+                "b_lv_std" = glue::glue(
+                    "Cognateness (+1 SD, {round(sd(syllables_data$lv), 2)})"
+                )
+            )
+        )),
+    
     # render report ------------------------------------------------------------
-    tar_quarto(website, "docs/index.qmd", cache = FALSE, quiet = FALSE),
+    tar_quarto(website,
+               "docs/index.qmd",
+               cache = FALSE,
+               quiet = FALSE),
     
     # render manuscript
-    tar_quarto(manuscript, "manuscript/manuscript.qmd", quiet = FALSE, cache = FALSE),
+    tar_quarto(manuscript,
+               "manuscript/manuscript.qmd",
+               quiet = FALSE, 
+               cache = FALSE),
     
-    tar_quarto(appendix, "manuscript/appendix.qmd", quiet = FALSE, cache = FALSE),
+    tar_quarto(appendix, 
+               "manuscript/appendix.qmd",
+               quiet = FALSE,
+               cache = FALSE),
     
     tar_target(clean_repo,
                invisible({

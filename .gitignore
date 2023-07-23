@@ -27,9 +27,10 @@ manuscript_files/
 *.docx
 index/index_files/
 
-/.quarto/
 _freeze/*
 /.luarc.json
 .vscode/
-manuscript/.quarto*
+manuscript/.quarto/
+/.quarto/
+
 

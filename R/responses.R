@@ -9,7 +9,7 @@ get_responses <- function(bvq_data, items, participants) {
     responses_tmp <- bvq_data$responses |>
         mutate(time = as.integer(time),
                language = ifelse(grepl("cat_", item), "Catalan", "Spanish"),
-               item = str_remove(item, "cat_|spa_")) |>
+               item = stringr::str_remove(item, "cat_|spa_")) |>
         # drop missing responses
         # by default datasets are expanded so that every participant has rows for all items,
         # even for those that were not included in their version of the questionnaire
@@ -18,6 +18,7 @@ get_responses <- function(bvq_data, items, participants) {
                    by = join_by(id)) |>
         select(id, time, code, language, item, response)
     
+    response_levels <- c("No", "Understands", "Understands and Says")
     responses <- items |> 
         select(-list) |> 
         inner_join(responses_tmp,
@@ -28,9 +29,7 @@ get_responses <- function(bvq_data, items, participants) {
             # code responses as factor
             response = factor(response,
                               levels = c(1, 2, 3),
-                              labels = c("No",
-                                         "Understands",
-                                         "Understands and Says"),
+                              labels = response_levels,
                               ordered = TRUE),
             # does should have the value of the corresponding language
             doe = ifelse(language == "Catalan", doe_catalan, doe_spanish),

@@ -24,8 +24,8 @@ pool_tmp <- bvq_data$pool |>
                            split = paste0(.sep = c("\\.", "\\\""), 
                                           collapse = "|")),
            syll = lapply(syll, function(x) x[x != ""]),
-           n_syll = map_int(syll, length),
-           item = str_remove(item, "cat_|spa_")) 
+           n_syll = purrr::map_int(syll, length),
+           item = gsub("cat_|spa_", "", item)) 
 
 items <- items |> 
     mutate(xsampa = ipa::ipa(ipa)) |> 
@@ -33,8 +33,8 @@ items <- items |>
                            split = paste0(.sep = c("\\.", "\\\""), 
                                           collapse = "|")),
            syll = lapply(syll, function(x) x[x != ""]),
-           n_syll = map_int(syll, length),
-           item = str_remove(item, "cat_|spa_"))
+           n_syll = purrr::map_int(syll, length),
+           item = gsub("cat_|spa_", "", item)) 
 ```
 
 We define syllable frequency as the rate of appearance of individual syllables in the word-forms included in the Barcelona Vocabulary Questionnaire (BVQ) [@garcia-castro2023bvq]. Each item corresponds to a Catalan or Spanish word, and has an associated phonological transcription in X-SAMPA format [@wells1995computercoding]. These transcriptions are syllabified. Some examples:
@@ -119,9 +119,8 @@ syll <- items |>
               by = c("childes_lemma" = "token")) |> 
     select(language, item, te, meaning, xsampa, lv, freq_lex, syll) |> 
     unnest_longer(syll) |> 
-    group_by(language, syll) |> 
     summarise(freq_syll = sum(freq_lex),
-              .groups = "drop") |> 
+              .by = c(language, syll)) |> 
     arrange(language, desc(freq_syll))
 
 syll |> 
@@ -175,40 +174,14 @@ $$ {#eq-model-syllables}
 #| message: false
 rope_interval <- c(lower = -0.5, upper = 0.5)
 # tidy predictor names
-str_repl <- c(
-    "b_Intercept" = "Intercept",
-    "b_n_syll_std" = glue::glue("Syllables (+1 SD, {round(sd(syllables_data$n_syll), 3)})"),
-    "b_lv_std" = glue::glue("Cognateness (+1 SD, {round(sd(syllables_data$lv), 2)})")
-)
 
-post_syllables <- model_fit_syllables |>
-    bayestestR::describe_posterior(test = "rope",
-                                   rope_range = rope_interval,
-                                   ci_method = "HDI") |>
-    as_tibble() |>
-    janitor::clean_names() |>
-    mutate(.variable_name = factor(
-        parameter,
-        levels = names(str_repl),
-        labels = str_repl) |>
-            as.character(),
-        parameter = ifelse(grepl("Intercept", parameter),
-                           stringr::str_remove_all(parameter, "Intercept \\(|\\)"),
-                           parameter)) |>
-    select(.variable = parameter,
-           .variable_name,
-           .median = median,
-           .upper = ci_high,
-           .lower = ci_low,
-           .rope_overlap = rope_percentage) |>
-    ungroup()
 
-post_draws_list <- post_syllables |> 
-    split(post_syllables$.variable)
+post_draws_list <- posterior_syllables_summary |> 
+    split(posterior_syllables_summary$.variable)
 
 ```
 
-We fit this model running `r dim(model_fit_syllables$fit)[2]` sampling chains with `r format(dim(model_fit_syllables$fit)[1], big.mark = ",")` iterations each. @tbl-syll-coefs shows a summary of the posterior distribution of the fixed effects in the model. As expected, words with more syllables scored higher in syllabic frequency: all posterior draws for the regression coefficient of the main effect of this predictor fell outside the ROPE defined between -0.5 and +0.5 ($\beta$ = `r round(post_draws_list[["b_n_syll_std"]]$.median, 2)`, 95% HDI = [`r round(post_draws_list[["b_n_syll_std"]]$.lower, 2)`, `r round(post_draws_list[["b_n_syll_std"]]$.upper, 2)`]). Keeping the number of syllables constant, the effect of cognateness was negligible: all of the posterior distributions of this predictor fell within the ROPE, providing evidence that the true value of the increment in syllabic frequency for every increase in cognateness is equivalent to zero ($\beta$ = `r round(post_draws_list[["b_lv_std"]]$.median, 2)`, 95% HDI = [`r round(post_draws_list[["b_lv_std"]]$.lower, 2)`, `r round(post_draws_list[["b_lv_std"]]$.upper, 2)`]).
+We fit this model running `r dim(model_fit_syllables$fit)[2]` sampling chains with `r format(dim(model_fit_syllables$fit)[1], big.mark = ",")` iterations each. @tbl-syll-coefs shows a summary of the posterior distribution of the fixed effects in the model. As expected, words with more syllables scored higher in syllabic frequency: all posterior draws for the regression coefficient of the main effect of this predictor fell outside the ROPE defined between -0.5 and +0.5 ($\beta$ = `r round(post_draws_list[["b_n_syll_std"]]$.value, 2)`, 95% HDI = [`r round(post_draws_list[["b_n_syll_std"]]$.lower, 2)`, `r round(post_draws_list[["b_n_syll_std"]]$.upper, 2)`]). Keeping the number of syllables constant, the effect of cognateness was negligible: all of the posterior distributions of this predictor fell within the ROPE, providing evidence that the true value of the increment in syllabic frequency for every increase in cognateness is equivalent to zero ($\beta$ = `r round(post_draws_list[["b_lv_std"]]$.value, 2)`, 95% HDI = [`r round(post_draws_list[["b_lv_std"]]$.lower, 2)`, `r round(post_draws_list[["b_lv_std"]]$.upper, 2)`]).
 
 ```{r tbl-syll-coefs}
 #| label: tbl-syll-coefs
@@ -218,15 +191,15 @@ We fit this model running `r dim(model_fit_syllables$fit)[2]` sampling chains wi
 #| message: false
 #| warning: false
 # summarise posterior draws
-tbl_data <- post_syllables |>
-    select(.variable_name, .median, .lower, .upper, .rope_overlap) |>
+tbl_data <- posterior_syllables_summary |>
+    select(.variable_name, .value, .lower, .upper, .rope) |>
     mutate(
         .variable_name = gsub("×", '$\\\\times$', .variable_name),
         .hdi = paste0("[", round(.lower, 3),
                       ", ", round(.upper, 3), "]"),
-        .rope_overlap = sub("^(-?)0.", "\\1.",
-                            sprintf("%.3f", .rope_overlap))) |> 
-    select(.variable_name, .median, .lower, .upper, .hdi, .rope_overlap) 
+        .rope = sub("^(-?)0.", "\\1.",
+                    sprintf("%.3f", .rope))) |> 
+    select(.variable_name, .value, .lower, .upper, .hdi, .rope) 
 
 tbl_data |> 
     mutate(viz = "") |> 
@@ -237,26 +210,13 @@ tbl_data |>
         col.names = c("",
                       "$\\beta$",
                       "95\\% HDI",
-                      "$p(\\text{ROPE})$",
-                      ""),
+                      "$p(\\text{ROPE})$"),
         digits = 3,
         booktabs = TRUE,
-        align = "lclrc",
+        align = "lclr",
         linesep = ""
     ) |> 
-    kableExtra::kable_styling() |> 
-    kableExtra::column_spec(
-        5,
-        background = "#f2f2f2",
-        image = kableExtra::spec_pointrange(
-            x = tbl_data$.median, 
-            xmin = tbl_data$.lower, 
-            xmax = tbl_data$.upper, 
-            vline = 0,
-            xaxt = "n",
-            col = "#000000",
-            res = 200)
-    )
+    kableExtra::kable_styling()
 ```
 
 @fig-syll-marginal shows the median posterior-predicted syllabic frequencies for words with one to four syllables, for the whole range of cognateness values. Overall, cognate words' syllabic frequency is equivalent to that of non-cognates. This suggests that the cognate facilitation effect in word acquisition reported in the present study is not the result from an association between cognateness and higher syllabic frequencies.
@@ -276,9 +236,9 @@ expand_grid(lv_std = scale(seq(0, 1, 0.1),
             n_syll_std = scale(seq(1, 4, 1),
                                center = mean(syllables_data$n_syll),
                                scale = sd(syllables_data$n_syll))[, 1]) |> 
-    add_epred_draws(model_fit_syllables,
-                    re_formula = NA) |>
-    median_hdci() |> 
+    tidybayes::add_epred_draws(model_fit_syllables,
+                               re_formula = NA) |>
+    tidybayes::median_hdci() |> 
     mutate(
         lv_std = (lv_std * sd(syllables_data$lv)) + mean(syllables_data$lv),
         n_syll_std = (n_syll_std * sd(syllables_data$n_syll)) + mean(syllables_data$n_syll),

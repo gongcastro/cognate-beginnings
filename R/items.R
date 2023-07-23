@@ -54,16 +54,14 @@ get_childes_frequencies <- function(collection = "Eng-NA",
                              "corpus_id",
                              "speaker_id", 
                              "transcript_id")) |>
-            mutate(
-                id = as.character(id),
-                age_months = target_child_age,
-                age_bin = as.integer(floor(age_months / 6) * 6),
-                token = tolower(gloss)
+            mutate(id = as.character(id),
+                   age_months = target_child_age,
+                   age_bin = as.integer(floor(age_months / 6) * 6),
+                   token = tolower(gloss)
             ) |>
-            summarise(
-                transcript_count = sum(count),
-                transcript_num_tokens = sum(num_tokens),
-                .by = c(age_bin, token, target_child_id, transcript_id)
+            summarise(transcript_count = sum(count),
+                      transcript_num_tokens = sum(num_tokens),
+                      .by = c(age_bin, token, target_child_id, transcript_id)
             ) |>
             dplyr::filter(between(age_bin,
                                   age_range[1],
@@ -87,7 +85,7 @@ get_childes_frequencies <- function(collection = "Eng-NA",
 
 #' Get item data
 #' 
-#' Levenshtein similarityties are computed using the [stringdist::stringsim()] function (see ?[stringdist::`stringdist-package`]).
+#' Levenshtein similarities are computed using the [stringdist::stringsim()] function (see ?[stringdist::`stringdist-package`]).
 #'
 #' @param bvq_data A named list resulting from calling [get_bvq()]
 #' @param childes A data frame with lexical frequencies extracted from CHILDES, as returned by the [get_childes_frequencies()]
@@ -124,7 +122,7 @@ get_items <- function(bvq_data, childes, class = "Noun")
         distinct(language, te, .keep_all = TRUE) |> 
         mutate(xsampa_flat = bvq::flatten_xsampa(xsampa),
                syll = bvq::syllabify_xsampa(xsampa),
-               n_syll = map_int(syll, length),
+               n_syll = purrr::map_int(syll, length),
                item = gsub("cat_|spa_", "", item)) 
     
     syll_freq <- pool_tmp |> 
@@ -178,7 +176,7 @@ get_items <- function(bvq_data, childes, class = "Noun")
 #' Get CHILDES lexical frequencies
 #'
 #' @param collection CHILDES corpora from where to fetch transcriptions. Takes "Eng-NA" (North American English by default). See [CHILDES Index to corpora(https://childes.talkbank.org/access/) to see options
-#' @param age_range Numeric vector of lenght two indicating the minimum and maximum age range of interest for which to compute lexical frequencies in the CHILDES corpora. Frequencies will be summarised across this age range using the mean
+#' @param age_range Numeric vector of length two indicating the minimum and maximum age range of interest for which to compute lexical frequencies in the CHILDES corpora. Frequencies will be summarised across this age range using the mean
 #' @paran ... Additional arguments passed to [childesr::get_types()]
 get_childes_frequencies <- function(collection = "Eng-NA",
                                     age_range = c(10, 36),
