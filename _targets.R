@@ -137,9 +137,8 @@ list(
     ## marginal effects --------------------------------------------------------
     
     tar_target(model_epreds,
-               posterior_predictions(
+               posterior_epreds(
                    model = model_fit,
-                   responses, 
                    age_std = scale(seq(7, 40, length.out = 100),
                                    mean(responses$age),
                                    sd(responses$age))[, 1],
@@ -249,5 +248,5 @@ list(
                    file_path <- here::here("_targets.yaml")
                    if (file.exists(file_path)) file.remove(file_path)
                }))
-        
+    
 )
