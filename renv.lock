@@ -3,16 +3,16 @@
     "Version": "4.2.2",
     "Repositories": [
       {
-        "Name": "Stan",
-        "URL": "https://mc-stan.org/r-packages"
+        "Name": "CRAN",
+        "URL": "https://cloud.r-project.org"
       },
       {
-        "Name": "gongcastro",
+        "Name": "gon",
         "URL": "https://gongcastro.r-universe.dev"
       },
       {
-        "Name": "CRAN",
-        "URL": "https://cloud.r-project.org"
+        "Name": "stan",
+        "URL": "https://mc-stan.org/r-packages"
       }
     ]
   },
@@ -2103,7 +2103,7 @@
       "Package": "rstan",
       "Version": "2.26.22",
       "Source": "Repository",
-      "Repository": "Stan",
+      "Repository": "stan",
       "Requirements": [
         "BH",
         "R",

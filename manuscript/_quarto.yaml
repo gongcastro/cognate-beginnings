@@ -4,7 +4,6 @@ project:
 
 format:
   arxiv-pdf:
-    keep-tex: true  
     linenumbers: true
     doublespacing: false
     runninghead: "Cognate beginnings to bilingual lexical acquistion"
@@ -67,4 +66,3 @@ editor: source
 lang: en
 freeze: true
 fig-dpi: 1000
-keep-tex: false
