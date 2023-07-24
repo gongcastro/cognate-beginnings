@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|8387a018cbed8753|||||||||||||||
+.Random.seed|object|a53b18e313ab2dc0|||||||||||||||
 appendix|stem|00848980545a8d48|46650b2562dabf32|1d16bb34b3323b78|1554002692|manuscript/appendix.pdf*manuscript/appendix.qmd|t19561.6163584962s|dd61c373cf60367d|72192|file|local|vector|||32.35||
 bvq_data|stem|b9cdbf2e4a893895|1713fb13bcb0ffed|abbee844f3596b03|-1902070830||t19559.5893925943s|63253b11449ae909|1233401|rds|local|vector|||1.84||
 bvq_data_file|stem|2eeaa6c449fa1e44|48eaf072f2413071|ef46db3751d8e999|1011699987||t19559.5893425132s|d586f792a395948c|68|rds|local|vector|||0||
@@ -23,11 +23,11 @@ get_vars_dict|function|10a30763d4598b29|||||||||||||||
 get_vars_dict_doe|function|f54423dd2f43698b|||||||||||||||
 items|stem|02e41dc21548abba|49b6cd25c41a1b0f|794808e876deba6b|-986180865||t19559.5934274803s|8a1a7c406d603fbb|26069|rds|local|vector|||0.6||
 items_test|stem|32af597cbdb2a163|762d2cbc9b05fe3c|740911248080b911|883923261||t19559.5934444377s|ac45463db19e2cbe|48|rds|local|vector|||1.26||
-manuscript|stem|43dfe54986411b89|57fe045617c03ca1|b92ac803bee22681|615889701|manuscript/manuscript.pdf*manuscript/manuscript.qmd|t19561.6126907644s|6ffd98d0c93f71e1|270250|file|local|vector|||37.98||
+manuscript|stem|50782419016aad38|57fe045617c03ca1|b92ac803bee22681|615889701|manuscript/manuscript.pdf*manuscript/manuscript.qmd|t19562.4846371441s|9db6a9606e0ce1c3|282562|file|local|vector|||43.11||
 model_convergence|stem|ca2f52d5efb4f3c0|68cbac5a8705de12|9a5f6339f0427010|1264401096||t19561.3921089463s|40173b4f8b5e89ec|124886|rds|local|vector|||50.26||
 model_doe|stem|85b214d49a332375|24a8cbde6537d6ff|6202481c91aec30c|1345599899||t19560.4679861884s|2279300c61bae421|150172129|rds|local|vector|||1.78||
 model_draws|stem|eeb914dd253556f7|1fff6399ba521c80|784f6c06866eab6d|-665592718||t19561.3935359571s|43497b512cb14b56|273272|rds|local|vector|||1.4||
-model_epreds|stem|8e2bb00db2cd1056|76a6d7ab5f5fea0a|7a37dde16eae2160|2100708798||t19561.4047455018s|6267c5183925ef9a|69170652|rds|local|vector|||126.56||
+model_epreds|stem|8e2bb00db2cd1056|b0e431d59b7f7381|2812de5179c172ed|2100708798||t19562.3753239459s|6267c5183925ef9a|69170652|rds|local|vector|||162.53||
 model_fit|stem|e80cea308cf6494d|610f70134eb7d0da|e5402e1427df20c9|-1024817056||t19560.4680945049s|7b92d3d89cec8f13|130651098|rds|local|vector|||1.52||
 model_fit_prior|stem|3bd58c03b73c1c44|14456edc8366218f|e5402e1427df20c9|1463230726||t19560.4681988388s|b8c4641978aaec4b|124062281|rds|local|vector|||1.36||
 model_fit_syllables|stem|c33d0a59f9f073a2|7b2de271b876a5fa|140612e29b4c07fe|-1600143829||t19560.4678645124s|b671a0747a8a6002|16799146|rds|local|vector|||0.16||
@@ -41,6 +41,7 @@ participants|stem|eec3ae19aaafd9d3|faa1dd696f8b6b59|159b0d7c8b4b8c7c|392525641||
 participants_test|stem|32af597cbdb2a163|ffc69402e3973190|b26195fef6fcbc80|-717703539||t19560.4678507434s|ac45463db19e2cbe|48|rds|local|vector|||1.28||
 posterior_doe_draws|stem|b68af27f63a05678|8970862dbe7f3a1d|9a0ac8c5387cdd52|-728107259||t19561.3915135815s|3134f5b946766ac0|296265|rds|local|vector|||1.91||
 posterior_doe_summary|stem|4bbf428e6d059ed6|da65916be518fa5b|b0dfbbf618e37f6e|1252589896||t19561.431606725s|77e9b444841ad667|850|rds|local|vector|||1.53||
+posterior_epreds|function|f5ed3d5724ce2ade|||||||||||||||
 posterior_predictions|function|3f7312bdc6cf26b6|||||||||||||||
 posterior_predictions_re|function|04b47397c339d335|||||||||||||||
 posterior_syllables_summary|stem|1d1ac25dec31f558|038421ceb0d9bae4|3a77d45e8f3f5719|2108110979||t19561.431565671s|2a3cd98748fa2e3c|432|rds|local|vector|||1.06|There were 2 warnings in mutate.The first warning wasℹ In argument type  ifelse....Caused by warning Unknown or uninitialised column age.ℹ Run dplyrlast_dplyr_warnings to see the 1 remaining warning.|
