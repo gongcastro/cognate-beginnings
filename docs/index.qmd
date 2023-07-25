@@ -44,6 +44,8 @@ data_dict <- function(x) {
         cli::cli_abort("x must be a dataframe or tibble")
     }
     
+    x <- flatten_columns(x)
+    
     nmissing <- function(x) sum(is.na(x))
     nlevels <- function(x) length(unique(x))
     
@@ -60,8 +62,15 @@ data_dict <- function(x) {
                          numeric.fns,
                          .names = "{.col}.{.fn}"))
     
+    # describe date variables
+    date.fns <- tibble::lst(nmissing, min, max)
+    x_date <- x |> 
+        summarise(across(where(is.Date), 
+                         date.fns,
+                         .names = "{.col}.{.fn}"))
+    
     # join
-    out <- bind_cols(x_character, x_numeric) |> 
+    out <- bind_cols(x_character, x_numeric, x_date) |> 
         pivot_longer(everything(),
                      names_to = c("variable", "measure"),
                      values_to = "value",
@@ -71,7 +80,9 @@ data_dict <- function(x) {
                     values_from = "value",
                     values_fn = \(x) ifelse(is.character(x),
                                             paste0(x, collapse = ","),
-                                            unlist(x)))
+                                            unlist(x))) |> 
+        mutate(varclass = purrr::map_chr(x, class)) |> 
+        relocate(varclass, .after = variable)
     
     return(out)
 }
@@ -81,8 +92,78 @@ data_dict <- function(x) {
 
 ## Items
 
+```{r items-dict}
+tar_load(items)
 
+items_dict <- data_dict(items) |> 
+    mutate(comments = c(
+        "Concept associated to the word-form, uniquely identifies every translation equivalent",
+        "Language to which the word-form belongs to. Can be Catalan or Spanish",
+        "Uniquely identifies the word-form in the questionnare",
+        "Phonological transcription of the word-form in the IPA format",
+        "Phonological transcription of the word-form in X-SAMPA format",
+        "Syllables in the word-form",
+        "Questionnaire sub-list in which the word-form appears",
+        "Uniquely identifies every translation equivalent",
+        "Levenshtein distance between the word-form and its translation",
+        "Number of phonemes in the word-form",
+        "Number of syllables in the word-form",
+        "Lexical frequency in Zipf scores, from the English CHILDES corpora",
+        "Sum of the frequency of the syllables in the word-form, expressed as counts per million tokens"
+    ))
+options(knitr.kable.NA = '--')
 
+kable(items_dict,
+      col.names = c(
+          "Variable",
+          "Type",
+          "# missing",
+          "# levels",
+          "Mean",
+          "Median",
+          "SD",
+          "Min",
+          "Max",
+          "Description"
+      ))
+```
+
+## Participants
+
+```{r participants-dict}
+tar_load(participants)
+
+participants_dict <- data_dict(participants) |> 
+    mutate(comments = c(
+        "Concept associated to the word-form, uniquely identifies every translation equivalent",
+        "Language to which the word-form belongs to. Can be Catalan or Spanish",
+        "Uniquely identifies the word-form in the questionnare",
+        "Phonological transcription of the word-form in the IPA format",
+        "Phonological transcription of the word-form in X-SAMPA format",
+        "Syllables in the word-form",
+        "Questionnaire sub-list in which the word-form appears",
+        "Uniquely identifies every translation equivalent",
+        "Levenshtein distance between the word-form and its translation",
+        "Number of phonemes in the word-form",
+        "Number of syllables in the word-form",
+        "Lexical frequency in Zipf scores, from the English CHILDES corpora",
+        "Sum of the frequency of the syllables in the word-form, expressed as counts per million tokens"
+    ))
+options(knitr.kable.NA = '--')
+
+kable(items_dict,
+      col.names = c(
+          "Variable",
+          "Type",
+          "# missing",
+          "# levels",
+          "Mean",
+          "Median",
+          "SD",
+          "Min",
+          "Max",
+          "Description"
+      ))
 :::
 
 # Session info
