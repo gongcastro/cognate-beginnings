@@ -46,11 +46,11 @@ RUN Rscript -e 'install.packages("cli", repos = c("https://r-lib.r-universe.dev"
 RUN Rscript -e 'install.packages("targets", repos = c("https://ropensci.r-universe.dev", "https://cloud.r-project.org"))'
 
 # install Quarto
-RUN mkdir -p /opt/quarto/v1.3.340
+RUN mkdir -p /opt/quarto/v1.3.433
 RUN curl -o quarto.tar.gz -L \
-    'https://github.com/quarto-dev/quarto-cli/releases/download/v1.3.340/quarto-1.3.340-linux-amd64.tar.gz'
+    'https://github.com/quarto-dev/quarto-cli/releases/download/v1.3.433/quarto-1.3.433-linux-arm64.deb'
 RUN tar -zxvf quarto.tar.gz \
-    -C '/opt/quarto/v1.3.340' \
+    -C '/opt/quarto/v1.3.433' \
     --strip-components=1
 RUN rm quarto.tar.gz
 
