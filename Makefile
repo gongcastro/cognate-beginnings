@@ -6,7 +6,7 @@ targets: _targets.R
 	@echo "Cleaning repository..."
 	@Rscript -e "source('src/helpers.R'); clean_repo()"
 
-docker: targets Dockerfile .dockerignore
+docker-push: targets Dockerfile .dockerignore
 	@echo "Pushing Dockerfile to GitHub Actions..."
 	@git add Dockerfile
 	@git diff --quiet && git diff --staged --quiet || git commit -am "Update Dockerfile"
