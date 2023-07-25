@@ -17,8 +17,9 @@ docker-run:
 	@echo "Pulling Docker image..."
 	@docker pull gongcastro/cognate-beginnings:latest
 	@echo "Running Docker container at http://localhost:8787"
-	@docker run --rm \
-		-e DISABLE_AUTH=true -e ROOT=true \
-		-p 8787:8787 \
+	@docker run --rm -ti \
+		-e ROOT=true \
+		-e PASSWORD=rstudio \
+ 		-p 8787:8787 \
 		--name rstudio gongcastro/cognate-beginnings:latest
 	

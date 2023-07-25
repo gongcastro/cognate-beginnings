@@ -70,7 +70,7 @@ items |>
 This data frame contains demographic and linguistic information about participants participants, together with some identifiers used to relate participants' responses to their corresponding information.
 
 
-```{r tbl-items}
+```{r tbl-participants}
 participants |> 
     head(15) |> 
     glimpse()
@@ -91,7 +91,7 @@ participants |>
 This data frame is the one used to fit the main model, and the model included in Appendix A. It contains participants' responses to each item included in the sub-list of the questionnaire they responded to, together with participant- and word-level predictors of interest. 
 
 
-```{r tbl-items}
+```{r tbl-responses}
 responses |> 
     head(15) |> 
     glimpse()
