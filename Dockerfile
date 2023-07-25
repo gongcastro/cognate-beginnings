@@ -41,6 +41,7 @@ WORKDIR /home/rstudio/
 # install Quarto
 RUN curl -LO https://quarto.org/download/latest/quarto-linux-amd64.deb
 RUN gdebi --non-interactive quarto-linux-amd64.deb
+RUN rm /home/rstudio/quarto-linux-amd64.deb
 
 # install and configure renv
 RUN R -e 'install.packages("remotes", repos = c(CRAN = "https://cloud.r-project.org"))'
@@ -52,6 +53,9 @@ RUN Rscript -e 'renv::restore()'
 RUN Rscript -e 'Sys.setenv(R_INSTALL_STAGED = FALSE)'
 RUN Rscript -e 'install.packages("cli", repos = c("https://r-lib.r-universe.dev", "https://cloud.r-project.org"))'
 RUN Rscript -e 'install.packages("targets", repos = c("https://ropensci.r-universe.dev", "https://cloud.r-project.org"))'
+
+# run targets
+RUN Rscript -e 'targets::tar_make()'
 
 # expose RStudio IDE on this port
 # http://localhost:8787
