@@ -37,15 +37,14 @@ WORKDIR /home/rstudio/
 # install and configure renv
 ENV RENV_VERSION 1.0.0
 RUN R -e 'install.packages("remotes", repos = c(CRAN = "https://cloud.r-project.org"))'
-RUN R -e 'remotes::install_github("rstudio/renv")'
+RUN R -e 'remotes::install_version("rstudio/renv", version = "1.0.0")'
 ENV RENV_PATHS_LIBRARY renv/library
 RUN Rscript -e 'renv::restore()'
 
 # install basic R dependencies
 RUN Rscript -e 'Sys.setenv(R_INSTALL_STAGED = FALSE)'
-RUN Rscript -e 'install.packages("cli")'
-RUN Rscript -e 'install.packages("remotes")'
-RUN Rscript -e 'install.packages("targets")'
+RUN Rscript -e 'remotes::install_version("cli", version = "3.6.1")'
+RUN Rscript -e 'remotes::install_version("targets", version = "1.2.0")'
 
 # expose RStudio IDE on this port
 # http://localhost:8787
