@@ -37,7 +37,7 @@ WORKDIR /home/rstudio/
 # install and configure renv
 ENV RENV_VERSION 1.0.0
 RUN R -e 'install.packages("remotes", repos = c(CRAN = "https://cloud.r-project.org"))'
-RUN R -e 'remotes::install_version("renv", version = "1.0.0", repos = c("https://rstudio.r-universe.dev", "https://cloud.r-project.org"))'
+RUN R -e 'remotes::install_version("renv", version = ${RENV_VERSION}, repos = c("https://rstudio.r-universe.dev", "https://cloud.r-project.org"))'
 ENV RENV_PATHS_LIBRARY renv/library
 RUN Rscript -e 'renv::restore()'
 
@@ -47,12 +47,11 @@ RUN Rscript -e 'install.packages("cli", repos = c("https://r-lib.r-universe.dev"
 RUN Rscript -e 'install.packages("targets", repos = c("https://ropensci.r-universe.dev", "https://cloud.r-project.org"))'
 
 # install Quarto
-ENV QUARTO_VERSION 1.3.0
-RUN mkdir -p /opt/quarto/${QUARTO_VERSION}
+RUN mkdir -p /opt/quarto/v1.3.340
 RUN curl -o quarto.tar.gz -L \
-    'https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz'
+    'https://github.com/quarto-dev/quarto-cli/releases/download/v1.3.340/quarto-v1.3.340-linux-amd64.tar.gz'
 RUN tar -zxvf quarto.tar.gz \
-    -C '/opt/quarto/${QUARTO_VERSION}'' \
+    -C '/opt/quarto/v1.3.340' \
     --strip-components=1
 RUN rm quarto.tar.gz
 
