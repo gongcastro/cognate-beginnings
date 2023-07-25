@@ -1,6 +1,3 @@
----
----
-
 ```{r setup}
 #| label: setup
 #| message: false
@@ -19,9 +16,7 @@ thanks <- yaml_metadata$thanks
 ```
 
 ::: callout-tip
-Data and materials are available at [OSF](https://osf.io/hy984/), and
-code is available at
-[GitHub](https://github.com/gongcastro/trajectories).
+Data and materials are available at [OSF](https://osf.io/hy984/), and code is available at [GitHub](https://github.com/gongcastro/trajectories).
 :::
 
 `r abstract`
@@ -30,18 +25,70 @@ code is available at
 
 # Links
 
-![arXiv](https://info.arxiv.org/brand/images/brand-logo-primary.jpg){height=100px}
+![arXiv](https://info.arxiv.org/brand/images/brand-logo-primary.jpg){height="100px"}
 
-![OSF](https://www.datacc.org/wp-content/uploads/2020/03/osf.png){height=100px}
+![OSF](https://www.datacc.org/wp-content/uploads/2020/03/osf.png){height="100px"}
 
-![GitHub](https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/2048px-Octicons-mark-github.svg.png){height=100px}
-
+![GitHub](https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/2048px-Octicons-mark-github.svg.png){height="100px"}
 
 {{< include ../README.md >}}
 
+# Data dictionaries
+
+```{r}
+#' Create data dictionary for a dataframe and save as CSV in the docs/ folder
+#' 
+#' @param x Data frame for which to create a data dictionary
+data_dict <- function(x) {
+    if (!(is.data.frame(x) | tibble::is_tibble(x))) {
+        cli::cli_abort("x must be a dataframe or tibble")
+    }
+    
+    nmissing <- function(x) sum(is.na(x))
+    nlevels <- function(x) length(unique(x))
+    
+    # describe character variables
+    x_character <- x |> 
+        summarise(across(where(\(x) is.character(x) | is.factor(x)),
+                         tibble::lst(nmissing, nlevels),
+                         .names = "{.col}.{.fn}")) 
+    
+    # describe numeric variables
+    numeric.fns <- tibble::lst(nmissing, mean, median, sd, min, max)
+    x_numeric <- x |> 
+        summarise(across(where(is.numeric), 
+                         numeric.fns,
+                         .names = "{.col}.{.fn}"))
+    
+    # join
+    out <- bind_cols(x_character, x_numeric) |> 
+        pivot_longer(everything(),
+                     names_to = c("variable", "measure"),
+                     values_to = "value",
+                     names_sep = "\\.", ) |> 
+        pivot_wider(id_cols = variable,
+                    names_from = "measure",
+                    values_from = "value",
+                    values_fn = \(x) ifelse(is.character(x),
+                                            paste0(x, collapse = ","),
+                                            unlist(x)))
+    
+    return(out)
+}
+```
+
+::: {.callout-info}
+
+## Items
+
+
+
+:::
 
 # Session info
 
 ```{r}
 sessionInfo()
 ```
+
+

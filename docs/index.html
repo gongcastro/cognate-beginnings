@@ -223,10 +223,57 @@ Tip
 </ul>
 </section>
 </section>
+<section id="data-dictionaries" class="level1">
+<h1>Data dictionaries</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#' Create data dictionary for a dataframe and save as CSV in the docs/ folder</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#' </span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#' @param x Data frame for which to create a data dictionary</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>data_dict <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span>(<span class="fu">is.data.frame</span>(x) <span class="sc">|</span> tibble<span class="sc">::</span><span class="fu">is_tibble</span>(x))) {</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        cli<span class="sc">::</span><span class="fu">cli_abort</span>(<span class="st">"x must be a dataframe or tibble"</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    nmissing <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">sum</span>(<span class="fu">is.na</span>(x))</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    nlevels <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">length</span>(<span class="fu">unique</span>(x))</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># describe character variables</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    x_character <span class="ot">&lt;-</span> x <span class="sc">|&gt;</span> </span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">where</span>(\(x) <span class="fu">is.character</span>(x) <span class="sc">|</span> <span class="fu">is.factor</span>(x)),</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>                         tibble<span class="sc">::</span><span class="fu">lst</span>(nmissing, nlevels),</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>                         <span class="at">.names =</span> <span class="st">"{.col}.{.fn}"</span>)) </span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># describe numeric variables</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    numeric.fns <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">lst</span>(nmissing, mean, median, sd, min, max)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    x_numeric <span class="ot">&lt;-</span> x <span class="sc">|&gt;</span> </span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>        <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), </span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>                         numeric.fns,</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>                         <span class="at">.names =</span> <span class="st">"{.col}.{.fn}"</span>))</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># join</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    out <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(x_character, x_numeric) <span class="sc">|&gt;</span> </span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>        <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(),</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>                     <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">"variable"</span>, <span class="st">"measure"</span>),</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>                     <span class="at">values_to =</span> <span class="st">"value"</span>,</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>                     <span class="at">names_sep =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">."</span>, ) <span class="sc">|&gt;</span> </span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>        <span class="fu">pivot_wider</span>(<span class="at">id_cols =</span> variable,</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>                    <span class="at">names_from =</span> <span class="st">"measure"</span>,</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>                    <span class="at">values_from =</span> <span class="st">"value"</span>,</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>                    <span class="at">values_fn =</span> \(x) <span class="fu">ifelse</span>(<span class="fu">is.character</span>(x),</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>                                            <span class="fu">paste0</span>(x, <span class="at">collapse =</span> <span class="st">","</span>),</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>                                            <span class="fu">unlist</span>(x)))</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(out)</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="items" class="level2 callout-info">
+<h2 class="anchored" data-anchor-id="items">Items</h2>
+</section>
+</section>
 <section id="session-info" class="level1">
 <h1>Session info</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>R version 4.2.2 (2022-10-31 ucrt)
 Platform: x86_64-w64-mingw32/x64 (64-bit)
