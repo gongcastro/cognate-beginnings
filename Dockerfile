@@ -16,6 +16,10 @@ RUN apt-get update && \
     gcc \
     g++ \
     make\
+    pandoc \
+    pandoc-citeproc \
+    curl \
+    gdebi-core \
     libssl-dev \
     libzmq3-dev \
     libpng-dev \
@@ -34,6 +38,10 @@ COPY . /home/rstudio/
 #RUN cd /cognate-beginnings/
 WORKDIR /home/rstudio/
 
+# install Quarto
+RUN curl -LO https://quarto.org/download/latest/quarto-linux-amd64.deb
+RUN gdebi --non-interactive quarto-linux-amd64.deb
+
 # install and configure renv
 RUN R -e 'install.packages("remotes", repos = c(CRAN = "https://cloud.r-project.org"))'
 RUN R -e 'remotes::install_version("renv", version = "1.0.0", repos = c("https://rstudio.r-universe.dev", "https://cloud.r-project.org"))'
@@ -44,15 +52,6 @@ RUN Rscript -e 'renv::restore()'
 RUN Rscript -e 'Sys.setenv(R_INSTALL_STAGED = FALSE)'
 RUN Rscript -e 'install.packages("cli", repos = c("https://r-lib.r-universe.dev", "https://cloud.r-project.org"))'
 RUN Rscript -e 'install.packages("targets", repos = c("https://ropensci.r-universe.dev", "https://cloud.r-project.org"))'
-
-# install Quarto
-RUN mkdir -p /opt/quarto/v1.3.433
-RUN curl -o quarto.tar.gz -L \
-    'https://github.com/quarto-dev/quarto-cli/releases/download/v1.3.433/quarto-1.3.433-linux-arm64.deb'
-RUN tar -zxvf quarto.tar.gz \
-    -C '/opt/quarto/v1.3.433' \
-    --strip-components=1
-RUN rm quarto.tar.gz
 
 # expose RStudio IDE on this port
 # http://localhost:8787
