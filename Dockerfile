@@ -29,8 +29,9 @@ RUN apt-get update && \
     libicu-dev
 
 # copy the whole directory to /rstudio (working directory in Posit Cloud)
-COPY . '/home/rstudio/'
 RUN mkdir /cognate-beginnings/ && chown -c rstudio /cognate-beginnings/
+COPY . '/cognate-beginnings/'
+RUN cd /cognate-beginnings/
 
 # install basic R dependencies
 RUN Rscript -e 'install.packages("cli")'
