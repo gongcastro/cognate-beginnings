@@ -6,3 +6,4 @@ _targets.yaml
 .vscode/
 .github/
 .gitignore
+/renv/
