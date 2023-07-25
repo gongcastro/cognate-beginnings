@@ -30,7 +30,8 @@ RUN apt-get update && \
 
 # copy the whole directory to /rstudio (working directory in Posit Cloud)
 COPY . '/home/rstudio/'
-WORKDIR '/home/rstudio/'
+RUN mkdir /cognate-beginnings/ && chown -c rstudio /cognate-beginnings/
+
 # install basic R dependencies
 RUN Rscript -e 'install.packages("cli")'
 RUN Rscript -e 'install.packages("remotes")'
