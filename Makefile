@@ -12,6 +12,8 @@ docker: targets Dockerfile .dockerignore
 	@git diff --quiet && git diff --staged --quiet || git commit -am "Update Dockerfile"
 	@git push
 	@gh run watch -i 5 --repo gongcastro/cognate-beginnings
+
+docker-run:
 	@echo "Pulling Docker image..."
 	@docker pull gongcastro/cognate-beginnings:latest
 	@echo "Running Docker container at http://localhost:8787"

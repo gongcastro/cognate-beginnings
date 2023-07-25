@@ -29,10 +29,10 @@ RUN apt-get update && \
     libicu-dev
 
 # copy the whole directory to /rstudio (working directory in Posit Cloud)
-RUN mkdir /cognate-beginnings/ && chown -c rstudio /cognate-beginnings/
-COPY . '/cognate-beginnings/'
-RUN cd /cognate-beginnings/
-WORKDIR /cognate-beginnings/
+#RUN mkdir /cognate-beginnings/ && chown -c rstudio /cognate-beginnings/
+#COPY . '/cognate-beginnings/'
+#RUN cd /cognate-beginnings/
+#WORKDIR /cognate-beginnings/
 
 # install basic R dependencies
 RUN Rscript -e 'Sys.setenv(R_INSTALL_STAGED = FALSE)'
@@ -42,6 +42,7 @@ RUN Rscript -e 'install.packages("targets")'
 
 # install and configure renv
 RUN Rscript -e 'remotes::install_github("rstudio/renv")'
+RUN Rscript -e 'renv::init()'
 RUN Rscript -e 'renv::restore()'
 
 # expose RStudio IDE on this port
