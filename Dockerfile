@@ -30,9 +30,9 @@ RUN apt-get update && \
 
 # copy the whole directory to /rstudio (working directory in Posit Cloud)
 #RUN mkdir /cognate-beginnings/ && chown -c rstudio /cognate-beginnings/
-#COPY . '/cognate-beginnings/'
+COPY . /home/rstudio/
 #RUN cd /cognate-beginnings/
-#WORKDIR /cognate-beginnings/
+WORKDIR /home/rstudio/
 
 # install and configure renv
 ENV RENV_VERSION 1.0.0
