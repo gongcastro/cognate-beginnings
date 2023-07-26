@@ -1,0 +1,68 @@
+project:
+  title: "cognate-beginnings"
+  type: website
+  output-dir: "docs/"
+  
+  preview: 
+    port: 3333
+    browser: true
+    watch-inputs: false
+    navigate: true
+  
+  render: 
+    - site/_repo-structure.qmd
+    - site/_repro.qmd
+    - site/_repro-docker.qmd
+    - site/_repro-github.qmd
+    #- docs/_session-info.qmd
+    - site/_data-dictionary.qmd
+
+execute:
+  freeze: auto 
+
+website:
+  repo-url: "https://github.com/gongcastro/cognate-beginnings"
+  repo-actions: [edit, issue]
+  page-navigation: true
+  
+  navbar:
+    pinned: true
+    background: primary
+    search: false
+    left:
+      - text: "Repository"
+        file: site/_repo-structure.qmd
+      - text: "Reproducibility"
+        file: site/_repro.qmd
+      - text: "Data"
+        file: site/_data-dictionary.qmd
+    right:
+      - icon: github
+        aria-label: github
+        href: https://github.com/gongcastro/cognate-beginnings
+
+  sidebar:
+    - title: "Reproducibility"
+      contents:
+        - site/_repro.qmd
+        - site/_repro-docker.qmd
+        - site/_repro-github.qmd 
+        #- section: "Session info"
+        #  contents:
+        #    - docs/_session-info.qmd
+
+  page-footer:
+    right: |
+      Made with {{< fa brands r-project >}} and [Quarto](https://quarto.org/)<br>
+      [View the source at {{< fa brands github >}} GitHub](https://github.com/gongcastro/cognate-beginnings)
+
+format:
+  html:
+    shift-heading-level-by: 1
+    theme: 
+      - site/_assets/style.scss
+    toc: true
+    toc-depth: 4
+    retina: 3
+    code-fold: true
+    code-tools: true
