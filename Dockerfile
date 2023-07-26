@@ -1,5 +1,6 @@
 FROM rocker/rstudio:4.2.2
 
+
 LABEL "about" = "A Docker container for the cognate-begininings study" \
     "author" = "Gonzalo Garcia-Castro <gongarciacastro@gmail.com>"\
     "github" = "https://github.com/gongcastro/cognate-beginnings" \
@@ -53,6 +54,9 @@ RUN Rscript -e 'renv::restore()'
 RUN Rscript -e 'Sys.setenv(R_INSTALL_STAGED = FALSE)'
 RUN Rscript -e 'install.packages("cli", repos = c("https://r-lib.r-universe.dev", "https://cloud.r-project.org"))'
 RUN Rscript -e 'install.packages("targets", repos = c("https://ropensci.r-universe.dev", "https://cloud.r-project.org"))'
+
+# install cmdstanr
+RUN Rscript -e 'cmdstanr::install_cmdstan()'
 
 # run targets
 RUN Rscript -e 'targets::tar_make()'

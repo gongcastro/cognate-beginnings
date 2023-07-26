@@ -11,7 +11,8 @@ docker-push: Dockerfile .dockerignore
 	@git add Dockerfile
 	@git diff --quiet && git diff --staged --quiet || git commit -am "Update Dockerfile"
 	@git push
-	@gh run watch
+	@timeout 5
+	@gh run watch -i 60 --repo gongcastro/cognate-beginnings
 
 docker-run:
 	@echo "Pulling Docker image..."
