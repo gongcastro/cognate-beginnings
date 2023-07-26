@@ -1,6 +1,6 @@
 # Reproducing this repository
 
-We recommend two ways of reproducing or inspecting the code of this repository. One option is to clone the Docker image we have pused to Dockerhub. A Docker image is just a virtual machine that contains all dependencies, code, and files necessary to run the code. Everything is already installed and setup, you will only have to open [https://localhost:8787](https://localhost:8787) in your browser, and a RStudio session will open for you. This option is more robust (dependencies are difficult to get right when using your own computer), but it also requires Docker to be installed.
+We recommend two ways of reproducing or inspecting the code of this repository. One option is to clone the [Docker image](https://hub.docker.com/r/gongcastro/cognate-beginnings) we have pused to Dockerhub. A Docker image is just a virtual machine that contains all dependencies, code, and files necessary to run the code. Everything is already installed and setup, you will only have to open [https://localhost:8787](https://localhost:8787) in your browser, and a RStudio session will open for you. This option is more robust (dependencies are difficult to get right when using your own computer), but it also requires Docker to be installed.
 
 A second option is the more traditional approach of downloading the repository (or cloning it, if you know your way through Git/GitHub), installing the necessary dependencies (we recommend using renv for R dependencies, other system dependencies are listed below), and running the code (we recommend using the targets workflow).
 
@@ -38,7 +38,7 @@ Follow these steps (see below for details):
 3.  Running the code with targets
 4.  Repository structure and files
 
-## 0. Download this repository ⬇️
+### 0. Download this repository ⬇️
 
 First, you will need to download this repository to your local machine.
 We suggest three different ways:
@@ -68,7 +68,7 @@ c)  **Direct download**: click the [green
     "Code" in this page (upper-right corner), click "Download ZIP", and
     unzipping the downloaded repository.
 
-## 1. Install software dependencies 💻
+### 1. Install software dependencies 💻
 
 Here's a list of programs that you might need to install in your machine
 to make the project work:
@@ -111,7 +111,7 @@ to make the project work:
 
     </div>
 
-## 2. Install package dependencies with renv 📦
+### 2. Install package dependencies with renv 📦
 
 Open the downloaded repository folder and click on the
 [cognate-beginnings.Rproj](cognate-beginnings.Rproj) to open an RStudio
@@ -152,7 +152,7 @@ that need installation or an update.
 > this repository if you need further assistance! We'll get back to you
 > ASAP. :smile:
 
-## 3. Running the code with targets :rocket:
+### 3. Running the code with targets 🚀
 
 Once the package dependencies have been solved with renv, run the
 following command:
@@ -181,7 +181,7 @@ repository.
 > executed targets by running `targets::tar_load_everything()`, which
 > will load all defined targets into your workspace.
 
-## 4. Repository structure and files 📂
+### 4. Repository structure and files 📂
 
 This repository is organised as follows:
 
