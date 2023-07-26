@@ -40,7 +40,7 @@ author:
     orcid: 0000-0001-6938-2498
     affiliations: 
       - ref: cbc
-date: "last-updated"
+date: last-updated
 code-repo: "Access the code, data, and analysis at <https://github.com/gongcastro/trajectories>"
 keywords:
   - lexical acquisition
@@ -54,7 +54,9 @@ code-fold: true
 warning: false
 error: false
 format:
-  html: default
+  html:
+    theme: _assets/style.scss
+
 toc: true
 fig-dpi: 1000
 ---

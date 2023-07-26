@@ -58,9 +58,6 @@ RUN Rscript -e 'install.packages("targets", repos = c("https://ropensci.r-univer
 # install cmdstanr
 RUN Rscript -e 'cmdstanr::install_cmdstan()'
 
-# run targets
-RUN Rscript -e 'targets::tar_make()'
-
 # expose RStudio IDE on this port
 # http://localhost:8787
 EXPOSE 8787
