@@ -100,19 +100,18 @@ Data and materials are available at [OSF](https://osf.io/hy984/), and code is av
 
 `r thanks`
 
-
 {{< include ../README.md >}}
 
 # Data dictionaries
 
-::: {.callout-info}
+::: {.tabset-panel}
 
 ## Items
 
 This data frame contains information about the word-forms included in the questionnaire, together with some identifiers used to relate participants' responses to the information of the word-forms they responded to.
 
 
-```{r tbl-items}
+```{r items}
 items |>
     head(15) |>
     glimpse()
@@ -138,7 +137,7 @@ items |>
 This data frame contains demographic and linguistic information about participants participants, together with some identifiers used to relate participants' responses to their corresponding information.
 
 
-```{r tbl-participants}
+```{r participants}
 participants |>
     head(15) |>
     glimpse()
@@ -158,7 +157,7 @@ participants |>
 
 This data frame is the one used to fit the main model, and the model included in Appendix A. It contains participants' responses to each item included in the sub-list of the questionnaire they responded to, together with participant- and word-level predictors of interest. 
 
-```{r tbl-responses}
+```{r responses}
 responses |>
     head(15) |>
     glimpse()
@@ -183,6 +182,8 @@ responses |>
 * `doe_std`: numeric value indicating the participant's standardised `doe` to the `language` the `item` belongs to
 * `exposure`: numeric value indicating the participants' exposure score to the word-form, calculated as the product of `freq` and `doe`
 * `doe_std`: numeric value indicating the participant's standardised `exposure` score for the `item` and its `freq` (see the Methods section in the main Manuscript for more details)
+
+:::
 
 # Session info
 
