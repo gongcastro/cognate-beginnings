@@ -1,6 +1,4 @@
----
-title: Repository structure and files 📂
----
+# Repository structure and files 📂
 
 This repository is organised as follows:
 
@@ -17,7 +15,7 @@ This repository is organised as follows:
     to generate the datasets in the data/ directory.
 -   **docs**: source code to generate the documentation site of the
     project
-    ([cognate-beginnings](%5Bgongcastro.github.com/cognate-beginnings)].
+    ([cognate-beginnings](https://gongcastro.github.com/cognate-beginnings)).
 -   **manuscript**: Quarto document with the source code of the
     manuscript and appendix
 -   **R**: R functions used in the targets to process and analyse the

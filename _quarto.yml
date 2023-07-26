@@ -1,7 +1,7 @@
 project:
   title: "cognate-beginnings"
   type: website
-  output-dir: "docs/"
+  output-dir: docs
   
   preview: 
     port: 3333
@@ -10,12 +10,12 @@ project:
     navigate: true
   
   render: 
-    - site/_repo-structure.qmd
-    - site/_repro.qmd
-    - site/_repro-docker.qmd
-    - site/_repro-github.qmd
+    - docs/_repo-structure.qmd
+    - docs/_repro.qmd
+    - docs/_repro-docker.qmd
+    - docs/_repro-github.qmd
     #- docs/_session-info.qmd
-    - site/_data-dictionary.qmd
+    - docs/_data-dictionary.qmd
 
 execute:
   freeze: auto 
@@ -31,11 +31,11 @@ website:
     search: false
     left:
       - text: "Repository"
-        file: site/_repo-structure.qmd
+        file: docs/_repo-structure.qmd
       - text: "Reproducibility"
-        file: site/_repro.qmd
+        file: docs/_repro.qmd
       - text: "Data"
-        file: site/_data-dictionary.qmd
+        file: docs/_data-dictionary.qmd
     right:
       - icon: github
         aria-label: github
@@ -44,9 +44,9 @@ website:
   sidebar:
     - title: "Reproducibility"
       contents:
-        - site/_repro.qmd
-        - site/_repro-docker.qmd
-        - site/_repro-github.qmd 
+        - docs/_repro.qmd
+        - docs/_repro-docker.qmd
+        - docs/_repro-github.qmd 
         #- section: "Session info"
         #  contents:
         #    - docs/_session-info.qmd
@@ -60,7 +60,7 @@ format:
   html:
     shift-heading-level-by: 1
     theme: 
-      - site/_assets/style.scss
+      - docs/_assets/style.scss
     toc: true
     toc-depth: 4
     retina: 3

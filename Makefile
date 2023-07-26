@@ -6,7 +6,7 @@ targets: _targets.R
 	@echo "Cleaning repository..."
 	@Rscript -e "source('src/helpers.R'); clean_repo()"
 	@echo "Rendering website..."
-	@quarto render
+	@quarto publish gh-pages
 
 docker-build: Dockerfile .dockerignore
 	@echo "Building Docker image..."
