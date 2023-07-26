@@ -89,12 +89,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#reproducing-this-repository" id="toc-reproducing-this-repository" class="nav-link" data-scroll-target="#reproducing-this-repository">Reproducing this repository</a>
   <ul class="collapse">
   <li><a href="#docker-image" id="toc-docker-image" class="nav-link" data-scroll-target="#docker-image">Docker image 🐋</a></li>
-  <li><a href="#clone-the-repository-and-run-the-scripts" id="toc-clone-the-repository-and-run-the-scripts" class="nav-link" data-scroll-target="#clone-the-repository-and-run-the-scripts">Clone the repository and run the scripts</a></li>
+  <li><a href="#clone-the-repository-and-run-the-scripts" id="toc-clone-the-repository-and-run-the-scripts" class="nav-link" data-scroll-target="#clone-the-repository-and-run-the-scripts">Clone the repository and run the scripts</a>
+  <ul class="collapse">
   <li><a href="#download-this-repository" id="toc-download-this-repository" class="nav-link" data-scroll-target="#download-this-repository">0. Download this repository ⬇️</a></li>
   <li><a href="#install-software-dependencies" id="toc-install-software-dependencies" class="nav-link" data-scroll-target="#install-software-dependencies">1. Install software dependencies 💻</a></li>
   <li><a href="#install-package-dependencies-with-renv" id="toc-install-package-dependencies-with-renv" class="nav-link" data-scroll-target="#install-package-dependencies-with-renv">2. Install package dependencies with renv 📦</a></li>
-  <li><a href="#running-the-code-with-targets-rocket" id="toc-running-the-code-with-targets-rocket" class="nav-link" data-scroll-target="#running-the-code-with-targets-rocket">3. Running the code with targets :rocket:</a></li>
+  <li><a href="#running-the-code-with-targets" id="toc-running-the-code-with-targets" class="nav-link" data-scroll-target="#running-the-code-with-targets">3. Running the code with targets 🚀</a></li>
   <li><a href="#repository-structure-and-files" id="toc-repository-structure-and-files" class="nav-link" data-scroll-target="#repository-structure-and-files">4. Repository structure and files 📂</a></li>
+  </ul></li>
   </ul></li>
   <li><a href="#data-dictionaries" id="toc-data-dictionaries" class="nav-link" data-scroll-target="#data-dictionaries">Data dictionaries</a></li>
   <li><a href="#session-info" id="toc-session-info" class="nav-link" data-scroll-target="#session-info">Session info</a></li>
@@ -177,7 +179,7 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Data and materials are available at <a href="https://osf.io/hy984/">OSF</a>, and code is available at <a href="https://github.com/gongcastro/trajectories">GitHub</a>.</p>
+<p>Data and materials are available at <a href="https://osf.io/hy984/">OSF</a>, and code is available at <a href="https://github.com/gongcastro/trajectories">GitHub</a>, and <a href="https://hub.docker.com/r/gongcastro/cognate-beginnings">Docker</a>.</p>
 </div>
 </div>
 <section id="abstract" class="level2">
@@ -190,7 +192,7 @@ Tip
 </section>
 <section id="reproducing-this-repository" class="level1">
 <h1>Reproducing this repository</h1>
-<p>We recommend two ways of reproducing or inspecting the code of this repository. One option is to clone the Docker image we have pused to Dockerhub. A Docker image is just a virtual machine that contains all dependencies, code, and files necessary to run the code. Everything is already installed and setup, you will only have to open <a href="https://localhost:8787">https://localhost:8787</a> in your browser, and a RStudio session will open for you. This option is more robust (dependencies are difficult to get right when using your own computer), but it also requires Docker to be installed.</p>
+<p>We recommend two ways of reproducing or inspecting the code of this repository. One option is to clone the <a href="https://hub.docker.com/r/gongcastro/cognate-beginnings">Docker image</a> we have pused to Dockerhub. A Docker image is just a virtual machine that contains all dependencies, code, and files necessary to run the code. Everything is already installed and setup, you will only have to open <a href="https://localhost:8787">https://localhost:8787</a> in your browser, and a RStudio session will open for you. This option is more robust (dependencies are difficult to get right when using your own computer), but it also requires Docker to be installed.</p>
 <p>A second option is the more traditional approach of downloading the repository (or cloning it, if you know your way through Git/GitHub), installing the necessary dependencies (we recommend using renv for R dependencies, other system dependencies are listed below), and running the code (we recommend using the targets workflow).</p>
 <section id="docker-image" class="level2">
 <h2 class="anchored" data-anchor-id="docker-image">Docker image 🐋</h2>
@@ -227,9 +229,8 @@ Tip
 <li>Running the code with targets</li>
 <li>Repository structure and files</li>
 </ol>
-</section>
-<section id="download-this-repository" class="level2">
-<h2 class="anchored" data-anchor-id="download-this-repository">0. Download this repository ⬇️</h2>
+<section id="download-this-repository" class="level3">
+<h3 class="anchored" data-anchor-id="download-this-repository">0. Download this repository ⬇️</h3>
 <p>First, you will need to download this repository to your local machine. We suggest three different ways:</p>
 <ol type="a">
 <li><strong>Git terminal</strong>: download and install <a href="https://git-scm.com/downloads">Git</a> with default settings and clone this repository locally running the following command in your console:</li>
@@ -243,8 +244,8 @@ Tip
 <li><p><strong>Direct download</strong>: click the <a href="https://github.com/gongcastro/cognate-beginnings/archive/refs/heads/main.zip">green button</a> “Code” in this page (upper-right corner), click “Download ZIP”, and unzipping the downloaded repository.</p></li>
 </ol>
 </section>
-<section id="install-software-dependencies" class="level2">
-<h2 class="anchored" data-anchor-id="install-software-dependencies">1. Install software dependencies 💻</h2>
+<section id="install-software-dependencies" class="level3">
+<h3 class="anchored" data-anchor-id="install-software-dependencies">1. Install software dependencies 💻</h3>
 <p>Here’s a list of programs that you might need to install in your machine to make the project work:</p>
 <ul>
 <li><p><a href="https://www.r-project.org/">R</a> (4.2.2 or greater)</p></li>
@@ -259,8 +260,8 @@ Tip
 </div></li>
 </ul>
 </section>
-<section id="install-package-dependencies-with-renv" class="level2">
-<h2 class="anchored" data-anchor-id="install-package-dependencies-with-renv">2. Install package dependencies with renv 📦</h2>
+<section id="install-package-dependencies-with-renv" class="level3">
+<h3 class="anchored" data-anchor-id="install-package-dependencies-with-renv">2. Install package dependencies with renv 📦</h3>
 <p>Open the downloaded repository folder and click on the <a href="cognate-beginnings.Rproj">cognate-beginnings.Rproj</a> to open an RStudio session (recommended) or just open an R session and set the working directory to the downloaded folder. Once open run:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"renv"</span>) <span class="co"># in case you need to install renv</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>renv<span class="sc">::</span><span class="fu">restore</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -270,8 +271,8 @@ Tip
 <p>💡 <strong>Something went wrong with renv. Now what?</strong> Although renv facilitates the reproducibility of the repository, it is not guaranteed that things will work perfectly. If you encounter trouble installing the packages using renv, try installing them individually using (<code>install.packages()</code> or <code>renv::install()</code>) and try fixing whatever issues arise (they might depend on your particular setup). Some packages are used by RStudio itself, and might refiuse to update them while you’re using RStudio. Try installing them from the R console outside of RStudio. Open an <a href="https://github.com/gongcastro/cognate-beginnings/issues">issue</a> on this repository if you need further assistance! We’ll get back to you ASAP. :smile:</p>
 </blockquote>
 </section>
-<section id="running-the-code-with-targets-rocket" class="level2">
-<h2 class="anchored" data-anchor-id="running-the-code-with-targets-rocket">3. Running the code with targets :rocket:</h2>
+<section id="running-the-code-with-targets" class="level3">
+<h3 class="anchored" data-anchor-id="running-the-code-with-targets">3. Running the code with targets 🚀</h3>
 <p>Once the package dependencies have been solved with renv, run the following command:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_make</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Mind that this process might take some time. Refitting the brms models might take very long (days even, depending on your set-up). If you want to skip this step, download the “results” folder in the <a href="https://osf.io/hy984/">Open Science Framework repository</a> and replace it in the repository.</p>
@@ -279,8 +280,8 @@ Tip
 <p>💡<strong>What does this step do?</strong> This repository’s workflow is based on <a href="https://books.ropensci.org/targets/">targets</a>. This means that the code is run in the appropriate order according to its internal dependencies. The code is organised as <em>targets</em>, defined in the <code>_targets.R</code> file. Sometimes targets operate with the outcomes of other targets. For instance, one target might run a function that takes the outcome of a different target as argument. {targets} makes sure that the functions and objects needed to run each target have already been previously defined. You can visually explore this repository’s targets and its dependency structure by running <code>targets::tar_visnetwork()</code>. You can explore the contents of the executed targets by running <code>targets::tar_load_everything()</code>, which will load all defined targets into your workspace.</p>
 </blockquote>
 </section>
-<section id="repository-structure-and-files" class="level2">
-<h2 class="anchored" data-anchor-id="repository-structure-and-files">4. Repository structure and files 📂</h2>
+<section id="repository-structure-and-files" class="level3">
+<h3 class="anchored" data-anchor-id="repository-structure-and-files">4. Repository structure and files 📂</h3>
 <p>This repository is organised as follows:</p>
 <ul>
 <li><strong>data</strong>: processed data in CSV format
@@ -311,6 +312,7 @@ Tip
 <li><strong>stan</strong>: Stan code of the models, as generated by <code>brms::stancode()</code>.</li>
 <li><strong>test</strong>: testthat scripts used to unit test the functions used across the project.</li>
 </ul>
+</section>
 </section>
 </section>
 <section id="data-dictionaries" class="level1">
