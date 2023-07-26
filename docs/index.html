@@ -79,19 +79,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load objects -----------------------------------------------------------------</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_config_set</span>(<span class="at">store =</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_targets"</span>),</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">script =</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"_targets.R"</span>))</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>yaml_metadata <span class="ot">&lt;-</span> rmarkdown<span class="sc">::</span><span class="fu">yaml_front_matter</span>(</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"manuscript"</span>, <span class="st">"manuscript.qmd"</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>title <span class="ot">&lt;-</span> yaml_metadata<span class="sc">$</span>title</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>abstract <span class="ot">&lt;-</span> yaml_metadata<span class="sc">$</span>abstract</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>thanks <span class="ot">&lt;-</span> yaml_metadata<span class="sc">$</span>thanks</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<section id="cognate-beginnings-to-bilingual-lexical-acquisition" class="level1">
+<h1>Cognate beginnings to bilingual lexical acquisition</h1>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -105,31 +94,46 @@ Tip
 <p>Data and materials are available at <a href="https://osf.io/hy984/">OSF</a>, and code is available at <a href="https://github.com/gongcastro/trajectories">GitHub</a>.</p>
 </div>
 </div>
+<section id="abstract" class="level2">
+<h2 class="anchored" data-anchor-id="abstract">Abstract</h2>
 <p>Bilingual infants’ developmental trajectories of lexical acquisition are equivalent to those shown by their monolingual peers. This is remarkable, given the increased complexity of their linguistic input. Recent studies suggested that bilingual vocabulary growth is boosted by the number of cognates shared by the pair of languages being learned, and that this facilitation effect is driven by a stronger parallel activation of cognates during linguistic exposure, compared to non-cognates. The mechanisms behind this facilitation are still unclear. In this study, we capitalised on accumulator models of language acquisition to propose an account of bilingual lexical acquisition in which parallel activation increases the rate at which children accumulate learning instances for words in both languages, even in fully monolingual situations. Under this hypothesis, we predicted a stronger cognate facilitation for words to which children were exposed less frequently (low-exposure words), as they are co-activated by their translation more often than high-exposure words do. We developed an extensive online vocabulary checklist, the Barcelona Vocabulary questionnaire (BVQ), to collect vocabulary data from 366 Catalan-Spanish bilingual toddlers aged 12 to 32 months. We then used Bayesian explanatory item response theory to model the acquisition trajectories of 302 Catalan/Spanish translation equivalents. We found an interaction between exposure and cognateness, which pointed to cognateness facilitating the aquisition of low-exposure words, but not of mean exposure or high-exposure words. Overall, our findings suggest that cognateness plays a key role in bilingual lexical acquisition, and provides evidence for a frequency-mediated facilitation effect driven by parallel activation.</p>
+</section>
+<section id="acknowledgements" class="level2">
+<h2 class="anchored" data-anchor-id="acknowledgements">Acknowledgements</h2>
 <p>The authors declare no conflicts of interest with regard to the funding source of this study. GGC was supported by a FPI 2020 research contract (PRE2019-088165) in a project funded by the Spanish Ministry of Science, Innovation, and Universities (PGC2018-101831-B-I00). DAV was supported by the European Union’s Horizon 2023 research and innovation program under Marie Skłodowska–Curie Grant (765556) and a postdoctoral fellowship from the Foundation for Science and Technology of Portugal (UIDB/00214/2020). IC was supported by the Investigo program funded by the European Union’s NextGenerationEU (NGEU) recovery plan. NSG was supported by Academia 2019 award from the Catalan Institution for Research and Advanced Studies (ICREA). We are grateful to Chiara Santolin, Ege E. Özer, and the rest of the Speech Acquisition and Perception research group, and to Alicia Franco-Martínez and Cristina Rodríguez-Prada, for their helpful feedback. We thank Xavier Mayoral, Silvia Blanch, and Cristina Cuadrado for their technical support, and Cristina Dominguez and Katia Pistrin for their efforts in recruiting infants. We also thank all families and infants who participated in the experiments.</p>
-<section id="links" class="level1">
-<h1>Links</h1>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://info.arxiv.org/brand/images/brand-logo-primary.jpg" height="100" class="figure-img"></p>
-<figcaption class="figure-caption">arXiv</figcaption>
-</figure>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.datacc.org/wp-content/uploads/2020/03/osf.png" height="100" class="figure-img"></p>
-<figcaption class="figure-caption">OSF</figcaption>
-</figure>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/2048px-Octicons-mark-github.svg.png" height="100" class="figure-img"></p>
-<figcaption class="figure-caption">GitHub</figcaption>
-</figure>
-</div>
+</section>
 </section>
 <section id="reproducing-this-repository" class="level1">
 <h1>Reproducing this repository</h1>
+<p>We recommend two ways of reproducing or inspecting the code of this repository. One option is to clone the Docker image we have pused to Dockerhub. A Docker image is just a virtual machine that contains all dependencies, code, and files necessary to run the code. Everything is already installed and setup, you will only have to open https://localhost:8787 in your browser, and a RStudio session will open for you. This option is more robust (dependencies are difficult to get right when using your own computer), but it also requires Docker to be installed.</p>
+<p>A second option is the more traditional approach of downloading the repository (or cloning it, if you know your way through Git/GitHub), installing the necessary dependencies (we recommend using renv for R dependencies, other system dependencies are listed below), and running the code (we recommend using the targets workflow).</p>
+<section id="docker-image" class="level2">
+<h2 class="anchored" data-anchor-id="docker-image">Docker image 🐋</h2>
+<ol type="1">
+<li>Download and install Docker</li>
+<li>Pull the gongcastro/cognate-beginnings image. Two ways of doing this:
+<ol type="a">
+<li>Using the Docker UI: go the the “Images” tab, click on “Search images to run”, search for “gongcastro/cognate-beginnings”, and click “Pull”.</li>
+<li>Using the Docker CLI: open your console/terminal/command prompt, and run:</li>
+</ol>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull gongcastro/cognate-beginnings</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li>Run the image in a Docker container. Two ways of doing this:
+<ol type="a">
+<li>Using the Docker UI: in the “Images” tab, look for the “gongcastro/cognate-beginnings” image and click “Run”.</li>
+<li>Using the Docker CLI:</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-ti</span> <span class="at">-e</span> ROOT=true <span class="at">-e</span> PASSWORD=rstudio <span class="at">-p</span> 8787:8787 <span class="at">--name</span> rstudio gongcastro/cognate-beginnings:latest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li>Open https://localhost:8787 in your browser. Log in using <code>rstudio</code> as users, and <code>rstudio</code> as password. An RStudio session should open, with all files, code and dependencies installed and ready. Check <code>targets::tar_visnetwork()</code> to examine the targets workflow. This will list the objects created by the R code, and how they relate to each other. To retrieve and explore a given object, run <code>targets::tar_load(target_name)</code>, where <code>target_name</code> is the name of the rarget you want to explore.</li>
+</ol>
+<blockquote class="blockquote">
+<p>💡 The RStudio session opened by Docker does not have root permissions (you will not be able to run <code>targets::tar_make()</code> to run the code from the R console). Instead, open the “Terminal” tab, and run <code>sudo Rscript -e "targets::tar_make()"</code>. The targets workflow should now be triggered.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>💡 The targets workflow is run to completion before your Rstudio session is open in Docker. This means that even if you trigger <code>targets::tar_make()</code>, virtually all targets will be skipped, as they are completed. If you want to run a specific target, delete it first (or any other target it depends on), and the targets workflow will be run, now generating all deleted targets again. Be aware that this might take some time, especially when fitting the models anew.</p>
+</blockquote>
+</section>
+<section id="clone-the-repository-and-run-the-scripts" class="level2">
+<h2 class="anchored" data-anchor-id="clone-the-repository-and-run-the-scripts">Clone the repository and run the scripts</h2>
 <p>Follow these steps (see below for details):</p>
 <ol start="0" type="1">
 <li>Download this repository</li>
@@ -138,13 +142,14 @@ Tip
 <li>Running the code with targets</li>
 <li>Repository structure and files</li>
 </ol>
+</section>
 <section id="download-this-repository" class="level2">
 <h2 class="anchored" data-anchor-id="download-this-repository">0. Download this repository ⬇️</h2>
 <p>First, you will need to download this repository to your local machine. We suggest three different ways:</p>
 <ol type="a">
 <li><strong>Git terminal</strong>: download and install <a href="https://git-scm.com/downloads">Git</a> with default settings and clone this repository locally running the following command in your console:</li>
 </ol>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/gongcastro/cognate-beginnings.git</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/gongcastro/cognate-beginnings.git</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <blockquote class="blockquote">
 <p>💡 You don’t need to run this command from the Git console. Just open Command Prompt or Power Shell in Windows (just make sure that Git is included in your <a href="https://www.delftstack.com/howto/git/add-git-to-path-on-windows/">PATH variables</a>, which should be already done after the recommended Git installation), Terminal in MacOS, or command line in Linux and run this command.</p>
 </blockquote>
@@ -172,8 +177,8 @@ Tip
 <section id="install-package-dependencies-with-renv" class="level2">
 <h2 class="anchored" data-anchor-id="install-package-dependencies-with-renv">2. Install package dependencies with renv 📦</h2>
 <p>Open the downloaded repository folder and click on the <a href="cognate-beginnings.Rproj">cognate-beginnings.Rproj</a> to open an RStudio session (recommended) or just open an R session and set the working directory to the downloaded folder. Once open run:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"renv"</span>) <span class="co"># in case you need to install renv</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>renv<span class="sc">::</span><span class="fu">restore</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"renv"</span>) <span class="co"># in case you need to install renv</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>renv<span class="sc">::</span><span class="fu">restore</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>This might take a couple of minutes, depending on the number of packages that need installation or an update.</p>
 <blockquote class="blockquote">
 <p>💡 <strong>What does this step do?</strong> The code in this repository needs some packages to run, many of which might not have been already installed in your local machine. Instead of having to install them yourself one by one or updating already installed ones (which might change how they behave, possibly breaking some of your code in other projects) this repository uses the R package <a href="https://rstudio.github.io/renv/articles/renv.html">renv</a> to deal with package libraries. The command <code>renv::restore()</code> will install all necessary packages in the appropriate version (listed in the file <a href="renv.lock">renv.lock</a> in a self-contained R package library. This process will not affect the packages that you had already installed in your machine.</p>
@@ -183,7 +188,7 @@ Tip
 <section id="running-the-code-with-targets-rocket" class="level2">
 <h2 class="anchored" data-anchor-id="running-the-code-with-targets-rocket">3. Running the code with targets :rocket:</h2>
 <p>Once the package dependencies have been solved with renv, run the following command:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_make</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_make</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Mind that this process might take some time. Refitting the brms models might take very long (days even, depending on your set-up). If you want to skip this step, download the “results” folder in the <a href="https://osf.io/hy984/">Open Science Framework repository</a> and replace it in the repository.</p>
 <blockquote class="blockquote">
 <p>💡<strong>What does this step do?</strong> This repository’s workflow is based on <a href="https://books.ropensci.org/targets/">targets</a>. This means that the code is run in the appropriate order according to its internal dependencies. The code is organised as <em>targets</em>, defined in the <code>_targets.R</code> file. Sometimes targets operate with the outcomes of other targets. For instance, one target might run a function that takes the outcome of a different target as argument. {targets} makes sure that the functions and objects needed to run each target have already been previously defined. You can visually explore this repository’s targets and its dependency structure by running <code>targets::tar_visnetwork()</code>. You can explore the contents of the executed targets by running <code>targets::tar_load_everything()</code>, which will load all defined targets into your workspace.</p>
@@ -225,55 +230,160 @@ Tip
 </section>
 <section id="data-dictionaries" class="level1">
 <h1>Data dictionaries</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#' Create data dictionary for a dataframe and save as CSV in the docs/ folder</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#' </span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#' @param x Data frame for which to create a data dictionary</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>data_dict <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span>(<span class="fu">is.data.frame</span>(x) <span class="sc">|</span> tibble<span class="sc">::</span><span class="fu">is_tibble</span>(x))) {</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        cli<span class="sc">::</span><span class="fu">cli_abort</span>(<span class="st">"x must be a dataframe or tibble"</span>)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    nmissing <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">sum</span>(<span class="fu">is.na</span>(x))</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    nlevels <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">length</span>(<span class="fu">unique</span>(x))</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># describe character variables</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    x_character <span class="ot">&lt;-</span> x <span class="sc">|&gt;</span> </span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">where</span>(\(x) <span class="fu">is.character</span>(x) <span class="sc">|</span> <span class="fu">is.factor</span>(x)),</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>                         tibble<span class="sc">::</span><span class="fu">lst</span>(nmissing, nlevels),</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>                         <span class="at">.names =</span> <span class="st">"{.col}.{.fn}"</span>)) </span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># describe numeric variables</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    numeric.fns <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">lst</span>(nmissing, mean, median, sd, min, max)</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    x_numeric <span class="ot">&lt;-</span> x <span class="sc">|&gt;</span> </span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>        <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), </span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>                         numeric.fns,</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>                         <span class="at">.names =</span> <span class="st">"{.col}.{.fn}"</span>))</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># join</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    out <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(x_character, x_numeric) <span class="sc">|&gt;</span> </span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>        <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(),</span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>                     <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">"variable"</span>, <span class="st">"measure"</span>),</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>                     <span class="at">values_to =</span> <span class="st">"value"</span>,</span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>                     <span class="at">names_sep =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">."</span>, ) <span class="sc">|&gt;</span> </span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>        <span class="fu">pivot_wider</span>(<span class="at">id_cols =</span> variable,</span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>                    <span class="at">names_from =</span> <span class="st">"measure"</span>,</span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>                    <span class="at">values_from =</span> <span class="st">"value"</span>,</span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>                    <span class="at">values_fn =</span> \(x) <span class="fu">ifelse</span>(<span class="fu">is.character</span>(x),</span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>                                            <span class="fu">paste0</span>(x, <span class="at">collapse =</span> <span class="st">","</span>),</span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>                                            <span class="fu">unlist</span>(x)))</span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(out)</span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<section id="items" class="level2 callout-info">
+<p>::: {.callout-info}</p>
+<section id="items" class="level2">
 <h2 class="anchored" data-anchor-id="items">Items</h2>
+<p>This data frame contains information about the word-forms included in the questionnaire, together with some identifiers used to relate participants’ responses to the information of the word-forms they responded to.</p>
+<div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>items <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">15</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="tbl-items" class="cell tbl-parent quarto-layout-panel anchored">
+<div class="panel-caption table-caption">
+<p><strong>?(caption)</strong></p>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
+<pre><code>Rows: 15
+Columns: 13
+$ te        [3m[90m&lt;int&gt;[39m[23m 115, 115, 148, 148, 149, 149, 150, 150, 153, 153, 154, 154, …
+$ meaning   [3m[90m&lt;chr&gt;[39m[23m "witch", "witch", "bee", "bee", "animal", "animal", "spider"…
+$ language  [3m[90m&lt;chr&gt;[39m[23m "Catalan", "Spanish", "Catalan", "Spanish", "Catalan", "Span…
+$ item      [3m[90m&lt;chr&gt;[39m[23m "bruixa", "bruja", "abella", "abeja", "animals", "animales",…
+$ ipa       [3m[90m&lt;chr&gt;[39m[23m "ˈbɾu.ʃə", "ˈbɾu.xa", "əˈβɛ.ʎə", "aˈβe.xa", "ˈæn.ɪ.məlz", "a…
+$ xsampa    [3m[90m&lt;chr&gt;[39m[23m "\"b4u.S@", "\"b4u.xa", "@\"BE.L@", "a\"Be.xa", "\"{n.I.m@lz…
+$ lv        [3m[90m&lt;dbl&gt;[39m[23m 0.6000000, 0.6000000, 0.2000000, 0.2000000, 0.2500000, 0.250…
+$ n_phon    [3m[90m&lt;int&gt;[39m[23m 5, 5, 5, 5, 8, 8, 5, 5, 5, 3, 3, 4, 6, 7, 5
+$ n_syll    [3m[90m&lt;int&gt;[39m[23m 2, 2, 3, 3, 3, 4, 3, 3, 2, 2, 1, 2, 2, 3, 2
+$ syll      [3m[90m&lt;list&gt;[39m[23m &lt;"b4u", "S@"&gt;, &lt;"b4u", "xa"&gt;, &lt;"@", "BE", "L@"&gt;, &lt;"a", "Be",…
+$ freq      [3m[90m&lt;dbl&gt;[39m[23m 6.233203, 6.233203, 6.087128, 6.087128, 5.902990, 5.902990, …
+$ freq_syll [3m[90m&lt;dbl&gt;[39m[23m 12.998987, 13.400107, 20.479740, 21.360357, 17.708969, 27.6…
+$ list      [3m[90m&lt;list&gt;[39m[23m &lt;"A", "B", "C", "D"&gt;, &lt;"A", "B", "C", "D"&gt;, &lt;"A", "B", "C", …</code></pre>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li><code>te</code>: integer that uniquely labels a translation equivalent, and is only repeated across the word-forms from Catalan and Spanish that are part of the same translation equivalent</li>
+<li><code>meaning</code>: character string that uniquely labels the concept associated to the word-form, and is only repeated across the word-forms from Catalan and Spanish that are part of the same translation equivalent</li>
+<li><code>language</code>: character string indicating the language (Catalan or Spanish) to which the word-form belongs to</li>
+<li><code>item</code>: character string that uniquely identifies the word-form in the questionnaire, and links it to the formr item</li>
+<li><code>ipa</code>: phonological transcription of the word-form in IPA format, generated from the X-SAMPA transcription of the word-form using the <code>ipa::xsampa()</code> function.</li>
+<li><code>xsampa</code>: phonological transcription of the word-form in X-SAMPA format</li>
+<li><code>lv</code>: numeric value indicating the normalised inverse of the Levenshtein distance between the X-SAMPA phonological transcriptions of the word-form and of its translation equivalent, calculated using the <code>stringdist::stringsim()</code> (see the Methods section in the main manuscript for more details)</li>
+<li><code>n_phon</code>: integer indicating the number of phonemes included in the X-SAMPA phonological transcription of the word-form</li>
+<li><code>n_syll</code>: integer indicating the number of syllables included in the X-SAMPA phonological transcription of the word-form</li>
+<li><code>syll</code>: list of character strings in which each element is a syllable included in the word-form</li>
+<li><code>freq</code>: numeric values indicating the lexical frequency in Zipf scores, from the English CHILDES corpora</li>
+<li><code>freq_syll</code>: numeric value indicating the um of the frequency of the syllables in the word-form, expressed as counts per million tokens</li>
+<li><code>list</code>: characters string indicating the questionnaire sub-list(s) in which the word-form appears</li>
+</ul>
+</section>
+<section id="participants" class="level2">
+<h2 class="anchored" data-anchor-id="participants">Participants</h2>
+<p>This data frame contains demographic and linguistic information about participants participants, together with some identifiers used to relate participants’ responses to their corresponding information.</p>
+<div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>participants <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">15</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="tbl-participants" class="cell tbl-parent quarto-layout-panel anchored">
+<div class="panel-caption table-caption">
+<p><strong>?(caption)</strong></p>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
+<pre><code>Rows: 15
+Columns: 9
+$ id          [3m[90m&lt;chr&gt;[39m[23m "54531", "54794", "54828", "54881", "54939", "54966", "549…
+$ time        [3m[90m&lt;int&gt;[39m[23m 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+$ time_stamp  [3m[90m&lt;date&gt;[39m[23m 2020-04-19, 2020-04-15, 2020-06-11, 2020-06-03, 2020-05-08…
+$ list        [3m[90m&lt;chr&gt;[39m[23m "BL-Short-C", "BL-Short-C", "BL-Short-A", "BL-Short-D", "…
+$ age         [3m[90m&lt;dbl&gt;[39m[23m 31.63860, 29.30595, 30.78439, 29.20739, 28.91170, 28.97741…
+$ lp          [3m[90m&lt;chr&gt;[39m[23m "Monolingual", "Monolingual", "Monolingual", "Bilingual", …
+$ doe_catalan [3m[90m&lt;dbl&gt;[39m[23m 0.90, 1.00, 1.00, 0.50, 0.20, 0.00, 0.40, 0.10, 0.20, 0.60…
+$ doe_spanish [3m[90m&lt;dbl&gt;[39m[23m 0.10, 0.00, 0.00, 0.50, 0.70, 0.80, 0.60, 0.90, 0.80, 0.30…
+$ edu_parent  [3m[90m&lt;fct&gt;[39m[23m University, University, University, Complementary, Univers…</code></pre>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li><code>id</code>: integer that uniquely labels participant, and is only repeated across responses to the questionnaire from the same participant</li>
+<li><code>time</code>: integer indicating the cumulative number of times the participant has provided a valid response to the questionnaire</li>
+<li><code>time_stamp</code>: date at which the response to the questionnaire was recorded (last item responded)</li>
+<li><code>list</code>: character string indicating the questionnaire sub-list to which the participant responded, which is virtually always the same for the same participant</li>
+<li><code>age</code>: numeric value indicating the age of the participant when their response to the questionnaire was recorded, calculated as the difference in months between such date and the birth date of the participant</li>
+<li><code>lp</code>: character string indicating the language profile of the participant (Monolingual or Bilingual), calculated from <code>doe_catalan</code> and <code>doe_spanish</code> (<code>"Monolingual"</code> if &gt;=80% DoE to Catalan or Spanish, <code>"Bilingual"</code> otherwise)</li>
+<li><code>doe_catalan</code>: numeric value indicating participant’s degree of exposure (DoE) to Catalan, as reported by their caregivers</li>
+<li><code>doe_spanish</code>: numeric value indicating participant’s degree of exposure (DoE) to Spanish, as reported by their caregivers</li>
+<li><code>edu_parent</code>: factor indicating the caregivers maximum educational attainment</li>
+</ul>
+</section>
+<section id="responses" class="level2">
+<h2 class="anchored" data-anchor-id="responses">Responses</h2>
+<p>This data frame is the one used to fit the main model, and the model included in Appendix A. It contains participants’ responses to each item included in the sub-list of the questionnaire they responded to, together with participant- and word-level predictors of interest.</p>
+<div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>responses <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">15</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="tbl-responses" class="cell tbl-parent quarto-layout-panel anchored">
+<div class="panel-caption table-caption">
+<p><strong>?(caption)</strong></p>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
+<pre><code>Rows: 15
+Columns: 19
+$ id           [3m[90m&lt;chr&gt;[39m[23m "54531", "54531", "54531", "54531", "54531", "54531", "54…
+$ time         [3m[90m&lt;int&gt;[39m[23m 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+$ age          [3m[90m&lt;dbl&gt;[39m[23m 31.6386, 31.6386, 31.6386, 31.6386, 31.6386, 31.6386, 31.…
+$ age_std      [3m[90m&lt;dbl&gt;[39m[23m 1.942148, 1.942148, 1.942148, 1.942148, 1.942148, 1.94214…
+$ te           [3m[90m&lt;int&gt;[39m[23m 115, 115, 148, 148, 153, 153, 159, 159, 160, 160, 161, 16…
+$ language     [3m[90m&lt;chr&gt;[39m[23m "Catalan", "Spanish", "Catalan", "Spanish", "Catalan", "S…
+$ meaning      [3m[90m&lt;chr&gt;[39m[23m "witch", "witch", "bee", "bee", "owl", "owl", "snail", "s…
+$ item         [3m[90m&lt;chr&gt;[39m[23m "bruixa", "bruja", "abella", "abeja", "mussol", "buho", "…
+$ response     [3m[90m&lt;ord&gt;[39m[23m Understands and Says, Understands, Understands and Says, …
+$ lv           [3m[90m&lt;dbl&gt;[39m[23m 0.6000000, 0.6000000, 0.2000000, 0.2000000, 0.2000000, 0.…
+$ lv_std       [3m[90m&lt;dbl&gt;[39m[23m 0.9700234, 0.9700234, -0.5893891, -0.5893891, -0.5893891,…
+$ freq         [3m[90m&lt;dbl&gt;[39m[23m 6.233203, 6.233203, 6.087128, 6.087128, 5.945728, 5.94572…
+$ freq_std     [3m[90m&lt;dbl&gt;[39m[23m 1.0995509, 1.0995509, 0.3145191, 0.3145191, -0.4453853, -…
+$ n_phon       [3m[90m&lt;int&gt;[39m[23m 5, 5, 5, 5, 5, 3, 6, 7, 5, 5, 4, 5, 6, 6, 3
+$ n_phon_std   [3m[90m&lt;dbl&gt;[39m[23m -0.2158285, -0.2158285, -0.2158285, -0.2158285, -0.215828…
+$ doe          [3m[90m&lt;dbl&gt;[39m[23m 0.9, 0.1, 0.9, 0.1, 0.9, 0.1, 0.9, 0.1, 0.9, 0.1, 0.9, 0.…
+$ doe_std      [3m[90m&lt;dbl&gt;[39m[23m 1.362610, -1.307451, 1.362610, -1.307451, 1.362610, -1.30…
+$ exposure     [3m[90m&lt;dbl&gt;[39m[23m 5.6098826, 0.6233203, 5.4784148, 0.6087128, 5.3511551, 0.…
+$ exposure_std [3m[90m&lt;dbl&gt;[39m[23m 1.462264, -1.293936, 1.389599, -1.302010, 1.319259, -1.30…</code></pre>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li><code>id</code>: integer that uniquely labels participant, and is only repeated across responses to the questionnaire from the same participant</li>
+<li><code>time</code>: integer indicating the cumulative number of times the participant has provided a valid response to the questionnaire</li>
+<li><code>age</code>: numeric value indicating the age of the participant when their response to the questionnaire was recorded, calculated as the difference in months between such date and the birth date of the participant</li>
+<li><code>age_std</code>: numeric value indicating the participant’s standardised <code>age</code></li>
+<li><code>te</code>: integer that uniquely labels a translation equivalent, and is only repeated across the word-forms from Catalan and Spanish that are part of the same translation equivalent</li>
+<li><code>language</code>: character string indicating the language (Catalan or Spanish) to which the word-form belongs to</li>
+<li><code>meaning</code>: character string that uniquely labels the concept associated to the word-form, and is only repeated across the word-forms from Catalan and Spanish that are part of the same translation equivalent</li>
+<li><code>item</code>: character string that uniquely identifies the word-form in the questionnaire, and links it to the formr item</li>
+<li><code>response</code>: ordered factor indicating participant’s response to the item, which can take <code>"No"</code>, <code>"Understands"</code>, or <code>"Understands and Says"</code> as values</li>
+<li><code>lv</code>: numeric value indicating the normalised inverse of the Levenshtein distance between the X-SAMPA phonological transcriptions of the word-form and of its translation equivalent, calculated using the <code>stringdist::stringsim()</code> (see the Methods section in the main manuscript for more details)</li>
+<li><code>lv_std</code>: numeric value indicating the word-form’s standardised <code>lv</code></li>
+<li><code>freq</code>: numeric values indicating the lexical frequency in Zipf scores, from the English CHILDES corpora</li>
+<li><code>freq_std</code>: numeric value indicating the word-form’s standardised <code>freq</code></li>
+<li><code>n_phon</code>: integer indicating the number of phonemes included in the X-SAMPA phonological transcription of the word-form</li>
+<li><code>n_phon_std</code>: numeric value indicating the word-form’s standardised <code>n_phon</code></li>
+<li><code>doe</code>: numeric value indicating participant’s degree of exposure (DoE) to the <code>language</code> the <code>item</code> belongs to</li>
+<li><code>doe_std</code>: numeric value indicating the participant’s standardised <code>doe</code> to the <code>language</code> the <code>item</code> belongs to</li>
+<li><code>exposure</code>: numeric value indicating the participants’ exposure score to the word-form, calculated as the product of <code>freq</code> and <code>doe</code></li>
+<li><code>doe_std</code>: numeric value indicating the participant’s standardised <code>exposure</code> score for the <code>item</code> and its <code>freq</code> (see the Methods section in the main Manuscript for more details)</li>
+</ul>
 </section>
 </section>
 <section id="session-info" class="level1">
 <h1>Session info</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>R version 4.2.2 (2022-10-31 ucrt)
 Platform: x86_64-w64-mingw32/x64 (64-bit)
@@ -289,17 +399,20 @@ locale:
 attached base packages:
 [1] stats     graphics  grDevices datasets  utils     methods   base     
 
+other attached packages:
+[1] knitr_1.42  tidyr_1.3.0 dplyr_1.1.2
+
 loaded via a namespace (and not attached):
- [1] igraph_1.4.2      knitr_1.42        magrittr_2.0.3    tidyselect_1.2.0 
- [5] here_1.0.1        R6_2.5.1          rlang_1.1.1       fastmap_1.1.0    
- [9] fansi_1.0.4       tools_4.2.2       targets_1.2.0     data.table_1.14.2
-[13] xfun_0.39         utf8_1.2.3        cli_3.6.1         htmltools_0.5.5  
-[17] rprojroot_2.0.3   base64url_1.4     yaml_2.3.7        digest_0.6.31    
-[21] tibble_3.2.1      lifecycle_1.0.3   processx_3.8.1    callr_3.7.3      
-[25] vctrs_0.6.2       htmlwidgets_1.6.2 ps_1.7.5          codetools_0.2-18 
-[29] glue_1.6.2        evaluate_0.21     rmarkdown_2.21    pillar_1.9.0     
-[33] compiler_4.2.2    backports_1.4.1   jsonlite_1.8.4    renv_1.0.0       
-[37] pkgconfig_2.0.3  </code></pre>
+ [1] compiler_4.2.2    pillar_1.9.0      targets_1.2.0     tools_4.2.2      
+ [5] digest_0.6.31     jsonlite_1.8.4    evaluate_0.21     lifecycle_1.0.3  
+ [9] tibble_3.2.1      pkgconfig_2.0.3   rlang_1.1.1       igraph_1.4.2     
+[13] cli_3.6.1         yaml_2.3.7        xfun_0.39         fastmap_1.1.0    
+[17] withr_2.5.0       generics_0.1.3    htmlwidgets_1.6.2 vctrs_0.6.2      
+[21] rprojroot_2.0.3   tidyselect_1.2.0  glue_1.6.2        data.table_1.14.2
+[25] here_1.0.1        R6_2.5.1          processx_3.8.1    fansi_1.0.4      
+[29] base64url_1.4     rmarkdown_2.21    purrr_1.0.1       callr_3.7.3      
+[33] magrittr_2.0.3    backports_1.4.1   codetools_0.2-18  ps_1.7.5         
+[37] htmltools_0.5.5   renv_1.0.0        utf8_1.2.3       </code></pre>
 </div>
 </div>
 </section>
