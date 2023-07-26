@@ -1,0 +1,113 @@
+---
+title: Data dictionary
+---
+
+```{r setup}
+#| label: setup
+#| message: false
+#| warning: false
+#| echo: false
+# load objects -----------------------------------------------------------------
+targets::tar_config_set(
+    store = here::here("_targets"),
+    script = here::here("_targets.R")
+)
+
+yaml_metadata <- rmarkdown::yaml_front_matter(
+    here::here("manuscript", "manuscript.qmd")
+)
+
+title <- yaml_metadata$title
+abstract <- yaml_metadata$abstract
+thanks <- yaml_metadata$thanks
+
+targets::tar_load(items)
+targets::tar_load(participants)
+targets::tar_load(responses)
+
+library(dplyr)
+library(tidyr)
+library(knitr)
+
+```
+
+::: {.panel-tabset}
+
+## Items
+
+This data frame contains information about the word-forms included in the questionnaire, together with some identifiers used to relate participants' responses to the information of the word-forms they responded to.
+
+
+```{r items}
+items |>
+    head(10) |>
+    knitr::kable(digits = 2)
+```
+
+* `te`: integer that uniquely labels a translation equivalent, and is only repeated across the word-forms from Catalan and Spanish that are part of the same translation equivalent
+* `meaning`: character string that uniquely labels the concept associated to the word-form, and is only repeated across the word-forms from Catalan and Spanish that are part of the same translation equivalent
+* `language`: character string indicating the language (Catalan or Spanish) to which the word-form belongs to 
+* `item`: character string that uniquely identifies the word-form in the questionnaire, and links it to the formr item
+* `ipa`: phonological transcription of the word-form in IPA format, generated from the X-SAMPA transcription of the word-form using the `ipa::xsampa()` function.
+* `xsampa`: phonological transcription of the word-form in X-SAMPA format
+* `lv`: numeric value indicating the normalised inverse of the Levenshtein distance between the X-SAMPA phonological transcriptions of the word-form and of its translation equivalent, calculated using the `stringdist::stringsim()` (see the Methods section in the main manuscript for more details)
+* `n_phon`: integer indicating the number of phonemes included in the X-SAMPA phonological transcription of the word-form
+* `n_syll`: integer indicating the number of syllables included in the X-SAMPA phonological transcription of the word-form
+* `syll`: list of character strings in which each element is a syllable included in the word-form
+* `freq`: numeric values indicating the lexical frequency in Zipf scores, from the English CHILDES corpora
+* `freq_syll`: numeric value indicating the um of the frequency of the syllables in the word-form, expressed as counts per million tokens
+* `list`: characters string indicating the questionnaire sub-list(s) in which the word-form appears
+
+
+## Participants
+
+This data frame contains demographic and linguistic information about participants participants, together with some identifiers used to relate participants' responses to their corresponding information.
+
+
+```{r participants}
+participants |>
+    head(10) |>
+    knitr::kable(digits = 2)
+```
+
+* `id`: integer that uniquely labels participant, and is only repeated across responses to the questionnaire from the same participant
+* `time`: integer indicating the cumulative number of times the participant has provided a valid response to the questionnaire
+* `time_stamp`: date at which the response to the questionnaire was recorded (last item responded)
+* `list`: character string indicating the questionnaire sub-list to which the participant responded, which is virtually always the same for the same participant
+* `age`: numeric value indicating the age of the participant when their response to the questionnaire was recorded, calculated as the difference in months between such date and the birth date of the participant
+* `lp`: character string indicating the language profile of the participant (Monolingual or Bilingual), calculated from `doe_catalan` and `doe_spanish` (`"Monolingual"` if >=80% DoE to Catalan or Spanish, `"Bilingual"` otherwise)
+* `doe_catalan`: numeric value indicating participant's degree of exposure (DoE) to Catalan, as reported by their caregivers
+* `doe_spanish`: numeric value indicating participant's degree of exposure (DoE) to Spanish, as reported by their caregivers
+* `edu_parent`: factor indicating the caregivers maximum educational attainment
+
+## Responses
+
+This data frame is the one used to fit the main model, and the model included in Appendix A. It contains participants' responses to each item included in the sub-list of the questionnaire they responded to, together with participant- and word-level predictors of interest. 
+
+```{r responses}
+responses |>
+    head(10) |>
+    knitr::kable(digits = 2)
+```
+
+* `id`: integer that uniquely labels participant, and is only repeated across responses to the questionnaire from the same participant
+* `time`: integer indicating the cumulative number of times the participant has provided a valid response to the questionnaire
+* `age`: numeric value indicating the age of the participant when their response to the questionnaire was recorded, calculated as the difference in months between such date and the birth date of the participant
+* `age_std`: numeric value indicating the participant's standardised `age`
+* `te`: integer that uniquely labels a translation equivalent, and is only repeated across the word-forms from Catalan and Spanish that are part of the same translation equivalent
+* `language`: character string indicating the language (Catalan or Spanish) to which the word-form belongs to 
+* `meaning`: character string that uniquely labels the concept associated to the word-form, and is only repeated across the word-forms from Catalan and Spanish that are part of the same translation equivalent
+* `item`: character string that uniquely identifies the word-form in the questionnaire, and links it to the formr item
+* `response`: ordered factor indicating participant's response to the item, which can take `"No"`, `"Understands"`, or `"Understands and Says"` as values
+* `lv`: numeric value indicating the normalised inverse of the Levenshtein distance between the X-SAMPA phonological transcriptions of the word-form and of its translation equivalent, calculated using the `stringdist::stringsim()` (see the Methods section in the main manuscript for more details)
+* `lv_std`: numeric value indicating the word-form's standardised `lv`
+* `freq`: numeric values indicating the lexical frequency in Zipf scores, from the English CHILDES corpora
+* `freq_std`: numeric value indicating the word-form's standardised `freq`
+* `n_phon`: integer indicating the number of phonemes included in the X-SAMPA phonological transcription of the word-form
+* `n_phon_std`: numeric value indicating the word-form's standardised `n_phon`
+* `doe`: numeric value indicating participant's degree of exposure (DoE) to the `language` the `item` belongs to
+* `doe_std`: numeric value indicating the participant's standardised `doe` to the `language` the `item` belongs to
+* `exposure`: numeric value indicating the participants' exposure score to the word-form, calculated as the product of `freq` and `doe`
+* `doe_std`: numeric value indicating the participant's standardised `exposure` score for the `item` and its `freq` (see the Methods section in the main Manuscript for more details)
+
+:::

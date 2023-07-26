@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>cognate-beginnings – repro</title>
+<title>cognate-beginnings - Docker </title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -63,7 +63,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../site/_repro-docker.html" rel="next">
+<link href="../docs/_repro-github.html" rel="next">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -116,15 +116,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../site/_repo-structure.html" rel="" target="">
+    <a class="nav-link" href="../docs/_repo-structure.html" rel="" target="">
  <span class="menu-text">Repository</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="../site/_repro.html" rel="" target="" aria-current="page">
+    <a class="nav-link active" href="../docs/_repro.html" rel="" target="" aria-current="page">
  <span class="menu-text">Reproducibility</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../site/_data-dictionary.html" rel="" target="">
+    <a class="nav-link" href="../docs/_data-dictionary.html" rel="" target="">
  <span class="menu-text">Data</span></a>
   </li>  
 </ul>
@@ -145,7 +145,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../site/_repro.html">—</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../docs/_repro-docker.html">Docker <i class="fa-brands fa-docker" aria-label="docker"></i></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -159,19 +159,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../site/_repro.html" class="sidebar-item-text sidebar-link active">
+  <a href="../docs/_repro.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">—</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../site/_repro-docker.html" class="sidebar-item-text sidebar-link">
+  <a href="../docs/_repro-docker.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Docker <i class="fa-brands fa-docker" aria-label="docker"></i></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../site/_repro-github.html" class="sidebar-item-text sidebar-link">
+  <a href="../docs/_repro-github.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GitHub <i class="fa-brands fa-github" aria-label="github"></i></span></a>
   </div>
 </li>
@@ -184,12 +184,47 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><div class="quarto-title-block"><div class="quarto-title-tools-only"><h1></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Docker <i class="fa-brands fa-docker" aria-label="docker"></i></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
 
 
 
-<p>We recommend two ways of reproducing or inspecting the code of this repository. One option is to clone the <a href="https://hub.docker.com/r/gongcastro/cognate-beginnings">Docker image</a> we have pused to Dockerhub. A Docker image is just a virtual machine that contains all dependencies, code, and files necessary to run the code. Everything is already installed and setup, you will only have to open <a href="https://localhost:8787">https://localhost:8787</a> in your browser, and a RStudio session will open for you. This option is more robust (dependencies are difficult to get right when using your own computer), but it also requires Docker to be installed.</p>
-<p>A second option is the more traditional approach of downloading the repository (or cloning it, if you know your way through Git/GitHub), installing the necessary dependencies (we recommend using renv for R dependencies, other system dependencies are listed below), and running the code (we recommend using the targets workflow).</p>
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<ol type="1">
+<li>Download and install Docker</li>
+<li>Pull the gongcastro/cognate-beginnings image. Two ways of doing this:
+<ol type="a">
+<li>Using the Docker UI: go the the “Images” tab, click on “Search images to run”, search for “gongcastro/cognate-beginnings”, and click “Pull”.</li>
+<li>Using the Docker CLI: open your console/terminal/command prompt, and run:</li>
+</ol>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull gongcastro/cognate-beginnings</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li>Run the image in a Docker container. Two ways of doing this:
+<ol type="a">
+<li>Using the Docker UI: in the “Images” tab, look for the “gongcastro/cognate-beginnings” image and click “Run”.</li>
+<li>Using the Docker CLI:</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-ti</span> <span class="at">-e</span> ROOT=true <span class="at">-e</span> PASSWORD=rstudio <span class="at">-p</span> 8787:8787 <span class="at">--name</span> rstudio gongcastro/cognate-beginnings:latest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li>Open <a href="https://localhost:8787">https://localhost:8787</a> in your browser. Log in using <code>rstudio</code> as users, and <code>rstudio</code> as password. An RStudio session should open, with all files, code and dependencies installed and ready. Check <code>targets::tar_visnetwork()</code> to examine the targets workflow. This will list the objects created by the R code, and how they relate to each other. To retrieve and explore a given object, run <code>targets::tar_load(target_name)</code>, where <code>target_name</code> is the name of the rarget you want to explore.</li>
+</ol>
+<blockquote class="blockquote">
+<p>💡 The RStudio session opened by Docker does not have root permissions (you will not be able to run <code>targets::tar_make()</code> to run the code from the R console). Instead, open the “Terminal” tab, and run <code>sudo Rscript -e "targets::tar_make()"</code>. The targets workflow should now be triggered.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>💡 The targets workflow is run to completion before your Rstudio session is open in Docker. This means that even if you trigger <code>targets::tar_make()</code>, virtually all targets will be skipped, as they are completed. If you want to run a specific target, delete it first (or any other target it depends on), and the targets workflow will be run, now generating all deleted targets again. Be aware that this might take some time, especially when fitting the models anew.</p>
+</blockquote>
 
 
 <!-- -->
@@ -484,17 +519,35 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   <div class="nav-page nav-page-previous">
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../site/_repro-docker.html" class="pagination-link">
-        <span class="nav-page-text">Docker <i class="fa-brands fa-docker" aria-label="docker"></i></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../docs/_repro-github.html" class="pagination-link">
+        <span class="nav-page-text">GitHub <i class="fa-brands fa-github" aria-label="github"></i></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>We recommend two ways of reproducing or inspecting the code of this repository. One option is to clone the <span class="co">[</span><span class="ot">Docker image</span><span class="co">](https://hub.docker.com/r/gongcastro/cognate-beginnings)</span> we have pused to Dockerhub. A Docker image is just a virtual machine that contains all dependencies, code, and files necessary to run the code. Everything is already installed and setup, you will only have to open <span class="co">[</span><span class="ot">https://localhost:8787</span><span class="co">](https://localhost:8787)</span> in your browser, and a RStudio session will open for you. This option is more robust (dependencies are difficult to get right when using your own computer), but it also requires Docker to be installed.</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>A second option is the more traditional approach of downloading the repository (or cloning it, if you know your way through Git/GitHub), installing the necessary dependencies (we recommend using renv for R dependencies, other system dependencies are listed below), and running the code (we recommend using the targets workflow).</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> Docker {{&lt; fa brands docker &gt;}}</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Download and install Docker</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Pull the gongcastro/cognate-beginnings image. Two ways of doing this:</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    a) Using the Docker UI: go the the "Images" tab, click on "Search images to run", search for "gongcastro/cognate-beginnings", and click "Pull".</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    b) Using the Docker CLI: open your console/terminal/command prompt, and run:</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="in">```bash </span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="ex">docker</span> pull gongcastro/cognate-beginnings</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="in">```</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Run the image in a Docker container.  Two ways of doing this:</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    a) Using the Docker UI: in the "Images" tab, look for the "gongcastro/cognate-beginnings" image and click "Run".</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    b) Using the Docker CLI:</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="in">```bash </span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-ti</span> <span class="at">-e</span> ROOT=true <span class="at">-e</span> PASSWORD=rstudio <span class="at">-p</span> 8787:8787 <span class="at">--name</span> rstudio gongcastro/cognate-beginnings:latest</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="in">```</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Open <span class="co">[</span><span class="ot">https://localhost:8787</span><span class="co">](https://localhost:8787)</span> in your browser. Log in using <span class="in">`rstudio`</span> as users, and <span class="in">`rstudio`</span> as password. An RStudio session should open, with all files, code and dependencies installed and ready. Check <span class="in">`targets::tar_visnetwork()`</span> to examine the targets workflow. This will list the objects created by the R code, and how they relate to each other. To retrieve and explore a given object, run <span class="in">`targets::tar_load(target_name)`</span>, where <span class="in">`target_name`</span> is the name of the rarget you want to explore.</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 💡 The RStudio session opened by Docker does not have root permissions (you will not be able to run </span><span class="in">`targets::tar_make()`</span><span class="at"> to run the code from the R console). Instead, open the "Terminal" tab, and run </span><span class="in">`sudo Rscript -e "targets::tar_make()"`</span><span class="at">. The targets workflow should now be triggered.</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 💡 The targets workflow is run to completion before your Rstudio session is open in Docker. This means that even if you trigger </span><span class="in">`targets::tar_make()`</span><span class="at">, virtually all targets will be skipped, as they are completed. If you want to run a specific target, delete it first (or any other target it depends on), and the targets workflow will be run, now generating all deleted targets again. Be aware that this might take some time, especially when fitting the models anew.</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
@@ -504,7 +557,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/gongcastro/cognate-beginnings/edit/main/site/_repro.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/gongcastro/cognate-beginnings/issues/new" class="toc-action">Report an issue</a></p></div></div></div>
+    <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/gongcastro/cognate-beginnings/edit/main/docs/_repro-docker.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/gongcastro/cognate-beginnings/issues/new" class="toc-action">Report an issue</a></p></div></div></div>
     <div class="nav-footer-right">Made with <i class="fa-brands fa-r-project" aria-label="r-project"></i> and <a href="https://quarto.org/">Quarto</a><br> <a href="https://github.com/gongcastro/cognate-beginnings">View the source at <i class="fa-brands fa-github" aria-label="github"></i> GitHub</a></div>
   </div>
 </footer>

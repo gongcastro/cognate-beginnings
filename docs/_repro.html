@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>cognate-beginnings – repo-structure</title>
+<title>cognate-beginnings – repro</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -63,6 +63,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
+<link href="../docs/_repro-docker.html" rel="next">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -115,15 +116,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="../site/_repo-structure.html" rel="" target="" aria-current="page">
+    <a class="nav-link" href="../docs/_repo-structure.html" rel="" target="">
  <span class="menu-text">Repository</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../site/_repro.html" rel="" target="">
+    <a class="nav-link active" href="../docs/_repro.html" rel="" target="" aria-current="page">
  <span class="menu-text">Reproducibility</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../site/_data-dictionary.html" rel="" target="">
+    <a class="nav-link" href="../docs/_data-dictionary.html" rel="" target="">
  <span class="menu-text">Data</span></a>
   </li>  
 </ul>
@@ -144,7 +145,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Repository structure and files 📂</li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../docs/_repro.html">—</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -158,19 +159,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../site/_repro.html" class="sidebar-item-text sidebar-link">
+  <a href="../docs/_repro.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">—</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../site/_repro-docker.html" class="sidebar-item-text sidebar-link">
+  <a href="../docs/_repro-docker.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Docker <i class="fa-brands fa-docker" aria-label="docker"></i></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../site/_repro-github.html" class="sidebar-item-text sidebar-link">
+  <a href="../docs/_repro-github.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GitHub <i class="fa-brands fa-github" aria-label="github"></i></span></a>
   </div>
 </li>
@@ -183,55 +184,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Repository structure and files 📂</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
-</div>
+<main class="content" id="quarto-document-content"><div class="quarto-title-block"><div class="quarto-title-tools-only"><h1></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 
 
 
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-</header>
-
-<p>This repository is organised as follows:</p>
-<ul>
-<li><strong>data</strong>: processed data in CSV format
-<ul>
-<li><a href="data/items.csv">items.csv</a>: information about words included in the analyses</li>
-<li><a href="data/participants.csv">participants.csv</a>: information about participants</li>
-<li><a href="data/responses.csv">responses.csv</a>: participant responses to the items. The model was fit on this dataset.</li>
-</ul></li>
-<li><strong>data-raw</strong>: raw data from the <a href="https://gongcastro.github.io/bvq">Barcelona Vocabulary Questionnaire, BVQ</a>. This is a RDS file containing a list of data frames with all the information necessary to generate the datasets in the data/ directory.</li>
-<li><strong>docs</strong>: source code to generate the documentation site of the project (<a href="[gongcastro.github.com/cognate-beginnings">cognate-beginnings</a>].</li>
-<li><strong>manuscript</strong>: Quarto document with the source code of the manuscript and appendix</li>
-<li><strong>R</strong>: R functions used in the targets to process and analyse the data.
-<ul>
-<li><a href="R/items.R">items.R</a>: to generate <code>items.csv</code></li>
-<li><a href="R/items.R">models.R</a>: to fit the Bayesian model and extract posterior draws</li>
-<li><a href="R/participants.R">participants.R</a>: to generate <code>participants.csv</code></li>
-<li><a href="R/predictions.R">predictions.R</a>: to generate posterior predictions from the model</li>
-<li><a href="R/utils..R">utils.R</a>: helper functions and wrappers used across the project</li>
-</ul></li>
-<li><strong>renv</strong>: internal settings to ensure reproducibility of the computing environment.</li>
-<li><strong>results</strong>: model outputs. You will need to run the code to generate the files that will be contained in this directoty.)
-<ul>
-<li>fits: RDS files with the brmsfit of the Bayesian models</li>
-<li>posterior: CSV files with the posterior draws of the population-level and group-level coefficients</li>
-<li>predictions: CSV files with the posterior predictions</li>
-</ul></li>
-<li><strong>src</strong>: R functions to make programming tasks easier, not needed to reproduce the project.</li>
-<li><strong>stan</strong>: Stan code of the models, as generated by <code>brms::stancode()</code>.</li>
-<li><strong>test</strong>: testthat scripts used to unit test the functions used across the project.</li>
-</ul>
+<p>We recommend two ways of reproducing or inspecting the code of this repository. One option is to clone the <a href="https://hub.docker.com/r/gongcastro/cognate-beginnings">Docker image</a> we have pused to Dockerhub. A Docker image is just a virtual machine that contains all dependencies, code, and files necessary to run the code. Everything is already installed and setup, you will only have to open <a href="https://localhost:8787">https://localhost:8787</a> in your browser, and a RStudio session will open for you. This option is more robust (dependencies are difficult to get right when using your own computer), but it also requires Docker to be installed.</p>
+<p>A second option is the more traditional approach of downloading the repository (or cloning it, if you know your way through Git/GitHub), installing the necessary dependencies (we recommend using renv for R dependencies, other system dependencies are listed below), and running the code (we recommend using the targets workflow).</p>
 
 
 <!-- -->
@@ -521,8 +479,22 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 });
-</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>{{&lt; include ../README.md &gt;}}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../docs/_repro-docker.html" class="pagination-link">
+        <span class="nav-page-text">Docker <i class="fa-brands fa-docker" aria-label="docker"></i></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>We recommend two ways of reproducing or inspecting the code of this repository. One option is to clone the <span class="co">[</span><span class="ot">Docker image</span><span class="co">](https://hub.docker.com/r/gongcastro/cognate-beginnings)</span> we have pused to Dockerhub. A Docker image is just a virtual machine that contains all dependencies, code, and files necessary to run the code. Everything is already installed and setup, you will only have to open <span class="co">[</span><span class="ot">https://localhost:8787</span><span class="co">](https://localhost:8787)</span> in your browser, and a RStudio session will open for you. This option is more robust (dependencies are difficult to get right when using your own computer), but it also requires Docker to be installed.</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>A second option is the more traditional approach of downloading the repository (or cloning it, if you know your way through Git/GitHub), installing the necessary dependencies (we recommend using renv for R dependencies, other system dependencies are listed below), and running the code (we recommend using the targets workflow).</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
@@ -532,7 +504,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/gongcastro/cognate-beginnings/edit/main/site/_repo-structure.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/gongcastro/cognate-beginnings/issues/new" class="toc-action">Report an issue</a></p></div></div></div>
+    <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/gongcastro/cognate-beginnings/edit/main/docs/_repro.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/gongcastro/cognate-beginnings/issues/new" class="toc-action">Report an issue</a></p></div></div></div>
     <div class="nav-footer-right">Made with <i class="fa-brands fa-r-project" aria-label="r-project"></i> and <a href="https://quarto.org/">Quarto</a><br> <a href="https://github.com/gongcastro/cognate-beginnings">View the source at <i class="fa-brands fa-github" aria-label="github"></i> GitHub</a></div>
   </div>
 </footer>

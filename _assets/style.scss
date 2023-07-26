@@ -1,0 +1,452 @@
+/*-- scss:defaults --*/
+
+$theme: "minty" !default;
+
+//
+// Color system
+//
+
+$white: #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #f7f7f9 !default;
+$gray-300: #eceeef !default;
+$gray-400: #ced4da !default;
+$gray-500: #aaa !default;
+$gray-600: #888 !default;
+$gray-700: #5a5a5a !default;
+$gray-800: #343a40 !default;
+$gray-900: #212529 !default;
+$black: #000 !default;
+
+$blue: #007bff !default;
+$indigo: #6610f2 !default;
+$purple: #6f42c1 !default;
+$pink: #e83e8c !default;
+$red: #ff7851 !default;
+$orange: #fd7e14 !default;
+$yellow: #ffce67 !default;
+$green: #56cc9d !default;
+$teal: #20c997 !default;
+$cyan: #6cc3d5 !default;
+$lightsalmon: #ffa07a !default;
+$salmon: salmon !default;
+$yellow-main: #fcc203 !default;
+$blue-main: #2DC9D2 !default;
+
+$primary: $yellow-main !default;
+$secondary: $blue-main !default;
+$success: $green !default;
+$info: $cyan !default;
+$warning: $yellow !default;
+$danger: $red !default;
+$light: $gray-100 !default;
+$dark: $gray-800 !default;
+
+$min-contrast-ratio: 1.45 !default;
+
+// Body
+$body-color: $black !default;
+$color-contrast-dark: $body-color !default; // Prefer $body-color over $black inside color-contrast()
+
+// Components
+$border-radius: .4rem !default;
+$border-radius-lg: .6rem !default;
+$border-radius-sm: .3rem !default;
+
+// Fonts
+
+// stylelint-disable-next-line value-keyword-case
+$headings-font-family: Inter !default;
+$headings-font-weight: 600 !default;
+$navbar-font-family: Inter !default;
+$toc-font-family: Inter !default;
+$footer-font-family: Inter !default;
+
+$font-family-sans-serif: Inter !default;
+$body-family-sans-serif: Inter !default;
+
+$h1-font-size: 24pt !default;
+$h2-font-size: 20pt !default;
+$h3-font-size: 18pt !default;
+$h4-font-size: 16pt !default;
+$h5-font-size: 14pt !default;
+$h6-font-size: 14pt !default;
+$headings-color: $black !default;
+
+// Tables
+$table-border-color: rgba(0, 0, 0, .05) !default;
+
+$table-bg-scale: 0 !default;
+
+// Dropdowns
+$dropdown-link-hover-color: $black !default;
+$dropdown-link-hover-bg: $black !default;
+
+// Navbar
+$navbar-light-color: $black !default;
+$navbar-light-hover-color: $black !default;
+$navbar-light-active-color: $black !default;
+$navbar-light-disabled-color: $black !default;
+$navbar-light-bg: $white !default;
+
+// Pagination
+$pagination-color: $black !default;
+$pagination-bg: $primary !default;
+$pagination-border-color: $primary !default;
+$pagination-hover-color: $black !default;
+$pagination-hover-bg: $black !default;
+$pagination-hover-border-color: $pagination-hover-bg !default;
+$pagination-active-bg: $black !default;
+$pagination-active-border-color: $pagination-active-bg !default;
+$pagination-disabled-color: $black !default;
+$pagination-disabled-bg: $black !default;
+$pagination-disabled-border-color: $pagination-disabled-bg !default;
+
+// Alerts
+$alert-color-scale: 0% !default;
+$alert-bg-scale: 0 !default;
+
+// Breadcrumbs
+$breadcrumb-padding-y: .375rem !default;
+$breadcrumb-padding-x: .75rem !default;
+$breadcrumb-bg: $primary !default;
+$breadcrumb-divider-color: $black !default;
+$breadcrumb-active-color: $breadcrumb-divider-color !default;
+$breadcrumb-border-radius: .25rem !default;
+$description-color: $black;
+
+/*-- scss:rules --*/
+
+$web-font-path: "https://fonts.googleapis.com/css2?family=Inter&display=swap" !default;
+
+@if $web-font-path {
+    @import url($web-font-path);
+}
+
+$web-font-path-mono: "https://fonts.googleapis.com/css2?family=Roboto+Mono&display" !default;
+
+@if $web-font-path-mono {
+    @import url($web-font-path-mono);
+}
+
+$web-font-path-serif: "https://fonts.googleapis.com/css2?family=Old+Standard+TT&display=swap" !default;
+
+@if $web-font-path-serif {
+    @import url($web-font-path-serif);
+}
+
+.figure-caption {
+    font-family: Old Standard TT;
+    font-style: italic;
+    text-align: right;
+}
+
+
+/* css styles */
+p.caption {
+    font-size: 0.8em;
+    font-style: italic;
+}
+
+.code {
+    color: $black;
+    background-color: $gray-200;
+}
+
+// Navbar
+.navbar {
+    font-family: $headings-font-family;
+    font-weight: bold;
+    color: $black;
+    border-bottom: 6px solid primary;
+    background-color: $white;
+}
+
+.description {
+    color: $black;
+    padding-top: 3%;
+}
+
+#quarto-code-tools-source {
+    color: $black;
+}
+
+.quarto-categories {
+    color: $black;
+}
+
+.quarto-category {
+    color: $black;
+}
+
+.bi {
+    color: $black;
+}
+
+.navbar-light .navbar-toggler-icon {
+    background-color: $primary;
+}
+
+// this is a white icon with 50% opacity
+.navbar-dark .navbar-toggler-icon {
+    background-color: $primary;
+}
+
+.navbar-collapse {
+    background-color: $gray-200;
+}
+
+.navbar-title {
+    color: $black;
+}
+
+.menu-text {
+    color: $black;
+}
+
+.nav.navbar-nav.navbar-right li a {
+    color: $black;
+}
+
+.fa-cog {
+    color: $black;
+}
+
+.sourceCode {
+    font-family: Roboto Mono;
+}
+
+a {
+    color: #0314fc;
+}
+
+.bg-dark {
+    background-color: $secondary !important;
+}
+
+.border-dark {
+    border-color: $secondary !important;
+}
+
+// Buttons
+.btn {
+    font-family: $headings-font-family;
+}
+
+// Forms
+legend {
+    font-family: $headings-font-family;
+}
+
+// Navs
+.dropdown-menu {
+    font-family: $font-family-sans-serif;
+}
+
+.breadcrumb {
+    a {
+        color: grey;
+    }
+
+    a:hover {
+        color: $black;
+        text-decoration: none;
+    }
+}
+
+// Indicators
+.alert {
+
+    a,
+    .alert-link {
+        color: $white;
+    }
+
+    &-light {
+
+        &,
+        a:not(.btn),
+        .alert-link {
+            color: $body-color;
+        }
+    }
+}
+
+.badge {
+    color: $white;
+
+    &.bg-light {
+        color: $gray-700;
+    }
+}
+
+// Containers
+.card,
+.list-group-item {
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: inherit;
+    }
+}
+
+// Blog-Specific Settings
+.references {
+    line-height: 1.25;
+    box-sizing: border-box;
+    margin-left: 1.5em;
+    text-indent: -1.5em;
+    margin-bottom: 0.75em;
+}
+
+.blockquote {
+    background-color: $yellow;
+    color: $black;
+    border-left: 10px solid $yellow-main;
+    margin: 1.5em 10px;
+    padding: 0.5em 10px;
+    quotes: "\201C" "\201D" "\2018" "\2019";
+}
+
+.box {
+    width: 100%;
+    top: 100px;
+    height: 300px;
+    padding: 10px;
+    margin: 0;
+    left: 0%;
+    align-items: center;
+    background-color: $yellow;
+    background: $yellow;
+    border: solid 3px $yellow;
+
+    p {
+        position: relative;
+        color: black;
+        text-align: left;
+        font-size: 20px;
+    }
+
+    img {
+        left: 100px;
+        float: left;
+        width: 250px;
+        margin: 2.5%;
+    }
+}
+
+// Listings
+div.listing-date {
+    text-align: left;
+}
+
+p code:not(.sourceCode),
+li code:not(.sourceCode) {
+    background-color: $white;
+    padding: .2em;
+}
+
+
+body {
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.4;
+    font-weight: 500;
+    letter-spacing: 1.1px;
+    font-style: normal;
+    font-size: 13pt;
+    text-align: left;
+    font-family: Inter;
+    color: black
+}
+
+.navbar {
+    height: 100px;
+    color: black;
+}
+
+.nav-link {
+    color: black !important;
+}
+
+
+.navbar a:hover {
+    border-bottom: 3px solid $primary;
+}
+
+.navbar a.active {
+    border-bottom: 3px solid $primary;
+}
+
+.navbar a {
+    float: left;
+    display: block;
+    color: $black;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 20px;
+    border-bottom: 3px solid transparent;
+}
+
+.profile-card {
+    text-align: center;
+
+    img {
+        position: relative;
+        top: 20%;
+        border-radius: 50%;
+        width: 200px;
+    }
+
+    p {
+        text-align: center;
+    }
+}
+
+.social-container {
+    text-align: true;
+    display: grid;
+    grid-template-columns: repeat(9, 4.125em);
+    height: 2.5%;
+}
+
+.social {
+    margin: .125em;
+    font-size: 3em;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    display: grid;
+    place-items: center;
+
+    i,
+    a {
+        color: $black;
+    }
+
+    a:hover {
+        color: $yellow-main;
+    }
+
+}
+
+
+@media only screen and (max-device-width: 640px) {
+    .profilepic {
+        position: relative;
+    }
+
+    .social-container {
+        left: 0;
+        grid-template-columns: repeat(5, 4.125em);
+        grid-template-row: repeat(2, 3.125em);
+    }
+
+    .social {
+        font-size: 1.5em;
+    }
+}
