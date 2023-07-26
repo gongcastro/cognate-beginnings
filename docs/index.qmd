@@ -1,7 +1,11 @@
+
+# Cognate beginnings to bilingual lexical acquisition
+
 ```{r setup}
 #| label: setup
 #| message: false
 #| warning: false
+#| echo: false
 # load objects -----------------------------------------------------------------
 targets::tar_config_set(
     store = here::here("_targets"),
@@ -30,17 +34,14 @@ library(knitr)
 Data and materials are available at [OSF](https://osf.io/hy984/), and code is available at [GitHub](https://github.com/gongcastro/trajectories).
 :::
 
+## Abstract
+
 `r abstract`
+
+## Acknowledgements
 
 `r thanks`
 
-# Links
-
-![arXiv](https://info.arxiv.org/brand/images/brand-logo-primary.jpg){height="100px"}
-
-![OSF](https://www.datacc.org/wp-content/uploads/2020/03/osf.png){height="100px"}
-
-![GitHub](https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/2048px-Octicons-mark-github.svg.png){height="100px"}
 
 {{< include ../README.md >}}
 

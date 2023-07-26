@@ -52,8 +52,10 @@ editor: source
 
 code-fold: true
 warning: false
+error: false
 
 format:
   html: default
 
+toc: true
 fig-dpi: 1000
