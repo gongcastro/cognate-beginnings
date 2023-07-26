@@ -325,25 +325,28 @@ Tip
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>items <span class="sc">|&gt;</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">15</span>) <span class="sc">|&gt;</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Rows: 15
-Columns: 13
-$ te        [3m[90m&lt;int&gt;[39m[23m 115, 115, 148, 148, 149, 149, 150, 150, 153, 153, 154, 154, …
-$ meaning   [3m[90m&lt;chr&gt;[39m[23m "witch", "witch", "bee", "bee", "animal", "animal", "spider"…
-$ language  [3m[90m&lt;chr&gt;[39m[23m "Catalan", "Spanish", "Catalan", "Spanish", "Catalan", "Span…
-$ item      [3m[90m&lt;chr&gt;[39m[23m "bruixa", "bruja", "abella", "abeja", "animals", "animales",…
-$ ipa       [3m[90m&lt;chr&gt;[39m[23m "ˈbɾu.ʃə", "ˈbɾu.xa", "əˈβɛ.ʎə", "aˈβe.xa", "ˈæn.ɪ.məlz", "a…
-$ xsampa    [3m[90m&lt;chr&gt;[39m[23m "\"b4u.S@", "\"b4u.xa", "@\"BE.L@", "a\"Be.xa", "\"{n.I.m@lz…
-$ lv        [3m[90m&lt;dbl&gt;[39m[23m 0.6000000, 0.6000000, 0.2000000, 0.2000000, 0.2500000, 0.250…
-$ n_phon    [3m[90m&lt;int&gt;[39m[23m 5, 5, 5, 5, 8, 8, 5, 5, 5, 3, 3, 4, 6, 7, 5
-$ n_syll    [3m[90m&lt;int&gt;[39m[23m 2, 2, 3, 3, 3, 4, 3, 3, 2, 2, 1, 2, 2, 3, 2
-$ syll      [3m[90m&lt;list&gt;[39m[23m &lt;"b4u", "S@"&gt;, &lt;"b4u", "xa"&gt;, &lt;"@", "BE", "L@"&gt;, &lt;"a", "Be",…
-$ freq      [3m[90m&lt;dbl&gt;[39m[23m 6.233203, 6.233203, 6.087128, 6.087128, 5.902990, 5.902990, …
-$ freq_syll [3m[90m&lt;dbl&gt;[39m[23m 12.998987, 13.400107, 20.479740, 21.360357, 17.708969, 27.6…
-$ list      [3m[90m&lt;list&gt;[39m[23m &lt;"A", "B", "C", "D"&gt;, &lt;"A", "B", "C", "D"&gt;, &lt;"A", "B", "C", …</code></pre>
+<pre><code>[90m# A tibble: 15 × 13[39m
+      te meaning language item     ipa    xsampa    lv n_phon n_syll syll   freq
+   [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;chr&gt;[39m[23m   [3m[90m&lt;chr&gt;[39m[23m    [3m[90m&lt;chr&gt;[39m[23m    [3m[90m&lt;chr&gt;[39m[23m  [3m[90m&lt;chr&gt;[39m[23m  [3m[90m&lt;dbl&gt;[39m[23m  [3m[90m&lt;int&gt;[39m[23m  [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;lis&gt;[39m[23m [3m[90m&lt;dbl&gt;[39m[23m
+[90m 1[39m   115 witch   Catalan  bruixa   ˈbɾu.… [90m"[39m\"b4… 0.6        5      2 [90m&lt;chr&gt;[39m  6.23
+[90m 2[39m   115 witch   Spanish  bruja    ˈbɾu.… [90m"[39m\"b4… 0.6        5      2 [90m&lt;chr&gt;[39m  6.23
+[90m 3[39m   148 bee     Catalan  abella   əˈβɛ.… [90m"[39m@\"B… 0.2        5      3 [90m&lt;chr&gt;[39m  6.09
+[90m 4[39m   148 bee     Spanish  abeja    aˈβe.… [90m"[39ma\"B… 0.2        5      3 [90m&lt;chr&gt;[39m  6.09
+[90m 5[39m   149 animal  Catalan  animals  ˈæn.ɪ… [90m"[39m\"{n… 0.25       8      3 [90m&lt;chr&gt;[39m  5.90
+[90m 6[39m   149 animal  Spanish  animales a.niˈ… [90m"[39ma.ni… 0.25       8      4 [90m&lt;chr&gt;[39m  5.90
+[90m 7[39m   150 spider  Catalan  aranya   əˈɾa.… [90m"[39m@\"4… 0.6        5      3 [90m&lt;chr&gt;[39m  6.04
+[90m 8[39m   150 spider  Spanish  arana    aˈɾa.… [90m"[39ma\"4… 0.6        5      3 [90m&lt;chr&gt;[39m  6.04
+[90m 9[39m   153 owl     Catalan  mussol   muˈsɔɫ [90m"[39mmu\"… 0.2        5      2 [90m&lt;chr&gt;[39m  5.95
+[90m10[39m   153 owl     Spanish  buho     ˈbu.o  [90m"[39m\"bu… 0.2        3      2 [90m&lt;chr&gt;[39m  5.95
+[90m11[39m   154 donkey  Catalan  ruc      ruk    [90m"[39mruk[90m"[39m  0.25       3      1 [90m&lt;chr&gt;[39m  6.06
+[90m12[39m   154 donkey  Spanish  burro    ˈbu.ro [90m"[39m\"bu… 0.25       4      2 [90m&lt;chr&gt;[39m  6.06
+[90m13[39m   159 snail   Catalan  cargol   kərˈɡ… [90m"[39mk@r\… 0.286      6      2 [90m&lt;chr&gt;[39m  5.84
+[90m14[39m   159 snail   Spanish  caracol  ka.ɾa… [90m"[39mka.4… 0.286      7      3 [90m&lt;chr&gt;[39m  5.84
+[90m15[39m   160 zebra   Catalan  zebra    ˈze.β… [90m"[39m\"ze… 0.6        5      2 [90m&lt;chr&gt;[39m  6.13
+[90m# ℹ 2 more variables: freq_syll &lt;dbl&gt;, list &lt;list&gt;[39m</code></pre>
 </div>
 </div>
 <ul>
@@ -369,21 +372,27 @@ $ list      [3m[90m&lt;list&gt;[39m[23m &lt;"A", "B", "C", "D"&gt;, &lt;"A",
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>participants <span class="sc">|&gt;</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">15</span>) <span class="sc">|&gt;</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Rows: 15
-Columns: 9
-$ id          [3m[90m&lt;chr&gt;[39m[23m "54531", "54794", "54828", "54881", "54939", "54966", "549…
-$ time        [3m[90m&lt;int&gt;[39m[23m 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-$ time_stamp  [3m[90m&lt;date&gt;[39m[23m 2020-04-19, 2020-04-15, 2020-06-11, 2020-06-03, 2020-05-08…
-$ list        [3m[90m&lt;chr&gt;[39m[23m "BL-Short-C", "BL-Short-C", "BL-Short-A", "BL-Short-D", "…
-$ age         [3m[90m&lt;dbl&gt;[39m[23m 31.63860, 29.30595, 30.78439, 29.20739, 28.91170, 28.97741…
-$ lp          [3m[90m&lt;chr&gt;[39m[23m "Monolingual", "Monolingual", "Monolingual", "Bilingual", …
-$ doe_catalan [3m[90m&lt;dbl&gt;[39m[23m 0.90, 1.00, 1.00, 0.50, 0.20, 0.00, 0.40, 0.10, 0.20, 0.60…
-$ doe_spanish [3m[90m&lt;dbl&gt;[39m[23m 0.10, 0.00, 0.00, 0.50, 0.70, 0.80, 0.60, 0.90, 0.80, 0.30…
-$ edu_parent  [3m[90m&lt;fct&gt;[39m[23m University, University, University, Complementary, Univers…</code></pre>
+<pre><code>[90m# A tibble: 15 × 9[39m
+   id     time time_stamp list      age lp    doe_catalan doe_spanish edu_parent
+   [3m[90m&lt;chr&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;date&gt;[39m[23m     [3m[90m&lt;chr&gt;[39m[23m   [3m[90m&lt;dbl&gt;[39m[23m [3m[90m&lt;chr&gt;[39m[23m       [3m[90m&lt;dbl&gt;[39m[23m       [3m[90m&lt;dbl&gt;[39m[23m [3m[90m&lt;fct&gt;[39m[23m     
+[90m 1[39m 54531     1 2020-04-19 BL-Sho…  31.6 Mono…        0.9         0.1  University
+[90m 2[39m 54794     1 2020-04-15 BL-Sho…  29.3 Mono…        1           0    University
+[90m 3[39m 54828     1 2020-06-11 BL-Sho…  30.8 Mono…        1           0    University
+[90m 4[39m 54881     1 2020-06-03 BL-Sho…  29.2 Bili…        0.5         0.5  Complemen…
+[90m 5[39m 54939     1 2020-05-08 BL-Sho…  28.9 Bili…        0.2         0.7  University
+[90m 6[39m 54966     1 2020-05-16 BL-Sho…  29.0 Mono…        0           0.8  Vocational
+[90m 7[39m 54974     1 2020-05-23 BL-Sho…  29.2 Bili…        0.4         0.6  Vocational
+[90m 8[39m 54978     1 2020-05-18 BL-Sho…  29.0 Mono…        0.1         0.9  University
+[90m 9[39m 55011     1 2020-05-18 BL-Sho…  28.5 Mono…        0.2         0.8  Vocational
+[90m10[39m 55027     1 2020-04-13 BL-Sho…  27.1 Bili…        0.6         0.3  University
+[90m11[39m 55056     1 2020-05-08 BL-Sho…  28.0 Mono…        0.1         0.8  University
+[90m12[39m 55062     1 2020-04-15 BL-Sho…  26.9 Mono…        0.15        0.85 Vocational
+[90m13[39m 55063     1 2020-05-26 BL-Sho…  28.3 Bili…        0.5         0.5  [31mNA[39m        
+[90m14[39m 55064     1 2020-05-26 BL-Sho…  28.3 Bili…        0.6         0.3  University
+[90m15[39m 55080     1 2020-06-01 BL-Sho…  28.5 Mono…        0.8         0.2  University</code></pre>
 </div>
 </div>
 <ul>
@@ -405,31 +414,30 @@ $ edu_parent  [3m[90m&lt;fct&gt;[39m[23m University, University, University,
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>responses <span class="sc">|&gt;</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">15</span>) <span class="sc">|&gt;</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Rows: 15
-Columns: 19
-$ id           [3m[90m&lt;chr&gt;[39m[23m "54531", "54531", "54531", "54531", "54531", "54531", "54…
-$ time         [3m[90m&lt;int&gt;[39m[23m 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-$ age          [3m[90m&lt;dbl&gt;[39m[23m 31.6386, 31.6386, 31.6386, 31.6386, 31.6386, 31.6386, 31.…
-$ age_std      [3m[90m&lt;dbl&gt;[39m[23m 1.942148, 1.942148, 1.942148, 1.942148, 1.942148, 1.94214…
-$ te           [3m[90m&lt;int&gt;[39m[23m 115, 115, 148, 148, 153, 153, 159, 159, 160, 160, 161, 16…
-$ language     [3m[90m&lt;chr&gt;[39m[23m "Catalan", "Spanish", "Catalan", "Spanish", "Catalan", "S…
-$ meaning      [3m[90m&lt;chr&gt;[39m[23m "witch", "witch", "bee", "bee", "owl", "owl", "snail", "s…
-$ item         [3m[90m&lt;chr&gt;[39m[23m "bruixa", "bruja", "abella", "abeja", "mussol", "buho", "…
-$ response     [3m[90m&lt;ord&gt;[39m[23m Understands and Says, Understands, Understands and Says, …
-$ lv           [3m[90m&lt;dbl&gt;[39m[23m 0.6000000, 0.6000000, 0.2000000, 0.2000000, 0.2000000, 0.…
-$ lv_std       [3m[90m&lt;dbl&gt;[39m[23m 0.9700234, 0.9700234, -0.5893891, -0.5893891, -0.5893891,…
-$ freq         [3m[90m&lt;dbl&gt;[39m[23m 6.233203, 6.233203, 6.087128, 6.087128, 5.945728, 5.94572…
-$ freq_std     [3m[90m&lt;dbl&gt;[39m[23m 1.0995509, 1.0995509, 0.3145191, 0.3145191, -0.4453853, -…
-$ n_phon       [3m[90m&lt;int&gt;[39m[23m 5, 5, 5, 5, 5, 3, 6, 7, 5, 5, 4, 5, 6, 6, 3
-$ n_phon_std   [3m[90m&lt;dbl&gt;[39m[23m -0.2158285, -0.2158285, -0.2158285, -0.2158285, -0.215828…
-$ doe          [3m[90m&lt;dbl&gt;[39m[23m 0.9, 0.1, 0.9, 0.1, 0.9, 0.1, 0.9, 0.1, 0.9, 0.1, 0.9, 0.…
-$ doe_std      [3m[90m&lt;dbl&gt;[39m[23m 1.362610, -1.307451, 1.362610, -1.307451, 1.362610, -1.30…
-$ exposure     [3m[90m&lt;dbl&gt;[39m[23m 5.6098826, 0.6233203, 5.4784148, 0.6087128, 5.3511551, 0.…
-$ exposure_std [3m[90m&lt;dbl&gt;[39m[23m 1.462264, -1.293936, 1.389599, -1.302010, 1.319259, -1.30…</code></pre>
+<pre><code>[90m# A tibble: 15 × 19[39m
+   id     time   age age_std    te language meaning item   response    lv lv_std
+   [3m[90m&lt;chr&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;dbl&gt;[39m[23m   [3m[90m&lt;dbl&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;chr&gt;[39m[23m    [3m[90m&lt;chr&gt;[39m[23m   [3m[90m&lt;chr&gt;[39m[23m  [3m[90m&lt;ord&gt;[39m[23m    [3m[90m&lt;dbl&gt;[39m[23m  [3m[90m&lt;dbl&gt;[39m[23m
+[90m 1[39m 54531     1  31.6    1.94   115 Catalan  witch   bruixa Underst… 0.6    0.970
+[90m 2[39m 54531     1  31.6    1.94   115 Spanish  witch   bruja  Underst… 0.6    0.970
+[90m 3[39m 54531     1  31.6    1.94   148 Catalan  bee     abella Underst… 0.2   -[31m0[39m[31m.[39m[31m589[39m
+[90m 4[39m 54531     1  31.6    1.94   148 Spanish  bee     abeja  No       0.2   -[31m0[39m[31m.[39m[31m589[39m
+[90m 5[39m 54531     1  31.6    1.94   153 Catalan  owl     mussol Underst… 0.2   -[31m0[39m[31m.[39m[31m589[39m
+[90m 6[39m 54531     1  31.6    1.94   153 Spanish  owl     buho   No       0.2   -[31m0[39m[31m.[39m[31m589[39m
+[90m 7[39m 54531     1  31.6    1.94   159 Catalan  snail   cargol Underst… 0.286 -[31m0[39m[31m.[39m[31m255[39m
+[90m 8[39m 54531     1  31.6    1.94   159 Spanish  snail   carac… Underst… 0.286 -[31m0[39m[31m.[39m[31m255[39m
+[90m 9[39m 54531     1  31.6    1.94   160 Catalan  zebra   zebra  Underst… 0.6    0.970
+[90m10[39m 54531     1  31.6    1.94   160 Spanish  zebra   cebra  No       0.6    0.970
+[90m11[39m 54531     1  31.6    1.94   161 Catalan  pig     porc   Underst… 0     -[31m1[39m[31m.[39m[31m37[39m 
+[90m12[39m 54531     1  31.6    1.94   161 Spanish  pig     cerdo  No       0     -[31m1[39m[31m.[39m[31m37[39m 
+[90m13[39m 54531     1  31.6    1.94   172 Catalan  chicken galli… Underst… 0.667  1.23 
+[90m14[39m 54531     1  31.6    1.94   172 Spanish  chicken galli… Underst… 0.667  1.23 
+[90m15[39m 54531     1  31.6    1.94   173 Catalan  cat     gat    Underst… 0.75   1.55 
+[90m# ℹ 8 more variables: freq &lt;dbl&gt;, freq_std &lt;dbl&gt;, n_phon &lt;int&gt;,[39m
+[90m#   n_phon_std &lt;dbl&gt;, doe &lt;dbl&gt;, doe_std &lt;dbl&gt;, exposure &lt;dbl&gt;,[39m
+[90m#   exposure_std &lt;dbl&gt;[39m</code></pre>
 </div>
 </div>
 <ul>
