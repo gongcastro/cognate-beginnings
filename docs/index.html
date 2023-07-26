@@ -6,8 +6,13 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Gonzalo Garcia-Castro">
+<meta name="author" content="Daniela S. Avila-Varela">
+<meta name="author" content="Ignacio Castillejo">
+<meta name="author" content="Nuria Sebastian-Galles">
+<meta name="keywords" content="lexical acquisition, vocabulary, bilingualism, item response theory, bayesian">
 
-<title>index</title>
+<title>Cognate beginnings to bilingual lexical acquisition</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -71,16 +76,97 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </head>
 
-<body class="fullcontent">
+<body>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#abstract" id="toc-abstract" class="nav-link active" data-scroll-target="#abstract">Abstract</a></li>
+  <li><a href="#acknowledgements" id="toc-acknowledgements" class="nav-link" data-scroll-target="#acknowledgements">Acknowledgements</a></li>
+  <li><a href="#reproducing-this-repository" id="toc-reproducing-this-repository" class="nav-link" data-scroll-target="#reproducing-this-repository">Reproducing this repository</a>
+  <ul class="collapse">
+  <li><a href="#docker-image" id="toc-docker-image" class="nav-link" data-scroll-target="#docker-image">Docker image 🐋</a></li>
+  <li><a href="#clone-the-repository-and-run-the-scripts" id="toc-clone-the-repository-and-run-the-scripts" class="nav-link" data-scroll-target="#clone-the-repository-and-run-the-scripts">Clone the repository and run the scripts</a></li>
+  <li><a href="#download-this-repository" id="toc-download-this-repository" class="nav-link" data-scroll-target="#download-this-repository">0. Download this repository ⬇️</a></li>
+  <li><a href="#install-software-dependencies" id="toc-install-software-dependencies" class="nav-link" data-scroll-target="#install-software-dependencies">1. Install software dependencies 💻</a></li>
+  <li><a href="#install-package-dependencies-with-renv" id="toc-install-package-dependencies-with-renv" class="nav-link" data-scroll-target="#install-package-dependencies-with-renv">2. Install package dependencies with renv 📦</a></li>
+  <li><a href="#running-the-code-with-targets-rocket" id="toc-running-the-code-with-targets-rocket" class="nav-link" data-scroll-target="#running-the-code-with-targets-rocket">3. Running the code with targets :rocket:</a></li>
+  <li><a href="#repository-structure-and-files" id="toc-repository-structure-and-files" class="nav-link" data-scroll-target="#repository-structure-and-files">4. Repository structure and files 📂</a></li>
+  </ul></li>
+  <li><a href="#data-dictionaries" id="toc-data-dictionaries" class="nav-link" data-scroll-target="#data-dictionaries">Data dictionaries</a></li>
+  <li><a href="#session-info" id="toc-session-info" class="nav-link" data-scroll-target="#session-info">Session info</a></li>
+  </ul>
+</nav>
+</div>
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Cognate beginnings to bilingual lexical acquisition</h1>
+<p class="subtitle lead">Lab notes</p>
+</div>
 
 
-<section id="cognate-beginnings-to-bilingual-lexical-acquisition" class="level1">
-<h1>Cognate beginnings to bilingual lexical acquisition</h1>
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Authors</div>
+  <div class="quarto-title-meta-heading">Affiliations</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Gonzalo Garcia-Castro <a href="https://orcid.org/0000-0002-8553-4209" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+  </div>
+    <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Universitat Pompeu Fabra
+          </p>
+      </div>
+      <div class="quarto-title-meta-contents">
+    <p class="author">Daniela S. Avila-Varela <a href="https://orcid.org/0000-0002-3518-8117" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+  </div>
+    <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Universitat Pompeu Fabra
+          </p>
+        <p class="affiliation">
+            Universidade de Lisboa
+          </p>
+      </div>
+      <div class="quarto-title-meta-contents">
+    <p class="author">Ignacio Castillejo <a href="https://orcid.org/0000-0001-7445-0416" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+  </div>
+    <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Universidad Autónoma de Madrid
+          </p>
+      </div>
+      <div class="quarto-title-meta-contents">
+    <p class="author">Nuria Sebastian-Galles <a href="https://orcid.org/0000-0001-6938-2498" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+  </div>
+    <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Universitat Pompeu Fabra
+          </p>
+      </div>
+    </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">Invalid Date</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -102,10 +188,9 @@ Tip
 <h2 class="anchored" data-anchor-id="acknowledgements">Acknowledgements</h2>
 <p>The authors declare no conflicts of interest with regard to the funding source of this study. GGC was supported by a FPI 2020 research contract (PRE2019-088165) in a project funded by the Spanish Ministry of Science, Innovation, and Universities (PGC2018-101831-B-I00). DAV was supported by the European Union’s Horizon 2023 research and innovation program under Marie Skłodowska–Curie Grant (765556) and a postdoctoral fellowship from the Foundation for Science and Technology of Portugal (UIDB/00214/2020). IC was supported by the Investigo program funded by the European Union’s NextGenerationEU (NGEU) recovery plan. NSG was supported by Academia 2019 award from the Catalan Institution for Research and Advanced Studies (ICREA). We are grateful to Chiara Santolin, Ege E. Özer, and the rest of the Speech Acquisition and Perception research group, and to Alicia Franco-Martínez and Cristina Rodríguez-Prada, for their helpful feedback. We thank Xavier Mayoral, Silvia Blanch, and Cristina Cuadrado for their technical support, and Cristina Dominguez and Katia Pistrin for their efforts in recruiting infants. We also thank all families and infants who participated in the experiments.</p>
 </section>
-</section>
 <section id="reproducing-this-repository" class="level1">
 <h1>Reproducing this repository</h1>
-<p>We recommend two ways of reproducing or inspecting the code of this repository. One option is to clone the Docker image we have pused to Dockerhub. A Docker image is just a virtual machine that contains all dependencies, code, and files necessary to run the code. Everything is already installed and setup, you will only have to open https://localhost:8787 in your browser, and a RStudio session will open for you. This option is more robust (dependencies are difficult to get right when using your own computer), but it also requires Docker to be installed.</p>
+<p>We recommend two ways of reproducing or inspecting the code of this repository. One option is to clone the Docker image we have pused to Dockerhub. A Docker image is just a virtual machine that contains all dependencies, code, and files necessary to run the code. Everything is already installed and setup, you will only have to open <a href="https://localhost:8787">https://localhost:8787</a> in your browser, and a RStudio session will open for you. This option is more robust (dependencies are difficult to get right when using your own computer), but it also requires Docker to be installed.</p>
 <p>A second option is the more traditional approach of downloading the repository (or cloning it, if you know your way through Git/GitHub), installing the necessary dependencies (we recommend using renv for R dependencies, other system dependencies are listed below), and running the code (we recommend using the targets workflow).</p>
 <section id="docker-image" class="level2">
 <h2 class="anchored" data-anchor-id="docker-image">Docker image 🐋</h2>
@@ -123,7 +208,7 @@ Tip
 <li>Using the Docker CLI:</li>
 </ol>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-ti</span> <span class="at">-e</span> ROOT=true <span class="at">-e</span> PASSWORD=rstudio <span class="at">-p</span> 8787:8787 <span class="at">--name</span> rstudio gongcastro/cognate-beginnings:latest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
-<li>Open https://localhost:8787 in your browser. Log in using <code>rstudio</code> as users, and <code>rstudio</code> as password. An RStudio session should open, with all files, code and dependencies installed and ready. Check <code>targets::tar_visnetwork()</code> to examine the targets workflow. This will list the objects created by the R code, and how they relate to each other. To retrieve and explore a given object, run <code>targets::tar_load(target_name)</code>, where <code>target_name</code> is the name of the rarget you want to explore.</li>
+<li>Open <a href="https://localhost:8787">https://localhost:8787</a> in your browser. Log in using <code>rstudio</code> as users, and <code>rstudio</code> as password. An RStudio session should open, with all files, code and dependencies installed and ready. Check <code>targets::tar_visnetwork()</code> to examine the targets workflow. This will list the objects created by the R code, and how they relate to each other. To retrieve and explore a given object, run <code>targets::tar_load(target_name)</code>, where <code>target_name</code> is the name of the rarget you want to explore.</li>
 </ol>
 <blockquote class="blockquote">
 <p>💡 The RStudio session opened by Docker does not have root permissions (you will not be able to run <code>targets::tar_make()</code> to run the code from the R console). Instead, open the “Terminal” tab, and run <code>sudo Rscript -e "targets::tar_make()"</code>. The targets workflow should now be triggered.</p>
@@ -230,20 +315,18 @@ Tip
 </section>
 <section id="data-dictionaries" class="level1">
 <h1>Data dictionaries</h1>
-<p>::: {.callout-info}</p>
+<div class="tabset-panel">
 <section id="items" class="level2">
 <h2 class="anchored" data-anchor-id="items">Items</h2>
 <p>This data frame contains information about the word-forms included in the questionnaire, together with some identifiers used to relate participants’ responses to the information of the word-forms they responded to.</p>
-<div>
+<div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>items <span class="sc">|&gt;</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">15</span>) <span class="sc">|&gt;</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div id="tbl-items" class="cell tbl-parent quarto-layout-panel anchored">
-<div class="panel-caption table-caption">
-<p><strong>?(caption)</strong></p>
-</div>
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
+</details>
+<div class="cell-output cell-output-stdout">
 <pre><code>Rows: 15
 Columns: 13
 $ te        [3m[90m&lt;int&gt;[39m[23m 115, 115, 148, 148, 149, 149, 150, 150, 153, 153, 154, 154, …
@@ -259,8 +342,6 @@ $ syll      [3m[90m&lt;list&gt;[39m[23m &lt;"b4u", "S@"&gt;, &lt;"b4u", "xa"
 $ freq      [3m[90m&lt;dbl&gt;[39m[23m 6.233203, 6.233203, 6.087128, 6.087128, 5.902990, 5.902990, …
 $ freq_syll [3m[90m&lt;dbl&gt;[39m[23m 12.998987, 13.400107, 20.479740, 21.360357, 17.708969, 27.6…
 $ list      [3m[90m&lt;list&gt;[39m[23m &lt;"A", "B", "C", "D"&gt;, &lt;"A", "B", "C", "D"&gt;, &lt;"A", "B", "C", …</code></pre>
-</div>
-</div>
 </div>
 </div>
 <ul>
@@ -282,16 +363,14 @@ $ list      [3m[90m&lt;list&gt;[39m[23m &lt;"A", "B", "C", "D"&gt;, &lt;"A",
 <section id="participants" class="level2">
 <h2 class="anchored" data-anchor-id="participants">Participants</h2>
 <p>This data frame contains demographic and linguistic information about participants participants, together with some identifiers used to relate participants’ responses to their corresponding information.</p>
-<div>
+<div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>participants <span class="sc">|&gt;</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">15</span>) <span class="sc">|&gt;</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div id="tbl-participants" class="cell tbl-parent quarto-layout-panel anchored">
-<div class="panel-caption table-caption">
-<p><strong>?(caption)</strong></p>
-</div>
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
+</details>
+<div class="cell-output cell-output-stdout">
 <pre><code>Rows: 15
 Columns: 9
 $ id          [3m[90m&lt;chr&gt;[39m[23m "54531", "54794", "54828", "54881", "54939", "54966", "549…
@@ -303,8 +382,6 @@ $ lp          [3m[90m&lt;chr&gt;[39m[23m "Monolingual", "Monolingual", "Mono
 $ doe_catalan [3m[90m&lt;dbl&gt;[39m[23m 0.90, 1.00, 1.00, 0.50, 0.20, 0.00, 0.40, 0.10, 0.20, 0.60…
 $ doe_spanish [3m[90m&lt;dbl&gt;[39m[23m 0.10, 0.00, 0.00, 0.50, 0.70, 0.80, 0.60, 0.90, 0.80, 0.30…
 $ edu_parent  [3m[90m&lt;fct&gt;[39m[23m University, University, University, Complementary, Univers…</code></pre>
-</div>
-</div>
 </div>
 </div>
 <ul>
@@ -322,16 +399,14 @@ $ edu_parent  [3m[90m&lt;fct&gt;[39m[23m University, University, University,
 <section id="responses" class="level2">
 <h2 class="anchored" data-anchor-id="responses">Responses</h2>
 <p>This data frame is the one used to fit the main model, and the model included in Appendix A. It contains participants’ responses to each item included in the sub-list of the questionnaire they responded to, together with participant- and word-level predictors of interest.</p>
-<div>
+<div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>responses <span class="sc">|&gt;</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">15</span>) <span class="sc">|&gt;</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div id="tbl-responses" class="cell tbl-parent quarto-layout-panel anchored">
-<div class="panel-caption table-caption">
-<p><strong>?(caption)</strong></p>
-</div>
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
+</details>
+<div class="cell-output cell-output-stdout">
 <pre><code>Rows: 15
 Columns: 19
 $ id           [3m[90m&lt;chr&gt;[39m[23m "54531", "54531", "54531", "54531", "54531", "54531", "54…
@@ -353,8 +428,6 @@ $ doe          [3m[90m&lt;dbl&gt;[39m[23m 0.9, 0.1, 0.9, 0.1, 0.9, 0.1, 0.9,
 $ doe_std      [3m[90m&lt;dbl&gt;[39m[23m 1.362610, -1.307451, 1.362610, -1.307451, 1.362610, -1.30…
 $ exposure     [3m[90m&lt;dbl&gt;[39m[23m 5.6098826, 0.6233203, 5.4784148, 0.6087128, 5.3511551, 0.…
 $ exposure_std [3m[90m&lt;dbl&gt;[39m[23m 1.462264, -1.293936, 1.389599, -1.302010, 1.319259, -1.30…</code></pre>
-</div>
-</div>
 </div>
 </div>
 <ul>
@@ -379,11 +452,15 @@ $ exposure_std [3m[90m&lt;dbl&gt;[39m[23m 1.462264, -1.293936, 1.389599, -1.
 <li><code>doe_std</code>: numeric value indicating the participant’s standardised <code>exposure</code> score for the <code>item</code> and its <code>freq</code> (see the Methods section in the main Manuscript for more details)</li>
 </ul>
 </section>
+</div>
 </section>
 <section id="session-info" class="level1">
 <h1>Session info</h1>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>R version 4.2.2 (2022-10-31 ucrt)
 Platform: x86_64-w64-mingw32/x64 (64-bit)

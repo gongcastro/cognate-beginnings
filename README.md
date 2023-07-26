@@ -1,6 +1,6 @@
 # Reproducing this repository
 
-We recommend two ways of reproducing or inspecting the code of this repository. One option is to clone the Docker image we have pused to Dockerhub. A Docker image is just a virtual machine that contains all dependencies, code, and files necessary to run the code. Everything is already installed and setup, you will only have to open https://localhost:8787 in your browser, and a RStudio session will open for you. This option is more robust (dependencies are difficult to get right when using your own computer), but it also requires Docker to be installed.
+We recommend two ways of reproducing or inspecting the code of this repository. One option is to clone the Docker image we have pused to Dockerhub. A Docker image is just a virtual machine that contains all dependencies, code, and files necessary to run the code. Everything is already installed and setup, you will only have to open [https://localhost:8787](https://localhost:8787) in your browser, and a RStudio session will open for you. This option is more robust (dependencies are difficult to get right when using your own computer), but it also requires Docker to be installed.
 
 A second option is the more traditional approach of downloading the repository (or cloning it, if you know your way through Git/GitHub), installing the necessary dependencies (we recommend using renv for R dependencies, other system dependencies are listed below), and running the code (we recommend using the targets workflow).
 
@@ -20,7 +20,7 @@ A second option is the more traditional approach of downloading the repository (
     docker run --rm -ti -e ROOT=true -e PASSWORD=rstudio -p 8787:8787 --name rstudio gongcastro/cognate-beginnings:latest
     ```
 
-4. Open https://localhost:8787 in your browser. Log in using `rstudio` as users, and `rstudio` as password. An RStudio session should open, with all files, code and dependencies installed and ready. Check `targets::tar_visnetwork()` to examine the targets workflow. This will list the objects created by the R code, and how they relate to each other. To retrieve and explore a given object, run `targets::tar_load(target_name)`, where `target_name` is the name of the rarget you want to explore.
+4. Open [https://localhost:8787](https://localhost:8787) in your browser. Log in using `rstudio` as users, and `rstudio` as password. An RStudio session should open, with all files, code and dependencies installed and ready. Check `targets::tar_visnetwork()` to examine the targets workflow. This will list the objects created by the R code, and how they relate to each other. To retrieve and explore a given object, run `targets::tar_load(target_name)`, where `target_name` is the name of the rarget you want to explore.
 
 > 💡 The RStudio session opened by Docker does not have root permissions (you will not be able to run `targets::tar_make()` to run the code from the R console). Instead, open the "Terminal" tab, and run `sudo Rscript -e "targets::tar_make()"`. The targets workflow should now be triggered.
 
