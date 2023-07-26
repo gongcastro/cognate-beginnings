@@ -3,8 +3,10 @@
 #| message: false
 #| warning: false
 # load objects -----------------------------------------------------------------
-targets::tar_config_set(store = here::here("_targets"),
-                        script = here::here("_targets.R"))
+targets::tar_config_set(
+    store = here::here("_targets"),
+    script = here::here("_targets.R")
+)
 
 yaml_metadata <- rmarkdown::yaml_front_matter(
     here::here("manuscript", "manuscript.qmd")
@@ -13,6 +15,15 @@ yaml_metadata <- rmarkdown::yaml_front_matter(
 title <- yaml_metadata$title
 abstract <- yaml_metadata$abstract
 thanks <- yaml_metadata$thanks
+
+targets::tar_load(items)
+targets::tar_load(participants)
+targets::tar_load(responses)
+
+library(dplyr)
+library(tidyr)
+library(knitr)
+
 ```
 
 ::: callout-tip
@@ -35,8 +46,6 @@ Data and materials are available at [OSF](https://osf.io/hy984/), and code is av
 
 # Data dictionaries
 
-
-
 ::: {.callout-info}
 
 ## Items
@@ -45,8 +54,8 @@ This data frame contains information about the word-forms included in the questi
 
 
 ```{r tbl-items}
-items |> 
-    head(15) |> 
+items |>
+    head(15) |>
     glimpse()
 ```
 
@@ -71,8 +80,8 @@ This data frame contains demographic and linguistic information about participan
 
 
 ```{r tbl-participants}
-participants |> 
-    head(15) |> 
+participants |>
+    head(15) |>
     glimpse()
 ```
 
@@ -90,10 +99,9 @@ participants |>
 
 This data frame is the one used to fit the main model, and the model included in Appendix A. It contains participants' responses to each item included in the sub-list of the questionnaire they responded to, together with participant- and word-level predictors of interest. 
 
-
 ```{r tbl-responses}
-responses |> 
-    head(15) |> 
+responses |>
+    head(15) |>
     glimpse()
 ```
 
