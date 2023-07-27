@@ -1,6 +1,5 @@
 # Cognate beginnings to bilingual lexical acquisition
 
-
 | Link                                                             | Contents                                                       |
 |------------------------------------------------------------------|----------------------------------------------------------------|
 | [Website](https://gongcastro.github.io/cognate.beginnings)       | Instructions for reproducibility, data dictionaries, lab notes |
