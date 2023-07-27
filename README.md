@@ -10,13 +10,13 @@ Nuria Sebastian-Galles • Universitat Pompeu Fabra
 
 -------------------------------------------------
 
-| Link                   | Contents                                                       |
-|------------------------|----------------------------------------------------------------|
-| Website                | Instructions for reproducibility, data dictionaries, lab notes |
-| ArXiv                  | Preprint and figures                                           |
-| GitHub                 | Code, preprint and figures                                     |
-| Open Science Framework | Code, preprint, and results (model outputs)                    |
-| Docker                 | Docker image with reproducible RStudio session                 |
+| Link                                                             | Contents                                                       |
+|------------------------------------------------------------------|----------------------------------------------------------------|
+| [Website](gongcastro.github.io/cognate.beginnings)               | Instructions for reproducibility, data dictionaries, lab notes |
+| ArXiv                                                            | Preprint and figures                                           |
+| [GitHub](github.com/gongcastro/cognate.beginnings)               | Code, preprint and figures                                     |
+| [Open Science Framework](https://osf.io/hy984/)                  | Code, preprint, and results (model outputs)                    |
+| [Docker](https://hub.docker.com/r/gongcastro/cognate-beginnings) | Docker image with reproducible RStudio session                 |
 
 
 # Repository structure and files 📂
