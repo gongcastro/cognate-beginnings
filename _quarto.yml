@@ -33,8 +33,6 @@ website:
     left:
       - text: "Home"
         file: index.qmd
-      - text: "Repository"
-        file: docs/_repo-structure.qmd
       - text: "Reproducibility"
         file: docs/_repro.qmd
       - text: "Data"
