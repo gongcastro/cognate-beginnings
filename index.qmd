@@ -1,7 +1,4 @@
 ---
-title: "Cognate beginnings to bilingual lexical acquisition"
-subtitle: "Lab notes"
-short-title: "Cognate beginnings"
 author:
   - name: Gonzalo Garcia-Castro
     corresponding: true
