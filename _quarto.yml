@@ -10,6 +10,7 @@ project:
     navigate: true
   
   render: 
+    - index.qmd
     - docs/_repo-structure.qmd
     - docs/_repro.qmd
     - docs/_repro-docker.qmd
