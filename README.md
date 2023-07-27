@@ -1,10 +1,5 @@
 # Cognate beginnings to bilingual lexical acquisition
 
-<!-- badges: start -->
-![Website](https://gongcastro.github.io/cognate-beginnings)
-
-<!-- badges: end -->
-
 Gonzalo Garcia-Castro [:bird:](https://twitter.com/gongcastro) [:elephant:](https://fediscience.org/@gongcastro) • Universitat Pompeu Fabra
 
 Daniela S. Avila Varela • Universidade de Lisboa
