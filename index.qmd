@@ -40,7 +40,6 @@ author:
     orcid: 0000-0001-6938-2498
     affiliations: 
       - ref: cbc
-code-repo: "Access the code, data, and analysis at <https://github.com/gongcastro/trajectories>"
 keywords:
   - lexical acquisition
   - vocabulary
@@ -55,10 +54,6 @@ format:
   html:
     theme: _assets/style.scss
     page-layout: article
-    links:
-      - icon: github
-          text: Github
-          href: https://github.com/gongcastro/cognate-beginnings
     code-fold: true
     smooth-scroll: true
 toc: true
@@ -95,9 +90,26 @@ library(knitr)
 
 ```
 
-::: callout-tip
-Data and materials are available at [OSF](https://osf.io/hy984/), and code is available at [GitHub](https://github.com/gongcastro/trajectories), and [Docker](https://hub.docker.com/r/gongcastro/cognate-beginnings).
-:::
+
+# Cognate beginnings to bilingual lexical acquisition
+
+Gonzalo Garcia-Castro [:bird:](https://twitter.com/gongcastro) [:elephant:](https://fediscience.org/@gongcastro) • Universitat Pompeu Fabra
+
+Daniela S. Avila Varela • Universidade de Lisboa
+
+Ignacio Castillejo [:bird:](https://twitter.com/IndaloNacho) • Universidad Autónoma de Madrid
+
+Nuria Sebastian-Galles • Universitat Pompeu Fabra
+
+-------------------------------------------------
+
+| Link                                                             | Contents                                                       |
+|------------------------------------------------------------------|----------------------------------------------------------------|
+| [Website](https://gongcastro.github.io/cognate.beginnings)       | Instructions for reproducibility, data dictionaries, lab notes |
+| PsyArxiv                                                         | Preprint and figures                                           |
+| [GitHub](https://github.com/gongcastro/cognate.beginnings)       | Code, preprint and figures                                     |
+| [Open Science Framework](https://osf.io/hy984/)                  | Code, preprint, and results (model outputs)                    |
+| [Docker](https://hub.docker.com/r/gongcastro/cognate-beginnings) | Docker image with reproducible RStudio session                 |
 
 ## Abstract
 
@@ -107,7 +119,7 @@ Data and materials are available at [OSF](https://osf.io/hy984/), and code is av
 
 `r thanks`
 
-{{< include ../README.md >}}
+
 
 
 
