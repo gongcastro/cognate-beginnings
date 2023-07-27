@@ -3,10 +3,13 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-Gonzalo Garcia-Castro • Universitat Pompeu Fabra
+-------------------------------------------------
+
+Gonzalo Garcia-Castro [:bird:](https://twitter.com/gongcastro) [:elephant:](https://fediscience.org/@gongcastro) • Universitat Pompeu Fabra
 Daniela S. Avila Varela • Universidade de Lisboa
-Ignacio Castillejo • Universidad Autónoma de Madrid
+Ignacio Castillejo [:bird:](https://twitter.com/IndaloNacho) • Universidad Autónoma de Madrid
 Nuria Sebastian-Galles • Universitat Pompeu Fabra
+
 -------------------------------------------------
 
 | Link                   | Contents                                                       |
