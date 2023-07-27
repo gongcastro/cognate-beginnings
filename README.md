@@ -1,11 +1,13 @@
 # Cognate beginnings to bilingual lexical acquisition
 
+<!-- badges: start -->
+<!-- badges: end -->
 
-Gonzalo Garcia-Castro · Universitat Pompeu Fabra
-Daniela S. Avila Varela · Universidade de Lisboa
-Ignacio Castillejo · Universidad Autónoma de Madrid
-Nuria Sebastian-Galles · Universitat Pompeu Fabra
----
+Gonzalo Garcia-Castro • Universitat Pompeu Fabra
+Daniela S. Avila Varela • Universidade de Lisboa
+Ignacio Castillejo • Universidad Autónoma de Madrid
+Nuria Sebastian-Galles • Universitat Pompeu Fabra
+-------------------------------------------------
 
 | Link                   | Contents                                                       |
 |------------------------|----------------------------------------------------------------|
@@ -14,7 +16,6 @@ Nuria Sebastian-Galles · Universitat Pompeu Fabra
 | GitHub                 | Code, preprint and figures                                     |
 | Open Science Framework | Code, preprint, and results (model outputs)                    |
 | Docker                 | Docker image with reproducible RStudio session                 |
-
 
 
 # Repository structure and files 📂
@@ -51,7 +52,7 @@ This repository is organised as follows:
 -   **renv**: internal settings to ensure reproducibility of the
     computing environment.
 -   **results**: model outputs. You will need to run the code to
-    generate the files that will be contained in this directoty.)
+    generate the files that will be contained in this directoty.
     -   fits: RDS files with the brmsfit of the Bayesian models
     -   posterior: CSV files with the posterior draws of the
         population-level and group-level coefficients
