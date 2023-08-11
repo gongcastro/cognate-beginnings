@@ -11,6 +11,8 @@ format:
       text: |
         \usepackage{tipa}
         \usepackage{booktabs}
+        \hyphenpenalty=100000
+        \exhyphenpenalty=100000
     knitr:
       opts_chunk:
         dev: "cairo_pdf"

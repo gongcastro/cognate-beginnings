@@ -205,7 +205,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <ol type="1">
 <li>Download and install Docker</li>
-<li>Pull the gongcastro/cognate-beginnings image. Two ways of doing this:
+<li>Pull the <a href="https://hub.docker.com/r/gongcastro/cognate-beginnings">gongcastro/cognate-beginnings image</a>. Two ways of doing this:
 <ol type="a">
 <li>Using the Docker UI: go the the “Images” tab, click on “Search images to run”, search for “gongcastro/cognate-beginnings”, and click “Pull”.</li>
 <li>Using the Docker CLI: open your console/terminal/command prompt, and run:</li>
@@ -213,11 +213,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull gongcastro/cognate-beginnings</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
 <li>Run the image in a Docker container. Two ways of doing this:
 <ol type="a">
-<li>Using the Docker UI: in the “Images” tab, look for the “gongcastro/cognate-beginnings” image and click “Run”.</li>
+<li>Using the Docker UI: in the “Images” tab, look for the <code>gongcastro/cognate-beginnings</code> image and click “Run”.</li>
 <li>Using the Docker CLI:</li>
 </ol>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-ti</span> <span class="at">-e</span> ROOT=true <span class="at">-e</span> PASSWORD=rstudio <span class="at">-p</span> 8787:8787 <span class="at">--name</span> rstudio gongcastro/cognate-beginnings:latest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
-<li>Open <a href="https://localhost:8787">https://localhost:8787</a> in your browser. Log in using <code>rstudio</code> as users, and <code>rstudio</code> as password. An RStudio session should open, with all files, code and dependencies installed and ready. Check <code>targets::tar_visnetwork()</code> to examine the targets workflow. This will list the objects created by the R code, and how they relate to each other. To retrieve and explore a given object, run <code>targets::tar_load(target_name)</code>, where <code>target_name</code> is the name of the rarget you want to explore.</li>
+<li>Open <a href="https://localhost:8787">https://localhost:8787</a> in your browser. Log in using <code>rstudio</code> as user, and <code>rstudio</code> as password. An RStudio session should open, with all files, code and dependencies installed and ready. To retrieve and explore a given object, run <code>targets::tar_load(target_name)</code>, where <code>target_name</code> is the name of the rarget you want to explore (e.g., <code>targets::tar_load(items)</code>).</li>
 </ol>
 <blockquote class="blockquote">
 <p>💡 The RStudio session opened by Docker does not have root permissions (you will not be able to run <code>targets::tar_make()</code> to run the code from the R console). Instead, open the “Terminal” tab, and run <code>sudo Rscript -e "targets::tar_make()"</code>. The targets workflow should now be triggered.</p>
@@ -529,20 +529,20 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Download and install Docker</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Pull the gongcastro/cognate-beginnings image. Two ways of doing this:</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Pull the <span class="co">[</span><span class="ot">gongcastro/cognate-beginnings image</span><span class="co">](https://hub.docker.com/r/gongcastro/cognate-beginnings)</span>. Two ways of doing this:</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    a) Using the Docker UI: go the the "Images" tab, click on "Search images to run", search for "gongcastro/cognate-beginnings", and click "Pull".</span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    b) Using the Docker CLI: open your console/terminal/command prompt, and run:</span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="in">```bash </span></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="ex">docker</span> pull gongcastro/cognate-beginnings</span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="in">```</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Run the image in a Docker container.  Two ways of doing this:</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    a) Using the Docker UI: in the "Images" tab, look for the "gongcastro/cognate-beginnings" image and click "Run".</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Run the image in a Docker container. Two ways of doing this:</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    a) Using the Docker UI: in the "Images" tab, look for the <span class="in">`gongcastro/cognate-beginnings`</span> image and click "Run".</span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    b) Using the Docker CLI:</span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="in">```bash </span></span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-ti</span> <span class="at">-e</span> ROOT=true <span class="at">-e</span> PASSWORD=rstudio <span class="at">-p</span> 8787:8787 <span class="at">--name</span> rstudio gongcastro/cognate-beginnings:latest</span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="in">```</span></span>
 <span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Open <span class="co">[</span><span class="ot">https://localhost:8787</span><span class="co">](https://localhost:8787)</span> in your browser. Log in using <span class="in">`rstudio`</span> as users, and <span class="in">`rstudio`</span> as password. An RStudio session should open, with all files, code and dependencies installed and ready. Check <span class="in">`targets::tar_visnetwork()`</span> to examine the targets workflow. This will list the objects created by the R code, and how they relate to each other. To retrieve and explore a given object, run <span class="in">`targets::tar_load(target_name)`</span>, where <span class="in">`target_name`</span> is the name of the rarget you want to explore.</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Open <span class="co">[</span><span class="ot">https://localhost:8787</span><span class="co">](https://localhost:8787)</span> in your browser. Log in using <span class="in">`rstudio`</span> as user, and <span class="in">`rstudio`</span> as password. An RStudio session should open, with all files, code and dependencies installed and ready. To retrieve and explore a given object, run <span class="in">`targets::tar_load(target_name)`</span>, where <span class="in">`target_name`</span> is the name of the rarget you want to explore (e.g., <span class="in">`targets::tar_load(items)`</span>).</span>
 <span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 💡 The RStudio session opened by Docker does not have root permissions (you will not be able to run </span><span class="in">`targets::tar_make()`</span><span class="at"> to run the code from the R console). Instead, open the "Terminal" tab, and run </span><span class="in">`sudo Rscript -e "targets::tar_make()"`</span><span class="at">. The targets workflow should now be triggered.</span></span>
 <span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>

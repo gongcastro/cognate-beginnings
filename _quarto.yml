@@ -46,8 +46,6 @@ website:
     - title: "Reproducibility"
       contents:
         - docs/_repro.qmd
-        - docs/_repro-docker.qmd
-        - docs/_repro-github.qmd 
         #- section: "Session info"
         #  contents:
         #    - docs/_session-info.qmd
