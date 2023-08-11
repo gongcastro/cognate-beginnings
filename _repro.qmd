@@ -10,20 +10,19 @@ A second option is the more traditional approach of downloading the repository (
 
 1. Download and install Docker ([Windows](https://docs.docker.com/desktop/install/windows-install/), [Mac](https://docs.docker.com/desktop/install/mac-install/), [Linux](https://docs.docker.com/desktop/install/linux-install/))
 2. Pull the [gongcastro/cognate-beginnings image](https://hub.docker.com/r/gongcastro/cognate-beginnings). Two ways of doing this:
-    a) Using the Docker Desktop app: go the "Images" tab, click on "Search images to run", search for "gongcastro/cognate-beginnings", and click "Pull".
+    a) Using the Docker CLI: open your console/terminal/command prompt, and run:
     ```bash 
     docker pull gongcastro/cognate-beginnings
     ```
-    b) Using the Docker CLI: open your console/terminal/command prompt, and run:
-
+    b) Using the Docker Desktop app: go the "Images" tab, click on "Search images to run", search for "gongcastro/cognate-beginnings", and click "Pull".
 3. Run the image in a Docker container. Two ways of doing this:
-    a) Using the Docker UI: in the "Images" tab, look for the `gongcastro/cognate-beginnings` image and click "Run".
+    a) Using the Docker Desktop app: in the "Images" tab, look for the `gongcastro/cognate-beginnings` image and click "Run".
     b) Using the Docker CLI:
     ```bash 
     docker run --rm -ti -e ROOT=true -e PASSWORD=rstudio -p 8787:8787 --name rstudio gongcastro/cognate-beginnings:latest
     ```
 
-4. Open [https://localhost:8787](https://localhost:8787) in your browser. Log in using `rstudio` as user, and `rstudio` as password. An RStudio session should open, with all files, code and dependencies installed and ready. To retrieve and explore a given object, run `targets::tar_load(target_name)`, where `target_name` is the name of the rarget you want to explore (e.g., `targets::tar_load(items)`).
+4. Open [http://localhost:8787](http://localhost:8787) in your browser. Log in using `rstudio` as user, and `rstudio` as password. An RStudio session should open, with all files, code and dependencies installed and ready. To retrieve and explore a given object, run `targets::tar_load(target_name)`, where `target_name` is the name of the rarget you want to explore (e.g., `targets::tar_load(items)`).
 
 > 💡 The RStudio session opened by Docker does not have root permissions (you will not be able to run `targets::tar_make()` to run the code from the R console). Instead, open the "Terminal" tab, and run `sudo Rscript -e "targets::tar_make()"`. The targets workflow should now be triggered.
 
