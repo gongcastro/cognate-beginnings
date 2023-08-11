@@ -5,7 +5,7 @@
 | [Website](https://gongcastro.github.io/cognate-beginnings)       | Instructions for reproducibility, data dictionaries, lab notes |
 | PsyArxiv                                                         | Preprint and figures                                           |
 | [GitHub](https://github.com/gongcastro/cognate-beginnings)       | Code, preprint and figures                                     |
-| [Open Science Framework](https://osf.io/hy984/)                  | Code, preprint, and results (model outputs)                    |
+| [OSF](https://osf.io/hy984/)                  | Code, preprint, and results (model outputs)                    |
 | [Docker](https://hub.docker.com/r/gongcastro/cognate-beginnings) | Docker image with reproducible RStudio session                 |
 
 
