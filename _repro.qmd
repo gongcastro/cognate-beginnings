@@ -8,13 +8,14 @@ A second option is the more traditional approach of downloading the repository (
 ### Docker {{< fa brands docker >}}
 ---
 
-1. Download and install Docker
+1. Download and install Docker ([Windows](https://docs.docker.com/desktop/install/windows-install/), [Mac](https://docs.docker.com/desktop/install/mac-install/), [Linux](https://docs.docker.com/desktop/install/linux-install/))
 2. Pull the [gongcastro/cognate-beginnings image](https://hub.docker.com/r/gongcastro/cognate-beginnings). Two ways of doing this:
-    a) Using the Docker UI: go the the "Images" tab, click on "Search images to run", search for "gongcastro/cognate-beginnings", and click "Pull".
-    b) Using the Docker CLI: open your console/terminal/command prompt, and run:
+    a) Using the Docker Desktop app: go the "Images" tab, click on "Search images to run", search for "gongcastro/cognate-beginnings", and click "Pull".
     ```bash 
     docker pull gongcastro/cognate-beginnings
     ```
+    b) Using the Docker CLI: open your console/terminal/command prompt, and run:
+
 3. Run the image in a Docker container. Two ways of doing this:
     a) Using the Docker UI: in the "Images" tab, look for the `gongcastro/cognate-beginnings` image and click "Run".
     b) Using the Docker CLI:
