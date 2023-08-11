@@ -13,9 +13,6 @@ project:
     - index.qmd
     - docs/_repo-structure.qmd
     - docs/_repro.qmd
-    - docs/_repro-docker.qmd
-    - docs/_repro-github.qmd
-    #- docs/_session-info.qmd
     - docs/_data-dictionary.qmd
 
 execute:
@@ -41,14 +38,6 @@ website:
       - icon: github
         aria-label: github
         href: https://github.com/gongcastro/cognate-beginnings
-
-  sidebar:
-    - title: "Reproducibility"
-      contents:
-        - docs/_repro.qmd
-        #- section: "Session info"
-        #  contents:
-        #    - docs/_session-info.qmd
 
   page-footer:
     right: |
