@@ -63,7 +63,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../docs/_repro-docker.html" rel="next">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -163,25 +162,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">—</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../docs/_repro-docker.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Docker <i class="fa-brands fa-docker" aria-label="docker"></i></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../docs/_repro-github.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">GitHub <i class="fa-brands fa-github" aria-label="github"></i></span></a>
-  </div>
-</li>
     </ul>
     </div>
 </nav>
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#docker-fa-brands-docker" id="toc-docker-fa-brands-docker" class="nav-link active" data-scroll-target="#docker-fa-brands-docker">Docker <i class="fa-brands fa-docker" aria-label="docker"></i></a></li>
+  <li><a href="#github-fa-brands-github" id="toc-github-fa-brands-github" class="nav-link" data-scroll-target="#github-fa-brands-github">GitHub <i class="fa-brands fa-github" aria-label="github"></i></a>
+  <ul>
+  <li><a href="#download-this-repository" id="toc-download-this-repository" class="nav-link" data-scroll-target="#download-this-repository">0. Download this repository ⬇️</a></li>
+  <li><a href="#install-software-dependencies" id="toc-install-software-dependencies" class="nav-link" data-scroll-target="#install-software-dependencies">1. Install software dependencies 💻</a></li>
+  <li><a href="#install-package-dependencies-with-renv" id="toc-install-package-dependencies-with-renv" class="nav-link" data-scroll-target="#install-package-dependencies-with-renv">2. Install package dependencies with renv 📦</a></li>
+  <li><a href="#running-the-code-with-targets" id="toc-running-the-code-with-targets" class="nav-link" data-scroll-target="#running-the-code-with-targets">3. Running the code with targets 🚀</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/gongcastro/cognate-beginnings/edit/main/docs/_repro.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/gongcastro/cognate-beginnings/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content"><div class="quarto-title-block"><div class="quarto-title-tools-only"><h1></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
@@ -190,10 +190,99 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <p>We recommend two ways of reproducing or inspecting the code of this repository. One option is to clone the <a href="https://hub.docker.com/r/gongcastro/cognate-beginnings">Docker image</a> we have pused to Dockerhub. A Docker image is just a virtual machine that contains all dependencies, code, and files necessary to run the code. Everything is already installed and setup, you will only have to open <a href="https://localhost:8787">https://localhost:8787</a> in your browser, and a RStudio session will open for you. This option is more robust (dependencies are difficult to get right when using your own computer), but it also requires Docker to be installed.</p>
 <p>A second option is the more traditional approach of downloading the repository (or cloning it, if you know your way through Git/GitHub), installing the necessary dependencies (we recommend using renv for R dependencies, other system dependencies are listed below), and running the code (we recommend using the targets workflow).</p>
+<section id="docker-fa-brands-docker" class="level4">
+<h4 class="anchored" data-anchor-id="docker-fa-brands-docker">Docker <i class="fa-brands fa-docker" aria-label="docker"></i></h4>
+<hr>
+<ol type="1">
+<li>Download and install Docker (<a href="https://docs.docker.com/desktop/install/windows-install/">Windows</a>, <a href="https://docs.docker.com/desktop/install/mac-install/">Mac</a>, <a href="https://docs.docker.com/desktop/install/linux-install/">Linux</a>)</li>
+<li>Pull the <a href="https://hub.docker.com/r/gongcastro/cognate-beginnings">gongcastro/cognate-beginnings image</a>. Two ways of doing this:
+<ol type="a">
+<li>Using the Docker CLI: open your console/terminal/command prompt, and run:</li>
+</ol>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull gongcastro/cognate-beginnings</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ol start="2" type="a">
+<li>Using the Docker Desktop app: go the “Images” tab, click on “Search images to run”, search for “gongcastro/cognate-beginnings”, and click “Pull”.</li>
+</ol></li>
+<li>Run the image in a Docker container. Two ways of doing this:
+<ol type="a">
+<li>Using the Docker Desktop app: in the “Images” tab, look for the <code>gongcastro/cognate-beginnings</code> image and click “Run”.</li>
+<li>Using the Docker CLI:</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-ti</span> <span class="at">-e</span> ROOT=true <span class="at">-e</span> PASSWORD=rstudio <span class="at">-p</span> 8787:8787 <span class="at">--name</span> rstudio gongcastro/cognate-beginnings:latest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li>Open <a href="http://localhost:8787">http://localhost:8787</a> in your browser. Log in using <code>rstudio</code> as user, and <code>rstudio</code> as password. An RStudio session should open, with all files, code and dependencies installed and ready. To retrieve and explore a given object, run <code>targets::tar_load(target_name)</code>, where <code>target_name</code> is the name of the rarget you want to explore (e.g., <code>targets::tar_load(items)</code>).</li>
+</ol>
+<blockquote class="blockquote">
+<p>💡 The RStudio session opened by Docker does not have root permissions (you will not be able to run <code>targets::tar_make()</code> to run the code from the R console). Instead, open the “Terminal” tab, and run <code>sudo Rscript -e "targets::tar_make()"</code>. The targets workflow should now be triggered.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>💡 The targets workflow is run to completion before your Rstudio session is open in Docker. This means that even if you trigger <code>targets::tar_make()</code>, virtually all targets will be skipped, as they are completed. If you want to run a specific target, delete it first (or any other target it depends on), and the targets workflow will be run, now generating all deleted targets again. Be aware that this might take some time, especially when fitting the models anew.</p>
+</blockquote>
+</section>
+<section id="github-fa-brands-github" class="level3">
+<h3 class="anchored" data-anchor-id="github-fa-brands-github">GitHub <i class="fa-brands fa-github" aria-label="github"></i></h3>
+<ol start="0" type="1">
+<li>Download this repository</li>
+<li>Install software dependencies</li>
+<li>Install package dependencies with renv</li>
+<li>Running the code with targets</li>
+<li>Repository structure and files</li>
+</ol>
+<section id="download-this-repository" class="level4">
+<h4 class="anchored" data-anchor-id="download-this-repository">0. Download this repository ⬇️</h4>
+<p>First, you will need to download this repository to your local machine. We suggest three different ways:</p>
+<ol type="a">
+<li><strong>Git terminal</strong>: download and install <a href="https://git-scm.com/downloads">Git</a> with default settings and clone this repository locally running the following command in your console:</li>
+</ol>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/gongcastro/cognate-beginnings.git</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<blockquote class="blockquote">
+<p>💡 You don’t need to run this command from the Git console. Just open Command Prompt or Power Shell in Windows (just make sure that Git is included in your <a href="https://www.delftstack.com/howto/git/add-git-to-path-on-windows/">PATH variables</a>, which should be already done after the recommended Git installation), Terminal in MacOS, or command line in Linux and run this command.</p>
+</blockquote>
+<ol start="2" type="a">
+<li><p><strong>GitHub releases</strong>: download the latest <a href="https://github.com/gongcastro/cognate-beginnings/releases">release</a> of the repository.</p></li>
+<li><p><strong>Direct download</strong>: click the <a href="https://github.com/gongcastro/cognate-beginnings/archive/refs/heads/main.zip">green button</a> “Code” in this page (upper-right corner), click “Download ZIP”, and unzipping the downloaded repository.</p></li>
+</ol>
+</section>
+<section id="install-software-dependencies" class="level4">
+<h4 class="anchored" data-anchor-id="install-software-dependencies">1. Install software dependencies 💻</h4>
+<p>Here’s a list of programs that you might need to install in your machine to make the project work:</p>
+<ul>
+<li><p><a href="https://www.r-project.org/">R</a> (4.2.2 or greater)</p></li>
+<li><p><a href="https://posit.co/download/rstudio-desktop/">RStudio</a>: although not strictly necessary, we encourage the use of Rstudio for reproducing the present project. We have not tested the reproducibility of the project in other IDEs.</p></li>
+<li><p><a href="https://quarto.org/docs/get-started/">Quarto</a> (1.3.340 or greater): we use this software to generate the manuscript and lab notes. We recommend installing version 1.3.340 or higher, although previous version might work as well.</p></li>
+<li><p><a href="https://cran.r-project.org/bin/windows/Rtools/">Rtools</a> (4.3 or greater).</p></li>
+<li><p><a href="https://mc-stan.org/users/interfaces/cmdstan">CmdStan</a> (2.31.0 or greater): we use the CmdStan backend in brms to fit our Bayesian models. We recommend installing CmdStan using its R interface <a href="https://mc-stan.org/cmdstanr/">CmdStanR</a> following the <a href="https://mc-stan.org/cmdstanr/articles/cmdstanr.html"><em>Getting started with CmdStanR</em></a> vignette. You can also install it following the <a href="https://mc-stan.org/users/interfaces/">CmdStan installation guide</a>, and then letting CmdStanR know the path to the folder using <code>cmdstanr::set_cmdstan_path()</code>.</p>
+<div>
+<blockquote class="blockquote">
+<p>💡 <strong>Installing CmdStan</strong> is sometimes inconvenient, and might require some time to set up, specially if it’s your first time doing so. Have patience and follow the CmdStan installation guide closely. If you encounter problems and just don’t have the time, you can download the models from the <a href="https://osf.io/hy984/">Open Science Framework repository</a> and skip the model-fitting steps.</p>
+</blockquote>
+</div></li>
+</ul>
+</section>
+<section id="install-package-dependencies-with-renv" class="level4">
+<h4 class="anchored" data-anchor-id="install-package-dependencies-with-renv">2. Install package dependencies with renv 📦</h4>
+<p>Open the downloaded repository folder and click on the <a href="cognate-beginnings.Rproj">cognate-beginnings.Rproj</a> to open an RStudio session (recommended) or just open an R session and set the working directory to the downloaded folder. Once open run:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"renv"</span>) <span class="co"># in case you need to install renv</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>renv<span class="sc">::</span><span class="fu">restore</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This might take a couple of minutes, depending on the number of packages that need installation or an update.</p>
+<blockquote class="blockquote">
+<p>💡 <strong>What does this step do?</strong> The code in this repository needs some packages to run, many of which might not have been already installed in your local machine. Instead of having to install them yourself one by one or updating already installed ones (which might change how they behave, possibly breaking some of your code in other projects) this repository uses the R package <a href="https://rstudio.github.io/renv/articles/renv.html">renv</a> to deal with package libraries. The command <code>renv::restore()</code> will install all necessary packages in the appropriate version (listed in the file <a href="renv.lock">renv.lock</a> in a self-contained R package library. This process will not affect the packages that you had already installed in your machine.</p>
+<p>💡 <strong>Something went wrong with renv. Now what?</strong> Although renv facilitates the reproducibility of the repository, it is not guaranteed that things will work perfectly. If you encounter trouble installing the packages using renv, try installing them individually using (<code>install.packages()</code> or <code>renv::install()</code>) and try fixing whatever issues arise (they might depend on your particular setup). Some packages are used by RStudio itself, and might refiuse to update them while you’re using RStudio. Try installing them from the R console outside of RStudio. Open an <a href="https://github.com/gongcastro/cognate-beginnings/issues">issue</a> on this repository if you need further assistance! We’ll get back to you ASAP. :smile:</p>
+</blockquote>
+</section>
+<section id="running-the-code-with-targets" class="level4">
+<h4 class="anchored" data-anchor-id="running-the-code-with-targets">3. Running the code with targets 🚀</h4>
+<p>Once the package dependencies have been solved with renv, run the following command:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_make</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Mind that this process might take some time. Refitting the brms models might take very long (days even, depending on your set-up). If you want to skip this step, download the “results” folder in the <a href="https://osf.io/hy984/">Open Science Framework repository</a> and replace it in the repository.</p>
+<blockquote class="blockquote">
+<p>💡<strong>What does this step do?</strong> This repository’s workflow is based on <a href="https://books.ropensci.org/targets/">targets</a>. This means that the code is run in the appropriate order according to its internal dependencies. The code is organised as <em>targets</em>, defined in the <code>_targets.R</code> file. Sometimes targets operate with the outcomes of other targets. For instance, one target might run a function that takes the outcome of a different target as argument. {targets} makes sure that the functions and objects needed to run each target have already been previously defined. You can visually explore this repository’s targets and its dependency structure by running <code>targets::tar_visnetwork()</code>. You can explore the contents of the executed targets by running <code>targets::tar_load_everything()</code>, which will load all defined targets into your workspace.</p>
+</blockquote>
 
 
 <!-- -->
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -479,22 +568,188 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 });
-</script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-  </div>
-  <div class="nav-page nav-page-next">
-      <a href="../docs/_repro-docker.html" class="pagination-link">
-        <span class="nav-page-text">Docker <i class="fa-brands fa-docker" aria-label="docker"></i></span> <i class="bi bi-arrow-right-short"></i>
-      </a>
-  </div>
-</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>We recommend two ways of reproducing or inspecting the code of this repository. One option is to clone the <span class="co">[</span><span class="ot">Docker image</span><span class="co">](https://hub.docker.com/r/gongcastro/cognate-beginnings)</span> we have pused to Dockerhub. A Docker image is just a virtual machine that contains all dependencies, code, and files necessary to run the code. Everything is already installed and setup, you will only have to open <span class="co">[</span><span class="ot">https://localhost:8787</span><span class="co">](https://localhost:8787)</span> in your browser, and a RStudio session will open for you. This option is more robust (dependencies are difficult to get right when using your own computer), but it also requires Docker to be installed.</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>A second option is the more traditional approach of downloading the repository (or cloning it, if you know your way through Git/GitHub), installing the necessary dependencies (we recommend using renv for R dependencies, other system dependencies are listed below), and running the code (we recommend using the targets workflow).</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb6" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>We recommend two ways of reproducing or inspecting the code of this repository. One option is to clone the <span class="co">[</span><span class="ot">Docker image</span><span class="co">](https://hub.docker.com/r/gongcastro/cognate-beginnings)</span> we have pused to Dockerhub. A Docker image is just a virtual machine that contains all dependencies, code, and files necessary to run the code. Everything is already installed and setup, you will only have to open <span class="co">[</span><span class="ot">https://localhost:8787</span><span class="co">](https://localhost:8787)</span> in your browser, and a RStudio session will open for you. This option is more robust (dependencies are difficult to get right when using your own computer), but it also requires Docker to be installed.</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>A second option is the more traditional approach of downloading the repository (or cloning it, if you know your way through Git/GitHub), installing the necessary dependencies (we recommend using renv for R dependencies, other system dependencies are listed below), and running the code (we recommend using the targets workflow).</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">### Docker {{&lt; fa brands docker &gt;}}</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Download and install Docker (<span class="co">[</span><span class="ot">Windows</span><span class="co">](https://docs.docker.com/desktop/install/windows-install/)</span>, <span class="co">[</span><span class="ot">Mac</span><span class="co">](https://docs.docker.com/desktop/install/mac-install/)</span>, <span class="co">[</span><span class="ot">Linux</span><span class="co">](https://docs.docker.com/desktop/install/linux-install/)</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Pull the <span class="co">[</span><span class="ot">gongcastro/cognate-beginnings image</span><span class="co">](https://hub.docker.com/r/gongcastro/cognate-beginnings)</span>. Two ways of doing this:</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    a) Using the Docker CLI: open your console/terminal/command prompt, and run:</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="in">```bash </span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="ex">docker</span> pull gongcastro/cognate-beginnings</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="in">```</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    b) Using the Docker Desktop app: go the "Images" tab, click on "Search images to run", search for "gongcastro/cognate-beginnings", and click "Pull".</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Run the image in a Docker container. Two ways of doing this:</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    a) Using the Docker Desktop app: in the "Images" tab, look for the <span class="in">`gongcastro/cognate-beginnings`</span> image and click "Run".</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    b) Using the Docker CLI:</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    <span class="in">```bash </span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    <span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-ti</span> <span class="at">-e</span> ROOT=true <span class="at">-e</span> PASSWORD=rstudio <span class="at">-p</span> 8787:8787 <span class="at">--name</span> rstudio gongcastro/cognate-beginnings:latest</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    <span class="in">```</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Open <span class="co">[</span><span class="ot">http://localhost:8787</span><span class="co">](http://localhost:8787)</span> in your browser. Log in using <span class="in">`rstudio`</span> as user, and <span class="in">`rstudio`</span> as password. An RStudio session should open, with all files, code and dependencies installed and ready. To retrieve and explore a given object, run <span class="in">`targets::tar_load(target_name)`</span>, where <span class="in">`target_name`</span> is the name of the rarget you want to explore (e.g., <span class="in">`targets::tar_load(items)`</span>).</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 💡 The RStudio session opened by Docker does not have root permissions (you will not be able to run </span><span class="in">`targets::tar_make()`</span><span class="at"> to run the code from the R console). Instead, open the "Terminal" tab, and run </span><span class="in">`sudo Rscript -e "targets::tar_make()"`</span><span class="at">. The targets workflow should now be triggered.</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 💡 The targets workflow is run to completion before your Rstudio session is open in Docker. This means that even if you trigger </span><span class="in">`targets::tar_make()`</span><span class="at">, virtually all targets will be skipped, as they are completed. If you want to run a specific target, delete it first (or any other target it depends on), and the targets workflow will be run, now generating all deleted targets again. Be aware that this might take some time, especially when fitting the models anew.</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="fu">## GitHub {{&lt; fa brands github &gt;}}</span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="ss">0.  </span>Download this repository</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Install software dependencies</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Install package dependencies with renv</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Running the code with targets</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Repository structure and files</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a><span class="fu">### 0. Download this repository ⬇️</span></span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>First, you will need to download this repository to your local machine.</span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>We suggest three different ways:</span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>a)  **Git terminal**: download and install</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>    <span class="co">[</span><span class="ot">Git</span><span class="co">](https://git-scm.com/downloads)</span> with default settings and clone</span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>    this repository locally running the following command in your</span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>    console:</span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/gongcastro/cognate-beginnings.git</span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 💡 You don't need to run this command from the Git console. Just open</span></span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Command Prompt or Power Shell in Windows (just make sure that Git is</span></span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; included in your [PATH</span></span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; variables](https://www.delftstack.com/howto/git/add-git-to-path-on-windows/),</span></span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; which should be already done after the recommended Git installation),</span></span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Terminal in MacOS, or command line in Linux and run this command.</span></span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>b)  **GitHub releases**: download the latest</span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>    <span class="co">[</span><span class="ot">release</span><span class="co">](https://github.com/gongcastro/cognate-beginnings/releases)</span></span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>    of the repository.</span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>c)  **Direct download**: click the [green</span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>    button](https://github.com/gongcastro/cognate-beginnings/archive/refs/heads/main.zip)</span>
+<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>    "Code" in this page (upper-right corner), click "Download ZIP", and</span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>    unzipping the downloaded repository.</span>
+<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1. Install software dependencies 💻</span></span>
+<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a>Here's a list of programs that you might need to install in your machine</span>
+<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a>to make the project work:</span>
+<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="co">[</span><span class="ot">R</span><span class="co">](https://www.r-project.org/)</span> (4.2.2 or greater)</span>
+<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="co">[</span><span class="ot">RStudio</span><span class="co">](https://posit.co/download/rstudio-desktop/)</span>: although not</span>
+<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a>    strictly necessary, we encourage the use of Rstudio for reproducing</span>
+<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a>    the present project. We have not tested the reproducibility of the</span>
+<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a>    project in other IDEs.</span>
+<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="co">[</span><span class="ot">Quarto</span><span class="co">](https://quarto.org/docs/get-started/)</span> (1.3.340 or greater):</span>
+<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>    we use this software to generate the manuscript and lab notes. We</span>
+<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a>    recommend installing version 1.3.340 or higher, although previous</span>
+<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a>    version might work as well.</span>
+<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="co">[</span><span class="ot">Rtools</span><span class="co">](https://cran.r-project.org/bin/windows/Rtools/)</span> (4.3 or</span>
+<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a>    greater).</span>
+<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="co">[</span><span class="ot">CmdStan</span><span class="co">](https://mc-stan.org/users/interfaces/cmdstan)</span> (2.31.0 or</span>
+<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a>    greater): we use the CmdStan backend in brms to fit our Bayesian</span>
+<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a>    models. We recommend installing CmdStan using its R interface</span>
+<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a>    <span class="co">[</span><span class="ot">CmdStanR</span><span class="co">](https://mc-stan.org/cmdstanr/)</span> following the [*Getting</span>
+<span id="cb6-94"><a href="#cb6-94" aria-hidden="true" tabindex="-1"></a>    started with</span>
+<span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a>    CmdStanR*](https://mc-stan.org/cmdstanr/articles/cmdstanr.html)</span>
+<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a>    vignette. You can also install it following the [CmdStan</span>
+<span id="cb6-97"><a href="#cb6-97" aria-hidden="true" tabindex="-1"></a>    installation guide](https://mc-stan.org/users/interfaces/), and then</span>
+<span id="cb6-98"><a href="#cb6-98" aria-hidden="true" tabindex="-1"></a>    letting CmdStanR know the path to the folder using</span>
+<span id="cb6-99"><a href="#cb6-99" aria-hidden="true" tabindex="-1"></a>    <span class="in">`cmdstanr::set_cmdstan_path()`</span>.</span>
+<span id="cb6-100"><a href="#cb6-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-101"><a href="#cb6-101" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;div&gt;</span></span>
+<span id="cb6-102"><a href="#cb6-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-103"><a href="#cb6-103" aria-hidden="true" tabindex="-1"></a><span class="at">    &gt; 💡 **Installing CmdStan** is sometimes inconvenient, and might</span></span>
+<span id="cb6-104"><a href="#cb6-104" aria-hidden="true" tabindex="-1"></a><span class="at">    &gt; require some time to set up, specially if it's your first time</span></span>
+<span id="cb6-105"><a href="#cb6-105" aria-hidden="true" tabindex="-1"></a><span class="at">    &gt; doing so. Have patience and follow the CmdStan installation guide</span></span>
+<span id="cb6-106"><a href="#cb6-106" aria-hidden="true" tabindex="-1"></a><span class="at">    &gt; closely. If you encounter problems and just don't have the time,</span></span>
+<span id="cb6-107"><a href="#cb6-107" aria-hidden="true" tabindex="-1"></a><span class="at">    &gt; you can download the models from the [Open Science Framework</span></span>
+<span id="cb6-108"><a href="#cb6-108" aria-hidden="true" tabindex="-1"></a><span class="at">    &gt; repository](https://osf.io/hy984/) and skip the model-fitting</span></span>
+<span id="cb6-109"><a href="#cb6-109" aria-hidden="true" tabindex="-1"></a><span class="at">    &gt; steps.</span></span>
+<span id="cb6-110"><a href="#cb6-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-111"><a href="#cb6-111" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;/div&gt;</span></span>
+<span id="cb6-112"><a href="#cb6-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-113"><a href="#cb6-113" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2. Install package dependencies with renv 📦</span></span>
+<span id="cb6-114"><a href="#cb6-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-115"><a href="#cb6-115" aria-hidden="true" tabindex="-1"></a>Open the downloaded repository folder and click on the</span>
+<span id="cb6-116"><a href="#cb6-116" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">cognate-beginnings.Rproj</span><span class="co">](cognate-beginnings.Rproj)</span> to open an RStudio</span>
+<span id="cb6-117"><a href="#cb6-117" aria-hidden="true" tabindex="-1"></a>session (recommended) or just open an R session and set the working</span>
+<span id="cb6-118"><a href="#cb6-118" aria-hidden="true" tabindex="-1"></a>directory to the downloaded folder. Once open run:</span>
+<span id="cb6-119"><a href="#cb6-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-120"><a href="#cb6-120" aria-hidden="true" tabindex="-1"></a><span class="in">``` r</span></span>
+<span id="cb6-121"><a href="#cb6-121" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"renv"</span>) <span class="co"># in case you need to install renv</span></span>
+<span id="cb6-122"><a href="#cb6-122" aria-hidden="true" tabindex="-1"></a>renv<span class="sc">::</span><span class="fu">restore</span>()</span>
+<span id="cb6-123"><a href="#cb6-123" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-124"><a href="#cb6-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-125"><a href="#cb6-125" aria-hidden="true" tabindex="-1"></a>This might take a couple of minutes, depending on the number of packages</span>
+<span id="cb6-126"><a href="#cb6-126" aria-hidden="true" tabindex="-1"></a>that need installation or an update.</span>
+<span id="cb6-127"><a href="#cb6-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-128"><a href="#cb6-128" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 💡 **What does this step do?** The code in this repository needs some</span></span>
+<span id="cb6-129"><a href="#cb6-129" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; packages to run, many of which might not have been already installed</span></span>
+<span id="cb6-130"><a href="#cb6-130" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; in your local machine. Instead of having to install them yourself one</span></span>
+<span id="cb6-131"><a href="#cb6-131" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; by one or updating already installed ones (which might change how they</span></span>
+<span id="cb6-132"><a href="#cb6-132" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; behave, possibly breaking some of your code in other projects) this</span></span>
+<span id="cb6-133"><a href="#cb6-133" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; repository uses the R package</span></span>
+<span id="cb6-134"><a href="#cb6-134" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">renv</span><span class="co">](https://rstudio.github.io/renv/articles/renv.html)</span><span class="at"> to deal with</span></span>
+<span id="cb6-135"><a href="#cb6-135" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; package libraries. The command </span><span class="in">`renv::restore()`</span><span class="at"> will install all</span></span>
+<span id="cb6-136"><a href="#cb6-136" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; necessary packages in the appropriate version (listed in the file</span></span>
+<span id="cb6-137"><a href="#cb6-137" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">renv.lock</span><span class="co">](renv.lock)</span><span class="at"> in a self-contained R package library. This</span></span>
+<span id="cb6-138"><a href="#cb6-138" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; process will not affect the packages that you had already installed in</span></span>
+<span id="cb6-139"><a href="#cb6-139" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; your machine.</span></span>
+<span id="cb6-140"><a href="#cb6-140" aria-hidden="true" tabindex="-1"></a><span class="at">&gt;</span></span>
+<span id="cb6-141"><a href="#cb6-141" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 💡 **Something went wrong with renv. Now what?** Although renv</span></span>
+<span id="cb6-142"><a href="#cb6-142" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; facilitates the reproducibility of the repository, it is not</span></span>
+<span id="cb6-143"><a href="#cb6-143" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; guaranteed that things will work perfectly. If you encounter trouble</span></span>
+<span id="cb6-144"><a href="#cb6-144" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; installing the packages using renv, try installing them individually</span></span>
+<span id="cb6-145"><a href="#cb6-145" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; using (</span><span class="in">`install.packages()`</span><span class="at"> or </span><span class="in">`renv::install()`</span><span class="at">) and try fixing</span></span>
+<span id="cb6-146"><a href="#cb6-146" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; whatever issues arise (they might depend on your particular setup).</span></span>
+<span id="cb6-147"><a href="#cb6-147" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Some packages are used by RStudio itself, and might refiuse to update</span></span>
+<span id="cb6-148"><a href="#cb6-148" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; them while you're using RStudio. Try installing them from the R</span></span>
+<span id="cb6-149"><a href="#cb6-149" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; console outside of RStudio. Open an</span></span>
+<span id="cb6-150"><a href="#cb6-150" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">issue</span><span class="co">](https://github.com/gongcastro/cognate-beginnings/issues)</span><span class="at"> on</span></span>
+<span id="cb6-151"><a href="#cb6-151" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; this repository if you need further assistance! We'll get back to you</span></span>
+<span id="cb6-152"><a href="#cb6-152" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; ASAP. :smile:</span></span>
+<span id="cb6-153"><a href="#cb6-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-154"><a href="#cb6-154" aria-hidden="true" tabindex="-1"></a><span class="fu">### 3. Running the code with targets 🚀</span></span>
+<span id="cb6-155"><a href="#cb6-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-156"><a href="#cb6-156" aria-hidden="true" tabindex="-1"></a>Once the package dependencies have been solved with renv, run the</span>
+<span id="cb6-157"><a href="#cb6-157" aria-hidden="true" tabindex="-1"></a>following command:</span>
+<span id="cb6-158"><a href="#cb6-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-159"><a href="#cb6-159" aria-hidden="true" tabindex="-1"></a><span class="in">``` r</span></span>
+<span id="cb6-160"><a href="#cb6-160" aria-hidden="true" tabindex="-1"></a>targets<span class="sc">::</span><span class="fu">tar_make</span>()</span>
+<span id="cb6-161"><a href="#cb6-161" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-162"><a href="#cb6-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-163"><a href="#cb6-163" aria-hidden="true" tabindex="-1"></a>Mind that this process might take some time. Refitting the brms models</span>
+<span id="cb6-164"><a href="#cb6-164" aria-hidden="true" tabindex="-1"></a>might take very long (days even, depending on your set-up). If you want</span>
+<span id="cb6-165"><a href="#cb6-165" aria-hidden="true" tabindex="-1"></a>to skip this step, download the "results" folder in the [Open Science</span>
+<span id="cb6-166"><a href="#cb6-166" aria-hidden="true" tabindex="-1"></a>Framework repository](https://osf.io/hy984/) and replace it in the</span>
+<span id="cb6-167"><a href="#cb6-167" aria-hidden="true" tabindex="-1"></a>repository.</span>
+<span id="cb6-168"><a href="#cb6-168" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-169"><a href="#cb6-169" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 💡**What does this step do?** This repository's workflow is based on</span></span>
+<span id="cb6-170"><a href="#cb6-170" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">targets</span><span class="co">](https://books.ropensci.org/targets/)</span><span class="at">. This means that the</span></span>
+<span id="cb6-171"><a href="#cb6-171" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; code is run in the appropriate order according to its internal</span></span>
+<span id="cb6-172"><a href="#cb6-172" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; dependencies. The code is organised as *targets*, defined in the</span></span>
+<span id="cb6-173"><a href="#cb6-173" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="in">`_targets.R`</span><span class="at"> file. Sometimes targets operate with the outcomes of</span></span>
+<span id="cb6-174"><a href="#cb6-174" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; other targets. For instance, one target might run a function that</span></span>
+<span id="cb6-175"><a href="#cb6-175" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; takes the outcome of a different target as argument. {targets} makes</span></span>
+<span id="cb6-176"><a href="#cb6-176" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; sure that the functions and objects needed to run each target have</span></span>
+<span id="cb6-177"><a href="#cb6-177" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; already been previously defined. You can visually explore this</span></span>
+<span id="cb6-178"><a href="#cb6-178" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; repository's targets and its dependency structure by running</span></span>
+<span id="cb6-179"><a href="#cb6-179" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="in">`targets::tar_visnetwork()`</span><span class="at">. You can explore the contents of the</span></span>
+<span id="cb6-180"><a href="#cb6-180" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; executed targets by running </span><span class="in">`targets::tar_load_everything()`</span><span class="at">, which</span></span>
+<span id="cb6-181"><a href="#cb6-181" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; will load all defined targets into your workspace.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
@@ -504,7 +759,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/gongcastro/cognate-beginnings/edit/main/docs/_repro.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/gongcastro/cognate-beginnings/issues/new" class="toc-action">Report an issue</a></p></div></div></div>
+    </div>
     <div class="nav-footer-right">Made with <i class="fa-brands fa-r-project" aria-label="r-project"></i> and <a href="https://quarto.org/">Quarto</a><br> <a href="https://github.com/gongcastro/cognate-beginnings">View the source at <i class="fa-brands fa-github" aria-label="github"></i> GitHub</a></div>
   </div>
 </footer>

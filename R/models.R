@@ -3,20 +3,20 @@
 #' @param ... Arguments to be passed to [brms::brm()]
 fit_model <- function(name, ...) {
     fit <- brms::brm(...,
-                     iter = 2000,
-                     chains = 4,
-                     init = 0.5,
-                     seed = 888,
-                     backend = "cmdstanr",
-                     file = glue::glue("results/fits/{name}.rds"),
-                     file_refit = "never",
-                     control = list(
-                         adapt_delta = 0.9,
-                         max_treedepth = 15
-                     ),
-                     save_model = glue::glue("Stan/{name}.stan")
+        iter = 2000,
+        chains = 4,
+        init = 0.5,
+        seed = 888,
+        backend = "cmdstanr",
+        file = glue::glue("results/fits/{name}.rds"),
+        file_refit = "never",
+        control = list(
+            adapt_delta = 0.9,
+            max_treedepth = 15
+        ),
+        save_model = glue::glue("Stan/{name}.stan")
     )
-    
+
     return(fit)
 }
 
@@ -31,8 +31,8 @@ get_posterior_draws <- function(model, data, vars_dict, ...) {
     posterior_draws <- tidybayes::gather_draws(model, `b_.*`, regex = TRUE) |>
         mutate(
             .variable_name = factor(.variable,
-                                    levels = names(vars_dict),
-                                    labels = vars_dict
+                levels = names(vars_dict),
+                labels = vars_dict
             ) |>
                 as.character(),
             type = ifelse(
@@ -47,16 +47,16 @@ get_posterior_draws <- function(model, data, vars_dict, ...) {
             )
         ) |>
         select(.variable, .variable_name,
-               .type = type,
-               .chain, .iteration, .draw, .value
+            .type = type,
+            .chain, .iteration, .draw, .value
         ) |>
         ungroup()
-    
+
     save_files(posterior_draws,
-               formats = "csv",
-               folder = "results/posterior"
+        formats = "csv",
+        folder = "results/posterior"
     )
-    
+
     return(posterior_draws)
 }
 
@@ -76,9 +76,9 @@ get_posterior_summary <- function(model,
         tidybayes::median_hdci() |>
         mutate(
             .variable_name = factor(.variable,
-                                    levels = names(vars_dict),
-                                    labels = vars_dict,
-                                    ordered = TRUE
+                levels = names(vars_dict),
+                labels = vars_dict,
+                ordered = TRUE
             ),
             type = ifelse(
                 grepl("Intercept", .variable),
@@ -95,55 +95,15 @@ get_posterior_summary <- function(model,
         ) |>
         arrange(type, .variable_name) |>
         select(.variable, .variable_name,
-               .type = type,
-               .value, .lower, .upper, .rope
+            .type = type,
+            .value, .lower, .upper, .rope
         ) |>
         ungroup()
-    
+
     return(posterior_summary)
 }
 
-#' Extract posterior draws of random effect coefficients from brmsfit model via [tidybayes::gather_draws()].
-#'
-#' @param model A brmsfit object
-#' @param vars_dict Dictionary of variable names, as returned by `get_vars_dict()` or `get_vars_dict_doe()`
-#' @param ... Arguments to be passed to [tidybayes::gather_draws()].
-get_posterior_re <- function(model, vars_dict, ...)
-{
-    fixed_effects <- model |> 
-        tidybayes::gather_draws(`b_.*`, regex = TRUE, ...) |> 
-        filter(!grepl("Intercept", .variable)) |> 
-        tidybayes::median_hdci() |> 
-        mutate(.variable_name = factor(.variable,
-                                       levels = names(vars_dict),
-                                       labels = vars_dict,
-                                       ordered = TRUE)) |>  
-        select(.variable, .variable_name,
-               .value_fixed = .value,
-               .lower_fixed = .lower,
-               .upper_fixed = .upper)
-    
-    posterior_re <- model |> 
-        tidybayes::gather_draws(r_id[id, .param], ...) |>
-        filter(!grepl("Intercept", .param)) |> 
-        tidybayes::median_hdci() |> 
-        select(-.variable) |> 
-        rename(.variable = .param) |>
-        mutate(.variable = paste0("b_", .variable)) |> 
-        inner_join(fixed_effects,
-                   relationship = "many-to-many",
-                   by = join_by(.variable)) |>
-        mutate(.variable_name = factor(.variable,
-                                       levels = names(vars_dict), 
-                                       labels = vars_dict, 
-                                       ordered = TRUE), 
-               .value = (.value_fixed + .value) / 4) |>       
-        select(id, .variable, .variable_name, 
-               .value, .lower, .upper, 
-               .value_fixed, .lower_fixed, .upper_fixed)
-    
-    return(posterior_re)
-}
+
 
 #' Get model R-hat scores
 #'

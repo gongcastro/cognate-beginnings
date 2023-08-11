@@ -3,16 +3,16 @@
     "Version": "4.2.2",
     "Repositories": [
       {
-        "Name": "CRAN",
-        "URL": "https://cloud.r-project.org"
+        "Name": "Stan",
+        "URL": "https://mc-stan.org/r-packages"
       },
       {
-        "Name": "gon",
+        "Name": "gongcastro",
         "URL": "https://gongcastro.r-universe.dev"
       },
       {
-        "Name": "stan",
-        "URL": "https://mc-stan.org/r-packages"
+        "Name": "CRAN",
+        "URL": "https://cloud.r-project.org"
       }
     ]
   },
@@ -172,7 +172,7 @@
       "Package": "StanHeaders",
       "Version": "2.26.22",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "Stan",
       "Requirements": [
         "R",
         "RcppEigen",
@@ -2103,7 +2103,7 @@
       "Package": "rstan",
       "Version": "2.26.22",
       "Source": "Repository",
-      "Repository": "stan",
+      "Repository": "Stan",
       "Requirements": [
         "BH",
         "R",

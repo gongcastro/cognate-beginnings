@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|28e4ec15438b0ccb|||||||||||||||
+.Random.seed|object|2365b4d7b28d457a|||||||||||||||
 appendix|stem|357f2e4532634282|46650b2562dabf32|a2f54ca013ed64d9|1554002692|manuscript/appendix.pdf*manuscript/appendix.qmd|t19564.6388121597s|f9b4fad96ede03f0|72265|file|local|vector|||31.82||
 bvq_data|stem|b9cdbf2e4a893895|1713fb13bcb0ffed|abbee844f3596b03|-1902070830||t19559.5893925943s|63253b11449ae909|1233401|rds|local|vector|||1.84||
 bvq_data_file|stem|2eeaa6c449fa1e44|48eaf072f2413071|ef46db3751d8e999|1011699987||t19559.5893425132s|d586f792a395948c|68|rds|local|vector|||0||
@@ -16,6 +16,7 @@ get_model_ppc|function|a939e994eed9176b|||||||||||||||
 get_participants|function|c0a4f00b19032f75|||||||||||||||
 get_posterior_draws|function|df7ed9181942c899|||||||||||||||
 get_posterior_draws_re|function|c492851033d98e5b|||||||||||||||
+get_posterior_re|function|df0217f08a710298|||||||||||||||
 get_posterior_summary|function|652c418300efd4c9|||||||||||||||
 get_responses|function|36742355b5263122|||||||||||||||
 get_rope_overlap|function|b3a9f08072394b26|||||||||||||||
@@ -24,7 +25,7 @@ get_vars_dict|function|10a30763d4598b29|||||||||||||||
 get_vars_dict_doe|function|f54423dd2f43698b|||||||||||||||
 items|stem|02e41dc21548abba|49b6cd25c41a1b0f|794808e876deba6b|-986180865||t19559.5934274803s|8a1a7c406d603fbb|26069|rds|local|vector|||0.6||
 items_test|stem|32af597cbdb2a163|762d2cbc9b05fe3c|740911248080b911|883923261||t19559.5934444377s|ac45463db19e2cbe|48|rds|local|vector|||1.26||
-manuscript|stem|78db61a51e81e8d6|57fe045617c03ca1|387a5ad3c7e79ffb|615889701|manuscript/manuscript.pdf*manuscript/manuscript.qmd|t19564.6388122291s|df3c328dc6d20567|295483|file|local|vector|||49.84||
+manuscript|stem|51c505346bc48e15|e8f10768ffdf98ee|c1b03181b33425b9|615889701|manuscript/manuscript.pdf*manuscript/manuscript.qmd|t19580.6766422073s|2a87e68afa4012c2|295373|file|local|vector|||49.61||
 model_convergence|stem|ca2f52d5efb4f3c0|68cbac5a8705de12|5ca4901a79f93b0d|1264401096||t19564.3860637151s|40173b4f8b5e89ec|124886|rds|local|vector|||53.46||
 model_doe|stem|9bc65508804e8e95|24a8cbde6537d6ff|0c1b3778fcb624c4|1345599899||t19564.3851348444s|2279300c61bae421|150172129|rds|local|vector|||2.03||
 model_draws|stem|eeb914dd253556f7|1fff6399ba521c80|ab23309017e56441|-665592718||t19564.3899257505s|43497b512cb14b56|273272|rds|local|vector|||1.09||
@@ -36,6 +37,7 @@ model_formula|stem|bb54894362542c9b|eeb2009d5be4ca49|db2572525e3c8d9d|308494096|
 model_ppcs|stem|475d9678cc4207cd|650036e0523dac34|d0269ccacead722e|1213183795||t19564.3899048814s|a5f977d252824dea|4149164|rds|local|vector|||157.02||
 model_prior|stem|8b007f78d7cf8d97|e02009e62e881874|8596a76cdeb9adbf|-1420164522||t19559.5885176485s|1e85e50b3bd5846b|284|rds|local|vector|||0.02||
 model_summary|stem|29981038c690c5aa|f139e2d886999225|7c3c2817fbbca396|-817296688||t19564.3899120277s|c8da580d4ab439ea|802|rds|local|vector|||0.58||
+model_summary_re|stem|f3264277ca2738b9|88e6dbe236077b39|39e85578b542339a|1718095021||t19573.4180613012s|b0e3a693b14ef46b|63852|rds|local|vector|||158.59|gather_ was deprecated in tidyr 1.2.0.ℹ Please use gather instead.ℹ The deprecated feature was likely used in the tidybayes package.  Please report the issue at httpsgithub.commjskaytidybayesissuesnew.|
 model_vars_dict|stem|00ea74621dce51cc|dc567e844b18a172|f95db138e9f5bf4f|-702081807||t19561.3880944495s|0e56fdca6a5a4864|301|rds|local|vector|||0||
 model_vars_dict_doe|stem|e7fcb396955e5c25|4d67f4a33ad9e70c|9f2654c6cb065b8d|1933248954||t19560.4678650549s|8729b3dc109d06c6|313|rds|local|vector|||0.01||
 participants|stem|eec3ae19aaafd9d3|faa1dd696f8b6b59|159b0d7c8b4b8c7c|392525641||t19560.4677560068s|ba04ff37b4e4562e|6619|rds|local|vector|||0.33||

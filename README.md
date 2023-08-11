@@ -38,7 +38,7 @@ This repository is organised as follows:
         `participants.csv`
     -   [predictions.R](R/predictions.R): to generate posterior
         predictions from the model
-    -   [utils.R](R/utils..R): helper functions and wrappers used across
+    -   [utils.R](R/utils.R): helper functions and wrappers used across
         the project
 -   **renv**: internal settings to ensure reproducibility of the
     computing environment.
