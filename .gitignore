@@ -32,5 +32,6 @@ _freeze/*
 .vscode/
 manuscript/.quarto/
 /.quarto/
+submissions/
 
 
