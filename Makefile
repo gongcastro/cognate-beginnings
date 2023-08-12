@@ -8,6 +8,9 @@ targets: _targets.R
 	@echo "Rendering website..."
 	@quarto publish gh-pages
 
+delete-nul:
+	Del \\?\C:\Users\gonza\Documents\cognate-priming\deletefile.txt
+	
 docker-build: Dockerfile .dockerignore
 	@echo "Building Docker image..."
 	@docker build -t cognate-beginnings .
