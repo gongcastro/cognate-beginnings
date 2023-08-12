@@ -19,7 +19,12 @@ execute:
   freeze: auto 
 
 website:
-  repo-url: "https://github.com/gongcastro/cognate-beginnings"
+  twitter-card:
+    creator: "@gongcastro"
+    site: "@cbcUPF"
+    image: https://raw.githubusercontent.com/gongcastro/gongcastro.github.io/main/assets/media/favicon.ico
+  favicon: https://raw.githubusercontent.com/gongcastro/gongcastro.github.io/main/assets/media/favicon.ico
+  repo-url: https://github.com/gongcastro/cognate-beginnings
   repo-actions: [edit, issue]
   page-navigation: true
   
