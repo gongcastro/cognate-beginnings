@@ -30,38 +30,55 @@ format:
 library(knitr)
 library(kableExtra)
 library(ggplot2)
+library(ggdist)
+library(patchwork)
 
-targets::tar_config_set(store = here::here("_targets"),
-                        script = here::here("_targets.R"))
+targets::tar_config_set(
+    store = here::here("_targets"),
+    script = here::here("_targets.R")
+)
 
 targets::tar_load_globals()
 
-targets::tar_load(c(bvq_data, childes, items, model_summary,
-                    participants, responses))
+targets::tar_load(c(
+    bvq_data, childes, items, model_summary,
+    participants, responses
+))
+
+targets::tar_load(c(model_fit, model_convergence, model_ppcs))
 
 targets::tar_load(c(posterior_doe_summary, posterior_doe_draws))
 
-targets::tar_load(c(syllables_data, model_fit_syllables, post_syllables,
-                    posterior_syllables_summary))
+targets::tar_load(c(syllables_data, model_fit_syllables, post_syllables, posterior_syllables_summary))
 
 my_theme <- theme_minimal() +
-    theme(panel.grid = element_line(colour = "grey",
-                                    linetype = "dotted"),
-          axis.line = element_line(colour = "black"),
-          text = element_text(size = 12, colour = "black"),
-          axis.text = element_text(colour = "black"))
+    theme(
+        panel.grid = element_line(
+            colour = "grey",
+            linetype = "dotted"
+        ),
+        axis.line = element_line(colour = "black"),
+        text = element_text(size = 12, colour = "black"),
+        axis.text = element_text(colour = "black")
+    )
 
 theme_set(my_theme)
 ```
 
+## Appendix A: model diagnostics {.appendix .unnumbered}
 
-## Appendix A: frequency and language exposure as separate predictors {.appendix .unnumbered}
+{{< include _appendix/_model-diagnostics.qmd >}}
+
+{{< pagebreak >}}
+
+## Appendix B: frequency and language exposure as separate predictors {.appendix .unnumbered}
 
 {{< include _appendix/_model-doe.qmd >}}
 
 {{< pagebreak >}}
 
-## Appendix B: frequency and language exposure as separate predictors {.appendix .unnumbered}
+
+## Appendix C: frequency and language exposure as separate predictors {.appendix .unnumbered}
 
 {{< include _appendix/_syllable-frequency.qmd >}}
 

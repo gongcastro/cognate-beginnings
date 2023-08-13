@@ -3,16 +3,16 @@
     "Version": "4.2.2",
     "Repositories": [
       {
-        "Name": "Stan",
-        "URL": "https://mc-stan.org/r-packages"
+        "Name": "CRAN",
+        "URL": "https://cloud.r-project.org"
       },
       {
-        "Name": "gongcastro",
+        "Name": "gon",
         "URL": "https://gongcastro.r-universe.dev"
       },
       {
-        "Name": "CRAN",
-        "URL": "https://cloud.r-project.org"
+        "Name": "stan",
+        "URL": "https://mc-stan.org/r-packages"
       }
     ]
   },
@@ -62,6 +62,31 @@
         "promises"
       ],
       "Hash": "3444e6ed78763f9f13aaa39f2481eb34"
+    },
+    "GGally": {
+      "Package": "GGally",
+      "Version": "2.1.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "RColorBrewer",
+        "dplyr",
+        "forcats",
+        "ggplot2",
+        "grDevices",
+        "grid",
+        "gtable",
+        "lifecycle",
+        "plyr",
+        "progress",
+        "reshape",
+        "rlang",
+        "scales",
+        "tidyr",
+        "utils"
+      ],
+      "Hash": "022f78c8698724b326f1838b1a98cafa"
     },
     "HDInterval": {
       "Package": "HDInterval",
@@ -172,7 +197,7 @@
       "Package": "StanHeaders",
       "Version": "2.26.22",
       "Source": "Repository",
-      "Repository": "Stan",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "RcppEigen",
@@ -1766,6 +1791,22 @@
       ],
       "Hash": "1cf5a54cfc5dcb0b84037acfd93cbca7"
     },
+    "patchwork": {
+      "Package": "patchwork",
+      "Version": "1.1.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "ggplot2",
+        "grDevices",
+        "graphics",
+        "grid",
+        "gtable",
+        "stats",
+        "utils"
+      ],
+      "Hash": "63b611e9d909a9ed057639d9c3b77152"
+    },
     "pillar": {
       "Package": "pillar",
       "Version": "1.9.0",
@@ -2023,6 +2064,17 @@
       ],
       "Hash": "c321cd99d56443dbffd1c9e673c0c1a2"
     },
+    "reshape": {
+      "Package": "reshape",
+      "Version": "0.8.9",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "plyr"
+      ],
+      "Hash": "603d56041d7d4fa3ceb1864b3f6ee6b1"
+    },
     "reshape2": {
       "Package": "reshape2",
       "Version": "1.4.4",
@@ -2103,7 +2155,7 @@
       "Package": "rstan",
       "Version": "2.26.22",
       "Source": "Repository",
-      "Repository": "Stan",
+      "Repository": "stan",
       "Requirements": [
         "BH",
         "R",

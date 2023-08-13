@@ -1,13 +1,12 @@
 FROM rocker/rstudio:4.2.2
 
-
 LABEL "about" = "A Docker container for the cognate-begininings study" \
     "author" = "Gonzalo Garcia-Castro <gongarciacastro@gmail.com>"\
     "github" = "https://github.com/gongcastro/cognate-beginnings" \
     "osf" = "https://osf.io/hy984/" \
     "source"="https://github.com/gongcastro/cognate-beginnings/blob/main/Dockerfile"
 
-# add C++ dependencies
+# add system
 RUN apt-get update && \
     apt-get install -y libxml2-dev \
     libglpk-dev \
@@ -34,9 +33,7 @@ RUN apt-get update && \
     libicu-dev
 
 # copy the whole directory to /rstudio (working directory in Posit Cloud)
-#RUN mkdir /cognate-beginnings/ && chown -c rstudio /cognate-beginnings/
 COPY . /home/rstudio/
-#RUN cd /cognate-beginnings/
 WORKDIR /home/rstudio/
 
 # install Quarto
