@@ -542,7 +542,7 @@ Around `r scales::percent(post_draws_list[["b_lv_std"]]$.rope, accuracy = 0.01)`
 #| fig-height: 4.5
 #| out-width: 100%
 #| eval: true
-#| fig-cap: "Posterior marginal effects. Lines and error bands correspond to the mean and 95% credible interval of the posterior-predicted means. Different colours indicate different levels of cognateness (phonological similarity). Predictions are presented separately for different degrees of word-form exposure index: little exposure to the word-form, mean exposure, and high exposure). Predictions for Comprehension are shown on top and predictions for Comprehension and Production are shown on the bottom. In-sample predictions lie inside the grey rectangles."
+#| fig-cap: "Posterior marginal effects. Lines and error bands correspond to the mean and 95% credible interval of the posterior-predicted means. Different shades of grey indicate different levels of cognateness (phonological similarity). Predictions are presented separately for different degrees of word-form exposure index: little exposure to the word-form, mean exposure, and high exposure). Predictions for Comprehension are shown on top and predictions for Comprehension and Production are shown on the bottom. In-sample predictions lie inside the yellow rectangles. For reference, we indicate the 50% chance level of word acquisition (horizontal yellow lines), and the mean age of the sample (vertical yellow lines)."
 fig_data <- model_epreds |>
     ungroup() |>
     reframe(
@@ -602,13 +602,15 @@ fig_data |>
     ) +
     geom_vline(
         xintercept = mean(responses$age),
-        linewidth = 1 / 4,
-        linetype = "dotted"
+        linewidth = 2 / 4,
+        alpha = 0.5,
+        colour = "orange"
     ) +
     geom_hline(
         yintercept = 0.5,
-        linewidth = 1 / 4,
-        linetype = "dotted"
+        linewidth = 2 / 4,
+        alpha = 0.5,
+        colour = "orange"
     ) +
     ggdist::geom_lineribbon(aes(order = lv),
         size = 0.5
