@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://github.com/gongcastro/cognate-beginnings/docs/_data-dictionary.html</loc>
+    <lastmod>2023-09-19T12:20:15.128Z</lastmod>
+  </url>
+  <url>
     <loc>https://github.com/gongcastro/cognate-beginnings/index.html</loc>
-    <lastmod>2023-08-15T09:32:30.647Z</lastmod>
+    <lastmod>2023-09-19T12:19:50.616Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/gongcastro/cognate-beginnings/docs/_repro.html</loc>
-    <lastmod>2023-08-15T09:32:32.278Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/gongcastro/cognate-beginnings/docs/_data-dictionary.html</loc>
-    <lastmod>2023-08-15T09:32:34.180Z</lastmod>
+    <lastmod>2023-09-19T12:19:54.601Z</lastmod>
   </url>
 </urlset>
