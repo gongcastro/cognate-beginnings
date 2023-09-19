@@ -1,4 +1,4 @@
-// generated with brms 2.19.0
+// generated with brms 2.19.2
 functions {
   /* compute correlated group-level effects
    * Args:
@@ -18,6 +18,7 @@ data {
   vector[N] Y; // response variable
   int<lower=1> K; // number of population-level effects
   matrix[N, K] X; // population-level design matrix
+  int<lower=1> Kc; // number of population-level effects after centering
   // data for group-level effects of ID 1
   int<lower=1> N_1; // number of grouping levels
   int<lower=1> M_1; // number of coefficients per level
@@ -29,7 +30,6 @@ data {
   int prior_only; // should the likelihood be ignored?
 }
 transformed data {
-  int Kc = K - 1;
   matrix[N, Kc] Xc; // centered version of X without an intercept
   vector[Kc] means_X; // column means of X before centering
   for (i in 2 : K) {
@@ -38,7 +38,7 @@ transformed data {
   }
 }
 parameters {
-  vector[Kc] b; // population-level effects
+  vector[Kc] b; // regression coefficients
   real Intercept; // temporary intercept for centered predictors
   real<lower=0> sigma; // dispersion parameter
   vector<lower=0>[M_1] sd_1; // group-level standard deviations

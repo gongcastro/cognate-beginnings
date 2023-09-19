@@ -33,6 +33,4 @@ _freeze/*
 manuscript/.quarto/
 /.quarto/
 submissions/*
-
-
-submissions/
+manuscript/submissions/*
