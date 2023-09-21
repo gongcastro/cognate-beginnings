@@ -9,7 +9,7 @@ fit_model <- function(name, ...) {
         seed = 888,
         backend = "cmdstanr",
         file = glue::glue("results/fits/{name}.rds"),
-        file_refit = "never",
+        file_refit = "on_change",
         control = list(
             adapt_delta = 0.9,
             max_treedepth = 15

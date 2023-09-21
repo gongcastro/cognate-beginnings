@@ -4,6 +4,7 @@ project:
 
 format:
   arxiv-pdf:
+    keep-tex: true  
     linenumbers: true
     doublespacing: false
     runninghead: "Cognate beginnings to bilingual lexical acquistion"
@@ -11,8 +12,6 @@ format:
       text: |
         \usepackage{tipa}
         \usepackage{booktabs}
-        \hyphenpenalty=100000
-        \exhyphenpenalty=100000
     knitr:
       opts_chunk:
         dev: "cairo_pdf"
@@ -43,11 +42,11 @@ author:
         city: Lisbon, 1600-214
   - name: Ignacio Castillejo
     orcid: 0000-0001-7445-0416
-    email: ignacio.castillejo@uam.es
+    email: jignaciocastillejo@gmail.com
     affiliations: 
       - id: uam 
         name: Universidad Autónoma de Madrid
-        department: Departamento de Psicología Básica
+        department: Departamento de Psicología
         city: Madrid, 28049
   - name: Nuria Sebastian-Galles
     orcid: 0000-0001-6938-2498
@@ -68,3 +67,5 @@ editor: source
 lang: en
 freeze: true
 fig-dpi: 1000
+
+

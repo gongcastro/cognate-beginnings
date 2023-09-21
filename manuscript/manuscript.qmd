@@ -451,26 +451,6 @@ post_draws_list <- model_summary |>
         )
     )) |>
     split(model_summary$.variable)
-
-re_data <- model_summary_re |>
-    filter(.variable %in% c(
-        "b_lv_std",
-        "b_exposure_std:lv_std"
-    ))
-
-
-re_data_prop <- re_data |>
-    mutate(
-        is_positive = .value > 0,
-        is_negative = .value < 0
-    ) |>
-    summarise(across(matches("is_"), mean),
-        .by = .variable_name
-    ) |>
-    mutate(prop = ifelse(is_positive > is_negative,
-        is_positive,
-        is_negative
-    ))
 ```
 
 The model posterior showed adequate chain convergence diagnostics and posterior predictive checks (see Appendix A). @tbl-coefs shows the summary of the posterior distribution of the fixed regression coefficients, and their degree of overlap with the ROPE. For interpretability, we report the estimated regression coefficients transformed to the probability scale^[The logit and probability scales relate non-linearly. This means that one logit difference is not necessarily translated to a unique value in the probability scale. For example, the probability of acquisition of a given word might increase in 5% when age increases from 22 to 23 months, the probability of acquisition of the same word might only increase in 0.2% when age increases from 31 to 32 months. The linear growth of the probability of acquisition differs along the logistic curve, and therefore deciding the age point at which to report the estimates of the regression coefficients in the probability scale is not trivial. Following @gelman2020regression, we report the maximum value of such coefficient, which corresponds to the linear growth (i.e. derivative) of the logistic curve at the age at which most participants were acquiring a given word. This value can be approximated by dividing the coefficient in the logit scale by four: $\hat{\beta_j}/4$, where $\hat{\beta_j}$ is the estimated mean of the posterior distribution of coefficient $j$.]. The resulting values correspond to the maximum difference in probability of acquisition (*Comprehension* or *Comprehension and Production*) that corresponds to a one standard deviation change in each predictor.
