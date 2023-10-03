@@ -25,13 +25,13 @@ get_participants <- function(bvq_data,
             # make sure that degrees of exposure are between 0 and 1
             between(doe_spanish, 0, 1),
             between(doe_catalan, 0, 1),
-            between(doe_others, 0, 1),
+            between(doe_others, 0, 1)
         ) |> 
         mutate(time = as.integer(time)) |> 
         # see ?bvq::get_longitudinal
         bvq::get_longitudinal(longitudinal = longitudinal) |> 
         select(id, time, time_stamp = date_finished, list = version,
-               age, lp, doe_catalan, doe_spanish, edu_parent) |> 
+               age, sex, lp, doe_catalan, doe_spanish, edu_parent) |> 
         arrange(id)
     
     # export data
