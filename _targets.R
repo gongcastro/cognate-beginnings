@@ -51,37 +51,37 @@ options(
 
 list(
     ## import data -------------------------------------------------------------
-
+    
     tar_target(bvq_data_file, "data-raw/bvq.rds", format = "rds"),
     tar_target(bvq_data, readRDS(bvq_data_file)),
-
+    
     # get CHILDES frequencies
     tar_target(childes, get_childes_frequencies(age_range = c(12, 32))),
-
+    
     # items
     tar_target(items, get_items(
         bvq_data = bvq_data,
         childes = childes
     )),
     tar_target(items_test, test_items(items)),
-
+    
     # participants
     tar_target(
         participants,
         get_participants(bvq_data,
-            age = c(12, 32),
-            lp = c("Monolingual", "Bilingual"),
-            other_threshold = 0.1
+                         age = c(12, 32),
+                         lp = c("Monolingual", "Bilingual"),
+                         other_threshold = 0.1
         )
     ),
     tar_target(participants_test, test_participants(participants)),
-
+    
     # responses
     tar_target(responses, get_responses(bvq_data, items, participants)),
     tar_target(responses_test, test_responses(responses)),
-
+    
     # fit models ---------------------------------------------------------------
-
+    
     # model prior
     tar_target(
         model_prior,
@@ -93,7 +93,7 @@ list(
             prior(lkj(2), class = "cor")
         )
     ),
-
+    
     # multilevel model with crossed random effects (participants an items)
     # responses are generated from a categorical distribution:
     #   - https://journals.sagepub.com/doi/full/10.1177/2515245918823199
@@ -101,7 +101,7 @@ list(
     #   - https://bookdown.org/content/3686/ordinal-predicted-variable.html
     # the probability of each response category is adjusted by age (population-level effect)
     # and adjusted for each individual participant and item (group-level effects)
-
+    
     # only intercepts (category boundaries)
     tar_target(
         model_formula,
@@ -112,7 +112,7 @@ list(
             family = cumulative("logit")
         )
     ),
-
+    
     # add age:exposure interaction
     tar_target(
         model_fit,
@@ -124,7 +124,7 @@ list(
             sample_prior = "yes"
         )
     ),
-
+    
     # model with only prior samples
     tar_target(
         model_fit_prior,
@@ -136,31 +136,31 @@ list(
             sample_prior = "only"
         )
     ),
-
+    
     ## describe models ---------------------------------------------------------
-
+    
     tar_target(model_vars_dict, get_vars_dict(responses)),
-
+    
     # get posterior draws for population-level effects
     tar_target(
         model_draws,
         get_posterior_draws(model_fit,
-            data = responses,
-            vars_dict = model_vars_dict
+                            data = responses,
+                            vars_dict = model_vars_dict
         )
     ),
-
+    
     # get summary of posterior draws for population-level effects
     tar_target(
         model_summary,
         get_posterior_summary(model_fit,
-            data = responses,
-            vars_dict = model_vars_dict
+                              data = responses,
+                              vars_dict = model_vars_dict
         )
     ),
-
+    
     ## marginal effects --------------------------------------------------------
-
+    
     tar_target(
         model_epreds,
         posterior_epreds(
@@ -179,15 +179,15 @@ list(
             n_phon_std = 0
         )
     ),
-
+    
     # convergence diagnostics (rhat and n_eff)
     tar_target(model_convergence, get_model_convergence(model_fit)),
-
+    
     # posterior predictive checks
     tar_target(model_ppcs, get_model_ppc(model_fit, responses)),
-
+    
     # appendix -----------------------------------------------------------------
-
+    
     # fit model with frequency and DoE as separate predictors instead of exposure
     tar_target(
         model_doe,
@@ -197,7 +197,7 @@ list(
                 response ~ age_std * doe_std * lv_std +
                     n_phon_std + freq_std +
                     (1 + age_std * doe_std * lv_std +
-                        n_phon_std + freq_std | id) +
+                         n_phon_std + freq_std | id) +
                     (1 + age_std * doe_std + n_phon_std + freq_std | te),
                 family = cumulative(link = "logit")
             ),
@@ -257,25 +257,18 @@ list(
             )
         )
     ),
-
+    
     # render report ------------------------------------------------------------
-
+    
     # render manuscript
     tar_quarto(manuscript,
-        "manuscript/manuscript.qmd",
-        quiet = FALSE,
-        cache = FALSE
+               "manuscript/manuscript.qmd",
+               quiet = FALSE,
+               cache = FALSE
     ),
     tar_quarto(appendix,
-        "manuscript/appendix.qmd",
-        quiet = FALSE,
-        cache = FALSE
-    ),
-    tar_target(
-        clean_repo,
-        invisible({
-            file_path <- here::here("_targets.yaml")
-            if (file.exists(file_path)) file.remove(file_path)
-        })
+               "manuscript/appendix.qmd",
+               quiet = FALSE,
+               cache = FALSE
     )
 )

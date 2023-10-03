@@ -41,33 +41,62 @@ targets::tar_config_set(
 targets::tar_load_globals()
 
 targets::tar_load(c(
-    bvq_data, childes, items, model_summary,
-    participants, responses
+    bvq_data, childes, 
+    items,
+    model_summary,
+    participants, 
+    responses
 ))
 
-targets::tar_load(c(model_fit, model_convergence, model_ppcs))
+targets::tar_load(c(model_fit, 
+                    model_convergence,
+                    model_ppcs))
 
-targets::tar_load(c(posterior_doe_summary, posterior_doe_draws))
+targets::tar_load(c(posterior_doe_summary, 
+                    posterior_doe_draws))
 
-targets::tar_load(c(syllables_data, model_fit_syllables, post_syllables, posterior_syllables_summary))
+targets::tar_load(c(syllables_data,
+                    model_fit_syllables, 
+                    post_syllables,
+                    posterior_syllables_summary))
 
 my_theme <- theme_minimal() +
-    theme(
-        panel.grid = element_line(
-            colour = "grey",
-            linetype = "dotted"
-        ),
-        axis.line = element_line(colour = "black"),
-        text = element_text(size = 12, colour = "black"),
-        axis.text = element_text(colour = "black")
+    theme(panel.grid = element_line(
+        colour = "grey",
+        linetype = "dotted"
+    ),
+    axis.line = element_line(colour = "black"),
+    text = element_text(size = 12, colour = "black"),
+    axis.text = element_text(colour = "black")
     )
 
 theme_set(my_theme)
+
+save_image <- function(file, ...) {
+    suppressWarnings({
+        invisible({
+            devices <- c("png", "pdf", "svg", "tiff", "eps")
+            paths <- file.path(paste(file, devices, sep = "."))
+            purrr::map(paths,
+                       \(x) ggsave(x, ...),
+                       .progress = TRUE)
+        })
+    })
+}
+
+post_draws_list <- model_summary |>
+    mutate(across(
+        .value:.upper,
+        \(x) ifelse(grepl("Intercept", .type),
+                    plogis(x), x / 4
+        )
+    )) |>
+    split(model_summary$.variable)
 ```
 
-## Appendix A: model diagnostics {.appendix .unnumbered}
+## Appendix A: model details {.appendix .unnumbered}
 
-{{< include _appendix/_model-diagnostics.qmd >}}
+{{< include _appendix/_model-details.qmd >}}
 
 {{< pagebreak >}}
 

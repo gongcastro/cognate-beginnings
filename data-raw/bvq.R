@@ -1,18 +1,24 @@
 # get bvq participant data
-p <- bvq_participants()
+p <- bvq::bvq_participants()
 
 # get bvq questionnaire responses
-r <- bvq_responses(p)
+r <- bvq::bvq_responses(p) |> 
+    filter(date_started <= as.Date("2022-10-31"))
 
 # merge participant data with questionnaire responses
 edu_dict <- c("noeducation" = "No education",
-                "primary" = "Primary",
-                "secondary" = "Secondary",
-                "complementary" = "Complementary",
-                "vocational" = "Vocational",
-                "university" = "University")
+              "primary" = "Primary",
+              "secondary" = "Secondary",
+              "complementary" = "Complementary",
+              "vocational" = "Vocational",
+              "university" = "University")
 
-l <- bvq_logs(p, r) |>
+# logs
+sex <- readr::read_csv(file.path("data-raw", "sex.csv"), 
+                       col_types = "cc",
+                       show_col_types = FALSE)
+
+l <- bvq::bvq_logs(p, r) |>
     mutate(across(starts_with("edu_"), 
                   function(x) {
                       factor(x, 
@@ -27,7 +33,8 @@ l <- bvq_logs(p, r) |>
            edu_parent = factor(edu_parent,
                                levels = 1:6, 
                                labels = edu_dict)) |>
-    select(id, time, date_finished, age,
+    left_join(sex, by = join_by(id)) |> 
+    select(id, time, date_finished, age, sex,
            lp, dominance, version, completed, doe_catalan,
            doe_spanish, doe_others, edu_parent)
 
@@ -39,4 +46,4 @@ bvq_data <- list(participants = p,
                  logs = l,
                  pool = pool)
 
-saveRDS(bvq_data, "data-raw/bvq.rds")
+saveRDS(bvq_data, file.path("data-raw", "bvq.rds"))

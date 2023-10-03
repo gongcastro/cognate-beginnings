@@ -2,7 +2,7 @@ As a robustness check, we fit a model similar to the one described in the main m
 
 ```{r tbl-coefs-doe}
 #| label: tbl-coefs-doe
-#| tbl-cap: "Posterior distribution of regression coefficients of the model including the *Exposure* composite predictor, and of the model including lexical frequency (*Frequency*) and degree of exposure (*DoE*) separately. Median: median of the posterior distribution in the probability scale. 95\\% HDI: 95\\% highest density interval of the distribution. *p*(ROPE): overlap between the 95\\% HDI and the ROPE, indicating the posterior probability that the true value of the coefficient is equivalent to zero. In the right column, we show a graphical representation of the median and 95% HDI of each coefficient, with a reference dotted line indicating the location of zero."
+#| tbl-cap: "Posterior distribution of regression coefficients of the model including the *Exposure* composite predictor, and of the model including lexical frequency (*Frequency*) and degree of exposure (*DoE*) separately."
 #| echo: false
 #| message: false
 #| warning: false
@@ -32,15 +32,14 @@ tbl_data <- list("Exposure model" = model_summary,
                     sprintf("%.3f", .rope))) |> 
     select(.variable_name, .value, .lower, .upper, .hdi, .rope) 
 
+col_names <- c("", "$\\beta$", "95\\% HDI", "$p(\\text{ROPE})$")
+
 tbl_data |> 
     select(-c(.lower, .upper)) |> 
     knitr::kable(
-        format = "latex", 
+        format = "latex",
         escape = FALSE,
-        col.names = c("",
-                      "$\\beta$",
-                      "95\\% HDI",
-                      "$p(\\text{ROPE})$"),
+        col.names = col_names,
         digits = 3,
         booktabs = TRUE,
         align = "lclr",
@@ -51,6 +50,7 @@ tbl_data |>
                           end_row = 8) |> 
     kableExtra::pack_rows("Model: Frequency & DoE",
                           start_row = 9,
-                          end_row = 17)
+                          end_row = 17) |> 
+    add_footnote("$\\beta$: median of the posterior distribution in the probability scale. 95\\% HDI: 95\\% highest density interval of the distribution. $p(\\text{ROPE})$: overlap between the 95\\% HDI and the ROPE, indicating the posterior probability that the true value of the coefficient is equivalent to zero.", notation = "none", escape = FALSE)
 ```
 

@@ -7,6 +7,7 @@ test_participants <- function(participants) {
                 "time_stamp",
                 "list",
                 "age",
+                "sex",
                 "lp",
                 "doe_catalan",
                 "doe_spanish",
@@ -22,6 +23,7 @@ test_participants <- function(participants) {
         expect_type(participants$list, "character")
         expect_type(participants$age, "double")
         expect_type(participants$lp, "character")
+        expect_type(participants$sex, "character")
         expect_type(participants$doe_catalan, "double")
         expect_type(participants$doe_spanish, "double")
         expect_type(participants$edu_parent, "integer")
