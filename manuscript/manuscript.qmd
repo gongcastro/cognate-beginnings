@@ -165,13 +165,13 @@ sum_rows <- function(x) {
     } else if (is.list(x)) {
         ""
     } else {
-        "*N*"
+        "N"
     }
 }
 
 sums_row <- tbl_data |>
     summarise(
-        semantic_category = "*N*",
+        semantic_category = "N",
         across(a:d, sum),
         items = "-"
     )
