@@ -6,5 +6,6 @@ manuscript/**/*.tex linguist-detectable=false
 docs/**/*.css linguist-detectable=false
 manuscript/**/*.lua linguist-detectable=false
 
-docs/ linguist-vendor
-manuscript/_extensions/ linguist-vendor
+docs/ linguist-vendored
+manuscript/*.tex
+manuscript/_extensions/ linguist-vendored
