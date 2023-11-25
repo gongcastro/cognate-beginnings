@@ -1,0 +1,10 @@
+*.pl linguist-detectable=true
+*.js linguist-detectable=true
+*.html linguist-detectable=false
+*.htm linguist-detectable=false
+manuscript/**/*.tex linguist-detectable=false
+docs/**/*.css linguist-detectable=false
+manuscript/**/*.lua linguist-detectable=false
+
+docs/ linguist-vendor
+manuscript/_extensions/ linguist-vendor
