@@ -2,7 +2,7 @@ all: targets docker
 
 targets: _targets.R
 	@echo "Running targets..."
-	@Rscript -e "targets::tar_make($(target))"
+	@Rscript -e "targets::tar_make()"
 	@echo "Cleaning repository..."
 	@Rscript -e "source('src/helpers.R'); clean_repo()"
 	@echo "Rendering website..."
