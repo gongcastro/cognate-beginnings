@@ -78,7 +78,10 @@ get_childes_frequencies <- function(collection = "Eng-NA",
                      freq_million,
                      freq_zipf)
         
+        save_files(childes, folder = "data", formats = "csv")
+        
     })
+    
     
     return(childes)
 }

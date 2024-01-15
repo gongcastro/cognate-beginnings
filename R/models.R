@@ -99,11 +99,11 @@ get_posterior_summary <- function(model,
             .value, .lower, .upper, .rope
         ) |>
         ungroup()
+    
+    save_files(posterior_summary, folder = "results/posterior", formats = "csv")
 
     return(posterior_summary)
 }
-
-
 
 #' Get model R-hat scores
 #'
@@ -117,11 +117,15 @@ get_posterior_summary <- function(model,
 #' [bayesplot::rhat()].
 #' * .neff: effective sample size, as returned by [bayesplot::neff_ratio()]
 get_model_convergence <- function(model, ...) {
-    tibble::tibble(
+    out <- tibble::tibble(
         .variable = variables(model),
         .rhat = rhat(model, ...),
         .neff = neff_ratio(model, ...)
     )
+    
+    save_files(out, folder = "results/posterior", formats = "csv")
+    
+    return(out)
 }
 
 #' Get model posterior predictive checks

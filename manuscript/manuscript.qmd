@@ -26,7 +26,7 @@ targets::tar_load(c(
 ))
 
 targets::tar_load(c(
-    model_fit, model_summary, model_summary_re,
+    model_fit, model_summary,
     model_epreds, model_convergence
 ))
 

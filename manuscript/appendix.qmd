@@ -107,7 +107,7 @@ post_draws_list <- model_summary |>
 {{< pagebreak >}}
 
 
-## Appendix C: frequency and language exposure as separate predictors {.appendix .unnumbered}
+## Appendix C: syllable frequency {.appendix .unnumbered}
 
 {{< include _appendix/_syllable-frequency.qmd >}}
 
